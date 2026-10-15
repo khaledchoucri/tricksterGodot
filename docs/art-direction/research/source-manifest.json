@@ -1,0 +1,79 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/2d/2d_sprite_animation.rst",
+    "file": "sources/2d_sprite_animation.rst",
+    "sha256": "fea5a11a5a101cf71dbb9540c0ef19486afe7d0fd0e85c951f8ee6424bbdbda3",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/2d/using_tilemaps.rst",
+    "file": "sources/using_tilemaps.rst",
+    "sha256": "1ea3cc0dc7b144e07f76699f87462dd83e7ba261aaecad1344a62eda48cf949f",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/2d/2d_lights_and_shadows.rst",
+    "file": "sources/2d_lights_and_shadows.rst",
+    "sha256": "71b5b5ade5817f1b70802bc05a6f8a2a731aaddbb4331d3648c5de433bea8bfe",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/animation/cutout_animation.rst",
+    "file": "sources/cutout_animation.rst",
+    "sha256": "a09bd0f0e868dcf4fe4fb3ad338ccbe54cf32fc3fadc2536ef6d12562c1a1b29",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/2d/using_tilesets.rst",
+    "file": "sources/using_tilesets.rst",
+    "sha256": "b7b637f8668afb1c51bd82d3c760d0ca6e657b4a3ce15aa825bb553dd57ac99b",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/assets_pipeline/importing_images.rst",
+    "file": "sources/importing_images.rst",
+    "sha256": "4930e2347e77d46f862472283e567864d7f4c8006dd2017719bef7cd5818bca2",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/2d/2d_transforms.rst",
+    "file": "sources/2d_transforms.rst",
+    "sha256": "014a4d94124dd8b94d18d941216233c76fe81a5d287e9c93800e0c6e30580b51",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/tutorials/rendering/renderers.rst",
+    "file": "sources/renderers.rst",
+    "sha256": "ff73af5c0d33c61a14bf945938a4544ed66a2c805fb807888a18541e5933d04a",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/classes/class_canvasitem.rst",
+    "file": "sources/class_canvasitem.rst",
+    "sha256": "9f738a6bfd1de94fdc87b88ae4ec47acd5b31f84eff0e48f08c5a8bd8a5aecf2",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/classes/class_animatedsprite2d.rst",
+    "file": "sources/class_animatedsprite2d.rst",
+    "sha256": "e6dcc14ccdcb85b75fd46f3a219dfa603a14cb27da393cf00d3f655c68f56fd1",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/godotengine/godot-docs/4.6/classes/class_tilemaplayer.rst",
+    "file": "sources/class_tilemaplayer.rst",
+    "sha256": "ee6ea73ead751b57afb40b1c82d1694179c262ecde31fbe07578821fdc0c7a1c",
+    "retrieved_date": "2026-10-15",
+    "status": "retrieved"
+  }
+]

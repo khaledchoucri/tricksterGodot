@@ -1,0 +1,28 @@
+{
+  "asset_id": "presentation.sunlit-impact.concept.v001",
+  "status": "exploration_not_approved",
+  "generated_date": "2026-10-15",
+  "tool": "image_gen.imagegen",
+  "model_version": "not_exposed",
+  "seed": "not_exposed",
+  "generation_id": "not_exposed",
+  "original_output_file": "/workspace/generated_images/exec-6d1e0387-1456-4af7-ac4e-8c04903f9706.png",
+  "package_file": "assets/sunlit-impact-concept.png",
+  "sha256": "70cb2d52f7f85218f9cdcc1cd3abacd84b577c85c5c91633f760eb7348369754",
+  "prompt_file": "research/prompts/concept-board-v001.txt",
+  "image_references": [],
+  "source_note": "Text-directed visual exploration; no canon-authenticated image pack was supplied. Tool metadata does not establish canonical fidelity.",
+  "transform_history": [
+    "Byte-for-byte file copy to package; no image edits."
+  ],
+  "review": {
+    "production_acceptance": "rejected_as_production_reference",
+    "reasons": [
+      "Canonical designs not verified",
+      "Hero gear/details vary between panels",
+      "Town is generic rather than verified Megalopolis",
+      "Projection not calibrated",
+      "No animation or runtime asset demonstrated"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+batch_id,scope,owner,name,planning_unit,planned_units,dependency,acceptance_gate,status
+REF-01,P0,REFERENCE,Canon character reference pack,pack,1,source access,A,planned_not_generated
+REF-02,P0,REFERENCE,Coral Beach and Megalopolis evidence,pack,1,source access,A,planned_not_generated
+REF-03,P0,REFERENCE,Drilling skills pets and monster evidence,pack,1,source access,A,planned_not_generated
+DIR-01,P0,DIRECTOR,Comparable visual treatments,board,3,REF-01 REF-02,A,planned_not_generated
+DIR-02,P0,DIRECTOR,Palette material and edge grammar,sheet,1,DIR-01,A,planned_not_generated
+CHR-01,P0,CHAR,Bunny canonical interpretation and landmarks,sheet,1,REF-01 DIR-01,A,planned_not_generated
+CHR-02,P0,CHAR,Bunny eight directional references,view,8,CHR-01,B,planned_not_generated
+CHR-03,P0,CHAR,Bunny expressions hands attachments,sheet,1,CHR-01,B,planned_not_generated
+ANI-01,P0,ANIM,Available animation-route comparison,report,1,CHR-02,B,planned_not_generated
+ANI-02,P0,ANIM,Bunny small-set motion pilot,action family,3,ANI-01,B,planned_not_generated
+CAL-01,P0,DESIGN,Camera scale pivot and import scene,diagnostic scene,1,ANI-02 ENV-01 VFX-01,C,planned_not_generated
+ENV-01,P0,ENV,Terrain adjacency and prop pilot,kit,1,REF-02 DIR-01,B,planned_not_generated
+VFX-01,P0,VFX,Threat and contact grammar pilot,family,1,DIR-02 design phase contract,B,planned_not_generated
+UI-01,P0,UI,HUD and icon grammar study,sheet,1,DIR-02 design UI contract,B,planned_not_generated
+CHR-04,P1,CHAR,Bunny final fixed outfit model,family,1,C,D,planned_not_generated
+ANI-03,P1,ANIM,Bunny idle locomotion ready,clip family,3,C CHR-04,D,planned_not_generated
+ANI-04,P1,ANIM,Bunny primary attack,clip family,1,C CHR-04,D,planned_not_generated
+ANI-05,P1,ANIM,Bunny approved skill,clip family,1,C skill design,D,planned_not_generated
+ANI-06,P1,ANIM,Bunny proposed evade,clip family,1,C evade decision,D,planned_not_generated
+ANI-07,P1,ANIM,Bunny hurt and defeat,clip family,2,C,D,planned_not_generated
+ANI-08,P1,ANIM,Drill plant loop resistance abort,clip family,4,C drill contract,D,planned_not_generated
+ANI-09,P1,ANIM,Discovery reveal retrieve celebrate,clip family,3,ANI-08,D,planned_not_generated
+ANI-10,P1,ANIM,Interact and return-to-neutral transitions,family,1,C,D,planned_not_generated
+ENV-02,P1,ENV,Quiet sand ground variants,surface variant,4,C,D,planned_not_generated
+ENV-03,P1,ENV,Sand water vegetation transitions,adjacency family,1,C ENV-02,D,planned_not_generated
+ENV-04,P1,ENV,Shoreline foam and water motion,loop family,1,C ENV-03,D,planned_not_generated
+ENV-05,P1,ENV,Cliff and rock bases caps,kit,1,C,D,planned_not_generated
+ENV-06,P1,ENV,Palm canopy and coral prop family,kit,1,C,D,planned_not_generated
+ENV-07,P1,ENV,Small scatter props,prop,6,C,D,planned_not_generated
+ENV-08,P1,ENV,Large occluders and landmark,family,1,C canon landmark,D,planned_not_generated
+ENV-09,P1,ENV,Drilling surfaces and route markers,family,1,C drill contract,D,planned_not_generated
+ENV-10,P1,ENV,Megalopolis social mood and future kit plan,study,1,REF-02,concept review,planned_not_generated
+ENM-01,P1,CHAR,Verified melee and ranged monsters,actor family,2,REF-03 C,D,planned_not_generated
+ENM-02,P1,ANIM,Enemy complete state coverage,actor clip family,2,ENM-01,D,planned_not_generated
+ENM-03,P1,CHAR,Elite silhouette and action variant,family,1,ENM-01 design elite contract,D,planned_not_generated
+PET-01,P1,CHAR,Verified companion model,family,1,REF-03 C,D,planned_not_generated
+PET-02,P1,ANIM,Companion idle follow emote discovery,action family,4,PET-01,D,planned_not_generated
+NPC-01,P1,CHAR,Guide portrait and simple world sprite,concept family,1,canon NPC selection,concept review,planned_not_generated
+VFX-02,P1,VFX,Punch arc contact hurt feedback,family,1,C ANI-04,D,planned_not_generated
+VFX-03,P1,VFX,Dust evade trail and landing,family,1,C ANI-06,D,planned_not_generated
+VFX-04,P1,VFX,Approved skill all phases,family,1,C ANI-05,D,planned_not_generated
+VFX-05,P1,VFX,Enemy warnings projectile contact,family,1,ENM-02,D,planned_not_generated
+VFX-06,P1,VFX,Drill disturbance find and rare reveal,family,1,ANI-08 ANI-09,D,planned_not_generated
+VFX-07,P1,VFX,Reduced effects and crowd variants,family,1,VFX-02 VFX-05,D,planned_not_generated
+UI-02,P1,UI,HP resource skills target interaction,component family,1,C,D,planned_not_generated
+UI-03,P1,UI,Drilling discovery and pickup,component family,1,C drill contract,D,planned_not_generated
+UI-04,P1,UI,Pause settings focus and input glyphs,component family,1,UI-02,D,planned_not_generated
+ICO-01,P1,UI,Item skill status icon grammar,family,1,UI-01,D,planned_not_generated
+REV-01,P1,REVIEW,Full slice playback and screenshot matrix,packet,1,all P1 runtime families,E,planned_not_generated
+EXP-01,P2,CHAR,Remaining seven characters,concept family,7,Bunny qualification canon pack,expansion gate,planned_not_generated
+EXP-02,P2,CHAR,Class progression and equipment variants,matrix,1,EXP-01 gear-swap pilot,expansion gate,planned_not_generated
+EXP-03,P2,ENV,Further fields towns and region kits,matrix,1,Coral Beach qualification,expansion gate,planned_not_generated
+EXP-04,P2,CHAR,Enemy ecology bosses and phase art,matrix,1,enemy readability qualification,expansion gate,planned_not_generated
+EXP-05,P2,CHAR,NPC portraits and expression coverage,matrix,1,canon story scope,expansion gate,planned_not_generated
+EXP-06,P2,UI,Inventory equipment skills quests dialogue,system concept,5,UI grammar,expansion gate,planned_not_generated
+EXP-07,P2,UI,Map shop collection companion care,system concept,4,UI grammar canon systems,expansion gate,planned_not_generated
+EXP-08,P2,UI,Party chat guild trade reconnect,system concept,5,online scope later,expansion gate,planned_not_generated
+EXP-09,P2,ANIM,Social emotes and town idles,matrix,1,actor route crowd budget,expansion gate,planned_not_generated
+EXP-10,P2,ENV,Lighting weather and time variants,matrix,1,painted baseline lighting test,expansion gate,planned_not_generated
+EXP-11,P2,DIRECTOR,Story loading and marketing illustration,matrix,1,approved identity distribution scope,expansion gate,planned_not_generated
+EXP-12,P2,REVIEW,Accessibility and online-crowd variants,matrix,1,runtime measurements,expansion gate,planned_not_generated
