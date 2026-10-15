@@ -1,0 +1,11 @@
+# Godot
+.godot/
+*.import
+export_presets.cfg
+
+# Original Trickster material (copyrighted). Generate locally with tools/,
+# never commit it.
+original_assets/
+
+# Python
+__pycache__/
