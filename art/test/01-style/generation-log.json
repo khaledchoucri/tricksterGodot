@@ -1,0 +1,244 @@
+{
+  "shot": 1,
+  "source_branch": "poc/combat-room",
+  "source_commit": "4c8ee9e",
+  "status": "awaiting_style_choice",
+  "counts": {
+    "generations": 11,
+    "candidates": 6,
+    "rejects": 5
+  },
+  "approx_tool_seconds": 471.2,
+  "calls": [
+    {
+      "sequence": 1,
+      "file": "rejected/buffalo_a_01.png",
+      "prompt_file": "rejected/buffalo_a_01.txt",
+      "references": [],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 61.3,
+      "status": "rejected",
+      "native_px": [
+        1254,
+        1254
+      ],
+      "sha256": "be5f3e292c68eef6019509fe9b45779657202bb958ad1fedf76ac8b62d0b9428",
+      "reason_file": "rejected/buffalo_a_01.reason.txt"
+    },
+    {
+      "sequence": 2,
+      "file": "rejected/buffalo_a_02.png",
+      "prompt_file": "rejected/buffalo_a_02.txt",
+      "references": [],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 37.3,
+      "status": "rejected",
+      "native_px": [
+        1254,
+        1254
+      ],
+      "sha256": "3b32b251b0832255554257f5152fcf884952a3e546651a3881e2c877f0788328",
+      "reason_file": "rejected/buffalo_a_02.reason.txt"
+    },
+    {
+      "sequence": 3,
+      "file": "rejected/buffalo_a_03.png",
+      "prompt_file": "rejected/buffalo_a_03.txt",
+      "references": [
+        "rejected/buffalo_a_02.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 30.6,
+      "status": "rejected",
+      "native_px": [
+        1254,
+        1254
+      ],
+      "sha256": "78b8cf6c763f2feca0d7b2843f05203e1b88c71bca4344123e9315843db7f614",
+      "reason_file": "rejected/buffalo_a_03.reason.txt"
+    },
+    {
+      "sequence": 4,
+      "file": "buffalo_a_04.png",
+      "prompt_file": "buffalo_a_04.txt",
+      "references": [],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 30.5,
+      "status": "candidate_awaiting_user",
+      "native_px": [
+        1254,
+        1254
+      ],
+      "sha256": "170c7e3944b0bddc7f281c3052465d35db0f3910323314d17f3f9772810b7c65",
+      "approx_nonmagenta_bounds_px": [
+        335,
+        79,
+        916,
+        1169
+      ]
+    },
+    {
+      "sequence": 5,
+      "file": "buffalo_b_01.png",
+      "prompt_file": "buffalo_b_01.txt",
+      "references": [
+        "buffalo_a_04.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 45.6,
+      "status": "candidate_awaiting_user",
+      "native_px": [
+        1254,
+        1254
+      ],
+      "sha256": "3924accad8110c6a9f290bb38ae30904651a6ed52aad51bd27a2cfb144bee8d0",
+      "approx_nonmagenta_bounds_px": [
+        331,
+        73,
+        919,
+        1171
+      ]
+    },
+    {
+      "sequence": 6,
+      "file": "buffalo_c_01.png",
+      "prompt_file": "buffalo_c_01.txt",
+      "references": [
+        "buffalo_a_04.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 34.0,
+      "status": "candidate_awaiting_user",
+      "native_px": [
+        1254,
+        1254
+      ],
+      "sha256": "bba2356609bbd2cf2907ed24221ecdbf859edc643ad02abf14e6de4d5bd8f3c1",
+      "approx_nonmagenta_bounds_px": [
+        334,
+        78,
+        917,
+        1170
+      ]
+    },
+    {
+      "sequence": 7,
+      "file": "rejected/coral_beach_a_01.png",
+      "prompt_file": "rejected/coral_beach_a_01.txt",
+      "references": [
+        "buffalo_a_04.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 72.3,
+      "status": "rejected",
+      "native_px": [
+        1672,
+        941
+      ],
+      "sha256": "8da41bbaa345cfd21a6987759f913f427279094396d75b2eacb9e3aeb452ba98",
+      "reason_file": "rejected/coral_beach_a_01.reason.txt"
+    },
+    {
+      "sequence": 8,
+      "file": "rejected/coral_beach_a_02.png",
+      "prompt_file": "rejected/coral_beach_a_02.txt",
+      "references": [
+        "rejected/coral_beach_a_01.png",
+        "buffalo_a_04.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 35.2,
+      "status": "rejected",
+      "native_px": [
+        1672,
+        941
+      ],
+      "sha256": "0ec67a1db5863ad3df06a3709d68223768262a1834ebae5edb5c72fb24601dde",
+      "reason_file": "rejected/coral_beach_a_02.reason.txt"
+    },
+    {
+      "sequence": 9,
+      "file": "coral_beach_a_03.png",
+      "prompt_file": "coral_beach_a_03.txt",
+      "references": [
+        "rejected/coral_beach_a_02.png",
+        "buffalo_a_04.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 28.9,
+      "status": "candidate_awaiting_user",
+      "native_px": [
+        1671,
+        941
+      ],
+      "sha256": "86992e19bb18b7eb1557b7dfbea328a12962ed74cf383135e0d1996e030802e0"
+    },
+    {
+      "sequence": 10,
+      "file": "coral_beach_b_01.png",
+      "prompt_file": "coral_beach_b_01.txt",
+      "references": [
+        "coral_beach_a_03.png",
+        "buffalo_b_01.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 55.1,
+      "status": "candidate_awaiting_user",
+      "native_px": [
+        1668,
+        943
+      ],
+      "sha256": "b50c104c24d35ddc9f1946ef0c3206c4fa8073ff5269776ca067a3e970e0d8f3"
+    },
+    {
+      "sequence": 11,
+      "file": "coral_beach_c_01.png",
+      "prompt_file": "coral_beach_c_01.txt",
+      "references": [
+        "coral_beach_a_03.png",
+        "buffalo_c_01.png"
+      ],
+      "tool": "image_gen.imagegen",
+      "transparent_background": false,
+      "seed": "not_exposed",
+      "model_version": "not_exposed",
+      "approx_tool_seconds": 40.4,
+      "status": "candidate_awaiting_user",
+      "native_px": [
+        1671,
+        941
+      ],
+      "sha256": "206867fe5d791ccdc636249e9a268807b02d5be5a02c58b61681897d6d71f180"
+    }
+  ]
+}

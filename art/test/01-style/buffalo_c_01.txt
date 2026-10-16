@@ -1,0 +1,15 @@
+EXACT GENERATION PROMPT
+
+Restyle the attached generated Buffalo image while preserving its EXACT geometry. Copy the same standing pose, figure size, canvas size, crop, framing, camera, silhouette, boot positions, face angle, hand positions and every costume landmark. Do not zoom, reframe, mirror or redesign. This is a controlled three-style comparison; only rendering treatment changes.
+A young, cheerful, sturdy male fighter, roughly 5 heads tall. A wrapped cream headwrap with an ornamental red-and-gold band; short dark hair with a few strands showing. A red sleeveless top with light trim, bare strong arms, wrapped wrists. Loose khaki trousers gathered at the shin, sturdy grey boots. Newly designed details: a small buffalo-horn motif worked into the headwrap band, and a single leather pauldron on his own right shoulder. A belt with an empty scabbard on his own left hip. Simplify costume details so they read at about 150 px tall. Keep the design left/right symmetric enough to mirror except the pauldron and scabbard. No weapon in either hand, no blade, no shield, no horned helmet.
+The reference already has the correct EMPTY scabbard with a black hollow opening on his own left hip. Preserve that opening, never add anything inside. Both hands remain empty. Preserve the cream wrapped headwrap with red/gold horn motif band, short dark hair, red sleeveless light-trim top, one right leather pauldron, khaki trousers, grey boots and wrapped wrists.
+Hand-painted game art. Bold, confident dark-ink outlines of varying weight; saturated painterly colour in broad planes with selective texture; strong warm key light from the upper left and a cool rim light; graphic, readable silhouettes. Bright, sunlit, warm and friendly, a coastal adventure mood, never dark, gritty or menacing. Clean edges, no photorealism, no text.
+TREATMENT C: flatter graphic CEL SHADING. Simplify the rendering to flat base color plus ONE crisp hard-edged shadow band and very sparse flat highlights; essentially no interior brush texture, no blended gradients, clean deep-ink line hierarchy, strong readable flat shape design. Retain warm upper-left key light and a small cool rim. Preserve the same saturated cream/red/khaki/grey costume palette and friendly face. Clearly flatter than painterly A and B.
+Background: flat uniform pure magenta #FF00FF RGB(255,0,255), all background pixels identical, no gradient or texture, no shadows, no ground, no text. One full-body figure only.
+
+REFERENCE IMAGES USED (in supplied order)
+1. buffalo_a_04.png
+
+TOOL SETTINGS
+image_gen.imagegen; transparent_background=false. No seed or model-version identifier exposed.
+

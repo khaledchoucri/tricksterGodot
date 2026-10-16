@@ -1,0 +1,1 @@
+Rejected: Buffalo is about 320 px tall at native resolution, roughly double the requested game size.

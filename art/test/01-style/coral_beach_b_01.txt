@@ -1,0 +1,16 @@
+EXACT GENERATION PROMPT
+
+Make a controlled style comparison of the scene in image 1. Image 1 is the exact composition, camera, actor pose, framing and scale reference; image 2 is ONLY Buffalo's rendering-treatment reference, not a scale reference. Preserve the camera and all object locations. Do NOT enlarge the actor. Preserve the tiny Buffalo bounding box in image 1, approximately x=765..885, y=360..580 in the 1672x941 scene, standing near center with the same boots-ground location. Scene is intended for a 1152x648 game-view display, where Buffalo should read about150px tall. Do not replace the tiny actor with a large illustration. Whole scene stays landscape with the same aspect ratio.
+Hand-painted game art. Bold, confident dark-ink outlines of varying weight; saturated painterly colour in broad planes with selective texture; strong warm key light from the upper left and a cool rim light; graphic, readable silhouettes. Bright, sunlit, warm and friendly, a coastal adventure mood, never dark, gritty or menacing. Clean edges, no photorealism, no text.
+Fixed orthographic 2:1 dimetric game camera looking down about30 degrees. Diamond paving ground axes slope +0.5 and -0.5; no perspective convergence or horizon. Preserve quiet central pale sand #F3DFBC, teal sea #2AADB4 upper-left, coral-pink #E98070 perimeter rocks, one palm upper-right, sparse limestone paving lower-left. Same coastline, rock groupings and palm footprint as image1, low-noise center. No other actors, no enemies, no HUD, no labels or lettering.
+A young, cheerful, sturdy male fighter, roughly 5 heads tall. A wrapped cream headwrap with an ornamental red-and-gold band; short dark hair with a few strands showing. A red sleeveless top with light trim, bare strong arms, wrapped wrists. Loose khaki trousers gathered at the shin, sturdy grey boots. Newly designed details: a small buffalo-horn motif worked into the headwrap band, and a single leather pauldron on his own right shoulder. A belt with an empty scabbard on his own left hip. Simplify costume details so they read at about 150 px tall. Keep the design left/right symmetric enough to mirror except the pauldron and scabbard. No weapon in either hand, no blade, no shield, no horned helmet.
+Buffalo must keep image1's identical southeast standing pose, size, center placement, five-head anatomy, empty hands, open hollow scabbard, one right-shoulder pauldron and cream/red/khaki/grey palette. One actor only. Only change rendering treatment, not design or geometry.
+OPTION B / BOLD INK-AND-PAINT: saturated broad angular painted color planes, confident varying-weight dark ink outlines, stronger graphic light/shadow grouping, selective visible painterly texture, emphatic warm upper-left light and clear cool rim on actor and props. Brighter crisp decisive rendering than softer A, but retain the friendly coastal mood and clear ground.
+
+REFERENCE IMAGES USED (in supplied order)
+1. coral_beach_a_03.png
+2. buffalo_b_01.png
+
+TOOL SETTINGS
+image_gen.imagegen; transparent_background=false. No seed or model-version identifier exposed.
+

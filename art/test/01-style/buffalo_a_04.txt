@@ -1,0 +1,14 @@
+EXACT GENERATION PROMPT
+
+Draw one compact five-head-tall Buffalo adventurer for a 2D game, full body on a square magenta canvas. He is a cheerful young sturdy male with broad arms and SHORT strong legs, not realistically tall. Keep generous empty margins: the figure occupies about 63% of image height, with boots at 82% of canvas height. Elevated 2:1 dimetric view looking down about 30 degrees, facing screen lower-right, parallel projection. Heroic stationary stance, feet shoulder-width apart, his left foot a little forward, both arms down slightly away from hips, both hands empty and loosely closed.
+BUFFALO DESIGN BRIEF: wrapped cream headwrap, ornamental red-and-gold band containing a small buffalo-horn emblem; short dark hair strands. Red sleeveless top with light trim, bare strong arms, wrapped wrists. Loose khaki trousers gathered at the shin, sturdy grey boots. Single leather pauldron on his own right shoulder (viewer left). Simple belt. On his own left hip (viewer right), an EMPTY brown leather scabbard shown as a hollow leather tube with an obvious BLACK OPEN OVAL at its top: completely vacant, containing nothing. Costume details simplified for 150px game-size readability. Symmetric costume masses except the pauldron and empty scabbard. No decorative hanging sash.
+Hand-painted game art. Bold, confident dark-ink outlines of varying weight; saturated painterly colour in broad planes with selective texture; strong warm key light from the upper left and a cool rim light; graphic, readable silhouettes. Bright, sunlit, warm and friendly, a coastal adventure mood, never dark, gritty or menacing. Clean edges, no photorealism, no text.
+OPTION A: SOFTER PAINTERLY. Softly blended brush-painted interior shadows and broad warm color masses, restrained contour weight, gentle shadow transitions, visible selective painterly texture. Friendly expressive eyes. Avoid hard cel-shaded shadow polygons.
+Background is a flat uniform solid digital magenta fill #FF00FF, RGB 255,0,255. No background lighting, no texture, no gradient, no shadow, no ground. No weapons anywhere, no letters, no panels.
+
+REFERENCE IMAGES USED (in supplied order)
+None. Optional local original reference was absent; written brief only.
+
+TOOL SETTINGS
+image_gen.imagegen; transparent_background=false. No seed or model-version identifier exposed.
+
