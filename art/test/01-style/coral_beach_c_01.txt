@@ -13,4 +13,3 @@ REFERENCE IMAGES USED (in supplied order)
 
 TOOL SETTINGS
 image_gen.imagegen; transparent_background=false. No seed or model-version identifier exposed.
-

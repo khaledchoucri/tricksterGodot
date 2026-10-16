@@ -11,4 +11,3 @@ None. Optional local original reference was absent; written brief only.
 
 TOOL SETTINGS
 image_gen.imagegen; transparent_background=false. No seed or model-version identifier exposed.
-
