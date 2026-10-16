@@ -1,0 +1,87 @@
+{
+  "action": "run",
+  "actor": "buffalo",
+  "canvas": 512,
+  "dir": "w",
+  "feet": [
+    256,
+    420
+  ],
+  "frame_ms": [
+    70,
+    70,
+    70,
+    70,
+    70,
+    70,
+    70,
+    70
+  ],
+  "scale": 4.32432432432432,
+  "sockets": [
+    {
+      "frame": 0,
+      "front": false,
+      "hand": [
+        239,
+        308
+      ]
+    },
+    {
+      "frame": 1,
+      "front": false,
+      "hand": [
+        234,
+        312
+      ]
+    },
+    {
+      "frame": 2,
+      "front": false,
+      "hand": [
+        239,
+        312
+      ]
+    },
+    {
+      "frame": 3,
+      "front": true,
+      "hand": [
+        243,
+        312
+      ]
+    },
+    {
+      "frame": 4,
+      "front": false,
+      "hand": [
+        247,
+        312
+      ]
+    },
+    {
+      "frame": 5,
+      "front": true,
+      "hand": [
+        252,
+        308
+      ]
+    },
+    {
+      "frame": 6,
+      "front": true,
+      "hand": [
+        247,
+        308
+      ]
+    },
+    {
+      "frame": 7,
+      "front": true,
+      "hand": [
+        243,
+        308
+      ]
+    }
+  ]
+}
