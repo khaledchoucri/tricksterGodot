@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"hidden_shore_a"
+display_name = "Hidden Shore"
+map = "map_fd11g"
+rect = Rect2i(384, 704, 1120, 680)

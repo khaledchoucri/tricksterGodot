@@ -1,8 +1,9 @@
 class_name Enemy
 extends CharacterBody2D
-## Data-driven Coral Beach monster. Stats and movement come from the original
-## MonsterParamEx2 row (via original_assets/data/monsters.json); the attack
-## pattern and its wind-up are new, since MMO monsters attacked instantly.
+## Data-driven Coral Beach monster (scenes/enemy.tscn). Stats, speed and
+## rewards come from the original MonsterParamEx2 row; the attack pattern
+## ("kind") and its wind-up come from its EnemyData, since MMO monsters
+## attacked instantly.
 
 signal died(enemy: Enemy)
 
@@ -17,12 +18,16 @@ const KINDS := {
 		"length": 160.0, "width": 36.0, "poise": 0},
 	"slam": {"range": 70.0, "windup": 0.9, "active": 0.1, "recover": 0.85, "shape": "circle",
 		"radius": 78.0, "poise": -1},
+	"spin": {"range": 56.0, "windup": 0.7, "active": 0.35, "recover": 0.6, "shape": "circle",
+		"radius": 64.0, "poise": 1},
+	"shot": {"range": 260.0, "windup": 0.7, "active": 0.05, "recover": 0.9, "shape": "lane",
+		"length": 120.0, "width": 18.0, "poise": 0, "keep_away": 150.0, "shot_speed": 210.0},
 }
+const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
 
-var monster_id := ""
+var data: EnemyData
 var display_name := ""
-var actor := ""
-var kind := "melee"
+var cfg: Dictionary = {}
 var max_hp := 60
 var hp := 60
 var damage := 8
@@ -31,6 +36,12 @@ var run_speed := 105.0
 var body_radius := 14.0
 var idle_stay := Vector2(3, 5)
 var is_boss := false
+var is_elite := false
+var rewards := {"exp": 0, "tm": 0, "galder": 0}
+
+## Set by the room before the enemy enters the tree.
+var room: Room
+var player: Player
 
 var state := State.SPAWN
 var _t := 0.0
@@ -38,52 +49,67 @@ var _state_len := 0.0
 var _attack_dir := Vector2.RIGHT
 var _telegraph: Telegraph
 var _knock := Vector2.ZERO
+var _pull := Vector2.ZERO  # extra velocity for this frame (Tornado Bomb)
 var _hits_taken := 0
 var _attack_landed := false
 var _wander_target := Vector2.ZERO
+var _path := PackedVector2Array()
+var _path_at := -10.0
 
-var sprite: ActorSprite
-var arena
-var player: Player
+# Status effects from skill cards.
+var break_until := 0.0
+var break_bonus := 0.0
+var burn_until := 0.0
+var burn_dps := 0.0
+var _burn_tick := 0.0
+
+@onready var sprite: ActorSprite = $Sprite
+@onready var shape: CollisionShape2D = $Shape
 
 
-## Configure from a monsters.json entry. `scale` adjusts MMO numbers to action pacing.
-func configure(id: String, data: Dictionary, p_actor: String, p_kind: String) -> void:
-	monster_id = id
-	actor = p_actor
-	kind = p_kind
-	display_name = data.get("name", p_actor.capitalize())
-	var stats: Dictionary = data.get("stats", {})
-	max_hp = int(round(float(stats.get("MAXHP", 100)) * 0.6))
-	damage = int(round(6.0 + float(stats.get("AP", 4)) * 0.25))
-	walk_speed = float(data.get("walk_speed", 86.0)) * 0.8
-	run_speed = float(data.get("run_speed", 119.0)) * 0.9
-	var stay: Array = data.get("idle_stay", [3, 5])
+func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void:
+	data = p_data
+	cfg = KINDS[data.kind].duplicate()
+	cfg.merge(data.tune, true)
+	body_radius = data.body_radius
+	is_boss = data.is_boss
+	is_elite = elite
+	display_name = stats_row.get("name", String(data.id).capitalize())
+	var stats: Dictionary = stats_row.get("stats", {})
+	max_hp = roundi(float(stats.get("MAXHP", 100)) * 0.6 * data.hp_mult)
+	damage = roundi(6.0 + float(stats.get("AP", 4)) * 0.25)
+	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
+	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
+	var stay: Array = stats_row.get("idle_stay", [3, 5])
 	idle_stay = Vector2(stay[0], stay[1])
+	var g: Array = stats_row.get("galder", [0, 20])
+	rewards = {"exp": int(float(stats_row.get("exp", 100)) * 0.6), "tm": int(stats_row.get("tm", 30)),
+		"galder": randi_range(int(g[0]), int(g[1])) if randf() < 0.6 else 0}
+	if elite:
+		display_name = "Elite " + display_name
+		max_hp = int(max_hp * 2.5)
+		damage = roundi(damage * 1.25)
+		cfg.windup *= 0.85
+		cfg.poise = -1 if cfg.poise < 0 else cfg.poise + 2
+		for k: String in rewards:
+			rewards[k] *= 2
 	hp = max_hp
 
 
 func _ready() -> void:
 	add_to_group("enemies")
-	arena = get_tree().get_first_node_in_group("arena")
-	player = get_tree().get_first_node_in_group("player")
-	collision_layer = 0
-	set_collision_layer_value(3, true)
-	collision_mask = 0
-	set_collision_mask_value(1, true)
-	set_collision_mask_value(2, true)
-	set_collision_mask_value(3, true)
-	var shape := CollisionShape2D.new()
-	var circle := CircleShape2D.new()
-	circle.radius = body_radius
-	shape.shape = circle
-	add_child(shape)
-	sprite = ActorSprite.new()
-	add_child(sprite)
-	sprite.setup(actor)
+	(shape.shape as CircleShape2D).radius = body_radius
+	sprite.setup(String(data.id))
+	if is_elite:
+		sprite.scale = Vector2(1.25, 1.25)
+		sprite.self_modulate = Color(1.2, 1.05, 0.7)
 	sprite.play_action("idle", Vector2(-1, 1))
 	_enter(State.SPAWN, 0.5)
 	sprite.modulate.a = 0.0
+
+
+func now() -> float:
+	return Time.get_ticks_msec() / 1000.0
 
 
 func is_hittable() -> bool:
@@ -93,6 +119,7 @@ func is_hittable() -> bool:
 func _physics_process(delta: float) -> void:
 	_t += delta
 	_knock = _knock.move_toward(Vector2.ZERO, 700.0 * delta)
+	_tick_status(delta)
 	match state:
 		State.SPAWN:
 			sprite.modulate.a = clampf(_t / _state_len, 0.0, 1.0)
@@ -109,11 +136,7 @@ func _physics_process(delta: float) -> void:
 				_start_active()
 		State.ATTACK:
 			_state_attack()
-		State.RECOVER:
-			velocity = _knock
-			if _t >= _state_len:
-				_enter(State.CHASE)
-		State.HURT:
+		State.RECOVER, State.HURT:
 			velocity = _knock
 			if _t >= _state_len:
 				_enter(State.CHASE)
@@ -123,9 +146,30 @@ func _physics_process(delta: float) -> void:
 				sprite.modulate.a = maxf(0.0, 1.0 - (_t - 0.9) / 0.5)
 			if _t > 1.4:
 				queue_free()
+	if state != State.DEAD and state != State.SPAWN:
+		velocity += _pull
+	_pull = Vector2.ZERO
 	move_and_slide()
 	if sprite.modulate.r > 1.0:
 		sprite.modulate = sprite.modulate.lerp(Color(1, 1, 1, sprite.modulate.a), minf(1.0, delta * 14.0))
+
+
+func _tick_status(delta: float) -> void:
+	if state == State.DEAD or now() >= burn_until:
+		return
+	_burn_tick += delta
+	if int(now() * 10.0) % 2 == 0:
+		sprite.modulate = Color(1.4, 0.9, 0.6, sprite.modulate.a)
+	if _burn_tick < 0.5:
+		return
+	_burn_tick = 0.0
+	var dmg := maxi(1, roundi(burn_dps * 0.5))
+	hp = maxi(hp - dmg, 0)
+	Events.damage_shown.emit(global_position + Vector2(0, -44), dmg, Color(1.0, 0.6, 0.25), false)
+	if is_boss:
+		Events.boss_health_changed.emit(self)
+	if hp <= 0:
+		_die(Vector2.DOWN)
 
 
 func _state_idle() -> void:
@@ -144,15 +188,38 @@ func _state_chase() -> void:
 	if not is_instance_valid(player) or player.state == Player.State.DEAD:
 		_wander()
 		return
-	var cfg: Dictionary = KINDS[kind]
 	var to := player.global_position - global_position
 	var dist := Combat.ground(to).length()
-	if dist <= cfg.range + body_radius and arena.request_attack_token(self):
+	if data.kind == "shot" and dist < cfg.keep_away:
+		# Ranged enemies back away to keep their distance.
+		var away := -to.normalized()
+		if room.is_walkable(global_position + away * 24.0):
+			velocity = away * walk_speed + _knock
+			sprite.play_action("walk", away)
+			return
+	if dist <= cfg.range + body_radius and room.line_clear(global_position, player.global_position) \
+			and room.request_attack_token(self):
 		_start_windup()
 		return
-	velocity = to.normalized() * run_speed + _knock
-	sprite.play_action("walk", to)
+	var step := _steer_toward(player.global_position)
+	velocity = step * run_speed + _knock
+	sprite.play_action("walk", step if step != Vector2.ZERO else to)
 	sprite.speed_scale = 1.3
+
+
+## Direct line when it's clear, otherwise follow a grid path around obstacles.
+func _steer_toward(target: Vector2) -> Vector2:
+	if room.line_clear(global_position, target):
+		_path = PackedVector2Array()
+		return (target - global_position).normalized()
+	if now() - _path_at > 0.35 or _path.is_empty():
+		_path = room.find_path(global_position, target)
+		_path_at = now()
+	while _path.size() > 0 and global_position.distance_to(_path[0]) < 10.0:
+		_path.remove_at(0)
+	if _path.is_empty():
+		return (target - global_position).normalized()
+	return (_path[0] - global_position).normalized()
 
 
 func _wander() -> void:
@@ -161,7 +228,6 @@ func _wander() -> void:
 
 
 func _start_windup() -> void:
-	var cfg: Dictionary = KINDS[kind]
 	_attack_dir = Combat.ground(player.global_position - global_position).normalized()
 	_enter(State.WINDUP, cfg.windup)
 	_hits_taken = 0
@@ -176,31 +242,42 @@ func _start_windup() -> void:
 			opts.length = cfg.length
 			opts.width = cfg.width
 	_telegraph = Telegraph.make(cfg.shape, cfg.windup, opts)
-	arena.add_ground_fx(_telegraph, global_position)
-	# Hold the first frames of the attack as an anticipation pose.
+	room.add_ground_fx(_telegraph, global_position)
+	# Hold the first frame of the attack as an anticipation pose.
 	sprite.play_action("attack", Combat.screen(_attack_dir), 0.0, true)
 	sprite.pause()
 	sprite.frame = 0
 
 
 func _start_active() -> void:
-	var cfg: Dictionary = KINDS[kind]
 	_attack_landed = false
 	_enter(State.ATTACK, cfg.active)
 	sprite.play_action("attack", Combat.screen(_attack_dir), cfg.active + cfg.recover * 0.6, true)
 	if is_instance_valid(_telegraph):
 		_telegraph.trigger()
-	if kind == "slam":
-		arena.shake(3.0)
+	if data.kind == "slam":
+		Events.shake_requested.emit(3.0)
+	if data.kind == "shot":
+		_fire()
+
+
+func _fire() -> void:
+	var p: Projectile = PROJECTILE_SCENE.instantiate()
+	p.direction = Combat.screen(_attack_dir).normalized()
+	p.speed = cfg.shot_speed
+	p.damage = damage
+	p.room = room
+	p.player = player
+	p.position = global_position + Vector2(0, -18)
+	room.world.add_child(p)
 
 
 func _state_attack() -> void:
-	var cfg: Dictionary = KINDS[kind]
-	if kind == "lunge":
+	if data.kind == "lunge":
 		velocity = Combat.screen(_attack_dir) * (cfg.length / cfg.active)
 	else:
 		velocity = Vector2.ZERO
-	if not _attack_landed and is_instance_valid(player):
+	if not _attack_landed and data.kind != "shot" and is_instance_valid(player):
 		var hit := false
 		match cfg.shape:
 			"wedge":
@@ -213,31 +290,53 @@ func _state_attack() -> void:
 			_attack_landed = true
 			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0)
 	if _t >= _state_len:
-		arena.release_attack_token(self)
+		room.release_attack_token(self)
 		_enter(State.RECOVER, cfg.recover)
 
 
-func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool) -> void:
+## Drags the enemy this frame (screen-space velocity), e.g. toward a whirlwind.
+func nudge(v: Vector2) -> void:
+	_pull += v
+
+
+## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps) and "crit".
+func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
 	if not is_hittable():
 		return
+	if now() < break_until:
+		amount = roundi(amount * (1.0 + break_bonus / 100.0))
 	hp = maxi(hp - amount, 0)
-	arena.damage_number(global_position + Vector2(0, -50), amount, Color(1, 0.93, 0.7) if heavy else Color.WHITE)
+	var crit: bool = fx.get("crit", false)
+	var color := Color(1.0, 0.85, 0.2) if crit else (Color(1, 0.93, 0.7) if heavy else Color.WHITE)
+	Events.damage_shown.emit(global_position + Vector2(0, -50), amount, color, crit)
 	sprite.modulate = Color(2.2, 2.2, 2.2, sprite.modulate.a)
-	var poise: int = KINDS[kind].poise
-	var armored := poise < 0 or (state == State.ATTACK and kind == "lunge")
+	if fx.has("break"):
+		break_bonus = fx.break
+		break_until = now() + 4.0
+	if fx.has("burn"):
+		burn_until = now() + 3.0
+		burn_dps = maxf(burn_dps, fx.burn)
+	var armored: bool = cfg.poise < 0 or (state == State.ATTACK and data.kind == "lunge")
 	_knock = Combat.screen(dir) * knockback * (0.35 if armored else 1.0)
+	if is_boss:
+		Events.boss_health_changed.emit(self)
 	if hp <= 0:
 		_die(dir)
 		return
 	_hits_taken += 1
-	if not armored and _hits_taken > poise:
+	var stun: float = fx.get("stun", 0.0)
+	if stun > 0.0 and not is_boss:
+		_cancel_attack()
+		_enter(State.HURT, stun)
+		sprite.play_action("hit", -Combat.screen(dir), 0.2, true)
+	elif not armored and _hits_taken > cfg.poise:
 		_cancel_attack()
 		_enter(State.HURT, 0.28 if heavy else 0.2)
 		sprite.play_action("hit", -Combat.screen(dir), 0.2, true)
 
 
 func _cancel_attack() -> void:
-	arena.release_attack_token(self)
+	room.release_attack_token(self)
 	if is_instance_valid(_telegraph):
 		_telegraph.queue_free()
 
@@ -250,6 +349,7 @@ func _die(dir: Vector2) -> void:
 	_knock = Combat.screen(dir) * 260.0
 	sprite.play_action("faint", -Combat.screen(dir), 0.8, true)
 	died.emit(self)
+	Events.enemy_died.emit(self)
 
 
 func _enter(s: State, length := 0.0) -> void:

@@ -52,7 +52,7 @@ def _inflate_if_needed(b: bytes) -> bytes:
     if b[:4] == b'NORI':
         return b
     tag, real, size = struct.unpack_from('<III', b, 0)
-    if tag == 0xB0A0:
+    if tag in (0xA0B0, 0xB0A0):  # bytes B0 A0 on disk
         return zlib.decompress(b[12:12 + size])
     raise ValueError('not a NORI file')
 

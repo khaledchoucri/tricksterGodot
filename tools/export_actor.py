@@ -7,6 +7,14 @@ resource (.tres) and a JSON manifest with frame durations.
 
 usage:
   python -I export_actor.py <file.nri> <out_dir> <actor_name> [--actions walk,idle,...]
+      [--pivots <chr.pvt> --pivot-section weapon001.nri]
+
+With --pivots, each frame that holds a weapon gets a hand socket in the
+manifest ("hand": [x, y] from the feet, "front": drawn over the body), taken
+from the character's pivot file (see pivots.py), and the "equipped" versions
+of idle, walk, run and combat stance replace the empty-handed ones. The weapon
+itself is a separate sprite (export_weapon.py) that the game attaches to the
+socket, so any weapon fits and it can point in any direction.
 
 The output belongs in the git-ignored `original_assets/` folder: it is
 copyrighted Trickster material for private prototyping only.
@@ -20,6 +28,9 @@ import zlib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nori  # noqa: E402
+import pivots  # noqa: E402
+
+EQUIPPED = '장비'  # title suffix of the poses that hold a weapon
 
 ACTIONS = {
     '서있기': 'idle', '걷기': 'walk', '달리기': 'run', '피격': 'hit', '기절': 'faint',
@@ -43,12 +54,14 @@ DIR_ORDER = ['e', 'se', 's', 'sw', 'w', 'nw', 'n', 'ne']
 
 
 def parse_title(title):
-    if '_' not in title:
+    """'걷기_위' -> ('walk', 'n', False); '걷기_위_장비' -> ('walk', 'n', True)."""
+    parts = title.split('_')
+    if len(parts) not in (2, 3) or (len(parts) == 3 and parts[2] != EQUIPPED):
         return None
-    act, d = title.split('_', 1)
+    act, d = parts[0], parts[1]
     if act not in ACTIONS or d not in DIRECTIONS:
         return None
-    return ACTIONS[act], DIRECTIONS[d]
+    return ACTIONS[act], DIRECTIONS[d], len(parts) == 3
 
 
 def blit(canvas, cw, ch, bm, dx, dy, flip_h, flip_v):
@@ -86,23 +99,31 @@ def main():
     ap.add_argument('name')
     ap.add_argument('--actions', default='')
     ap.add_argument('--res-prefix', default='', help='res:// path of out_dir for the .tres')
+    ap.add_argument('--pivots', default='', help="the character's pivot file (.pvt), for hand sockets")
+    ap.add_argument('--pivot-section', default='weapon001.nri',
+                    help='pivot section to read sockets from (one per weapon type)')
     args = ap.parse_args()
     keep = set(filter(None, args.actions.split(',')))
 
     n = nori.read(args.nri)
-    groups = {}  # action -> {dir: Anim}
-    for a in n.anims:
+    places = pivots.read(args.pivots)[args.pivot_section] if args.pivots else {}
+    groups = {}  # action -> {dir: (anim index, Anim)}
+    for i, a in enumerate(n.anims):
         parsed = parse_title(a.title)
-        if not parsed or (keep and parsed[0] not in keep):
+        if not parsed or not a.frames or (keep and parsed[0] not in keep):
             continue
-        act, d = parsed
-        groups.setdefault(act, {}).setdefault(d, a)
+        act, d, equipped = parsed
+        if equipped and not places:
+            continue
+        dirs = groups.setdefault(act, {})
+        if equipped or d not in dirs:
+            dirs[d] = (i, a)
 
     # One shared cell size and anchor across all actions keeps the sprite stable.
     x0 = y0 = 10 ** 9
     x1 = y1 = -10 ** 9
     for dirs in groups.values():
-        for a in dirs.values():
+        for _, a in dirs.values():
             for fr in a.frames:
                 for p in fr.planes:
                     bm = n.bitmaps[p.bmp]
@@ -116,21 +137,26 @@ def main():
                 'anchor': list(anchor), 'actions': {}}
     for act, dirs in sorted(groups.items()):
         dir_list = [d for d in DIR_ORDER if d in dirs]
-        cols = max(len(dirs[d].frames) for d in dir_list)
+        cols = max(len(dirs[d][1].frames) for d in dir_list)
         sw, sh = cw * cols, ch * len(dir_list)
         sheet = bytearray(sw * sh * 4)
         info = {'sheet': f'{args.name}_{act}.png', 'dirs': {}}
         for r, d in enumerate(dir_list):
             frames = []
-            for c, fr in enumerate(dirs[d].frames):
+            ai, anim = dirs[d]
+            for c, fr in enumerate(anim.frames):
                 cell = bytearray(cw * ch * 4)
                 for p in fr.planes:
-                    bm = n.bitmaps[p.bmp]
-                    blit(cell, cw, ch, bm, p.x - x0, p.y - y0, p.flip & 1, p.flip & 2)
+                    blit(cell, cw, ch, n.bitmaps[p.bmp], p.x - x0, p.y - y0, p.flip & 1, p.flip & 2)
                 for y in range(ch):
                     o = ((r * ch + y) * sw + c * cw) * 4
                     sheet[o:o + cw * 4] = cell[y * cw * 4:(y + 1) * cw * 4]
-                frames.append({'col': c, 'row': r, 'ms': fr.duration})
+                entry = {'col': c, 'row': r, 'ms': fr.duration}
+                place = places.get((ai, c))
+                if place:
+                    entry['hand'] = [place[0], place[1]]
+                    entry['front'] = place[3] != 0
+                frames.append(entry)
             info['dirs'][d] = frames
         write_png(os.path.join(args.out_dir, info['sheet']), sw, sh, bytes(sheet))
         manifest['actions'][act] = info

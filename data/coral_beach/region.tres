@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="RegionData" load_steps=40 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/region_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2_r"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="3_r"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="4_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/blue_wave_a.tres" id="5_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/blue_wave_b.tres" id="6_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/blue_wave_c.tres" id="7_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/passionate_sun_a.tres" id="8_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/passionate_sun_b.tres" id="9_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/passionate_sun_c.tres" id="10_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/sunny_beach_a.tres" id="11_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/sunny_beach_b.tres" id="12_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/sunny_beach_c.tres" id="13_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/hidden_shore_a.tres" id="14_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/hidden_shore_b.tres" id="15_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/rooms/dark_cave.tres" id="16_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/torobbie.tres" id="17_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/bad_fury.tres" id="18_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/tottochi.tres" id="19_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/little_cora.tres" id="20_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/blue_penguin.tres" id="21_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/clione.tres" id="22_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/bustshell.tres" id="23_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/golden_mole.tres" id="24_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/adrenaline.tres" id="c_adrenaline"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/armor_breaker.tres" id="c_armor_breaker"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/berserker.tres" id="c_berserker"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/counter_punch.tres" id="c_counter_punch"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/flaming_fist.tres" id="c_flaming_fist"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/guard.tres" id="c_guard"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/hyper_beat.tres" id="c_hyper_beat"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/inferno_blade.tres" id="c_inferno_blade"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/lacerator.tres" id="c_lacerator"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/lightning_strike.tres" id="c_lightning_strike"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/piercing_wave.tres" id="c_piercing_wave"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/shockwave.tres" id="c_shockwave"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/tornado_bomb.tres" id="c_tornado_bomb"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/upper_smash.tres" id="c_upper_smash"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/uppercut.tres" id="c_uppercut"]
+
+[resource]
+script = ExtResource("1_s")
+display_name = "Coral Beach"
+rooms = Array[ExtResource("2_r")]([ExtResource("5_r"), ExtResource("6_r"), ExtResource("7_r"), ExtResource("8_r"), ExtResource("9_r"), ExtResource("10_r"), ExtResource("11_r"), ExtResource("12_r"), ExtResource("13_r"), ExtResource("14_r"), ExtResource("15_r")])
+boss_room = ExtResource("16_r")
+enemies = Array[ExtResource("3_r")]([ExtResource("17_r"), ExtResource("18_r"), ExtResource("19_r"), ExtResource("20_r"), ExtResource("21_r"), ExtResource("22_r"), ExtResource("23_r"), ExtResource("24_r")])
+cards = Array[ExtResource("4_r")]([ExtResource("c_adrenaline"), ExtResource("c_armor_breaker"), ExtResource("c_berserker"), ExtResource("c_counter_punch"), ExtResource("c_flaming_fist"), ExtResource("c_guard"), ExtResource("c_hyper_beat"), ExtResource("c_inferno_blade"), ExtResource("c_lacerator"), ExtResource("c_lightning_strike"), ExtResource("c_piercing_wave"), ExtResource("c_shockwave"), ExtResource("c_tornado_bomb"), ExtResource("c_upper_smash"), ExtResource("c_uppercut")])
+run_length = 7
+elite_depths = Array[int]([3, 6])
+field_music = "coral_day.mp3"
+boss_music = "Boss_Monster.mp3"
+field_ambience = "bgs_beach.wav"
+boss_ambience = "bgs_cave01.wav"

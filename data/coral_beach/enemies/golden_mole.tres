@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"golden_mole"
+monster_id = "2037"
+kind = "slam"
+body_radius = 24.0
+cost = 0
+min_depth = 0
+hp_mult = 3.0
+is_boss = true

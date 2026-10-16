@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/actor_sprite.gd" id="2_sprite"]
+[ext_resource type="Script" path="res://scripts/held_weapon.gd" id="3_weapon"]
+[ext_resource type="Script" path="res://scripts/fx/silhouette.gd" id="4_silhouette"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 11.0
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 13
+script = ExtResource("1_player")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+script = ExtResource("2_sprite")
+
+[node name="Weapon" type="Sprite2D" parent="."]
+script = ExtResource("3_weapon")
+
+[node name="Silhouette" type="Node2D" parent="."]
+script = ExtResource("4_silhouette")
+
+[node name="Camera" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
+position_smoothing_enabled = true
+position_smoothing_speed = 9.0

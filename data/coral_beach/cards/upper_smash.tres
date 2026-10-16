@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/skills/upper_smash.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"upper_smash"
+display_name = "Upper Smash"
+kind = 1
+skill_id = 1008
+base_value = 46.0
+per_level = 11.0
+text = "Leap to the cursor, over obstacles, and crash down for {v} damage, stunning enemies around you."
+mp_cost = 28
+cooldown = 6.0
+element = "none"
+behavior = ExtResource("2_b")

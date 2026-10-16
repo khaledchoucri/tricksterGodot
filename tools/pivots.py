@@ -1,0 +1,53 @@
+"""Reader for Trickster equipment pivot files (.pvt / .pvo).
+
+Each character has a pivot file (CharacterInfo.PivotFileName) that says where
+held and worn items sit on every frame of its animations. The file is a list of
+sections, one per item sprite (weapon001.nri, shield001.nri, hat001.nri...):
+the item's file name, a small header, then 16-byte records:
+
+    i16 x, i16 y        item origin relative to the character's feet
+    u8  anim, u8 frame  index into the character .nri's animations / frames
+    u16 (unused)
+    u8, u8, u8          three percentages (usually 100; meaning unknown)
+    u8  (unused)
+    u8  item_frame      which frame of the item's single animation to draw
+    u8 0xFF, u8 (0xFF or 0x01)
+    u8  layer           0x03 draws in front of the body, 0x00 behind it
+
+Frames with no record don't show the item.
+"""
+import re
+import struct
+
+RECORD = 16
+
+
+def _is_record(b: bytes, p: int) -> bool:
+    return p + RECORD <= len(b) and b[p + 8] == 0x64 and b[p + 9] == 0x64 \
+        and b[p + 11] == 0 and b[p + 13] == 0xFF
+
+
+def read(path: str) -> dict:
+    """Returns {item file name: {(anim, frame): (x, y, item_frame, layer)}}."""
+    b = open(path, 'rb').read()
+    names = [(m.start(), m.end(), m.group(1).decode()) for m in re.finditer(rb'([a-z_0-9]+\.nri)\x00', b)]
+    out = {}
+    for i, (_, end, name) in enumerate(names):
+        stop = names[i + 1][0] if i + 1 < len(names) else len(b)
+        # The header after the name varies in length; records start at the
+        # first offset where several records line up.
+        p = end
+        while p < stop and not all(_is_record(b, p + k * RECORD) for k in range(3)):
+            p += 1
+        recs = out.setdefault(name, {})
+        while p < stop and _is_record(b, p):
+            x, y, anim, frame = struct.unpack_from('<hhBB', b, p)
+            recs.setdefault((anim, frame), (x, y, b[p + 12], b[p + 15]))
+            p += RECORD
+    return out
+
+
+if __name__ == '__main__':
+    import sys
+    for name, recs in read(sys.argv[1]).items():
+        print(f'{name}: {len(recs)} frames')
