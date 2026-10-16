@@ -12,6 +12,8 @@ const REWARD_POOL: Array[String] = ["card", "card", "upgrade", "gear", "gear", "
 const CAMERA_MARGIN := 60
 ## MP restored on entering a room.
 const ROOM_MP := 40
+## Rewards that need a city system: reward -> Run.system_on() id.
+const REWARD_SYSTEMS := {"gear": &"smithing", "anvil": &"smithing", "shop": &"smithing", "compound": &"compounding"}
 ## Bronze Fragments waiting at an anvil, and Galder for scrapping gear.
 const ANVIL_ORE := 2
 const SCRAP_GALDER := 25
@@ -101,7 +103,7 @@ func _load_room() -> void:
 	hud.hide_boss()
 	await hud.fade(0.0, 0.3)
 	var title := "Real Golden Mole" if plan.boss else plan.data.display_name
-	if Run.depth == Run.region.job_change_depth:
+	if Run.job_change_due():
 		title += "\n%s's trial: clear it to change job" % Run.job.display_name
 	elif plan.elite:
 		title += "\nElite monsters ahead"
@@ -138,9 +140,9 @@ func _on_room_cleared() -> void:
 	if Run.job_change_due():
 		_steps.append("job")
 	_steps.append(reward_here)
-	if Run.current_room().elite:
+	if Run.current_room().elite and Run.system_on(&"smithing"):
 		_steps.append("gear")
-	if Run.depth == Run.region.job_change_depth:
+	if Run.depth == Run.region.job_change_depth and Run.system_on(&"warehouse"):
 		_steps.append("port")
 	_next_step()
 
@@ -225,7 +227,8 @@ func _open_doors() -> void:
 	if Run.depth + 1 >= Run.plan.size() - 1:
 		rewards = ["boss"]
 	else:
-		var pool := REWARD_POOL.duplicate()
+		var pool := REWARD_POOL.filter(func(r: String) -> bool:
+			return not REWARD_SYSTEMS.has(r) or Run.system_on(REWARD_SYSTEMS[r]))
 		pool.shuffle()
 		rewards.append(pool[0])
 		for r in pool:
@@ -667,7 +670,10 @@ func _win() -> void:
 	Audio.play("guild_battlewin.wav")
 	hud.log_line("[Notice] Coral Beach cleared. The Harkon Shards resonate.", Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout
-	_open_port()
+	if Run.system_on(&"warehouse"):
+		_open_port()
+	else:
+		_show_win_results()
 
 
 func _show_win_results() -> void:

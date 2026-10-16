@@ -10,5 +10,5 @@ text = "Recover +{v} more MP on entering each room."
 max_level = 2
 per_level = 15.0
 effect = "room_mp"
-tm_costs = Array[int]([300, 700])
+tm_costs = Array[int]([3000, 6000])
 shard_costs = Array[int]([0, 0])

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"warehouse"
+display_name = "Warehouse"
+text = "Brings back Keeper Julio. Portable Ports let you send items home and carry an heirloom."
+max_level = 1
+per_level = 1.0
+effect = "system"
+system = &"warehouse"
+tm_costs = Array[int]([6000])
+shard_costs = Array[int]([2])

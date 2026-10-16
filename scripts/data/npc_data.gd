@@ -14,3 +14,5 @@ extends Resource
 @export var facing := Vector2(-1, 1)
 ## Objects (signs, plaques) are read rather than talked to.
 @export var is_object := false
+## Restoration that brings this person back to the square; empty: always here.
+@export var requires: StringName

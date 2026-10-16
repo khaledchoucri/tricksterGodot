@@ -28,6 +28,10 @@ func _wait(t: float) -> void:
 
 
 func _shoot() -> void:
+	if "hub" in OS.get_cmdline_user_args():
+		await _shoot_hub()
+		get_tree().quit()
+		return
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(3.0)
@@ -72,3 +76,27 @@ func _shoot() -> void:
 	await _wait(0.3)
 	await _snap("07_job_change")
 	get_tree().quit()
+
+
+func _shoot_hub() -> void:
+	Profile.set_flag("met_cavalier")
+	Run.new_run()
+	var sword := GearItem.make(load("res://data/items/wood_sword.tres"))
+	sword.refine = 4
+	Run.save_point(sword)
+	var hub = load("res://scenes/hub.tscn").instantiate()
+	add_child(hub)
+	await _wait(1.5)
+	var julio: Npc = hub._npc(&"julio")
+	hub.player.global_position = julio.global_position + Vector2(-40, 30)
+	await _wait(0.5)
+	await _snap("10_hub_julio")
+	hub.talk(julio)
+	for _i in 12:
+		await _wait(0.15)
+		hub.dialogue._typing = false
+		if hub.dialogue._choices.visible:
+			break
+		hub.dialogue._advanced.emit()
+	await _wait(0.4)
+	await _snap("11_warehouse_menu")

@@ -10,5 +10,5 @@ text = "Start every run with a second random skill."
 max_level = 1
 per_level = 1.0
 effect = "second_skill"
-tm_costs = Array[int]([600])
+tm_costs = Array[int]([10000])
 shard_costs = Array[int]([3])

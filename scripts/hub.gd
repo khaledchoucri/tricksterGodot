@@ -38,11 +38,8 @@ func _ready() -> void:
 	room.build(hub.room)
 	_spawn_player()
 	for data in hub.npcs:
-		var npc: Npc = NPC_SCENE.instantiate()
-		npc.data = data
-		npc.position = data.position if room.is_walkable(data.position) else room.nearest_reachable(data.position)
-		room.world.add_child(npc)
-		npcs.append(npc)
+		if data.requires == &"" or Profile.level(data.requires) > 0:
+			_add_npc(data)
 	gate = DOOR_SCENE.instantiate()
 	gate.reward = "expedition"
 	gate.position = room.nearest_reachable(hub.gate_position)
@@ -52,6 +49,15 @@ func _ready() -> void:
 	Audio.play_music(hub.music)
 	Audio.play_ambience(hub.ambience)
 	_welcome()
+
+
+func _add_npc(data: NpcData) -> Npc:
+	var npc: Npc = NPC_SCENE.instantiate()
+	npc.data = data
+	npc.position = data.position if room.is_walkable(data.position) else room.nearest_reachable(data.position)
+	room.world.add_child(npc)
+	npcs.append(npc)
+	return npc
 
 
 func _spawn_player() -> void:
@@ -188,6 +194,10 @@ func _restore_menu(npc: Npc) -> void:
 		if Profile.buy(r):
 			Audio.play("ui_unique_get.wav", -4.0)
 			hud.log_line("[System] %s restored (%d/%d)." % [r.display_name, Profile.level(r.id), r.max_level], Color("e0b54d"))
+			for data in hub.npcs:
+				if data.requires == r.id and _npc(data.id) == null:
+					_add_npc(data)
+					hud.log_line("[Megalopolis] %s logged in." % data.display_name, Color("94a7b2"))
 
 
 ## The warehouse: choose the heirloom to carry into runs, or clear shelves.

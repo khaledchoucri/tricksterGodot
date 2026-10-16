@@ -139,7 +139,7 @@ func new_run() -> void:
 
 ## Equips the heirloom chosen in the warehouse, level-synced to the region.
 func _carry_heirloom() -> void:
-	if Profile.heirloom < 0 or Profile.heirloom >= Profile.warehouse.size():
+	if not system_on(&"warehouse") or Profile.heirloom < 0 or Profile.heirloom >= Profile.warehouse.size():
 		return
 	var g := GearItem.from_dict(Profile.warehouse[Profile.heirloom], item_by_id)
 	if g == null:
@@ -218,6 +218,17 @@ func _apply_restorations() -> void:
 						pool.append(card.id)
 				if pool.size() > 0:
 					add_card(pool[randi() % pool.size()])
+
+
+## Whether a city restoration has switched a system on (smithing, jobs,
+## compounding, warehouse).
+func system_on(id: StringName) -> bool:
+	if hub == null:
+		return true
+	for r in hub.restorations:
+		if r.effect == "system" and r.system == id:
+			return Profile.level(r.id) > 0
+	return true
 
 
 ## Extra MP recovered on entering a room, from restorations.
@@ -376,7 +387,7 @@ func start_job(j: JobData) -> void:
 
 ## Whether the run has reached its job change and the job has somewhere to go.
 func job_change_due() -> bool:
-	return depth == region.job_change_depth and job.next_jobs.size() > 0
+	return depth == region.job_change_depth and job.next_jobs.size() > 0 and system_on(&"jobs")
 
 
 func has_passive(id: StringName) -> bool:
@@ -660,7 +671,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 		found = 1
 	ore += found
 	var count := 0
-	if mat:
+	if mat and system_on(&"compounding"):
 		if boss:
 			count = 3
 		elif elite:

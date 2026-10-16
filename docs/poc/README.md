@@ -37,7 +37,18 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 
 - Don Cavalier, Miranda Watty and Star Gazer Stella have conversations that change as you play (`data/megalopolis/story.json`): who they are, the rollback, the first Harkon Shard, the first clear. The statue's copper plate shows the service termination notice.
 - Walk into the **Coral Beach Gate** to start a run.
-- Every run ends by banking its Time Marks (TM) and Harkon Shards into your profile (`user://profile.json`). Don Cavalier spends them on **restorations**, permanent bonuses for every run: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
+- Every run ends by banking its Time Marks (TM) and Harkon Shards into your profile (`user://profile.json`). Don Cavalier spends them on **restorations**.
+- **System restorations.** A new save starts simple: levels, types and Fighter skills. Each of these brings an original Megalopolis NPC back to the square and turns a system on inside runs:
+
+| Restoration | Cost | Brings back | Turns on |
+|---|---|---|---|
+| Blacksmith Row | 2,500 TM | Blacksmith Marx | Equipment drops, anvils, shops |
+| Job Hall | 5,000 TM + 1 shard | | The Knight job change at the trial |
+| Compounder's Stall | 7,000 TM + 1 shard | Compounder Paul | Monster materials, Compounders, monster dens |
+| Warehouse | 6,000 TM + 2 shards | Keeper Julio | Portable Ports and heirlooms |
+
+- **Other restorations** are permanent bonuses: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
+- **Pace.** In playtests the systems open over the first 3–4 runs.
 
 ## A run
 

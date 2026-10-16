@@ -278,7 +278,7 @@ func _run() -> void:
 	var hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)
-	check(hub.npcs.size() == 5 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
+	check(hub.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
 		"the hub builds Megalopolis with %d people and the gate" % hub.npcs.size())
 	check(hub.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
 	var guide: Npc = hub._npc(&"cavalier")
@@ -291,7 +291,7 @@ func _run() -> void:
 	check(P.has_flag("met_cavalier") and not hub.talking, "finishing a conversation sets its flag")
 	check(hub.story.conversation_for("cavalier").get("id") == "cav_rollback", "after a death he remembers the rollback")
 	P.tm = 1000
-	var hall: RestorationData = Run.hub.restorations[0]
+	var hall: RestorationData = Run.hub.restorations.filter(func(r: RestorationData) -> bool: return r.id == &"training_hall")[0]
 	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 1000 - hall.tm_cost(1), "restoring the Training Hall spends TM")
 	Run.new_run()
 	check(Run.max_hp == Run.stat("HP") and Run._bonus_hp == 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
@@ -311,6 +311,7 @@ func _item(id: String) -> ItemData:
 
 ## Stats, types and traits, jobs and prerequisites, gear, weight and refining.
 func _systems(Run: Node) -> void:
+	_restore_all(Run)
 	Run.new_run()
 	var ap: int = Run.stat("AP")
 	var ac: int = Run.stat("AC")
@@ -466,3 +467,15 @@ func _systems(Run: Node) -> void:
 	check(Run.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
 	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()
+	check(not Run.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")
+	Run.depth = Run.region.job_change_depth
+	check(not Run.job_change_due(), "without the Job Hall the trial room changes nothing")
+	_restore_all(Run)
+	check(Run.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
+	Run.new_run()
+
+
+func _restore_all(Run: Node) -> void:
+	for r: RestorationData in Run.hub.restorations:
+		if r.effect == "system":
+			Profile.restorations[String(r.id)] = 1

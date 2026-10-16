@@ -10,5 +10,5 @@ text = "Once per run, survive a fatal blow with 30% HP."
 max_level = 1
 per_level = 1.0
 effect = "revive"
-tm_costs = Array[int]([500])
+tm_costs = Array[int]([8000])
 shard_costs = Array[int]([2])

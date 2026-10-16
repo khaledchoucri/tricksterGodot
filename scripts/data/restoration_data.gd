@@ -1,7 +1,8 @@
 class_name RestorationData
 extends Resource
 ## A part of the city the player can restore between runs with Time Marks
-## and Harkon Shards. Each level gives a permanent bonus to every run.
+## and Harkon Shards. A "system" restoration brings an NPC back and switches
+## one Trickster system on inside runs; the others give permanent bonuses.
 
 @export var id: StringName
 @export var display_name := ""
@@ -10,7 +11,10 @@ extends Resource
 @export var max_level := 1
 ## Bonus per level (meaning depends on `effect`).
 @export var per_level := 1.0
-@export_enum("max_hp", "room_mp", "revive", "second_skill") var effect := "max_hp"
+@export_enum("max_hp", "room_mp", "revive", "second_skill", "system") var effect := "max_hp"
+## For "system": which system it switches on (smithing, jobs, compounding,
+## warehouse), checked through Run.system_on().
+@export var system: StringName
 ## Cost of each level: index 0 is level 1.
 @export var tm_costs: Array[int] = []
 @export var shard_costs: Array[int] = []

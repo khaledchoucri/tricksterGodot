@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"compounders_stall"
+display_name = "Compounder's Stall"
+text = "Brings back Compounder Paul. Monsters drop materials, and Compounders appear in runs."
+max_level = 1
+per_level = 1.0
+effect = "system"
+system = &"compounding"
+tm_costs = Array[int]([7000])
+shard_costs = Array[int]([1])

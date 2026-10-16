@@ -322,6 +322,88 @@
      ]
     ]
    }
+  ],
+  "paul": [
+   {
+    "id": "paul_intro",
+    "if": [
+     "!met_paul"
+    ],
+    "set": [
+     "met_paul"
+    ],
+    "lines": [
+     [
+      "paul",
+      "The stall's open? It's open! Compounder Paul, at your service. Again. Finally."
+     ],
+     [
+      "paul",
+      "Out there every monster drops a little something. Cool Ice from the penguins, Sharp Legs from the Bad Furies, Hard Scales off the Bustshells."
+     ],
+     [
+      "paul",
+      "Bring enough of one kind to a Compounder and it'll set it into your gear's slot. The numbers roll, mind. That's half the fun."
+     ],
+     [
+      "paul",
+      "Doors past the gate name the monsters behind them now. Pick the den with the material you need."
+     ]
+    ]
+   },
+   {
+    "id": "paul_default",
+    "if": [
+     "met_paul"
+    ],
+    "lines": [
+     [
+      "paul",
+      "Four Cool Ice into a sword slot. Water attack on every swing. Never gets old."
+     ]
+    ]
+   }
+  ],
+  "marx": [
+   {
+    "id": "marx_intro",
+    "if": [
+     "!met_marx"
+    ],
+    "set": [
+     "met_marx"
+    ],
+    "lines": [
+     [
+      "marx",
+      "Hm. The forge is warm again. You did that?"
+     ],
+     [
+      "marx",
+      "Marx. Blacksmith. I don't talk much. The anvil talks."
+     ],
+     [
+      "marx",
+      "You'll find gear out there now, and anvils. Bring Bronze Fragments and Galder. Refining past +4 bites back, so mind your luck."
+     ],
+     [
+      "marx",
+      "Shops are open too. Mostly mine."
+     ]
+    ]
+   },
+   {
+    "id": "marx_default",
+    "if": [
+     "met_marx"
+    ],
+    "lines": [
+     [
+      "marx",
+      "+5 is where it gets interesting. And expensive."
+     ]
+    ]
+   }
   ]
  }
 }

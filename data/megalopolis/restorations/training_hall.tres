@@ -10,5 +10,5 @@ text = "Start every run with +{v} max HP."
 max_level = 3
 per_level = 15.0
 effect = "max_hp"
-tm_costs = Array[int]([400, 800, 1200])
-shard_costs = Array[int]([0, 0, 0])
+tm_costs = Array[int]([3000, 6000, 9000])
+shard_costs = Array[int]([0, 0, 1])

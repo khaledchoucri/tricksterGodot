@@ -76,6 +76,7 @@ func _one_run(index: int) -> void:
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
 	_choose_heirloom()
+	_restore_city()
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	game.queue_free()
@@ -294,6 +295,14 @@ func _score(g: GearItem) -> float:
 	return s.get("AP", 0) * 1.0 + s.get("DP", 0) * 0.8 + s.get("HP", 0) * 0.15 + s.get("MD", 0) * 0.3 \
 		+ s.get("LK", 0) * 2.0 + s.get("DA", 0) * 1.5 + s.get("AC", 0) * 0.5 + s.get("HV", 0) * 2.0 \
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
+
+
+## Between runs, buy whatever the city can afford, in the guide's order.
+func _restore_city() -> void:
+	for r: RestorationData in Run.hub.restorations:
+		while Profile.can_buy(r):
+			Profile.buy(r)
+			print("   restored %s (%d TM, %d shards left)" % [r.display_name, Profile.tm, Profile.shards])
 
 
 ## Between runs, carry the best item in the warehouse (as a player would).
