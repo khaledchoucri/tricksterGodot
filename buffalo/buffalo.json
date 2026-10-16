@@ -1,0 +1,3757 @@
+{
+ "actor": "buffalo",
+ "source": "chr002.nri",
+ "cell": [
+  113,
+  112
+ ],
+ "anchor": [
+  56,
+  96
+ ],
+ "actions": {
+  "attack": {
+   "sheet": "buffalo_attack.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 120
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 120
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 120
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 120
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 120
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 120
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 120
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 120
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 120
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 120
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 120
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 120
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 120
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 120
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 120
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 120
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 120
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 120
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 120
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 120
+     }
+    ]
+   }
+  },
+  "attack2": {
+   "sheet": "buffalo_attack2.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 6,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 7,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 8,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 9,
+      "row": 0,
+      "ms": 80
+     },
+     {
+      "col": 10,
+      "row": 0,
+      "ms": 80
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 6,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 7,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 8,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 9,
+      "row": 1,
+      "ms": 80
+     },
+     {
+      "col": 10,
+      "row": 1,
+      "ms": 80
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 6,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 7,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 8,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 9,
+      "row": 2,
+      "ms": 80
+     },
+     {
+      "col": 10,
+      "row": 2,
+      "ms": 80
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 6,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 7,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 8,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 9,
+      "row": 3,
+      "ms": 80
+     },
+     {
+      "col": 10,
+      "row": 3,
+      "ms": 80
+     }
+    ]
+   }
+  },
+  "attack_ready": {
+   "sheet": "buffalo_attack_ready.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 50
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 50
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 50
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 50
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 40
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 50
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 50
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 50
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 50
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 40
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 50
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 50
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 50
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 50
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 40
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 50
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 50
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 50
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 50
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 40
+     }
+    ]
+   }
+  },
+  "cast": {
+   "sheet": "buffalo_cast.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 140,
+      "hand": [
+       15,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 140,
+      "hand": [
+       23,
+       -55
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 140,
+      "hand": [
+       23,
+       -56
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 140,
+      "hand": [
+       23,
+       -56
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 140,
+      "hand": [
+       23,
+       -56
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 140,
+      "hand": [
+       23,
+       -56
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 140,
+      "hand": [
+       -15,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 140,
+      "hand": [
+       -22,
+       -56
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 140,
+      "hand": [
+       -22,
+       -57
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 140,
+      "hand": [
+       -22,
+       -56
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 140,
+      "hand": [
+       -22,
+       -56
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 140,
+      "hand": [
+       -22,
+       -56
+      ],
+      "front": false
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 140,
+      "hand": [
+       5,
+       -21
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 140,
+      "hand": [
+       19,
+       -57
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 140,
+      "hand": [
+       19,
+       -57
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 140,
+      "hand": [
+       19,
+       -57
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 140,
+      "hand": [
+       19,
+       -57
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 140,
+      "hand": [
+       19,
+       -57
+      ],
+      "front": true
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 140,
+      "hand": [
+       -6,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 140,
+      "hand": [
+       -18,
+       -59
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 140,
+      "hand": [
+       -18,
+       -59
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 140,
+      "hand": [
+       -18,
+       -59
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 140,
+      "hand": [
+       -18,
+       -59
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 140,
+      "hand": [
+       -18,
+       -59
+      ],
+      "front": true
+     }
+    ]
+   }
+  },
+  "charge": {
+   "sheet": "buffalo_charge.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       11,
+       -24
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       11,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       11,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       11,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       11,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       11,
+       -23
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       -11,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       -11,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       -11,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       -11,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       -11,
+       -24
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       -11,
+       -23
+      ],
+      "front": true
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       13,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       13,
+       -35
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       13,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       13,
+       -35
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       13,
+       -34
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       13,
+       -35
+      ],
+      "front": true
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -8,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -8,
+       -35
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -8,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -8,
+       -35
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -8,
+       -34
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -8,
+       -35
+      ],
+      "front": false
+     }
+    ]
+   }
+  },
+  "combat_stance": {
+   "sheet": "buffalo_combat_stance.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       6,
+       -20
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       5,
+       -20
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       4,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       4,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       5,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       6,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       7,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       7,
+       -20
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -5,
+       -18
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -4,
+       -18
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -4,
+       -19
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -4,
+       -20
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -5,
+       -20
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -6,
+       -20
+      ],
+      "front": false
+     },
+     {
+      "col": 6,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -7,
+       -19
+      ],
+      "front": false
+     },
+     {
+      "col": 7,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       -7,
+       -18
+      ],
+      "front": false
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       9,
+       -21
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       7,
+       -19
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       6,
+       -18
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       5,
+       -18
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       6,
+       -20
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       8,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       10,
+       -22
+      ],
+      "front": false
+     },
+     {
+      "col": 7,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       11,
+       -22
+      ],
+      "front": false
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -10,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -8,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -7,
+       -22
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -6,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -7,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -9,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -11,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -12,
+       -26
+      ],
+      "front": true
+     }
+    ]
+   }
+  },
+  "dodge": {
+   "sheet": "buffalo_dodge.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 150,
+      "hand": [
+       15,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 150,
+      "hand": [
+       9,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 150,
+      "hand": [
+       8,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 150,
+      "hand": [
+       9,
+       -26
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 150,
+      "hand": [
+       -15,
+       -24
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 150,
+      "hand": [
+       -9,
+       -26
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 150,
+      "hand": [
+       -8,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 150,
+      "hand": [
+       -9,
+       -26
+      ],
+      "front": true
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 150,
+      "hand": [
+       6,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 150,
+      "hand": [
+       10,
+       -34
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 150,
+      "hand": [
+       11,
+       -33
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 150,
+      "hand": [
+       9,
+       -35
+      ],
+      "front": false
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 150,
+      "hand": [
+       -6,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 150,
+      "hand": [
+       -10,
+       -33
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 150,
+      "hand": [
+       -12,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 150,
+      "hand": [
+       -11,
+       -33
+      ],
+      "front": false
+     }
+    ]
+   }
+  },
+  "drill0": {
+   "sheet": "buffalo_drill0.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 70
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 70
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 70
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 70
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 70
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 70
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 70
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 70
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 70
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 70
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 70
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 70
+     }
+    ]
+   }
+  },
+  "faint": {
+   "sheet": "buffalo_faint.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 6,
+      "row": 0,
+      "ms": 140
+     },
+     {
+      "col": 7,
+      "row": 0,
+      "ms": 140
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 6,
+      "row": 1,
+      "ms": 140
+     },
+     {
+      "col": 7,
+      "row": 1,
+      "ms": 140
+     }
+    ]
+   }
+  },
+  "guard": {
+   "sheet": "buffalo_guard.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 400
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 400
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 400
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 400
+     }
+    ]
+   }
+  },
+  "hit": {
+   "sheet": "buffalo_hit.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 100,
+      "hand": [
+       30,
+       -32
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 30,
+      "hand": [
+       29,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 100,
+      "hand": [
+       30,
+       -31
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 100,
+      "hand": [
+       -28,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 30,
+      "hand": [
+       -26,
+       -32
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 100,
+      "hand": [
+       -27,
+       -34
+      ],
+      "front": true
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 100,
+      "hand": [
+       9,
+       -47
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 30,
+      "hand": [
+       8,
+       -47
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 100,
+      "hand": [
+       8,
+       -49
+      ],
+      "front": true
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 100,
+      "hand": [
+       -3,
+       -43
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 30,
+      "hand": [
+       -3,
+       -45
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 100,
+      "hand": [
+       -4,
+       -44
+      ],
+      "front": false
+     }
+    ]
+   }
+  },
+  "idle": {
+   "sheet": "buffalo_idle.png",
+   "dirs": {
+    "e": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 50,
+      "hand": [
+       7,
+       -25
+      ],
+      "front": false
+     }
+    ],
+    "se": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 50,
+      "hand": [
+       15,
+       -25
+      ],
+      "front": true
+     }
+    ],
+    "s": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 50,
+      "hand": [
+       -16,
+       -21
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 50,
+      "hand": [
+       -14,
+       -26
+      ],
+      "front": true
+     }
+    ],
+    "w": [
+     {
+      "col": 0,
+      "row": 4,
+      "ms": 50,
+      "hand": [
+       -7,
+       -24
+      ],
+      "front": false
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 5,
+      "ms": 50,
+      "hand": [
+       7,
+       -23
+      ],
+      "front": false
+     }
+    ],
+    "n": [
+     {
+      "col": 0,
+      "row": 6,
+      "ms": 50,
+      "hand": [
+       16,
+       -21
+      ],
+      "front": false
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 7,
+      "ms": 50,
+      "hand": [
+       -4,
+       -23
+      ],
+      "front": true
+     }
+    ]
+   }
+  },
+  "jump": {
+   "sheet": "buffalo_jump.png",
+   "dirs": {
+    "e": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 20
+     }
+    ],
+    "w": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 20
+     }
+    ]
+   }
+  },
+  "run": {
+   "sheet": "buffalo_run.png",
+   "dirs": {
+    "e": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -2,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -1,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       1,
+       -29
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       1,
+       -30
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -1,
+       -30
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -2,
+       -30
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -3,
+       -30
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -4,
+       -29
+      ],
+      "front": true
+     }
+    ],
+    "se": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       3,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       3,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       2,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       1,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       0,
+       -29
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       0,
+       -30
+      ],
+      "front": false
+     },
+     {
+      "col": 6,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       1,
+       -30
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       2,
+       -30
+      ],
+      "front": true
+     }
+    ],
+    "s": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -17,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -18,
+       -32
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -19,
+       -34
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -21,
+       -33
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -19,
+       -30
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -18,
+       -31
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -16,
+       -32
+      ],
+      "front": false
+     },
+     {
+      "col": 7,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       -15,
+       -31
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -3,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -4,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -3,
+       -27
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -2,
+       -27
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -1,
+       -27
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       0,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -1,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -2,
+       -29
+      ],
+      "front": true
+     }
+    ],
+    "w": [
+     {
+      "col": 0,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -4,
+       -26
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -5,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -4,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -3,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -2,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -1,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -2,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 4,
+      "ms": 70,
+      "hand": [
+       -3,
+       -26
+      ],
+      "front": true
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       6,
+       -29
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       8,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       7,
+       -30
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       6,
+       -31
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       5,
+       -31
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       4,
+       -31
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       3,
+       -30
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 5,
+      "ms": 70,
+      "hand": [
+       5,
+       -30
+      ],
+      "front": true
+     }
+    ],
+    "n": [
+     {
+      "col": 0,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       18,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       19,
+       -32
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       20,
+       -36
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       21,
+       -35
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       20,
+       -32
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       19,
+       -33
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       18,
+       -33
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 6,
+      "ms": 70,
+      "hand": [
+       17,
+       -30
+      ],
+      "front": true
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -5,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -8,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -5,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -3,
+       -29
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -1,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       0,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -2,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 7,
+      "ms": 70,
+      "hand": [
+       -4,
+       -28
+      ],
+      "front": true
+     }
+    ]
+   }
+  },
+  "throw": {
+   "sheet": "buffalo_throw.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -21,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 70,
+      "hand": [
+       -23,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       -25,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 40,
+      "hand": [
+       23,
+       -47
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 40,
+      "hand": [
+       24,
+       -18
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       15,
+       -10
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       15,
+       -10
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 0,
+      "ms": 160,
+      "hand": [
+       15,
+       -10
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       20,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 70,
+      "hand": [
+       22,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       25,
+       -30
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 40,
+      "hand": [
+       -24,
+       -47
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 40,
+      "hand": [
+       -22,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       -14,
+       -11
+      ],
+      "front": false
+     },
+     {
+      "col": 6,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       -14,
+       -11
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 1,
+      "ms": 160,
+      "hand": [
+       -14,
+       -11
+      ],
+      "front": true
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       17,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 70,
+      "hand": [
+       15,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       12,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 40,
+      "hand": [
+       -16,
+       -62
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 40,
+      "hand": [
+       -22,
+       -35
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       -18,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       -18,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 2,
+      "ms": 160,
+      "hand": [
+       -18,
+       -26
+      ],
+      "front": true
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -15,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 70,
+      "hand": [
+       -13,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       -12,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 40,
+      "hand": [
+       8,
+       -57
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 40,
+      "hand": [
+       21,
+       -34
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       17,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       17,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 7,
+      "row": 3,
+      "ms": 160,
+      "hand": [
+       17,
+       -25
+      ],
+      "front": false
+     }
+    ]
+   }
+  },
+  "walk": {
+   "sheet": "buffalo_walk.png",
+   "dirs": {
+    "e": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 110,
+      "hand": [
+       3,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 110,
+      "hand": [
+       2,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 110,
+      "hand": [
+       1,
+       -24
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 110,
+      "hand": [
+       0,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 110,
+      "hand": [
+       1,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 110,
+      "hand": [
+       2,
+       -25
+      ],
+      "front": false
+     }
+    ],
+    "se": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 110,
+      "hand": [
+       7,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 110,
+      "hand": [
+       6,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 110,
+      "hand": [
+       5,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 110,
+      "hand": [
+       6,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 110,
+      "hand": [
+       7,
+       -26
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 110,
+      "hand": [
+       8,
+       -25
+      ],
+      "front": true
+     }
+    ],
+    "s": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 110,
+      "hand": [
+       -16,
+       -26
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 110,
+      "hand": [
+       -15,
+       -26
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 110,
+      "hand": [
+       -16,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 110,
+      "hand": [
+       -18,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 110,
+      "hand": [
+       -19,
+       -30
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 110,
+      "hand": [
+       -18,
+       -27
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 110,
+      "hand": [
+       -8,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 110,
+      "hand": [
+       -6,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 110,
+      "hand": [
+       -5,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 110,
+      "hand": [
+       -6,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 110,
+      "hand": [
+       -7,
+       -27
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 110,
+      "hand": [
+       -8,
+       -26
+      ],
+      "front": false
+     }
+    ],
+    "w": [
+     {
+      "col": 0,
+      "row": 4,
+      "ms": 110,
+      "hand": [
+       -4,
+       -21
+      ],
+      "front": false
+     },
+     {
+      "col": 1,
+      "row": 4,
+      "ms": 110,
+      "hand": [
+       -3,
+       -21
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 4,
+      "ms": 110,
+      "hand": [
+       -4,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 4,
+      "ms": 110,
+      "hand": [
+       -5,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 4,
+      "ms": 110,
+      "hand": [
+       -6,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 4,
+      "ms": 110,
+      "hand": [
+       -5,
+       -21
+      ],
+      "front": false
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 5,
+      "ms": 110,
+      "hand": [
+       5,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 5,
+      "ms": 110,
+      "hand": [
+       6,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 5,
+      "ms": 110,
+      "hand": [
+       7,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 5,
+      "ms": 110,
+      "hand": [
+       6,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 5,
+      "ms": 110,
+      "hand": [
+       5,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 5,
+      "ms": 110,
+      "hand": [
+       4,
+       -23
+      ],
+      "front": true
+     }
+    ],
+    "n": [
+     {
+      "col": 0,
+      "row": 6,
+      "ms": 110,
+      "hand": [
+       21,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 6,
+      "ms": 110,
+      "hand": [
+       20,
+       -28
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 6,
+      "ms": 110,
+      "hand": [
+       19,
+       -26
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 6,
+      "ms": 110,
+      "hand": [
+       20,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 6,
+      "ms": 110,
+      "hand": [
+       21,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 6,
+      "ms": 110,
+      "hand": [
+       23,
+       -29
+      ],
+      "front": false
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 7,
+      "ms": 110,
+      "hand": [
+       -5,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 7,
+      "ms": 110,
+      "hand": [
+       -6,
+       -21
+      ],
+      "front": false
+     },
+     {
+      "col": 2,
+      "row": 7,
+      "ms": 110,
+      "hand": [
+       -7,
+       -21
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 7,
+      "ms": 110,
+      "hand": [
+       -6,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 7,
+      "ms": 110,
+      "hand": [
+       -5,
+       -22
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 7,
+      "ms": 110,
+      "hand": [
+       -4,
+       -23
+      ],
+      "front": true
+     }
+    ]
+   }
+  },
+  "weapon_crit": {
+   "sheet": "buffalo_weapon_crit.png",
+   "dirs": {
+    "se": [
+     {
+      "col": 0,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       -21,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       -23,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 0,
+      "ms": 200,
+      "hand": [
+       -25,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 0,
+      "ms": 30,
+      "hand": [
+       23,
+       -47
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 0,
+      "ms": 30,
+      "hand": [
+       24,
+       -18
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       15,
+       -10
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 0,
+      "ms": 80,
+      "hand": [
+       15,
+       -10
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 0,
+      "ms": 180,
+      "hand": [
+       15,
+       -10
+      ],
+      "front": true
+     }
+    ],
+    "sw": [
+     {
+      "col": 0,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       20,
+       -34
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       22,
+       -32
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 1,
+      "ms": 200,
+      "hand": [
+       25,
+       -30
+      ],
+      "front": false
+     },
+     {
+      "col": 3,
+      "row": 1,
+      "ms": 30,
+      "hand": [
+       -24,
+       -47
+      ],
+      "front": false
+     },
+     {
+      "col": 4,
+      "row": 1,
+      "ms": 30,
+      "hand": [
+       -22,
+       -21
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       -14,
+       -11
+      ],
+      "front": false
+     },
+     {
+      "col": 6,
+      "row": 1,
+      "ms": 80,
+      "hand": [
+       -14,
+       -11
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 1,
+      "ms": 180,
+      "hand": [
+       -14,
+       -11
+      ],
+      "front": true
+     }
+    ],
+    "nw": [
+     {
+      "col": 0,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       17,
+       -29
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       15,
+       -27
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 2,
+      "ms": 200,
+      "hand": [
+       12,
+       -24
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 2,
+      "ms": 30,
+      "hand": [
+       -16,
+       -62
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 2,
+      "ms": 30,
+      "hand": [
+       -22,
+       -35
+      ],
+      "front": true
+     },
+     {
+      "col": 5,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       -18,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 2,
+      "ms": 80,
+      "hand": [
+       -18,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 7,
+      "row": 2,
+      "ms": 180,
+      "hand": [
+       -18,
+       -26
+      ],
+      "front": true
+     }
+    ],
+    "ne": [
+     {
+      "col": 0,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       -15,
+       -28
+      ],
+      "front": true
+     },
+     {
+      "col": 1,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       -13,
+       -26
+      ],
+      "front": true
+     },
+     {
+      "col": 2,
+      "row": 3,
+      "ms": 200,
+      "hand": [
+       -12,
+       -23
+      ],
+      "front": true
+     },
+     {
+      "col": 3,
+      "row": 3,
+      "ms": 30,
+      "hand": [
+       8,
+       -57
+      ],
+      "front": true
+     },
+     {
+      "col": 4,
+      "row": 3,
+      "ms": 30,
+      "hand": [
+       21,
+       -34
+      ],
+      "front": false
+     },
+     {
+      "col": 5,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       17,
+       -25
+      ],
+      "front": true
+     },
+     {
+      "col": 6,
+      "row": 3,
+      "ms": 80,
+      "hand": [
+       17,
+       -25
+      ],
+      "front": false
+     },
+     {
+      "col": 7,
+      "row": 3,
+      "ms": 180,
+      "hand": [
+       17,
+       -25
+      ],
+      "front": false
+     }
+    ]
+   }
+  }
+ }
+}
