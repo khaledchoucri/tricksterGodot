@@ -17,6 +17,9 @@ var lengths: Dictionary = {}    # action -> seconds at speed 1.0
 var sockets: Dictionary = {}    # animation name -> Array of {"hand": Vector2, "front": bool} or null per frame
 var facing := Vector2(1, 1).normalized()
 var action := ""
+## Draw the left-facing directions by mirroring the right ones even when
+## left-facing art exists (to compare the two).
+var prefer_mirror := false
 
 var _anchor := Vector2.ZERO
 var _cell := Vector2.ZERO
@@ -24,8 +27,10 @@ var _stop_at := -1  # frame to hold on when playing part of a clip
 var _last_dir: Dictionary = {}  # action -> direction last used, for tie-breaking
 
 
-func setup(actor_name: String) -> bool:
-	var base := "res://original_assets/actors/%s/%s" % [actor_name, actor_name]
+## Loads <folder>/<actor_name>/<actor_name>.json and .tres. Original sprites
+## live in original_assets/actors/; imported new art in art_build/.
+func setup(actor_name: String, folder := "res://original_assets/actors") -> bool:
+	var base := "%s/%s/%s" % [folder, actor_name, actor_name]
 	if not ResourceLoader.exists(base + ".tres") or not FileAccess.file_exists(base + ".json"):
 		push_warning("Missing exported sprites for %s; run tools/export_actor.py" % actor_name)
 		return false
@@ -35,6 +40,10 @@ func setup(actor_name: String) -> bool:
 	_anchor = Vector2(manifest.anchor[0], manifest.anchor[1])
 	_cell = Vector2(manifest.cell[0], manifest.cell[1])
 	offset = -_anchor
+	var s := float(manifest.get("display_scale", 1.0))
+	scale = Vector2(s, s)
+	if manifest.get("filter", "") == "linear":
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	for act: String in manifest.actions:
 		var dirs: Dictionary = manifest.actions[act].dirs
 		available[act] = dirs.keys()
@@ -70,7 +79,10 @@ func dir_for(act: String, v: Vector2) -> Array:
 	for d: String in DIRS:
 		var source := ""
 		var mirrored := false
-		if d in dirs:
+		if prefer_mirror and d in ["w", "sw", "nw"] and MIRROR[d] in dirs:
+			source = MIRROR[d]
+			mirrored = true
+		elif d in dirs:
 			source = d
 		elif MIRROR[d] in dirs:
 			source = MIRROR[d]
@@ -120,16 +132,17 @@ func play_action(act: String, v := Vector2.ZERO, duration := 0.0, restart := fal
 		frame = clampi(frames[0], 0, sprite_frames.get_frame_count(anim) - 1)
 
 
-## Hand socket of the frame on screen, relative to the feet:
+## Hand socket of the frame on screen, relative to the feet, in the parent's space:
 ## {"hand": Vector2, "front": bool}, or an empty Dictionary if the frame has none.
 func hand_socket() -> Dictionary:
 	var per_frame: Array = sockets.get(animation, [])
 	if frame >= per_frame.size() or per_frame[frame] == null:
 		return {}
 	var s: Dictionary = per_frame[frame]
+	var hand: Vector2 = s.hand * scale  # in the parent's space
 	if flip_h:
-		return {"hand": Vector2(-s.hand.x, s.hand.y), "front": s.front}
-	return s
+		hand.x = -hand.x
+	return {"hand": hand, "front": s.front}
 
 
 func _ready() -> void:
