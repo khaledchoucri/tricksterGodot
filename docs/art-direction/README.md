@@ -4,7 +4,7 @@
 
 This package proposes a warm painterly 2D isometric visual direction, specifies the art library, and supplies an AI production/review workflow plus a later technical kickoff. Prepared 15 October 2026.
 
-**Start with [the visual presentation](index.html), or read [the PDF presentation](presentation.pdf).** It is a standalone HTML document with an embedded concept board, chapter navigation, a filterable batch catalog and printable chapters. Open it in a browser; no installation or server is required. Its sibling Markdown files contain the full briefs.
+**For the current art test, start with [art-test-v0.2.md](art-test-v0.2.md)**: it updates this package for the single-player homage (Buffalo first, Hades-like but friendly style) and replaces the v0.1 process for the test. For the original v0.1 proposal, start with [the visual presentation](index.html), or read [the PDF presentation](presentation.pdf).** It is a standalone HTML document with an embedded concept board, chapter navigation, a filterable batch catalog and printable chapters. Open it in a browser; no installation or server is required. Its sibling Markdown files contain the full briefs.
 
 | File | Purpose |
 |---|---|
