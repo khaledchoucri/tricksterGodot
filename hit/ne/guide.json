@@ -1,0 +1,42 @@
+{
+  "action": "hit",
+  "actor": "buffalo",
+  "canvas": 512,
+  "dir": "ne",
+  "feet": [
+    256,
+    420
+  ],
+  "frame_ms": [
+    100,
+    30,
+    100
+  ],
+  "scale": 4.32432432432432,
+  "sockets": [
+    {
+      "frame": 0,
+      "front": true,
+      "hand": [
+        243,
+        234
+      ]
+    },
+    {
+      "frame": 1,
+      "front": false,
+      "hand": [
+        243,
+        225
+      ]
+    },
+    {
+      "frame": 2,
+      "front": false,
+      "hand": [
+        239,
+        230
+      ]
+    }
+  ]
+}
