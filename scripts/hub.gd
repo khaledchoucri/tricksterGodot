@@ -127,8 +127,11 @@ func talk(npc: Npc) -> void:
 		lines.append(_line(String(l[0]), String(l[1])))
 	await dialogue.play(lines)
 	story.finish(c)
-	if c.get("then", "") == "restore":
-		await _restore_menu(npc)
+	match c.get("then", ""):
+		"restore":
+			await _restore_menu(npc)
+		"warehouse":
+			await _warehouse_menu(npc)
 	_set_talking(false)
 
 
@@ -185,6 +188,41 @@ func _restore_menu(npc: Npc) -> void:
 		if Profile.buy(r):
 			Audio.play("ui_unique_get.wav", -4.0)
 			hud.log_line("[System] %s restored (%d/%d)." % [r.display_name, Profile.level(r.id), r.max_level], Color("e0b54d"))
+
+
+## The warehouse: choose the heirloom to carry into runs, or clear shelves.
+func _warehouse_menu(npc: Npc) -> void:
+	while true:
+		var items: Array[GearItem] = []
+		var options: Array = []
+		for i in Profile.warehouse.size():
+			var g := GearItem.from_dict(Profile.warehouse[i], Run.item_by_id)
+			items.append(g)
+			if g == null:
+				options.append({"title": "(unknown item)", "text": "", "disabled": true})
+				continue
+			options.append({"title": g.title(), "tag": "Carried" if Profile.heirloom == i else g.data.slot_name(),
+				"icon": g.data.icon(), "text": g.summary()})
+		options.append({"title": "Carry nothing", "tag": "", "text": "Head out with only the Rookie Sword."})
+		options.append({"title": "Leave", "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
+		var line := "Which one goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
+		var pick := await dialogue.choose(_line(String(npc.data.id), line), options)
+		if pick == items.size():
+			Profile.set_heirloom(-1)
+			continue
+		if pick < 0 or pick > items.size():
+			return
+		var g := items[pick]
+		var what := await dialogue.choose(_line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
+			{"title": "Carry it as my heirloom", "tag": "", "text": "Equipped at the start of every run, synced to the area's level."},
+			{"title": "Throw it away", "tag": "", "text": "Frees the shelf. It can't be undone."},
+			{"title": "Back", "tag": "", "text": ""}])
+		if what == 0:
+			Profile.set_heirloom(pick)
+			Audio.play("etc_item1.wav")
+			hud.log_line("[System] You'll carry %s." % g.title(), Color("a8d8da"))
+		elif what == 1:
+			Profile.discard_item(pick)
 
 
 # ---------------------------------------------------------------- expedition

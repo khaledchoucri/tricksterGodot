@@ -53,7 +53,7 @@ func _one_run(index: int) -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	var t := 0.0
-	while game.phase != game.Phase.DEAD and game.phase != game.Phase.WON and t < 1800.0:
+	while not game.hud.results_panel.visible and t < 1800.0:
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		_tick(get_physics_process_delta_time())
@@ -75,6 +75,7 @@ func _one_run(index: int) -> void:
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
+	_choose_heirloom()
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	game.queue_free()
@@ -244,6 +245,13 @@ func _choose() -> void:
 					break
 		"compound_target":
 			pick = 0
+		"port":
+			pick = opts.size() - 1
+			var best_score := 0.0
+			for i in opts.size() - 1:
+				if _score(opts[i]) > best_score:
+					best_score = _score(opts[i])
+					pick = i
 		"shop":
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
@@ -286,6 +294,20 @@ func _score(g: GearItem) -> float:
 	return s.get("AP", 0) * 1.0 + s.get("DP", 0) * 0.8 + s.get("HP", 0) * 0.15 + s.get("MD", 0) * 0.3 \
 		+ s.get("LK", 0) * 2.0 + s.get("DA", 0) * 1.5 + s.get("AC", 0) * 0.5 + s.get("HV", 0) * 2.0 \
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
+
+
+## Between runs, carry the best item in the warehouse (as a player would).
+func _choose_heirloom() -> void:
+	var best := -1
+	var best_score := 0.0
+	for i in Profile.warehouse.size():
+		var g := GearItem.from_dict(Profile.warehouse[i], Run.item_by_id)
+		if g and g.data.slot == ItemData.Slot.WEAPON and _score(g) > best_score:
+			best_score = _score(g)
+			best = i
+	Profile.set_heirloom(best)
+	if best >= 0:
+		print("   carrying %s next" % GearItem.from_dict(Profile.warehouse[best], Run.item_by_id).title())
 
 
 # ---------------------------------------------------------------- report

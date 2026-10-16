@@ -48,7 +48,7 @@ func choose(line: Dictionary, options: Array) -> int:
 		var o: Dictionary = options[i]
 		var b: PickOption = PICK_OPTION.instantiate()
 		_choices.add_child(b)
-		b.setup(i, o.title, o.get("tag", ""), o.get("text", ""))
+		b.setup(i, o.title, o.get("tag", ""), o.get("text", ""), o.get("icon"))
 		b.disabled = o.get("disabled", false)
 		b.custom_minimum_size = Vector2(440, 52)
 		b.pressed.connect(func() -> void: _chosen.emit(i))

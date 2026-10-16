@@ -34,6 +34,12 @@ var refine := 0
 ## Compound slots, and what fills them: {"material", "stat", "value"}.
 var slots := 0
 var compounds: Array[Dictionary] = []
+## The warehouse entry it's saved in (-1: not stored). A carried heirloom
+## is level-synced: its refine counts up to `refine_cap` and its base stats
+## scale down to `sync_level` (both -1: no sync).
+var stored := -1
+var refine_cap := -1
+var sync_level := -1
 
 
 static func make(p_data: ItemData, p_prefix := "", p_rolled := {}) -> GearItem:
@@ -80,18 +86,44 @@ func title() -> String:
 		t = "%s %s" % [PREFIXES[prefix].name, t]
 	if refine > 0:
 		t += " +%d" % refine
+		if effective_refine() < refine:
+			t += " (synced to +%d)" % effective_refine()
+	if sync_factor() < 1.0:
+		t += " (synced %d%%)" % roundi(sync_factor() * 100)
 	return t
+
+
+## How much of its base stats a level-synced item keeps (1.0: all).
+func sync_factor() -> float:
+	if sync_level < 0 or sync_level >= data.level:
+		return 1.0
+	return clampf(float(sync_level) / data.level, 0.35, 1.0)
+
+
+func is_synced() -> bool:
+	return sync_factor() < 1.0 or effective_refine() < refine
+
+
+## Refine level that counts, after level sync.
+func effective_refine() -> int:
+	return refine if refine_cap < 0 else mini(refine, refine_cap)
 
 
 ## Stats with the refine bonus and compounds applied (elements excluded).
 func stats() -> Dictionary:
 	var out := rolled.duplicate()
+	var f := sync_factor()
+	if f < 1.0:
+		for k: String in out:
+			if out[k] > 0:
+				out[k] = maxi(1, roundi(out[k] * f))
 	for c in compounds:
 		if not c.stat in MaterialData.ELEMENTS:
 			out[c.stat] = out.get(c.stat, 0) + c.value
-	if refine > 0 and data.refine_stat != "" and out.has(data.refine_stat):
+	var r := effective_refine()
+	if r > 0 and data.refine_stat != "" and out.has(data.refine_stat):
 		var base: int = out[data.refine_stat]
-		out[data.refine_stat] = base + roundi(base * REFINE_BONUS[refine] / 100.0) + refine * int(REFINE_FLAT.get(data.refine_stat, 1))
+		out[data.refine_stat] = base + roundi(base * REFINE_BONUS[r] / 100.0) + r * int(REFINE_FLAT.get(data.refine_stat, 1))
 	return out
 
 
@@ -151,6 +183,22 @@ func summary(other: GearItem = null) -> String:
 	if slots > 0:
 		parts.append("slots %d/%d" % [compounds.size(), slots])
 	return "  ·  ".join(parts)
+
+
+## Rebuilds an item saved with to_dict(); `lookup` finds the ItemData by id.
+static func from_dict(d: Dictionary, lookup: Callable) -> GearItem:
+	var item_data: ItemData = lookup.call(StringName(d.get("id", "")))
+	if item_data == null:
+		return null
+	var rolled := {}
+	for k: String in d.get("rolled", {}):
+		rolled[k] = int(d.rolled[k])
+	var g := make(item_data, d.get("prefix", ""), rolled)
+	g.refine = int(d.get("refine", 0))
+	g.slots = int(d.get("slots", item_data.compound_slots))
+	for c: Dictionary in d.get("compounds", []):
+		g.compounds.append({"material": c.material, "stat": c.stat, "value": int(c.value)})
+	return g
 
 
 func to_dict() -> Dictionary:

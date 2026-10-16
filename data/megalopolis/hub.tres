@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="HubData" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="HubData" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/hub_data.gd" id="1"]
 [ext_resource type="Resource" path="res://data/megalopolis/hub_room.tres" id="2"]
@@ -12,12 +12,13 @@
 [ext_resource type="Resource" path="res://data/megalopolis/restorations/tutors_desk.tres" id="10"]
 [ext_resource type="Script" path="res://scripts/data/npc_data.gd" id="11"]
 [ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="12"]
+[ext_resource type="Resource" path="res://data/megalopolis/npcs/julio.tres" id="13"]
 
 [resource]
 script = ExtResource("1")
 display_name = "Megalopolis"
 room = ExtResource("2")
-npcs = Array[ExtResource("11")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+npcs = Array[ExtResource("11")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("13")])
 restorations = Array[ExtResource("12")]([ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10")])
 gate_position = Vector2(2340, 2050)
 story = "res://data/megalopolis/story.json"

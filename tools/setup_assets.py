@@ -41,9 +41,13 @@ ACTORS = {
     'miranda': ('data/npc/npc003.nri', '', None),
     'stella': ('data/npc/npc222.nri', '', None),
     'copper_plate': ('data/npc/npc270.nri', '', None),
+    'julio': ('data/npc/npc046.nri', '', None),
+    'paul': ('data/npc/npc040.nri', '', None),
+    'marx': ('data/npc/npc119.nri', '', None),
 }
 # Dialogue portraits: name -> NPC illustration
 PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003_illu.nri',
+             'julio': 'data/npc/npc046_illu.nri', 'paul': 'data/npc/npc040_illu.nri', 'marx': 'data/npc/npc119_illu.nri',
              'stella': 'data/npc/npc222_illu.nri'}
 MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00']
 SOUNDS = [

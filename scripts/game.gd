@@ -84,6 +84,7 @@ func _load_room() -> void:
 		room = null
 		player = null
 	var plan := Run.current_room()
+	Run.sync_heirlooms()
 	room = Room.new()
 	add_child(room)
 	if not room.build(plan.data):
@@ -139,6 +140,8 @@ func _on_room_cleared() -> void:
 	_steps.append(reward_here)
 	if Run.current_room().elite:
 		_steps.append("gear")
+	if Run.depth == Run.region.job_change_depth:
+		_steps.append("port")
 	_next_step()
 
 
@@ -192,6 +195,9 @@ func _grant(reward: String) -> void:
 			_return_to = "shop"
 			Audio.play("ui_card.wav")
 			_open_shop()
+			return
+		"port":
+			_open_port()
 			return
 		"heal":
 			var amount := int(Run.max_hp * 0.35)
@@ -349,6 +355,19 @@ func _start_pick(kind: String, options: Array) -> void:
 				entry.disabled = Run.galder < o.price
 				shown.append(entry)
 			title = "Shop  ·  %d Galder" % Run.galder
+		"port":
+			var full := Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE
+			for g: GearItem in options:
+				if g == null:
+					shown.append({"title": "Save and go on" if phase != Phase.WON else "Save and log out", "tag": "",
+						"text": "Saves your heirloom's progress. Dying rolls back to the last save."})
+					continue
+				shown.append({"title": "Send %s home" % g.title(), "tag": g.data.slot_name(), "icon": g.data.icon(),
+					"text": g.summary() + ("
+The warehouse is full." if full else "
+Kept in the Megalopolis warehouse, refines and compounds included."),
+					"disabled": full})
+			title = "Portable Port  ·  save your progress"
 	hud.show_pick(title, shown)
 	get_tree().paused = true
 
@@ -476,6 +495,17 @@ func _on_picked(i: int) -> void:
 					return
 				_open_shop()
 				return
+		"port":
+			var g: GearItem = _pick_options[i]
+			Run.save_point(g)
+			Audio.play("ui_unique_get.wav", -4.0)
+			if g:
+				hud.notice("%s sent home" % g.title())
+				hud.log_line("[System] %s was sent to the Megalopolis warehouse." % g.title(), Color("e0b54d"))
+			hud.log_line("[System] Progress saved.", Color("c9a4ff"))
+			if phase == Phase.WON:
+				_show_win_results()
+				return
 		"anvil":
 			var k: String = _pick_options[i]
 			if k != "":
@@ -569,6 +599,17 @@ func _buy(o: Dictionary) -> bool:
 	return false
 
 
+## The Portable Port: send one item home (anything not already stored), or just save.
+func _open_port() -> void:
+	var opts: Array = []
+	for k in Run.EQUIP_SLOTS:
+		var g := Run.equipped(k)
+		if g and g.stored < 0 and g.data != Run.cls.start_weapon:
+			opts.append(g)
+	opts.append(null)
+	_start_pick("port", opts)
+
+
 func _open_anvil() -> void:
 	var keys: Array = []
 	for k in Run.EQUIP_SLOTS:
@@ -606,12 +647,15 @@ func _refine(g: GearItem) -> void:
 
 func _on_player_died() -> void:
 	phase = Phase.DEAD
+	var lost := Run.unsaved_changes()
 	Run.finish(false)
 	Audio.play("shchr002.wav")
 	await get_tree().create_timer(1.2).timeout
 	hud.log_line("[System] Connection lost.", Color("f07a62"))
 	await hud.fade(0.85, 0.6)
 	hud.log_line("[System] Rolling back server state...", Color("f07a62"))
+	for t in lost:
+		hud.log_line("[System] %s rolled back to its last save." % t, Color("f07a62"))
 	hud.show_results(false)
 
 
@@ -623,6 +667,10 @@ func _win() -> void:
 	Audio.play("guild_battlewin.wav")
 	hud.log_line("[Notice] Coral Beach cleared. The Harkon Shards resonate.", Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout
+	_open_port()
+
+
+func _show_win_results() -> void:
 	await hud.fade(0.85, 0.6)
 	hud.show_results(true)
 

@@ -278,7 +278,7 @@ func _run() -> void:
 	var hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)
-	check(hub.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
+	check(hub.npcs.size() == 5 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
 		"the hub builds Megalopolis with %d people and the gate" % hub.npcs.size())
 	check(hub.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
 	var guide: Npc = hub._npc(&"cavalier")
@@ -436,4 +436,33 @@ func _systems(Run: Node) -> void:
 			total += 1
 			penguins += 1 if e.id == &"blue_penguin" else 0
 	check(penguins * 3 >= total, "a Blue Penguin den fills its waves with penguins (%d of %d)" % [penguins, total])
+
+	# Warehouse, heirlooms, level sync and rollback.
+	Run.new_run()
+	var heir := GearItem.make(_item("wood_sword"))
+	heir.refine = 5
+	Run.equip(heir)
+	check(Run.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == 0, "a Portable Port sends the sword home")
+	Profile.set_heirloom(0)
+	Run.new_run()
+	var carried: GearItem = Run.equipped("weapon")
+	check(carried.data.id == &"wood_sword" and carried.refine == 5 and carried.effective_refine() == 3
+		and carried.sync_factor() < 1.0, "the heirloom comes back level-synced: %s" % carried.title())
+	var synced_ap: int = carried.stats().AP
+	Run.depth = 3
+	Run.sync_heirlooms()
+	check(carried.stats().AP > synced_ap and carried.sync_factor() == 1.0, "deeper rooms lift the sync (AP %d -> %d)"
+		% [synced_ap, carried.stats().AP])
+	Run.depth = 0
+	Run.ore = 20
+	Run.galder = 5000
+	Run.try_refine(carried, 0.0)
+	check(Run.unsaved_changes().size() == 1, "refining the heirloom is unsaved until a Port")
+	Run.new_run()
+	check(Run.equipped("weapon").refine == 5, "dying without saving rolls the heirloom back to +5")
+	Run.try_refine(Run.equipped("weapon"), 0.0)
+	Run.save_point()
+	Run.new_run()
+	check(Run.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
+	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()

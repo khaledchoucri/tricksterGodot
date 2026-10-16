@@ -129,11 +129,73 @@ func new_run() -> void:
 	for k in Stats.KEYS:
 		_ref[k] = stat(k)
 	start_job(cls.start_job)
+	_carry_heirloom()
 	_apply_restorations()
 	stats_changed()
 	hp = max_hp
 	mp = max_mp
 	plan = _plan_rooms()
+
+
+## Equips the heirloom chosen in the warehouse, level-synced to the region.
+func _carry_heirloom() -> void:
+	if Profile.heirloom < 0 or Profile.heirloom >= Profile.warehouse.size():
+		return
+	var g := GearItem.from_dict(Profile.warehouse[Profile.heirloom], item_by_id)
+	if g == null:
+		return
+	g.stored = Profile.heirloom
+	g.refine_cap = region.refine_cap
+	g.sync_level = sync_level()
+	equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
+
+
+## The item level gear is synced to at this depth (drops use the same scale).
+func sync_level() -> int:
+	return 3 + 3 * depth
+
+
+## Re-syncs carried heirlooms to the current depth (on entering a room).
+func sync_heirlooms() -> void:
+	for g: GearItem in equipment.values():
+		if g.sync_level >= 0:
+			g.sync_level = sync_level()
+	stats_changed()
+
+
+func item_by_id(id: StringName) -> ItemData:
+	for it in items:
+		if it.id == id:
+			return it
+	return null
+
+
+## Portable Port: saves every stored item's progress, and sends `item` home
+## (if given). Returns false if the warehouse is full.
+func save_point(item: GearItem = null) -> bool:
+	for g: GearItem in equipment.values():
+		if g.stored >= 0:
+			Profile.update_item(g.stored, g.to_dict())
+	if item == null:
+		return true
+	var index := Profile.store_item(item.to_dict())
+	if index < 0:
+		return false
+	Profile.set_flag("stored_any")
+	item.stored = index
+	return true
+
+
+## Stored items changed since the last save (what a rollback would undo).
+func unsaved_changes() -> Array[String]:
+	var out: Array[String] = []
+	for g: GearItem in equipment.values():
+		if g.stored < 0 or g.stored >= Profile.warehouse.size():
+			continue
+		var saved := GearItem.from_dict(Profile.warehouse[g.stored], item_by_id)
+		if saved == null or JSON.stringify(saved.to_dict()) != JSON.stringify(g.to_dict()):
+			out.append(g.title())
+	return out
 
 
 ## Permanent bonuses from the city's restorations (Profile).

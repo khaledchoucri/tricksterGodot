@@ -108,6 +108,13 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 - **Water attack** adds that percent of each hit as water damage, less the monster's water resistance.
 - **Shops** sell two pieces of gear, Bronze Fragments, a material bundle and a potion for Galder.
 
+### Warehouse and heirlooms
+
+- **Portable Port.** It appears after the job change and again when you clear the run. There you can send one item home to **Keeper Julio's warehouse** in Megalopolis, with its refines and compounds, and save your progress.
+- **Heirlooms.** In the city, Julio lets you pick one stored item to carry into every run.
+- **Level sync.** Coral Beach syncs a carried heirloom down. Its refine counts up to +3, and its base stats scale with the room's level (3 + 3 per room), so a Bamboo Sword starts weaker and is at full strength by about room 5.
+- **Death is a rollback.** Changes to a stored item since the last Port are undone, and the log says which.
+
 ### Balance
 
 `tests/playtest.tscn` is an autopilot that plays whole runs and reports how far it got, room times, damage taken, gear and leftovers:

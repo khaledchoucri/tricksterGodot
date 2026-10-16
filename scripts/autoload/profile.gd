@@ -1,9 +1,12 @@
 extends Node
 ## The player's saved progress across runs (autoloaded as `Profile`): banked
-## Time Marks and Harkon Shards, run statistics, story flags and the city's
-## restorations. Saved as JSON in user://profile.json after every change.
+## Time Marks and Harkon Shards, run statistics, story flags, the city's
+## restorations, and the warehouse of items sent home (one can be carried
+## into runs as an heirloom). Saved as JSON in user://profile.json after
+## every change.
 
-const VERSION := 1
+const VERSION := 2
+const WAREHOUSE_SIZE := 20
 const DEFAULT_PATH := "user://profile.json"
 
 var path := DEFAULT_PATH
@@ -14,6 +17,9 @@ var shards := 0
 var stats := {"runs": 0, "deaths": 0, "clears": 0, "best_depth": 0, "shards_found": 0, "tm_earned": 0}
 var flags: Dictionary = {}         # String -> true
 var restorations: Dictionary = {}  # restoration id -> level
+## Items sent home (GearItem.to_dict()), and which one runs carry (-1: none).
+var warehouse: Array = []
+var heirloom := -1
 
 
 func _ready() -> void:
@@ -34,6 +40,8 @@ func load_profile() -> void:
 	stats = {"runs": 0, "deaths": 0, "clears": 0, "best_depth": 0, "shards_found": 0, "tm_earned": 0}
 	flags = {}
 	restorations = {}
+	warehouse = []
+	heirloom = -1
 	if not FileAccess.file_exists(path):
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -47,6 +55,8 @@ func load_profile() -> void:
 	flags = data.get("flags", {})
 	for k: String in data.get("restorations", {}):
 		restorations[k] = int(data.restorations[k])
+	warehouse = data.get("warehouse", [])
+	heirloom = int(data.get("heirloom", -1))
 
 
 func save() -> void:
@@ -55,7 +65,7 @@ func save() -> void:
 		push_warning("Couldn't save the profile to %s" % path)
 		return
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "stats": stats,
-		"flags": flags, "restorations": restorations}, "  "))
+		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom}, "  "))
 
 
 func is_new() -> bool:
@@ -76,6 +86,40 @@ func bank_run(won: bool, depth: int, run_tm: int, run_shards: int) -> void:
 	stats.tm_earned += run_tm
 	tm += run_tm
 	shards += run_shards
+	save()
+
+
+# ---------------------------------------------------------------- warehouse
+
+## Stores an item sent home; returns its index, or -1 if the warehouse is full.
+func store_item(item: Dictionary) -> int:
+	if warehouse.size() >= WAREHOUSE_SIZE:
+		return -1
+	warehouse.append(item)
+	save()
+	return warehouse.size() - 1
+
+
+## Saves a stored item's new state (an heirloom improved during a run).
+func update_item(index: int, item: Dictionary) -> void:
+	if index >= 0 and index < warehouse.size():
+		warehouse[index] = item
+		save()
+
+
+func set_heirloom(index: int) -> void:
+	heirloom = index if index >= 0 and index < warehouse.size() else -1
+	save()
+
+
+func discard_item(index: int) -> void:
+	if index < 0 or index >= warehouse.size():
+		return
+	warehouse.remove_at(index)
+	if heirloom == index:
+		heirloom = -1
+	elif heirloom > index:
+		heirloom -= 1
 	save()
 
 

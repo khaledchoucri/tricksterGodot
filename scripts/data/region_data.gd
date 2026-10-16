@@ -12,6 +12,8 @@ extends Resource
 @export var elite_depths: Array[int] = [3, 6]
 ## Depth of the room whose clear brings the job change (the trial).
 @export var job_change_depth := 3
+## Level sync: the highest refine an heirloom counts as here.
+@export var refine_cap := 3
 @export var field_music := ""
 @export var boss_music := ""
 @export var field_ambience := ""
