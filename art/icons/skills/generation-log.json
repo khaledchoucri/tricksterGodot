@@ -1,0 +1,157 @@
+{
+  "status": "candidates_awaiting_review",
+  "brief": "docs/art-direction/art-round-2.md / Shot 9",
+  "base_commit": "b14a70b",
+  "total_generations": 8,
+  "total_rejects": 1,
+  "tool": "image_gen.imagegen",
+  "references": [],
+  "seed": "not_exposed",
+  "model_version": "not_exposed",
+  "export": "Godot Image.resize(512,512,INTERPOLATE_LANCZOS), FORMAT_RGB8; no compositional or painted edits",
+  "icons": [
+    {
+      "id": "lacerator",
+      "source_file": "sources/lacerator_01.png",
+      "file": "lacerator.png",
+      "generations": 1,
+      "approx_generation_seconds": 32.807,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "af57cc6ec2fe29a656971705c25e51ba30156ad1c4138647fe166c56a6d52b0e",
+      "export_sha256": "3c4e49a6a1f29d3f18fce0d5a3e055137476f0e65fc8739d55a1dfbc0a3a72b5",
+      "skill_id": 1202,
+      "element": "none"
+    },
+    {
+      "id": "piercing_wave",
+      "source_file": "sources/piercing_wave_02.png",
+      "file": "piercing_wave.png",
+      "generations": 2,
+      "approx_generation_seconds": 103.926,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "9302891b0ff3ea275a9e4251fa19e30e819a11de700ea041e5952dec5f761e1e",
+      "export_sha256": "b2146d4bbf38ed75c8b76e019d260d2fb121a0d1a8ffef0ff5ba81df6ca969df",
+      "skill_id": 1204,
+      "element": "earth"
+    },
+    {
+      "id": "inferno_blade",
+      "source_file": "sources/inferno_blade_01.png",
+      "file": "inferno_blade.png",
+      "generations": 1,
+      "approx_generation_seconds": 59.273,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "553d0ee0c4674febbd9d6ae875524ad1dff8e0794d877937cf82297a78804f30",
+      "export_sha256": "9946718b3f0acbba0519c9a5bfce7b21a668eb77b4809b2501aed03437c7b375",
+      "skill_id": 1208,
+      "element": "fire"
+    },
+    {
+      "id": "lightning_strike",
+      "source_file": "sources/lightning_strike_01.png",
+      "file": "lightning_strike.png",
+      "generations": 1,
+      "approx_generation_seconds": 91.33,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "84ed3158db8422ae144dc6b459d8e36e71c7b5dd0293705c4d065d94017a4e16",
+      "export_sha256": "cfe6652801d9ff701b78d8de59e21f137a1c97b663ad000d1a72beb802ccf0d2",
+      "skill_id": 1211,
+      "element": "lightning"
+    },
+    {
+      "id": "upper_smash",
+      "source_file": "sources/upper_smash_01.png",
+      "file": "upper_smash.png",
+      "generations": 1,
+      "approx_generation_seconds": 46.803,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "a80bff4c93a9a242e753cbded74a8e5b6059cb39a5cfd352188b3c851757f708",
+      "export_sha256": "a0baf5a68a583c363d9caabbcafdf30485c9ae8bc443711525b0cde04af9ffc9",
+      "skill_id": 1008,
+      "element": "none"
+    },
+    {
+      "id": "shockwave",
+      "source_file": "sources/shockwave_01.png",
+      "file": "shockwave.png",
+      "generations": 1,
+      "approx_generation_seconds": 87.591,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "c05c97c3f9efd0dc281addd2379a443bf7eaef650bf903236f460c9e31feb16b",
+      "export_sha256": "c547ef4fc1e929316726a9633cd8f4260d2c9306e3858c16515f238a77c002ff",
+      "skill_id": 1001,
+      "element": "none"
+    },
+    {
+      "id": "tornado_bomb",
+      "source_file": "sources/tornado_bomb_01.png",
+      "file": "tornado_bomb.png",
+      "generations": 1,
+      "approx_generation_seconds": 121,
+      "source_px": [
+        1254,
+        1254
+      ],
+      "export_px": [
+        512,
+        512
+      ],
+      "source_sha256": "38b8ba8c7617b4c783fc7b7541c6b428f79a8f881a59fb44a272108187094872",
+      "export_sha256": "ff721bbc89f8183beb83274d59a6e037544bebe2b99f6c975ac94bd2f1b82d46",
+      "skill_id": 1011,
+      "element": "wind"
+    }
+  ],
+  "approx_summed_tool_seconds": 542.73,
+  "rejected": [
+    {
+      "file": "rejected/piercing_wave_01.png",
+      "prompt": "rejected/piercing_wave_01.txt",
+      "reason": "Detailed scene rather than UI symbol",
+      "approx_generation_seconds": 72.0,
+      "sha256": "c1645d45537a0ca6b35a5ee56d941140e0e6e23d79d202c03718cc25c35eb3e4"
+    }
+  ]
+}

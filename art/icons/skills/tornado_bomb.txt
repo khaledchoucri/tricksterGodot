@@ -1,0 +1,12 @@
+EXACT GENERATION PROMPT
+
+A single finished square 512 x 512 full-bleed skill icon for an action game. One icon only, never a sprite sheet, no panels, no frame, no border, no lettering, no numbers, no watermark. All four corners are opaque painted background; no magenta or transparency.
+Hand-painted game art. Bold, confident dark-ink outlines of varying weight; saturated painterly colour in broad planes with selective texture; strong warm key light from the upper left and a cool rim light; graphic, readable silhouettes. Bright, sunlit, warm and friendly, a coastal adventure mood, never dark, gritty or menacing. Clean edges, no photorealism, no text.
+Rendering direction: HEAVIER TAPERED dark ink outlines #233B52, bold angular graphic shapes, decisive saturated color masses, strong cyan-white rim accents, saturated coral/violet shadows instead of grey shading. Selective paint texture only inside large masses. Friendly adventurous energy, no horror imagery. The icon must read clearly at 48 x 48 pixels: a very large simple central silhouette, two or three broad value groups, sparse secondary marks, clean quiet background, no intricate particles. Central artwork fills about75% of the square with a small breathing margin, strongly separated from the background. Do not add a decorative UI badge or ornamental frame.
+
+SKILL SYMBOL BRIEF
+ONE chunky teal whirlwind funnel, broad at the top and tapered to a small ground contact at the bottom, formed from THREE thick angular spiral bands separated by clean dark gaps. THREE small dark geometric debris shapes lean inward toward the funnel to communicate PULL. A simple shallow ground ellipse, no landscape. Teal/deep petrol tinted simple background. Turquoise and pale teal bands, ivory/cyan-white rim, violet shadow masses. No explosion, no lightning, no thin wispy noise. Communicate a sustained whirlwind gathering nearby targets inward.
+CRITICAL UI SIMPLICITY: this is one emblem on a quiet tinted background, NOT a scene. No scenery, horizon, landscape, decorative frame or detailed environment; ground-impact symbols are small abstract marks only. No tiny particles. Keep large clean negative spaces.
+
+REFERENCE IMAGES USED: none; independent text generation using art-round-2.md, Shot 9.
+TOOL: image_gen.imagegen; transparent_background=false; seed/model version not exposed.
