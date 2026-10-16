@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"duck_mole_paws"
+display_name = "Duck Mole's Paws"
+item_id = 10233
+stat = "HV"
+min_value = 2
+max_value = 5
+need = 3

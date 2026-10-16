@@ -45,6 +45,9 @@ var loadout: Array[StringName] = [&"", &"", &""]
 ## EQUIP_SLOTS key -> GearItem.
 var equipment: Dictionary = {}
 var ore := 0
+## Monster materials carried: MaterialData id -> count, and the data by id.
+var materials: Dictionary = {}
+var material_info: Dictionary = {}
 var galder := 0
 var tm := 0
 var shards := 0
@@ -74,6 +77,8 @@ class RoomPlan:
 	var data: RoomData
 	var elite := false
 	var boss := false
+	## Monster the room's waves lean on (chosen with the door), or &"".
+	var feature: StringName
 
 	func _init(p_data: RoomData, p_elite := false, p_boss := false) -> void:
 		data = p_data
@@ -108,6 +113,7 @@ func new_run() -> void:
 	jobs.clear()
 	equipment = {"weapon": GearItem.make(cls.start_weapon)}
 	ore = 0
+	materials = {}
 	galder = 0
 	tm = 0
 	shards = 0
@@ -578,8 +584,10 @@ func take_damage(amount: int) -> void:
 	Events.player_hp_changed.emit()
 
 
-## Rewards for a kill. Returns the Bronze Fragments it dropped.
-func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := false, boss := false) -> int:
+## Rewards for a kill. Returns what dropped: {"ore": n, "material":
+## MaterialData or null, "count": n}.
+func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := false, boss := false,
+		mat: MaterialData = null, mat_chance := 0.0) -> Dictionary:
 	kills += 1
 	tm += tm_amount
 	galder += int(galder_amount * (1.0 + stat("LK") / 100.0))
@@ -589,7 +597,85 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 	elif elite or randf() < 0.12 + stat("DA") / 400.0:
 		found = 1
 	ore += found
+	var count := 0
+	if mat:
+		if boss:
+			count = 3
+		elif elite:
+			count = 2
+		elif randf() < mat_chance + stat("DA") / 200.0:
+			count = 1
+		add_material(mat, count)
 	if card_level(&"adrenaline") > 0:
 		heal(int(card_value(&"adrenaline")))
 	gain_exp(exp_amount)
-	return found
+	return {"ore": found, "material": mat if count > 0 else null, "count": count}
+
+
+# ---------------------------------------------------------------- materials and compounding
+
+func add_material(mat: MaterialData, count: int) -> void:
+	if count <= 0:
+		return
+	material_info[mat.id] = mat
+	materials[mat.id] = materials.get(mat.id, 0) + count
+
+
+func material_count(mat: MaterialData) -> int:
+	return materials.get(mat.id, 0)
+
+
+## Materials carried with enough for one compound.
+func compoundable_materials() -> Array[MaterialData]:
+	var out: Array[MaterialData] = []
+	for id: StringName in materials:
+		var m: MaterialData = material_info[id]
+		if materials[id] >= m.need:
+			out.append(m)
+	return out
+
+
+## Equipped items with a free compound slot (slot keys).
+func compound_targets() -> Array[String]:
+	var out: Array[String] = []
+	for k in EQUIP_SLOTS:
+		var g := equipped(k)
+		if g and g.free_slots() > 0:
+			out.append(k)
+	return out
+
+
+func compound(g: GearItem, mat: MaterialData) -> Dictionary:
+	materials[mat.id] -= mat.need
+	var c := g.compound(mat, clampf(stat("DA") / 60.0, 0.0, 1.0))
+	stats_changed()
+	return c
+
+
+## Elemental attack from all equipped gear: element -> value.
+func element_attack() -> Dictionary:
+	var out := {}
+	for g: GearItem in equipment.values():
+		var el := g.elements()
+		for k: String in el:
+			out[k] = out.get(k, 0) + el[k]
+	return out
+
+
+# ---------------------------------------------------------------- shop
+
+## What a shop sells this visit: {"kind", "price", ...}.
+func shop_offers() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for g in gear_offers(2):
+		out.append({"kind": "gear", "item": g, "price": 160 + 24 * g.data.level + 50 * g.slots})
+	out.append({"kind": "ore", "count": 3, "price": 180})
+	var mats: Array[MaterialData] = []
+	for e in region.enemies:
+		if e.material and depth >= e.min_depth and not e.is_boss:
+			mats.append(e.material)
+	if mats.size() > 0:
+		var m: MaterialData = mats[randi() % mats.size()]
+		out.append({"kind": "material", "material": m, "count": m.need, "price": 70 * m.need})
+	out.append({"kind": "potion", "heal": 0.4, "price": 160})
+	return out

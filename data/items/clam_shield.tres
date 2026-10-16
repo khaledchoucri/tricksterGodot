@@ -14,4 +14,5 @@ weight = 40
 stats = {
 "DP": 32
 }
+compound_slots = 1
 refine_stat = "DP"

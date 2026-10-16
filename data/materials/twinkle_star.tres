@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"twinkle_star"
+display_name = "Twinkle Star"
+item_id = 10246
+stat = "DA"
+min_value = 1
+max_value = 3
+need = 4

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"acorn_nut"
+display_name = "Acorn Nut"
+item_id = 10234
+stat = "LK"
+min_value = 1
+max_value = 3
+need = 4

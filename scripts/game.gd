@@ -7,7 +7,8 @@ extends Node2D
 
 const PLAYER_SCENE := preload("res://scenes/player.tscn")
 const HUB_SCENE := "res://scenes/hub.tscn"
-const REWARD_POOL: Array[String] = ["card", "card", "upgrade", "gear", "gear", "anvil", "heal", "galder", "shard"]
+const REWARD_POOL: Array[String] = ["card", "card", "upgrade", "gear", "gear", "anvil", "compound", "shop", "heal",
+	"galder", "shard"]
 const CAMERA_MARGIN := 60
 ## MP restored on entering a room.
 const ROOM_MP := 40
@@ -31,6 +32,9 @@ var _pick_options: Array = []
 var _pending_skill: CardData  # new skill waiting for a slot to replace
 var _pending_gear: GearItem   # accessory waiting for a slot
 var _steps: Array[String] = []  # reward steps left for this room
+var _return_to := ""  # "shop" or "compound" while one of them is open
+var _shop: Array[Dictionary] = []
+var _pending_mat: MaterialData
 
 @onready var hud: Hud = $Hud
 
@@ -179,6 +183,16 @@ func _grant(reward: String) -> void:
 			Audio.play_ambience("bgs_blacksmith.wav")
 			_open_anvil()
 			return
+		"compound":
+			_return_to = "compound"
+			_open_compounder()
+			return
+		"shop":
+			_shop = Run.shop_offers()
+			_return_to = "shop"
+			Audio.play("ui_card.wav")
+			_open_shop()
+			return
 		"heal":
 			var amount := int(Run.max_hp * 0.35)
 			Run.heal(amount)
@@ -212,14 +226,22 @@ func _open_doors() -> void:
 			if r != pool[0]:
 				rewards.append(r)
 				break
-	room.open_doors(rewards)
+	var features: Array[StringName] = []
+	var pool: Array[EnemyData] = []
+	for e in Run.region.enemies:
+		if not e.is_boss and e.min_depth <= Run.depth + 1:
+			pool.append(e)
+	for r in rewards:
+		features.append(&"" if r == "boss" or pool.is_empty() else pool[randi() % pool.size()].id)
+	room.open_doors(rewards, features)
 	Audio.play("etc_warpzone.wav", -6.0)
 	hud.log_line("[System] Exits opened.", Color("94a7b2"))
 
 
-func _on_door_entered(reward: String) -> void:
+func _on_door_entered(reward: String, feature: StringName) -> void:
 	Audio.play("etc_warp.wav")
 	Run.depth += 1
+	Run.current_room().feature = feature
 	reward_here = "card" if reward == "boss" else reward
 	await hud.fade(1.0, 0.25)
 	_load_room()
@@ -298,6 +320,35 @@ func _start_pick(kind: String, options: Array) -> void:
 				shown.append({"title": "%s  →  +%d" % [g.title(), g.refine + 1], "tag": g.data.refine_stat,
 					"icon": g.data.icon(), "text": text, "disabled": not Run.can_afford_refine(g)})
 			title = "Anvil  ·  refine your gear"
+		"compound_mat":
+			for m: MaterialData in options:
+				if m == null:
+					shown.append({"title": "Leave the Compounder", "tag": "", "text": _materials_text()})
+					continue
+				var have := Run.material_count(m)
+				shown.append({"title": m.display_name, "tag": "%d / %d" % [have, m.need], "icon": m.icon(),
+					"text": "Compounds %s into a free slot." % m.describe(),
+					"disabled": have < m.need or Run.compound_targets().is_empty()})
+			title = "Compounder  ·  choose a material"
+		"compound_target":
+			for k: String in options:
+				if k == "":
+					shown.append({"title": "Back", "tag": "", "text": "Choose another material."})
+					continue
+				var g := Run.equipped(k)
+				shown.append({"title": g.title(), "tag": "%d free slot%s" % [g.free_slots(), "s" if g.free_slots() > 1 else ""],
+					"icon": g.data.icon(), "text": g.summary()})
+			title = "Compound %s into..." % _pending_mat.display_name
+		"shop":
+			for o: Dictionary in options:
+				if o.is_empty():
+					shown.append({"title": "Leave the shop", "tag": "", "text": "%d Galder left." % Run.galder})
+					continue
+				var entry := _shop_entry(o)
+				entry.tag = "%d G" % o.price
+				entry.disabled = Run.galder < o.price
+				shown.append(entry)
+			title = "Shop  ·  %d Galder" % Run.galder
 	hud.show_pick(title, shown)
 	get_tree().paused = true
 
@@ -390,13 +441,59 @@ func _on_picked(i: int) -> void:
 			else:
 				_equip(_pending_gear, k)
 			_pending_gear = null
+		"compound_mat":
+			var m: MaterialData = _pick_options[i]
+			if m == null:
+				_return_to = ""
+			else:
+				_pending_mat = m
+				var keys: Array = Run.compound_targets()
+				keys.append("")
+				_start_pick("compound_target", keys)
+				return
+		"compound_target":
+			var k: String = _pick_options[i]
+			if k != "":
+				var g := Run.equipped(k)
+				var c := Run.compound(g, _pending_mat)
+				Audio.play("ui_compose_success.wav")
+				var what: String = c.stat + (" attack" if _pending_mat.is_element() else "")
+				hud.notice("%s +%d on %s" % [what, c.value, g.title()])
+				hud.log_line("[System] Compounded %s into %s: %s +%d." % [_pending_mat.display_name, g.title(), what, c.value],
+					Color("e0b54d"))
+			_pending_mat = null
+			_open_compounder()
+			return
+		"shop":
+			var o: Dictionary = _pick_options[i]
+			if o.is_empty():
+				_return_to = ""
+			else:
+				_shop.erase(o)
+				Run.galder -= o.price
+				Audio.play("etc_money.wav")
+				if _buy(o):
+					return
+				_open_shop()
+				return
 		"anvil":
 			var k: String = _pick_options[i]
 			if k != "":
 				_refine(Run.equipped(k))
 				return
 			Audio.play_ambience(Run.region.field_ambience)
-	_next_step()
+	_resume()
+
+
+## After a pick: back to an open shop or compounder, or on to the next step.
+func _resume() -> void:
+	match _return_to:
+		"shop":
+			_open_shop()
+		"compound":
+			_open_compounder()
+		_:
+			_next_step()
 
 
 func _equip(g: GearItem, slot_key: String) -> void:
@@ -412,6 +509,64 @@ func _scrap(g: GearItem) -> void:
 	Run.galder += SCRAP_GALDER
 	if g:
 		hud.log_line("[System] Scrapped %s for %d Galder." % [g.title(), SCRAP_GALDER], MUTED)
+
+
+func _open_compounder() -> void:
+	var mats: Array = []
+	for id: StringName in Run.materials:
+		if Run.materials[id] > 0:
+			mats.append(Run.material_info[id])
+	mats.append(null)
+	_start_pick("compound_mat", mats)
+
+
+func _materials_text() -> String:
+	var parts: PackedStringArray = []
+	for id: StringName in Run.materials:
+		if Run.materials[id] > 0:
+			parts.append("%s %d" % [Run.material_info[id].display_name, Run.materials[id]])
+	return ("Carrying: " + ", ".join(parts)) if parts.size() else "You carry no monster materials yet."
+
+
+func _open_shop() -> void:
+	var opts: Array = _shop.duplicate()
+	opts.append({})
+	_start_pick("shop", opts)
+
+
+func _shop_entry(o: Dictionary) -> Dictionary:
+	match o.kind:
+		"gear":
+			return _gear_option(o.item)
+		"ore":
+			return {"title": "%d %ss" % [o.count, Run.ORE_NAME], "text": "For refining at anvils."}
+		"material":
+			var m: MaterialData = o.material
+			return {"title": "%d %s" % [o.count, m.display_name], "icon": m.icon(), "text": "Compounds %s." % m.describe()}
+	return {"title": "Pink Potion", "text": "Recover %d%% of your HP." % roundi(o.heal * 100)}
+
+
+## Gives a bought item. Returns true if a follow-up pick (an accessory slot) is open.
+func _buy(o: Dictionary) -> bool:
+	match o.kind:
+		"gear":
+			var g: GearItem = o.item
+			var keys := Run.slot_keys_for(g.data)
+			if keys.size() > 1 and keys.all(func(k: String) -> bool: return Run.equipped(k) != null):
+				_pending_gear = g
+				var slot_options: Array = keys.duplicate()
+				slot_options.append("")
+				_start_pick("gear_slot", slot_options)
+				return true
+			_equip(g, "")
+		"ore":
+			Run.ore += o.count
+		"material":
+			Run.add_material(o.material, o.count)
+		"potion":
+			Run.heal(int(Run.max_hp * o.heal))
+			Audio.play("eff_healing1.wav", -4.0)
+	return false
 
 
 func _open_anvil() -> void:
@@ -491,11 +646,16 @@ func _on_enemy_spawned(e: Enemy) -> void:
 func _on_enemy_died(e: Enemy) -> void:
 	Audio.play("sdmon103.wav" if e.is_boss else "etc_mon_death.wav", -4.0)
 	var before := Run.level
-	var ore := Run.add_kill(e.rewards.exp, e.rewards.tm, e.rewards.galder, e.is_elite, e.is_boss)
+	var drop := Run.add_kill(e.rewards.exp, e.rewards.tm, e.rewards.galder, e.is_elite, e.is_boss,
+		e.data.material, e.data.material_chance)
 	if e.rewards.galder > 0:
 		Audio.play("etc_money.wav", -10.0)
-	if ore > 0:
-		hud.log_line("[System] Picked up %d %s%s." % [ore, Run.ORE_NAME, "s" if ore > 1 else ""], INFO)
+	if drop.ore > 0:
+		hud.log_line("[System] Picked up %d %s%s." % [drop.ore, Run.ORE_NAME, "s" if drop.ore > 1 else ""], INFO)
+	if drop.material:
+		var m: MaterialData = drop.material
+		hud.log_line("[System] Picked up %s%s (%d / %d)." % ["%d " % drop.count if drop.count > 1 else "", m.display_name,
+			Run.material_count(m), m.need], INFO)
 	if Run.level > before:
 		Audio.play("etc_levelup.wav", -2.0)
 		hud.notice("Level up! Lv %d  ·  invest in a type after the fight" % Run.level)

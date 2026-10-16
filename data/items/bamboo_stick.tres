@@ -15,4 +15,5 @@ stats = {
 "AP": 32,
 "MA": 1
 }
+compound_slots = 1
 refine_stat = "AP"

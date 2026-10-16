@@ -15,4 +15,5 @@ stats = {
 "HP": 90,
 "HV": 2
 }
+compound_slots = 1
 refine_stat = ""

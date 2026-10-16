@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+
+[ext_resource type="Resource" path="res://data/materials/duck_mole_paws.tres" id="m_mat"]
 
 [resource]
 script = ExtResource("1_s")
@@ -12,3 +14,4 @@ cost = 0
 min_depth = 0
 hp_mult = 3.0
 is_boss = true
+material = ExtResource("m_mat")

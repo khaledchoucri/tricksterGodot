@@ -68,6 +68,19 @@ func _gear_text() -> String:
 			lines.append("    [color=#a8d8da]%s[/color]" % g.summary())
 		else:
 			lines.append("[color=#5a6b7c]%s  empty[/color]" % label)
+	var el := Run.element_attack()
+	if not el.is_empty():
+		var parts: PackedStringArray = []
+		for k: String in el:
+			parts.append("%s %d" % [k, el[k]])
+		lines.append("[color=#9fb2c0]Elemental attack[/color]  " + "  ".join(parts))
+	var mats: PackedStringArray = []
+	for id: StringName in Run.materials:
+		if Run.materials[id] > 0:
+			var m: MaterialData = Run.material_info[id]
+			mats.append("%s %d/%d" % [m.display_name, Run.materials[id], m.need])
+	if mats.size():
+		lines.append("[color=#9fb2c0]Materials[/color]  " + ", ".join(mats))
 	lines.append("")
 	lines.append("[font_size=18]Skills[/font_size]")
 	for id: StringName in Run.cards:

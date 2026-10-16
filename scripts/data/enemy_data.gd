@@ -16,5 +16,8 @@ extends Resource
 @export var speed_mult := 1.0
 @export var hp_mult := 1.0
 @export var is_boss := false
+## Signature drop for compounding, and the chance a kill drops one.
+@export var material: MaterialData
+@export var material_chance := 0.2
 ## Overrides for the pattern's numbers (windup, radius, length...).
 @export var tune: Dictionary = {}

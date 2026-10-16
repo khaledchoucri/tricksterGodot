@@ -15,4 +15,5 @@ stats = {
 "LK": 1,
 "HP": 100
 }
+compound_slots = 1
 refine_stat = ""

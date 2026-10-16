@@ -1,8 +1,8 @@
 class_name GearItem
 extends RefCounted
 ## One rolled piece of gear: an ItemData, maybe a Trickster prefix
-## ("Sharp Wood Sword"), its stats rolled around the base values, and its
-## refine level.
+## ("Sharp Wood Sword"), its stats rolled around the base values, its
+## refine level, and what has been compounded into its slots.
 
 ## Prefixes from the original item variants (Sharp. Wood Sword, Shrd. Wood
 ## Sword, Sen. Bronze Sword, Solid / Clever Wood Helmet, Spell Wood Buckler...).
@@ -31,6 +31,9 @@ var data: ItemData
 var prefix := ""
 var rolled: Dictionary = {}
 var refine := 0
+## Compound slots, and what fills them: {"material", "stat", "value"}.
+var slots := 0
+var compounds: Array[Dictionary] = []
 
 
 static func make(p_data: ItemData, p_prefix := "", p_rolled := {}) -> GearItem:
@@ -38,6 +41,7 @@ static func make(p_data: ItemData, p_prefix := "", p_rolled := {}) -> GearItem:
 	g.data = p_data
 	g.prefix = p_prefix
 	g.rolled = p_rolled if not p_rolled.is_empty() else p_data.stats.duplicate()
+	g.slots = p_data.compound_slots
 	return g
 
 
@@ -64,7 +68,10 @@ static func roll(p_data: ItemData, quality: float) -> GearItem:
 		for k: String in info.get("add", {}):
 			var r: Array = info.add[k]
 			stats[k] = stats.get(k, 0) + randi_range(r[0], r[1])
-	return make(p_data, p, stats)
+	var g := make(p_data, p, stats)
+	if p == "shrewd" or randf() < 0.15 + 0.3 * quality:
+		g.slots += 1
+	return g
 
 
 func title() -> String:
@@ -76,13 +83,38 @@ func title() -> String:
 	return t
 
 
-## Stats with the refine bonus applied.
+## Stats with the refine bonus and compounds applied (elements excluded).
 func stats() -> Dictionary:
 	var out := rolled.duplicate()
+	for c in compounds:
+		if not c.stat in MaterialData.ELEMENTS:
+			out[c.stat] = out.get(c.stat, 0) + c.value
 	if refine > 0 and data.refine_stat != "" and out.has(data.refine_stat):
 		var base: int = out[data.refine_stat]
 		out[data.refine_stat] = base + roundi(base * REFINE_BONUS[refine] / 100.0) + refine * int(REFINE_FLAT.get(data.refine_stat, 1))
 	return out
+
+
+## Elemental attack from compounds: element -> value.
+func elements() -> Dictionary:
+	var out := {}
+	for c in compounds:
+		if c.stat in MaterialData.ELEMENTS:
+			out[c.stat] = out.get(c.stat, 0) + c.value
+	return out
+
+
+func free_slots() -> int:
+	return slots - compounds.size()
+
+
+## Fills a slot with a material, rolling its value; `quality` (0..1, from DA)
+## leans the roll upward. Returns the compound added.
+func compound(mat: MaterialData, quality := 0.0) -> Dictionary:
+	var t := clampf((randf() + randf()) / 2.0 + 0.25 * quality * randf(), 0.0, 1.0)
+	var c := {"material": String(mat.id), "stat": mat.stat, "value": roundi(lerpf(mat.min_value, mat.max_value, t))}
+	compounds.append(c)
+	return c
 
 
 func can_refine() -> bool:
@@ -95,7 +127,7 @@ func refine_chance() -> float:
 
 ## Bronze Fragments and Galder one refine attempt costs.
 func refine_cost() -> Dictionary:
-	return {"ore": 1 + refine / 2, "galder": 30 + 25 * refine}
+	return {"ore": 1 + refine / 2, "galder": 50 + 40 * refine}
 
 
 ## "AP 26  ·  AC 2", with the change from `other` when given.
@@ -113,8 +145,14 @@ func summary(other: GearItem = null) -> String:
 			if d != 0:
 				s += " (%s%d)" % ["+" if d > 0 else "", d]
 		parts.append(s)
+	var el := elements()
+	for k: String in el:
+		parts.append("%s %d" % [k, el[k]])
+	if slots > 0:
+		parts.append("slots %d/%d" % [compounds.size(), slots])
 	return "  ·  ".join(parts)
 
 
 func to_dict() -> Dictionary:
-	return {"id": String(data.id), "prefix": prefix, "rolled": rolled, "refine": refine}
+	return {"id": String(data.id), "prefix": prefix, "rolled": rolled, "refine": refine, "slots": slots,
+		"compounds": compounds}

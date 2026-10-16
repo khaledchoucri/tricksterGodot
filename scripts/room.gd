@@ -6,7 +6,7 @@ extends Node2D
 ## spawns and hands them their references.
 
 signal cleared
-signal door_entered(reward: String)
+signal door_entered(reward: String, feature: StringName)
 
 const CELL := 16
 const VIEW_MARGIN := 420.0
@@ -339,6 +339,10 @@ func _make_waves(depth: int, elite: bool) -> Array:
 			if options.is_empty():
 				break
 			var pick: EnemyData = options[randi() % options.size()]
+			# A featured monster (its den) fills about half of each wave.
+			var featured := Run.region.enemy(Run.current_room().feature) if Run.current_room().feature != &"" else null
+			if featured and featured in options and randf() < 0.5:
+				pick = featured
 			wave_list.append({"id": pick.id, "elite": false})
 			budget -= pick.cost
 		out.append(wave_list)
@@ -415,7 +419,9 @@ func _on_enemy_died(e: Enemy) -> void:
 
 # ---------------------------------------------------------------- doors
 
-func open_doors(rewards: Array[String]) -> void:
+## `features` (optional, one per door) names the monster each door's room
+## leans on.
+func open_doors(rewards: Array[String], features: Array[StringName] = []) -> void:
 	var spots: Array[Vector2] = []
 	var targets: Array[Vector2] = []
 	if rewards.size() > 1:
@@ -431,6 +437,9 @@ func open_doors(rewards: Array[String]) -> void:
 	for i in rewards.size():
 		var d: Door = DOOR_SCENE.instantiate()
 		d.reward = rewards[i]
+		if i < features.size() and features[i] != &"":
+			d.feature = features[i]
+			d.feature_name = Run.monster_stats(Run.region.enemy(features[i])).get("name", String(features[i]).capitalize())
 		d.position = spots[i]
 		world.add_child(d)
 		doors.append(d)
@@ -469,8 +478,9 @@ func _physics_process(_delta: float) -> void:
 	for d in doors:
 		if d.ready_to_enter() and Combat.ground(player.global_position - d.global_position).length() < 30.0:
 			var reward := d.reward
+			var feature := d.feature
 			for other in doors:
 				other.queue_free()
 			doors.clear()
-			door_entered.emit(reward)
+			door_entered.emit(reward, feature)
 			return

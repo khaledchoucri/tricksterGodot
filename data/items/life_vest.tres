@@ -15,4 +15,5 @@ stats = {
 "LK": 1,
 "DP": 21
 }
+compound_slots = 1
 refine_stat = ""

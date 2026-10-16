@@ -102,6 +102,7 @@ func _run() -> void:
 		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp
 		player.skills.slot_ready_at[0] = 0.0
+		player.invulnerable_until = player.now() + 5.0  # room monsters mustn't interrupt the cast
 		player.aim = ground_dir
 		var cast := player.skills.try_cast(0)
 		for _f in 90:
@@ -399,4 +400,40 @@ func _systems(Run: Node) -> void:
 	Run.mp = 0
 	var hp_before: int = Run.hp
 	check(Run.spend_mp(10) and Run.hp == hp_before - 20, "Overcast pays missing MP with HP")
+
+	# Monster materials and compounding.
+	Run.new_run()
+	var penguin: EnemyData = Run.region.enemy(&"blue_penguin")
+	var ice: MaterialData = penguin.material
+	var drop: Dictionary = Run.add_kill(0, 0, 0, true, false, ice, 0.0)
+	check(drop.material == ice and Run.material_count(ice) == 2, "an elite Blue Penguin drops 2 Cool Ice")
+	Run.add_material(ice, 2)
+	var blade := GearItem.make(_item("wood_sword"))
+	Run.equip(blade)
+	check(Run.compoundable_materials().has(ice) and Run.compound_targets().has("weapon"),
+		"4 Cool Ice can be compounded into the Wood Sword's slot")
+	var c: Dictionary = Run.compound(blade, ice)
+	check(c.stat == "Water" and c.value >= ice.min_value and c.value <= ice.max_value and Run.material_count(ice) == 0
+		and blade.free_slots() == 0, "compounding uses 4 Cool Ice and rolls Water attack %d" % c.value)
+	check(Run.element_attack().get("Water", 0) == c.value, "the sword's Water attack counts toward elemental damage")
+	var hard: MaterialData = Run.region.enemy(&"bustshell").material
+	var helm := GearItem.make(_item("candy_hat"))
+	Run.equip(helm)
+	var dp: int = Run.stat("DP")
+	Run.add_material(hard, hard.need)
+	var hc: Dictionary = Run.compound(helm, hard)
+	check(Run.stat("DP") == dp + hc.value, "Hard Scales compounded into a hat add DP (+%d)" % hc.value)
+	var shop: Array[Dictionary] = Run.shop_offers()
+	check(shop.any(func(o: Dictionary) -> bool: return o.kind == "gear") and shop.any(func(o: Dictionary) -> bool: return o.kind == "potion"),
+		"the shop sells gear and potions")
+	Run.depth = 4
+	Run.current_room().feature = &"blue_penguin"
+	var waves: Array = load("res://scripts/room.gd").new()._make_waves(4, false)
+	var penguins := 0
+	var total := 0
+	for w in waves:
+		for e in w:
+			total += 1
+			penguins += 1 if e.id == &"blue_penguin" else 0
+	check(penguins * 3 >= total, "a Blue Penguin den fills its waves with penguins (%d of %d)" % [penguins, total])
 	Run.new_run()

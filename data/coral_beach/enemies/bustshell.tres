@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+
+[ext_resource type="Resource" path="res://data/materials/hard_scales.tres" id="m_mat"]
 
 [resource]
 script = ExtResource("1_s")
@@ -10,3 +12,4 @@ kind = "slam"
 body_radius = 18.0
 cost = 3
 min_depth = 3
+material = ExtResource("m_mat")

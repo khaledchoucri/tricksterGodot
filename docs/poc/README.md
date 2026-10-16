@@ -45,7 +45,8 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 
 - Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then the boss. Rooms 4 and 7 add elite monsters, and elites also drop gear.
 - **Room 4 is the Fighter's trial.** Clearing it changes job to **Knight**: the Knight skill tree joins the card offers, you pick a Knight skill, and Sword Mastery makes the sword combo 15% stronger.
-- Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, **equipment**, an **anvil**, healing, Galder (with Bronze Fragments) or a Harkon Shard.
+- Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, **equipment**, an **anvil**, a **Compounder**, a **shop**, healing, Galder (with Bronze Fragments) or a Harkon Shard.
+- Each door also names a monster: the next room is that monster's **den**, and about half of its waves are that monster. That makes the door a choice of which material you farm.
 - Skill cards come from your jobs' real skill trees, with the original prerequisites. Upper Smash and Hyper Beat need Bull's Eye Lv 2, Armor Breaker needs Shockwave Lv 2, Tornado Bomb needs Armor Breaker, and Berserker needs Pumping Heart Lv 2. Cards go up to level 5.
   - **Skills** go in the three skill slots and cost MP. Taking a new skill with full slots replaces one.
   - **Talents** are passive.
@@ -86,6 +87,36 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
   - The success chance falls from 95% at +1. The chance is shown, and LK raises it.
   - From +5 up, a failure can drop the item a level.
   - Monsters drop fragments (elites always, the boss three), and so do Galder rewards.
+
+### Materials and compounding
+
+- **Signature materials.** Every monster drops its own material (`data/materials/`): 20% per kill, 2 from elites, 3 from the boss, and DA raises the chance.
+
+| Monster | Material | Compounds |
+|---|---|---|
+| Torobbie | Baby Carrot | HP |
+| Tottochi | Acorn Nut | LK |
+| Bad Fury | Sharp Leg | AP |
+| Little Cora | Twinkle Star | DA |
+| Blue Penguin | Cool Ice | Water attack |
+| Bustshell | Hard Scales | DP |
+| Clione | Cool Spring Water | MD |
+| Golden Mole | Duck Mole's Paws | HV |
+
+- **Compound slots.** Gear has the original item's compound slots. Drops can roll one more slot, and Shrewd items always do.
+- **Compounder rooms** put 3–4 of one material into a free slot. The stat rolls in the material's range (the original ranges where the item existed), leaning toward the middle, with DA raising it.
+- **Water attack** adds that percent of each hit as water damage, less the monster's water resistance.
+- **Shops** sell two pieces of gear, Bronze Fragments, a material bundle and a potion for Galder.
+
+### Balance
+
+`tests/playtest.tscn` is an autopilot that plays whole runs and reports how far it got, room times, damage taken, gear and leftovers:
+
+```
+godot --headless --fixed-fps 60 res://tests/playtest.tscn -- runs=10 build=mixed
+```
+
+The `build` option is `power`, `magic`, `sense`, `charm` or `mixed`. Right now the bot clears about 6 runs in 10, and most deaths come at the boss.
 
 Also:
 

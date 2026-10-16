@@ -24,6 +24,9 @@ const KINDS := {
 		"length": 120.0, "width": 18.0, "poise": 0, "keep_away": 150.0, "shot_speed": 210.0},
 }
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
+## Monster damage over the original formula, and HP gained per room of depth.
+const DAMAGE_MULT := 1.25
+const DEPTH_HP := 0.06
 
 var data: EnemyData
 var display_name := ""
@@ -34,6 +37,7 @@ var damage := 8
 ## The original row's twelve stats (Stats.KEYS); DP/MD reduce damage taken,
 ## AC and HV decide grazes and evasion.
 var stats: Dictionary = {}
+var elements: Dictionary = {}
 var walk_speed := 70.0
 var run_speed := 105.0
 var body_radius := 14.0
@@ -79,8 +83,11 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	is_elite = elite
 	display_name = stats_row.get("name", String(data.id).capitalize())
 	stats = Stats.from_monster(stats_row.get("stats", {}))
-	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult)
-	damage = roundi(6.0 + float(stats.get("AP", 4)) * 0.25)
+	elements = stats_row.get("elements", {})
+	# Deeper rooms field tougher monsters.
+	var depth_mult := 1.0 + DEPTH_HP * Run.depth
+	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * depth_mult)
+	damage = roundi((6.0 + float(stats.get("AP", 4)) * 0.25) * DAMAGE_MULT)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
 	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
 	var stay: Array = stats_row.get("idle_stay", [3, 5])
@@ -113,6 +120,11 @@ func _ready() -> void:
 
 func now() -> float:
 	return Time.get_ticks_msec() / 1000.0
+
+
+## Resistance to an element, in % (the original FireR, WaterR...).
+func resist(element: String) -> float:
+	return float(elements.get(element, 0))
 
 
 ## Damage multiplier from this monster's DP (or MD against magic).

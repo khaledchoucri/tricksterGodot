@@ -219,7 +219,12 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var crit := randf() < Run.crit_chance()
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
 	var graze := not crit and randf() < e.evade_chance(Run.stat("AC"))
-	var amount := maxi(1, roundi(base * mult * (1.75 if crit else 1.0) * (0.5 if graze else 1.0) * e.defense_mult()))
+	# Elemental attack from compounds adds its % on top, less the monster's resistance.
+	var element := 1.0
+	var el := Run.element_attack()
+	for k: String in el:
+		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
+	var amount := maxi(1, roundi(base * mult * element * (1.75 if crit else 1.0) * (0.5 if graze else 1.0) * e.defense_mult()))
 	var effects := fx.duplicate()
 	effects.crit = crit
 	effects.graze = graze

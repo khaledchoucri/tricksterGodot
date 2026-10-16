@@ -71,7 +71,7 @@ func _one_run(index: int) -> void:
 	var r := {"run": index + 1, "won": game.phase == game.Phase.WON, "depth": Run.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
-		"ore": Run.ore, "galder": Run.galder, "around": killers}
+		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate()}
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
@@ -235,6 +235,24 @@ func _choose() -> void:
 					pick = i
 		"gear_slot":
 			pick = 0 if _score(Run.equipped("acc1")) <= _score(Run.equipped("acc2")) else 1
+		"compound_mat":
+			pick = opts.size() - 1
+			for i in opts.size() - 1:
+				var m: MaterialData = opts[i]
+				if Run.material_count(m) >= m.need and not Run.compound_targets().is_empty():
+					pick = i
+					break
+		"compound_target":
+			pick = 0
+		"shop":
+			pick = opts.size() - 1
+			for i in opts.size() - 1:
+				var o: Dictionary = opts[i]
+				if Run.galder < o.price:
+					continue
+				if (o.kind == "potion" and Run.hp < Run.max_hp * 0.6) or (o.kind == "gear" and _gear_gain(o.item) > 5.0) 						or (o.kind == "ore" and Run.galder > 400):
+					pick = i
+					break
 		"anvil":
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
@@ -291,7 +309,7 @@ func _report() -> void:
 		print("   gear: %s" % ", ".join(r.gear))
 		if not r.won:
 			print("   died near: %s" % ", ".join(r.around))
-		print("   cards: %s   ore %d  galder %d" % [r.cards, r.ore, r.galder])
+		print("   cards: %s   ore %d  galder %d  materials %s" % [r.cards, r.ore, r.galder, r.materials])
 		var rooms: PackedStringArray = []
 		for room in r.rooms:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])

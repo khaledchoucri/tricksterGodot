@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_mat"]
 
 [resource]
 script = ExtResource("1_s")
@@ -12,3 +14,4 @@ cost = 1
 min_depth = 0
 speed_mult = 1.35
 tune = {"windup": 0.45, "recover": 0.4, "radius": 46.0, "range": 36.0}
+material = ExtResource("m_mat")

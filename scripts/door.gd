@@ -10,11 +10,17 @@ const REWARDS := {
 	"shard": {"label": "Harkon Shard", "color": Color(0.8, 0.6, 1.0)},
 	"gear": {"label": "Equipment", "color": Color(0.95, 0.65, 0.35)},
 	"anvil": {"label": "Anvil", "color": Color(0.75, 0.8, 0.9)},
+	"compound": {"label": "Compounder", "color": Color(0.55, 0.85, 0.75)},
+	"shop": {"label": "Shop", "color": Color(1.0, 0.9, 0.55)},
 	"boss": {"label": "Boss", "color": Color(1.0, 0.35, 0.3)},
 	"expedition": {"label": "Coral Beach Gate", "color": Color(0.35, 0.85, 0.85)},
 }
 
 var reward := "card"
+## The monster whose den lies behind this door (its waves lean on it), and
+## the name shown under the reward.
+var feature: StringName
+var feature_name := ""
 
 var _t := 0.0
 var _color := Color.WHITE
@@ -25,7 +31,8 @@ var _color := Color.WHITE
 func _ready() -> void:
 	var info: Dictionary = REWARDS.get(reward, REWARDS.card)
 	_color = info.color
-	label.text = info.label
+	label.text = info.label + ("
+%s den" % feature_name if feature_name != "" else "")
 	label.add_theme_color_override("font_color", _color.lightened(0.3))
 
 
