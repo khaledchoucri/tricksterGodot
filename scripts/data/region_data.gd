@@ -10,6 +10,8 @@ extends Resource
 ## Combat rooms before the boss.
 @export var run_length := 7
 @export var elite_depths: Array[int] = [3, 6]
+## Depth of the room whose clear brings the job change (the trial).
+@export var job_change_depth := 3
 @export var field_music := ""
 @export var boss_music := ""
 @export var field_ambience := ""

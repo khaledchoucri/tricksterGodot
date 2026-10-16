@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"premium_belt"
+display_name = "Premium Belt"
+item_id = 5001
+slot = 3
+family = ""
+level = 16
+weight = 10
+stats = {
+"AP": 40
+}
+refine_stat = ""

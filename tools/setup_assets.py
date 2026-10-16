@@ -53,6 +53,8 @@ SOUNDS = [
     'etc_mon_death.wav', 'etc_warp.wav', 'etc_warpzone.wav', 'etc_monq_complete.wav',
     'ui_card.wav', 'ui_btn_ok.wav', 'ui_unique_get.wav', 'guild_battlewin.wav',
     'sgmon103.wav', 'sdmon103.wav', 'samon021.wav', 'bgs_beach.wav', 'bgs_cave01.wav',
+    'weapon002.wav', 'weapon003.wav', 'etc_item1.wav', 'ui_refine_proceed.wav', 'ui_refine_success.wav',
+    'ui_refine_fail.wav', 'ui_compose_success.wav', 'bgs_blacksmith.wav',
 ]
 # From data/sound/skillsound.
 SKILL_SOUNDS = [
@@ -69,6 +71,18 @@ def monster_ids():
     for f in sorted(os.listdir(folder)):
         if f.endswith('.tres'):
             m = re.search(r'^monster_id = "(\d+)"', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
+            if m:
+                ids.append(m.group(1))
+    return ids
+
+
+def item_ids():
+    """Original item IDs referenced by the ItemData resources."""
+    folder = os.path.join(ROOT, 'data', 'items')
+    ids = []
+    for f in sorted(os.listdir(folder)):
+        if f.endswith('.tres'):
+            m = re.search(r'^item_id = (\d+)', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
             if m:
                 ids.append(m.group(1))
     return ids
@@ -119,6 +133,7 @@ def main():
         os.path.join(OUT, 'data'), '--monsters', ids)
     run(os.path.join(HERE, 'export_icons.py'), client, os.path.join(OUT, 'data', 'tables', 'SkillParam2.json'),
         os.path.join(OUT, 'icons'), ','.join(skill_ids()))
+    run(os.path.join(HERE, 'export_items.py'), client, os.path.join(OUT, 'data', 'tables'), OUT, ','.join(item_ids()))
     audio = os.path.join(OUT, 'audio')
     os.makedirs(audio, exist_ok=True)
     for f in SOUNDS:

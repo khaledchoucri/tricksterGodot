@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"rookie_sword"
+display_name = "Rookie Sword"
+item_id = 3030
+slot = 0
+family = "sword"
+level = 1
+weight = 10
+stats = {
+"AP": 2
+}
+refine_stat = "AP"

@@ -18,10 +18,9 @@ import nori  # noqa: E402
 from export_actor import blit, write_png  # noqa: E402
 
 
-def main():
-    if len(sys.argv) != 3:
-        sys.exit(__doc__)
-    item = nori.read(sys.argv[1])
+def export(nri_path, out_png):
+    """Writes out_png and its .json; returns False if no right-pointing frame exists."""
+    item = nori.read(nri_path)
     best = None
     for fr in item.anims[0].frames:
         p = fr.planes[0]
@@ -40,13 +39,21 @@ def main():
         if tip[0] > grip[0] and (best is None or far > best[3]):
             best = (bm, img, grip, far, tip)
     if not best:
-        sys.exit('no right-pointing frame found')
+        return False
     bm, img, grip, length, tip = best
-    write_png(sys.argv[2], bm.w, bm.h, bytes(img))
+    write_png(out_png, bm.w, bm.h, bytes(img))
     info = {'grip': list(grip), 'angle': math.atan2(tip[1] - grip[1], tip[0] - grip[0]), 'length': length}
-    with open(os.path.splitext(sys.argv[2])[0] + '.json', 'w') as f:
+    with open(os.path.splitext(out_png)[0] + '.json', 'w') as f:
         json.dump(info, f)
-    print(f'{os.path.basename(sys.argv[2])}: {bm.w}x{bm.h}, grip {grip}, length {length:.0f}')
+    print(f'{os.path.basename(out_png)}: {bm.w}x{bm.h}, grip {grip}, length {length:.0f}')
+    return True
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.exit(__doc__)
+    if not export(sys.argv[1], sys.argv[2]):
+        sys.exit('no right-pointing frame found')
 
 
 if __name__ == '__main__':

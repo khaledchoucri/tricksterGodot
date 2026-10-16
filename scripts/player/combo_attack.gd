@@ -4,9 +4,6 @@ extends Node
 ## its hit windows, spawns the sword trail, and hands control back to the
 ## player for chaining, dash-cancels and moving off.
 
-## MP restored per enemy struck.
-@export var mp_per_hit := 5
-
 const HIT_SOUNDS: Array[String] = ["dmg_normal_a.wav", "dmg_normal_b.wav", "dmg_normal_c.wav", "dmg_normal_d.wav"]
 
 var step := 0
@@ -21,7 +18,7 @@ var _hit_this_window: Array[Enemy] = []
 
 
 func _steps() -> Array[ComboStep]:
-	return player.combo.steps
+	return player.combo_steps()
 
 
 func start(index: int) -> void:
@@ -77,8 +74,8 @@ func _apply(s: ComboStep) -> void:
 			continue
 		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, s.reach, s.arc(), e.body_radius):
 			_hit_this_window.append(e)
-			crit_any = player.deal_hit(e, s.damage, Run.attack_mult(), s.knockback, s.finisher, _talent_fx(s)) or crit_any
-			Run.gain_mp(mp_per_hit)
+			crit_any = player.deal_hit(e, s.damage, _mult(s), s.knockback, s.finisher, _talent_fx(s)) or crit_any
+			Run.gain_mp(Run.mp_per_hit())
 			landed = true
 	if landed:
 		Audio.play(HIT_SOUNDS[randi() % HIT_SOUNDS.size()], -4.0)
@@ -86,13 +83,25 @@ func _apply(s: ComboStep) -> void:
 		Events.shake_requested.emit(4.5 if s.finisher else 2.5)
 
 
-## Talent effects carried by basic attacks.
+func _mult(s: ComboStep) -> float:
+	var m := Run.attack_mult()
+	if s.finisher:
+		m *= 1.0 + Run.card_value(&"pumping_heart") / 100.0
+	return m
+
+
+## Talent and trait effects carried by basic attacks.
 func _talent_fx(s: ComboStep) -> Dictionary:
 	var fx := {}
 	if Run.card_level(&"flaming_fist") > 0:
 		fx.burn = Run.card_value(&"flaming_fist")
-	if s.finisher and Run.card_level(&"uppercut") > 0:
-		fx.stun = Run.card_value(&"uppercut")
+	if s.finisher:
+		if Run.card_level(&"uppercut") > 0:
+			fx.stun = Run.card_value(&"uppercut")
+		if Run.has_trait(&"staggering_finish"):
+			fx.stun = maxf(fx.get("stun", 0.0), 0.35)
+		if Run.has_trait(&"armor_crush"):
+			fx.break = 25.0
 	return fx
 
 

@@ -8,6 +8,8 @@ const REWARDS := {
 	"heal": {"label": "Recovery", "color": Color(1.0, 0.5, 0.55)},
 	"galder": {"label": "Galder", "color": Color(1.0, 0.82, 0.35)},
 	"shard": {"label": "Harkon Shard", "color": Color(0.8, 0.6, 1.0)},
+	"gear": {"label": "Equipment", "color": Color(0.95, 0.65, 0.35)},
+	"anvil": {"label": "Anvil", "color": Color(0.75, 0.8, 0.9)},
 	"boss": {"label": "Boss", "color": Color(1.0, 0.35, 0.3)},
 	"expedition": {"label": "Coral Beach Gate", "color": Color(0.35, 0.85, 0.85)},
 }

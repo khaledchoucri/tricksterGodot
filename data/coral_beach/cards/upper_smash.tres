@@ -12,6 +12,7 @@ skill_id = 1008
 base_value = 46.0
 per_level = 11.0
 text = "Leap to the cursor, over obstacles, and crash down for {v} damage, stunning enemies around you."
+requires = {&"bulls_eye": 2}
 mp_cost = 28
 cooldown = 6.0
 element = "none"

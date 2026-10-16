@@ -47,16 +47,17 @@ and drilling.
 
 ### Thresholds change how you play
 
-Each type has thresholds (for example every 5 points). Passing one either adds a
-**trait** that changes play, or puts that type's **type skills** into your offers
-(the original's Sense-only and Charm-only skills). Examples, not final:
+Each type has thresholds at **3, 6 and 10** chosen points (the first slice;
+more later). Passing one either adds a **trait** that changes play, or puts
+that type's **type skills** into your offers (the original's Sense-only and
+Charm-only skills, later). Built in the first slice:
 
-| | 5 | 10 | 15 | 20 |
-|---|---|---|---|---|
-| Power | finisher staggers | +1 combo hit | charged heavy attack | finisher breaks armour |
-| Magic | hits restore MP | cast while dashing | 4th skill slot | overcast: pay HP when out of MP |
-| Sense | dig spots appear | see item rolls before you take them | crits drop materials | drops roll twice, keep the best |
-| Charm | perfect-dodge window | auto-evade chance | counter on perfect dodge | second wind once per region |
+| | 3 | 6 | 10 |
+|---|---|---|---|
+| Power | Staggering Finish: finishers stun | Extra Swing: +1 combo swing | Armor Crush: finishers expose |
+| Magic | Mana Flow: +3 MP per hit | Dash Casting | Overcast: pay HP when out of MP |
+| Sense | Treasure Sense: choose 1 of 2 gear drops | Smith's Eye: +10 % refining | Lucky Strikes: crits drop ore |
+| Charm | Light Feet: +8 % evade | Perfect Dodge: dashing through an attack resets the dash | Second Wind |
 
 Each class grows automatically along its own graph (Buffalo is Power first,
 Charm second), so your picks push a build further rather than keeping it alive.

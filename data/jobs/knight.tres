@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/lacerator.tres" id="c_lacerator"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/piercing_wave.tres" id="c_piercing_wave"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/inferno_blade.tres" id="c_inferno_blade"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/lightning_strike.tres" id="c_lightning_strike"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/berserker.tres" id="c_berserker"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"knight"
+display_name = "Knight"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_lacerator"), ExtResource("c_piercing_wave"), ExtResource("c_inferno_blade"), ExtResource("c_lightning_strike"), ExtResource("c_berserker")])
+passive = &"sword_mastery"
+passive_name = "Sword Mastery"
+passive_text = "Your sword combo deals 15% more damage."
+text = "Versatile in combat. Not as powerful as a Boxer, but a Knight attacks many targets at once."

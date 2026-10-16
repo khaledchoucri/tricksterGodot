@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"candy_hat"
+display_name = "Candy Hat"
+item_id = 4051
+slot = 1
+family = ""
+level = 1
+weight = 6
+stats = {
+"HP": 10,
+"DP": 8
+}
+refine_stat = "DP"

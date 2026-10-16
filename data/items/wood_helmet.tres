@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"wood_helmet"
+display_name = "Wood Helmet"
+item_id = 520000
+slot = 1
+family = ""
+level = 4
+weight = 14
+stats = {
+"HP": 15,
+"DP": 9
+}
+refine_stat = "DP"

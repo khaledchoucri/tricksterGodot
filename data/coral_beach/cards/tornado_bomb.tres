@@ -12,6 +12,7 @@ skill_id = 1011
 base_value = 10.0
 per_level = 3.0
 text = "Send out a whirlwind that drags enemies in and cuts them for {v} damage several times a second."
+requires = {&"armor_breaker": 1}
 mp_cost = 28
 cooldown = 8.0
 element = "wind"

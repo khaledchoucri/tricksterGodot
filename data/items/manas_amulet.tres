@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"manas_amulet"
+display_name = "Mana's Amulet"
+item_id = 7002
+slot = 4
+family = ""
+level = 4
+weight = 5
+stats = {
+"MP": 100
+}
+refine_stat = ""

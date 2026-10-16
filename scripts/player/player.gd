@@ -1,6 +1,6 @@
 class_name Player
 extends CharacterBody2D
-## Buffalo (Power family, Knight line). Owns movement, the input buffer, the
+## The player character (Run.cls; Buffalo for now). Owns movement, the input buffer, the
 ## state machine, the dash (which vaults obstacles) and damage in and out.
 ## The basic attack chain is the ComboAttack child (playing `combo`) and the
 ## three skill slots are the SkillCaster child. Run stats and talent cards
@@ -13,6 +13,11 @@ enum State { MOVE, ATTACK, DASH, SKILL, HURT, DEAD }
 
 const BODY_RADIUS := 11.0
 const VAULT_HOP := 14.0
+## Basic combo for each weapon family.
+const FAMILY_COMBOS := {
+	"sword": preload("res://data/combos/sword.tres"),
+	"hammer": preload("res://data/combos/hammer.tres"),
+}
 
 @export var combo: ComboData
 @export var move_speed := 175.0
@@ -44,6 +49,8 @@ var _mouse_aim := false  # aim follows the cursor once the mouse is used
 var _phasing := false
 var _vaulting := false
 var _dash_len := 0.2
+var _perfect_this_dash := false
+var _steps: Array[ComboStep] = []
 
 @onready var sprite: ActorSprite = $Sprite
 @onready var camera: Camera2D = $Camera
@@ -55,12 +62,34 @@ var _dash_len := 0.2
 
 func _ready() -> void:
 	add_to_group("player")
-	sprite.setup("buffalo")
+	sprite.setup(Run.cls.actor)
+	refresh_gear()
 	sprite.play_action("idle", Vector2(1, 1))
 
 
 func now() -> float:
 	return Time.get_ticks_msec() / 1000.0
+
+
+## Matches the held weapon and the combo to the equipped weapon, and adds
+## the Extra Swing trait's swing.
+func refresh_gear() -> void:
+	var w := Run.equipped("weapon")
+	if w:
+		weapon.use(w.data.weapon_sprite())
+	combo = FAMILY_COMBOS.get(Run.weapon_family(), combo)
+	_steps = combo.steps.duplicate()
+	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
+		var extra: ComboStep = _steps[_steps.size() - 2].duplicate()
+		extra.clockwise = not extra.clockwise
+		extra.frames = Vector2i(extra.frames.y, extra.frames.x)
+		_steps.insert(_steps.size() - 1, extra)
+
+
+func combo_steps() -> Array[ComboStep]:
+	if _steps.is_empty():
+		refresh_gear()
+	return _steps
 
 
 ## Keeps the camera inside `rect` plus a margin.
@@ -188,13 +217,19 @@ func enter(s: State) -> void:
 ## direction. Returns true on a critical hit.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
 	var crit := randf() < Run.crit_chance()
-	var amount := roundi(base * mult * (1.75 if crit else 1.0))
+	# Low accuracy against an evasive monster grazes for half damage, never misses.
+	var graze := not crit and randf() < e.evade_chance(Run.stat("AC"))
+	var amount := maxi(1, roundi(base * mult * (1.75 if crit else 1.0) * (0.5 if graze else 1.0) * e.defense_mult()))
 	var effects := fx.duplicate()
 	effects.crit = crit
+	effects.graze = graze
 	if Run.card_level(&"armor_breaker") > 0:
-		effects.break = Run.card_value(&"armor_breaker")
+		effects.break = maxf(effects.get("break", 0.0), Run.card_value(&"armor_breaker"))
 	if crit:
 		Audio.play("etc_critical.wav", -6.0)
+		if Run.has_trait(&"lucky_strikes") and randf() < 0.3:
+			Run.ore += 1
+			Events.loot_found.emit("+1 " + Run.ORE_NAME)
 	var origin := global_position if from == Vector2.INF else from
 	e.take_hit(amount, Combat.ground(e.global_position - origin).normalized(), knockback, heavy, effects)
 	return crit
@@ -214,7 +249,8 @@ func start_dash() -> void:
 	_vaulting = vault > 0.0
 	_dash_len = dash_time * (vault / dash_distance if _vaulting else 1.0)
 	set_collision_mask_value(1, not _vaulting)
-	dash_ready_at = now() + _dash_len + dash_cooldown
+	dash_ready_at = now() + _dash_len + dash_cooldown * Run.dash_cooldown_mult()
+	_perfect_this_dash = false
 	invulnerable_until = maxf(invulnerable_until, now() + maxf(dash_invuln, _dash_len + 0.05))
 	set_phasing(true)  # pass through enemies, and don't shove them, while dashing
 	_hit_this_dash.clear()
@@ -227,6 +263,10 @@ func start_dash() -> void:
 
 func _state_dash() -> void:
 	velocity = _dash_dir * (dash_distance / dash_time)
+	if Run.has_trait(&"dash_casting") and not _vaulting:
+		for i in SkillCaster.SLOT_ACTIONS.size():
+			if take_buffer(SkillCaster.SLOT_ACTIONS[i]) and skills.try_cast(i):
+				return
 	if Run.card_level(&"counter_punch") > 0:
 		for e in room.enemies:
 			if e.is_hittable() and not e in _hit_this_dash and _touching(e, 8.0):
@@ -275,10 +315,22 @@ func _overlapping_enemy() -> bool:
 
 # ---------------------------------------------------------------- damage taken
 
-func take_hit(amount: int, from_dir: Vector2, knockback: float) -> void:
+## `magic` hits are reduced by MD instead of DP; `accuracy` is the
+## attacker's AC, against the player's evasion.
+func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, accuracy := 50) -> void:
 	if is_invulnerable():
+		if state == State.DASH and Run.has_trait(&"perfect_dodge") and not _perfect_this_dash:
+			_perfect_this_dash = true
+			dash_ready_at = now()
+			Events.text_shown.emit(global_position + Vector2(0, -70), "Perfect dodge", Color(1.0, 0.9, 0.5))
+			Ring.spawn(room.ground_fx, global_position, 40.0, 0.3, Color(1.0, 0.9, 0.5, 0.9))
 		return
-	amount = maxi(1, roundi(amount * Run.damage_taken_mult()))
+	if randf() < Run.evade_chance(accuracy):
+		invulnerable_until = now() + 0.25
+		Events.text_shown.emit(global_position + Vector2(0, -70), "Evade", Color(0.75, 0.95, 1.0))
+		Audio.play("etc_miss.wav", -8.0)
+		return
+	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic)))
 	Run.take_damage(amount)
 	Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(1.0, 0.45, 0.4), false)
 	Audio.play("shchr002.wav", -6.0)
@@ -287,7 +339,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float) -> void:
 	invulnerable_until = now() + hurt_invuln
 	knock = Combat.screen(from_dir) * knockback
 	if Run.hp <= 0 and Run.try_revive():
-		# Rollback Cache: survive the blow, with a moment to recover.
+		# Rollback Cache or Second Wind: survive the blow, with a moment to recover.
 		invulnerable_until = now() + 1.5
 		Ring.spawn(room.ground_fx, global_position, 70.0, 0.5, Color(0.8, 0.6, 1.0, 0.9))
 		Audio.play("eff_healing1.wav", -2.0)

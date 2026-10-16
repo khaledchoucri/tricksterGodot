@@ -31,6 +31,9 @@ var cfg: Dictionary = {}
 var max_hp := 60
 var hp := 60
 var damage := 8
+## The original row's twelve stats (Stats.KEYS); DP/MD reduce damage taken,
+## AC and HV decide grazes and evasion.
+var stats: Dictionary = {}
 var walk_speed := 70.0
 var run_speed := 105.0
 var body_radius := 14.0
@@ -75,8 +78,8 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	is_boss = data.is_boss
 	is_elite = elite
 	display_name = stats_row.get("name", String(data.id).capitalize())
-	var stats: Dictionary = stats_row.get("stats", {})
-	max_hp = roundi(float(stats.get("MAXHP", 100)) * 0.6 * data.hp_mult)
+	stats = Stats.from_monster(stats_row.get("stats", {}))
+	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult)
 	damage = roundi(6.0 + float(stats.get("AP", 4)) * 0.25)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
 	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
@@ -110,6 +113,22 @@ func _ready() -> void:
 
 func now() -> float:
 	return Time.get_ticks_msec() / 1000.0
+
+
+## Damage multiplier from this monster's DP (or MD against magic).
+func defense_mult(magic := false) -> float:
+	var def: int = stats.get("MD" if magic else "DP", 0)
+	return 100.0 / (100.0 + def)
+
+
+## Chance an attack with accuracy `ac` only grazes this monster.
+func evade_chance(ac: int) -> float:
+	var hv: int = stats.get("HV", 0)
+	return hv / float(hv + ac + 150) if hv > 0 else 0.0
+
+
+func accuracy() -> int:
+	return stats.get("AC", 50)
 
 
 func is_hittable() -> bool:
@@ -266,6 +285,7 @@ func _fire() -> void:
 	p.direction = Combat.screen(_attack_dir).normalized()
 	p.speed = cfg.shot_speed
 	p.damage = damage
+	p.accuracy = accuracy()
 	p.room = room
 	p.player = player
 	p.position = global_position + Vector2(0, -18)
@@ -288,7 +308,7 @@ func _state_attack() -> void:
 				hit = Combat.in_circle(global_position, player.global_position, body_radius + 14.0)
 		if hit and not player.is_invulnerable():
 			_attack_landed = true
-			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0)
+			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0, false, accuracy())
 	if _t >= _state_len:
 		room.release_attack_token(self)
 		_enter(State.RECOVER, cfg.recover)
@@ -299,7 +319,7 @@ func nudge(v: Vector2) -> void:
 	_pull += v
 
 
-## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps) and "crit".
+## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps), "crit" and "graze".
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
 	if not is_hittable():
 		return
@@ -308,6 +328,8 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 	hp = maxi(hp - amount, 0)
 	var crit: bool = fx.get("crit", false)
 	var color := Color(1.0, 0.85, 0.2) if crit else (Color(1, 0.93, 0.7) if heavy else Color.WHITE)
+	if fx.get("graze", false):
+		color = Color(0.7, 0.72, 0.75)
 	Events.damage_shown.emit(global_position + Vector2(0, -50), amount, color, crit)
 	sprite.modulate = Color(2.2, 2.2, 2.2, sprite.modulate.a)
 	if fx.has("break"):

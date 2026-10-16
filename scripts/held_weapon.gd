@@ -25,18 +25,25 @@ var _lent := false
 
 
 func _ready() -> void:
+	body = get_parent().get_node("Sprite")
+	use(weapon_name)
+
+
+## Switches to another exported weapon sprite (original_assets/weapons/<name>).
+func use(p_name: String) -> void:
+	weapon_name = p_name
 	var base := "res://original_assets/weapons/%s" % weapon_name
 	if not FileAccess.file_exists(base + ".json"):
 		push_warning("Missing weapon %s; run tools/setup_assets.py" % weapon_name)
 		visible = false
 		set_process(false)
 		return
+	set_process(true)
 	texture = load(base + ".png")
 	var info: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(base + ".json"))
 	_grip = Vector2(info.grip[0], info.grip[1])
 	_blade_angle = info.angle
 	centered = false
-	body = get_parent().get_node("Sprite")
 
 
 ## Sweeps across `arc` (radians, ground plane) centred on `ground_dir`,

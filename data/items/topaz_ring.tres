@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"topaz_ring"
+display_name = "Topaz Ring"
+item_id = 7005
+slot = 4
+family = ""
+level = 7
+weight = 10
+stats = {
+"MA": 4
+}
+refine_stat = ""

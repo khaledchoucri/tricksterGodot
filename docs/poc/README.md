@@ -41,14 +41,56 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 
 ## A run
 
-- Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then the boss. Rooms 4 and 7 add elite monsters.
-- Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, healing, Galder or a Harkon Shard.
-- Cards come in two kinds, each up to level 5:
-  - **Skills** go in the three skill slots and cost MP: Lacerator (the starter), Piercing Wave, Inferno Blade, Lightning Strike, Upper Smash, Shockwave and Tornado Bomb. Taking a new skill with full slots replaces one.
-  - **Talents** are passive: Armor Breaker, Flaming Fist, Uppercut, Berserker, Counter Punch, Guard, Adrenaline and Hyper Beat.
-- MP refills from sword hits and on entering a room.
+Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie Sword and Shockwave.
+
+- Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then the boss. Rooms 4 and 7 add elite monsters, and elites also drop gear.
+- **Room 4 is the Fighter's trial.** Clearing it changes job to **Knight**: the Knight skill tree joins the card offers, you pick a Knight skill, and Sword Mastery makes the sword combo 15% stronger.
+- Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, **equipment**, an **anvil**, healing, Galder (with Bronze Fragments) or a Harkon Shard.
+- Skill cards come from your jobs' real skill trees, with the original prerequisites. Upper Smash and Hyper Beat need Bull's Eye Lv 2, Armor Breaker needs Shockwave Lv 2, Tornado Bomb needs Armor Breaker, and Berserker needs Pumping Heart Lv 2. Cards go up to level 5.
+  - **Skills** go in the three skill slots and cost MP. Taking a new skill with full slots replaces one.
+  - **Talents** are passive.
+
+### Stats and types
+
+- Trickster's 12 stats in 4 types:
+  - Power: AP, AC, DX
+  - Magic: MP, MA, MD
+  - Sense: WT, DA, LK
+  - Charm: HP, DP, HV
+- Each level-up, after the fight, you put a point into a type. Buffalo also grows on his own along his type graph (Power first, Charm second).
+- 3, 6 and 10 points in a type unlock its traits:
+
+| Type | 3 | 6 | 10 |
+|---|---|---|---|
+| Power | Staggering Finish | Extra Swing (the combo gains a swing) | Armor Crush |
+| Magic | Mana Flow | Dash Casting | Overcast |
+| Sense | Treasure Sense (choose 1 of 2 gear drops) | Smith's Eye (+10% refining) | Lucky Strikes |
+| Charm | Light Feet (evade) | Perfect Dodge | Second Wind |
+
+- What the stats do:
+  - AP scales combo and skill damage, and DX scales attack speed.
+  - MA shortens cooldowns and MP is your mana pool.
+  - LK gives crits and refining luck. DA gives better gear rolls and more ore.
+  - DP and MD reduce damage taken, and HV lets you evade.
+  - Low AC against an evasive monster grazes for half damage, never a miss.
+- Press **C** (or Tab) for the character sheet: stats, traits, equipment, load and skills.
+
+### Equipment
+
+- **Six slots:** weapon, hat, shield, innerwear and two accessories.
+- **Items:** 30 real Trickster items from Coral Beach's level range (`data/items/`), with their original stats, weights and icons. Deeper rooms drop higher-level items.
+- **Drops** roll stats around the base values, and can roll an original prefix: Sharp, Shrewd, Sensible, Solid, Clever, Spell or Lucky. DA raises roll quality.
+- **Weapon families** change the combo. Swords use `data/combos/sword.tres`. Hammers (Pretty Red Hammer, Bamboo Stick) use `data/combos/hammer.tres`: slower and heavier, ending in a full-circle ground pound.
+- **Weight:** gear weighs what it did in Trickster. Over your load limit (WT / 4) you move slower and dash less often.
+- **Anvils** refine the weapon, hat or shield with Bronze Fragments and Galder.
+  - The success chance falls from 95% at +1. The chance is shown, and LK raises it.
+  - From +5 up, a failure can drop the item a level.
+  - Monsters drop fragments (elites always, the boss three), and so do Galder rewards.
+
+Also:
+
+- MP refills from combo hits and on entering a room.
 - Scenery that hides Buffalo or an enemy fades, and Buffalo shows as an outline while hidden.
-- Kills give EXP; each level lets you raise one of AP, DX, MA, LK, HP or DP after the fight.
 - Death is a "rollback": the results screen shows what the run earned, and you return to Megalopolis.
 
 ## Project layout
@@ -57,7 +99,7 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 |---|---|
 | `scenes/` | Game, player, enemy, boss, door and projectile scenes |
 | `scripts/autoload/` | `Run` (run state), `Profile` (saved progress), `Audio`, and `Events` (signal bus) |
-| `scripts/data/` | Resource classes: `RegionData`, `RoomData`, `EnemyData`, `CardData` |
+| `scripts/data/` | Resource classes: `RegionData`, `RoomData`, `EnemyData`, `CardData`, `ClassData`, `JobData`, `ItemData`; `Stats` (the 12 stats, types and traits) and `GearItem` (a rolled item) |
 | `data/coral_beach/` | The Coral Beach region: rooms, enemies and cards as `.tres` files |
 | `data/megalopolis/` | The hub: its room, people (`NpcData`), restorations (`RestorationData`) and story |
 | `scripts/story/`, `scenes/ui/dialogue_box.tscn` | Conversation selection and the dialogue box |

@@ -8,6 +8,10 @@ signal hitstop_requested(duration: float)
 signal shake_requested(amount: float)
 ## Show a floating damage number at a world position.
 signal damage_shown(world_pos: Vector2, amount: int, color: Color, big: bool)
+## Show a floating word (Evade, Graze, Perfect dodge) at a world position.
+signal text_shown(world_pos: Vector2, text: String, color: Color)
+## Something was picked up mid-fight (Bronze Fragments from Lucky Strikes).
+signal loot_found(text: String)
 
 signal enemy_spawned(enemy: Enemy)
 signal enemy_died(enemy: Enemy)

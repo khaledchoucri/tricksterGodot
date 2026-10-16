@@ -16,11 +16,15 @@ enum Kind { TALENT, SKILL }
 @export var per_level := 0.0
 ## Description; "{v}" is replaced by the value at the shown level.
 @export_multiline var text := ""
+## Prerequisites from the original skill tree: card id -> level needed.
+@export var requires: Dictionary = {}
 
 @export_group("Skill")
 @export var mp_cost := 0
 @export var cooldown := 0.0
 @export_enum("none", "fire", "water", "wind", "earth", "lightning") var element := "none"
+## Stat the damage scales with: AP for weapon skills, MA for magic.
+@export_enum("AP", "MA") var scaling := "AP"
 ## Script extending Skill that performs it.
 @export var behavior: Script
 

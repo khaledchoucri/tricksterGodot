@@ -74,7 +74,7 @@ func _run() -> void:
 	check(room.find_path(a, b).size() > 1, "grid pathfinding finds a route across the room")
 
 	# Every active skill casts and damages a monster in front of Buffalo.
-	check(Run.loadout[0] == Run.STARTER_SKILL, "the run starts with %s in slot 1" % Run.STARTER_SKILL)
+	check(Run.loadout[0] == Run.cls.start_job.starter.id, "the run starts with %s in slot 1" % Run.cls.start_job.starter.id)
 	var skill_ids: Array[StringName] = []
 	for card in Run.region.cards:
 		if card.is_skill():
@@ -99,7 +99,7 @@ func _run() -> void:
 		var before := dummy.hp
 		Run.cards[id] = 1
 		Run.loadout[0] = id
-		Run.mp = Run.MAX_MP
+		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp
 		player.skills.slot_ready_at[0] = 0.0
 		player.aim = ground_dir
@@ -112,15 +112,15 @@ func _run() -> void:
 		if dummy.is_hittable():
 			dummy.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.3)
-	Run.cards = {Run.STARTER_SKILL: 1}
-	Run.loadout.assign([Run.STARTER_SKILL, &"piercing_wave", &"shockwave"])
+	Run.cards = {Run.cls.start_job.starter.id: 1}
+	Run.loadout.assign([Run.cls.start_job.starter.id, &"piercing_wave", &"shockwave"])
 	Run.cards[&"piercing_wave"] = 2
 	Run.cards[&"shockwave"] = 1
 	Run.add_card(&"tornado_bomb", 1)
 	check(Run.loadout[1] == &"tornado_bomb" and Run.card_level(&"piercing_wave") == 0,
 		"a new skill can replace a slotted one")
-	Run.loadout.assign([Run.STARTER_SKILL, &"", &""])
-	Run.cards = {Run.STARTER_SKILL: 1}
+	Run.loadout.assign([Run.cls.start_job.starter.id, &"", &""])
+	Run.cards = {Run.cls.start_job.starter.id: 1}
 	Run.pending_levels = 0  # the dummies' EXP shouldn't queue level-ups for the checks below
 	Run.xp = 0
 
@@ -177,10 +177,37 @@ func _run() -> void:
 	await wait(1.0)
 	check(game.hud.pick_panel.visible and game._pick_kind == "card", "clearing room 1 offers a skill card")
 	var card_id: StringName = game._pick_options[0].id
+	game._steps.append_array(["gear", "anvil"])
 	game.hud._on_pick(0)
 	check(Run.card_level(card_id) == 1, "picking adds %s at level 1" % card_id)
 	await wait(0.2)
-	check(game.hud.pick_panel.visible and game._pick_kind == "stat", "the queued level-up offers stats next")
+	check(game.hud.pick_panel.visible and game._pick_kind == "gear", "an Equipment reward offers gear")
+	var found: GearItem = game._pick_options[0]
+	game.hud._on_pick(0)
+	await wait(0.2)
+	check(Run.equipment.values().has(found), "picking the gear equips %s" % found.title())
+	check(game.hud.pick_panel.visible and game._pick_kind == "anvil", "an Anvil reward opens the anvil")
+	var weapon: GearItem = Run.equipped("weapon")
+	Run.galder = 1000
+	game.hud._on_pick(0)
+	await wait(1.0)
+	check(game._pick_kind == "anvil" and Run.ore < game.ANVIL_ORE + 5, "refining at the anvil returns to it (%s)" % weapon.title())
+	game.hud._on_pick(game._pick_options.size() - 1)
+	await wait(0.2)
+	Run.equip(GearItem.make(_item("pretty_hammer")))
+	while Run.type_points.power < 6:
+		Run.apply_type("power")
+	game.player.refresh_gear()
+	var steps: Array = game.player.combo_steps()
+	game.player.attack.start(0)
+	for _f in 30:
+		await get_tree().physics_frame
+	check(game.player.combo == Player.FAMILY_COMBOS.hammer and steps.size() == 4
+		and game.player.weapon.weapon_name == "item_40004",
+		"a hammer swaps the combo; Extra Swing adds a 4th swing (%d)" % steps.size())
+	Run.equip(GearItem.make(Run.cls.start_weapon))
+	game.player.refresh_gear()
+	check(game.hud.pick_panel.visible and game._pick_kind == "type", "the queued level-up offers the four types next")
 	game.hud._on_pick(0)
 	await wait(0.4)
 	check(room.doors.size() == 2, "two exit doors open (%d)" % room.doors.size())
@@ -266,11 +293,110 @@ func _run() -> void:
 	var hall: RestorationData = Run.hub.restorations[0]
 	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 1000 - hall.tm_cost(1), "restoring the Training Hall spends TM")
 	Run.new_run()
-	check(Run.max_hp == Run.BASE_HP + 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
+	check(Run.max_hp == Run.stat("HP") and Run._bonus_hp == 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
 	var reach: float = Combat.ground(hub.room.nearest_reachable(Run.hub.gate_position) - hub.gate.global_position).length()
 	check(reach < 1.0, "the expedition gate stands on reachable ground")
 	hub.queue_free()
+	_systems(Run)
 
 	print("\n%s: %d failure(s)" % ["OK" if failures == 0 else "FAILED", failures])
 	Engine.time_scale = 1.0
 	get_tree().quit(1 if failures else 0)
+
+
+func _item(id: String) -> ItemData:
+	return load("res://data/items/%s.tres" % id)
+
+
+## Stats, types and traits, jobs and prerequisites, gear, weight and refining.
+func _systems(Run: Node) -> void:
+	Run.new_run()
+	var ap: int = Run.stat("AP")
+	var ac: int = Run.stat("AC")
+	var t: Dictionary = Run.apply_type("power")
+	check(Run.stat("AP") == ap + 4 and Run.stat("AC") == ac + 2 and t.is_empty(), "a Power point raises AP and AC")
+	Run.apply_type("power")
+	t = Run.apply_type("power")
+	check(t.get("id") == &"staggering_finish" and Run.has_trait(&"staggering_finish"),
+		"three Power points unlock Staggering Finish")
+	var hp: int = Run.max_hp
+	Run.gain_exp(Run.exp_to_next())
+	check(Run.level == 2 and Run.max_hp > hp and Run.hp == Run.max_hp, "levelling grows HP along Buffalo's graph")
+
+	Run.new_run()
+	var mult: float = Run.attack_mult()
+	Run.equip(GearItem.make(_item("wood_sword")))
+	check(Run.stat("AP") == Run.cls.base.AP + 20 and Run.attack_mult() > mult * 1.2,
+		"a Wood Sword raises AP and combo damage (x%.2f)" % (Run.attack_mult() / mult))
+	Run.equip(GearItem.make(_item("lucky_amulet")))
+	Run.equip(GearItem.make(_item("topaz_ring")))
+	check(Run.equipped("acc1").data.id == &"lucky_amulet" and Run.equipped("acc2").data.id == &"topaz_ring",
+		"two accessories fill both accessory slots")
+	check(not Run.overweight() and Run.speed_mult() == 1.0, "light gear stays under the load limit")
+	Run.equip(GearItem.make(_item("bamboo_sword")))
+	Run.equip(GearItem.make(_item("clam_shield")))
+	check(Run.overweight() and Run.speed_mult() < 1.0, "heavy gear past WT / 4 (%d / %d) slows you" % [Run.equip_load(), Run.load_limit()])
+	var pouch := GearItem.make(_item("pocket_pouch"))
+	Run.equip(pouch, "acc1")
+	check(not Run.overweight(), "a Pocket Pouch (+200 WT) carries the load")
+
+	var sword := GearItem.make(_item("wood_sword"))
+	Run.equip(sword)
+	Run.ore = 50
+	Run.galder = 5000
+	var before: int = Run.stat("AP")
+	check(Run.try_refine(sword, 0.0) == "success" and sword.refine == 1 and Run.stat("AP") > before
+		and sword.title() == "Wood Sword +1", "refining succeeds and raises AP (%d -> %d)" % [before, Run.stat("AP")])
+	var dropped := false
+	for _i in 40:
+		sword.refine = 5
+		if Run.try_refine(sword, 0.999) == "drop":
+			dropped = sword.refine == 4
+			break
+	check(dropped, "a failed refine from +5 can drop a level")
+	check(not Run.can_afford_refine(sword) or Run.ore > 0, "refining costs Bronze Fragments and Galder")
+
+	Run.depth = 0
+	var early: Array = Run.gear_offers(30)
+	Run.depth = 5
+	var late: Array = Run.gear_offers(30)
+	check(early.all(func(g: GearItem) -> bool: return g.data.level <= 1)
+		and late.any(func(g: GearItem) -> bool: return g.data.level >= 13), "deeper rooms drop higher-level gear")
+	var rolls: Array = []
+	for _i in 60:
+		rolls.append(GearItem.roll(_item("wood_sword"), 1.0))
+	check(rolls.any(func(g: GearItem) -> bool: return g.prefix != ""), "drops can roll Trickster prefixes (%s)"
+		% rolls.filter(func(g: GearItem) -> bool: return g.prefix != "")[0].title())
+
+	Run.new_run()
+	var offered_smash := false
+	for _i in 40:
+		for c: CardData in Run.card_offers(3, false):
+			offered_smash = offered_smash or c.id == &"upper_smash"
+	check(not offered_smash, "Upper Smash waits for Bull's Eye Lv 2")
+	Run.cards[&"bulls_eye"] = 2
+	for _i in 40:
+		for c: CardData in Run.card_offers(3, false):
+			offered_smash = offered_smash or c.id == &"upper_smash"
+	check(offered_smash, "Bull's Eye Lv 2 opens Upper Smash")
+
+	Run.depth = Run.region.job_change_depth
+	check(Run.job_change_due() and Run.job.id == &"fighter", "the trial room brings the Fighter's job change")
+	var sword_mult: float = Run.attack_mult()
+	var knight: JobData = Run.job.next_jobs[0]
+	Run.start_job(knight)
+	var knight_only: bool = Run.card_offers(3, false, knight).all(func(c: CardData) -> bool: return c in knight.cards)
+	check(Run.job.id == &"knight" and not Run.job_change_due() and knight_only, "advancing to Knight opens the Knight tree")
+	check(Run.attack_mult() > sword_mult * 1.1, "Sword Mastery strengthens the sword combo")
+
+	Run.new_run()
+	var evade: float = Run.evade_chance(50)
+	for _i in 3:
+		Run.apply_type("charm")
+	check(Run.evade_chance(50) > evade + 0.08, "Charm raises evasion and unlocks Light Feet")
+	for _i in 10:
+		Run.apply_type("magic")
+	Run.mp = 0
+	var hp_before: int = Run.hp
+	check(Run.spend_mp(10) and Run.hp == hp_before - 20, "Overcast pays missing MP with HP")
+	Run.new_run()

@@ -15,6 +15,7 @@ const LOG_LINES := 6
 
 @onready var pick_panel: PanelContainer = %PickPanel
 @onready var results_panel: PanelContainer = %ResultsPanel
+@onready var sheet: CharacterSheet = %CharacterSheet
 @onready var _slots: Array[SkillSlot] = [$Root/SlotBar/Slot1, $Root/SlotBar/Slot2, $Root/SlotBar/Slot3]
 
 var _pick_count := 0
@@ -37,7 +38,8 @@ func set_hub_mode(on: bool) -> void:
 	$Root/Status.visible = not on
 	%SlotBar.visible = not on
 	%CardsLabel.visible = not on
-	$Root/Hint.text = "WASD move  ·  F talk  ·  Space dash" if on 		else "WASD move  ·  LMB sword combo  ·  RMB / Q / E skills  ·  Space dash"
+	sheet.visible = false
+	$Root/Hint.text = "WASD move  ·  F talk  ·  Space dash" if on 		else "WASD move  ·  LMB combo  ·  RMB / Q / E skills  ·  Space dash  ·  C character"
 
 
 func refresh(player: Player) -> void:
@@ -51,17 +53,19 @@ func refresh(player: Player) -> void:
 	var xp: ProgressBar = %XpBar
 	xp.max_value = Run.exp_to_next()
 	xp.value = Run.xp
-	%LevelLabel.text = "Lv %d" % Run.level
+	%LevelLabel.text = "Lv %d  %s" % [Run.level, Run.job.display_name]
 	var mp: ProgressBar = %MpBar
-	mp.max_value = Run.MAX_MP
+	mp.max_value = Run.max_mp
 	mp.value = Run.mp
-	%MpLabel.text = "MP %d / %d" % [Run.mp, Run.MAX_MP]
-	%GalderLabel.text = "%d Galder" % Run.galder
+	%MpLabel.text = "MP %d / %d" % [Run.mp, Run.max_mp]
+	%GalderLabel.text = "%d Galder  ·  %d Bronze" % [Run.galder, Run.ore]
 	var owned: PackedStringArray = []
 	for id: StringName in Run.cards:
 		owned.append("%s %d" % [Run.region.card(id).display_name, Run.cards[id]])
 	%CardsLabel.text = "  ·  ".join(owned)
 	_refresh_slots(player)
+	if sheet.visible:
+		sheet.refresh()
 	if is_instance_valid(player):
 		%DashLabel.text = "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
 
@@ -147,7 +151,8 @@ func fade(to_alpha: float, time := 0.25) -> void:
 
 # ---------------------------------------------------------------- pickers
 
-## options: Array of {"title": String, "tag": String, "text": String}
+## options: Array of {"title", "tag", "text"} with optional "icon" (Texture2D)
+## and "disabled".
 func show_pick(title: String, options: Array) -> void:
 	var list: VBoxContainer = %PickList
 	for c in list.get_children():
@@ -158,7 +163,8 @@ func show_pick(title: String, options: Array) -> void:
 		var o: Dictionary = options[i]
 		var option: PickOption = PICK_OPTION.instantiate()
 		list.add_child(option)
-		option.setup(i, o.title, o.get("tag", ""), o.text)
+		option.setup(i, o.title, o.get("tag", ""), o.text, o.get("icon"))
+		option.disabled = o.get("disabled", false)
 		option.pressed.connect(_on_pick.bind(i))
 	pick_panel.visible = true
 	await get_tree().process_frame
@@ -169,11 +175,17 @@ func show_pick(title: String, options: Array) -> void:
 func _on_pick(i: int) -> void:
 	if not pick_panel.visible:
 		return
+	var list: VBoxContainer = %PickList
+	var at := list.get_child_count() - _pick_count + i
+	if at < list.get_child_count() and (list.get_child(at) as Button).disabled:
+		return
 	pick_panel.visible = false
 	picked.emit(i)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not _hub_mode and event.is_action_pressed("character"):
+		sheet.toggle()
 	if pick_panel.visible and event is InputEventKey and event.pressed:
 		var n: int = event.keycode - KEY_1
 		if n >= 0 and n < _pick_count:
@@ -189,10 +201,14 @@ func show_results(won: bool) -> void:
 	var cards: PackedStringArray = []
 	for id: StringName in Run.cards:
 		cards.append("%s Lv %d" % [Run.region.card(id).display_name, Run.cards[id]])
+	var gear: PackedStringArray = []
+	for k in Run.EQUIP_SLOTS:
+		if Run.equipped(k):
+			gear.append(Run.equipped(k).title())
 	%ResultsBody.text = "\n".join([
 		"Rooms cleared    %d / %d" % [Run.depth + (1 if won else 0), Run.plan.size()],
 		"Time             %d:%04.1f" % [int(Run.time) / 60, fmod(Run.time, 60.0)],
-		"Level            %d" % Run.level,
+		"Level            %d  %s" % [Run.level, Run.job.display_name],
 		"Monsters         %d" % Run.kills,
 		"",
 		"Carried home",
@@ -201,5 +217,6 @@ func show_results(won: bool) -> void:
 		"  Galder         %d" % Run.galder,
 		"",
 		"Cards  " + (", ".join(cards) if cards.size() else "none"),
+		"Gear   " + ", ".join(gear),
 	])
 	results_panel.visible = true

@@ -28,7 +28,7 @@ var _done: Dictionary = {}
 
 ## Damage for this cast: the card's value at its level, with skill bonuses.
 func damage(scale := 1.0) -> float:
-	return card.value_at(level) * scale * Run.skill_mult()
+	return card.value_at(level) * scale * Run.skill_mult(card)
 
 
 func start() -> void:

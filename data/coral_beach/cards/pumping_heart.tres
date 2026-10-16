@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pumping_heart"
+display_name = "Pumping Heart"
+skill_id = 1002
+base_value = 20.0
+per_level = 10.0
+text = "Combo finishers deal +{v}% damage."

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pocket_pouch"
+display_name = "Pocket Pouch"
+item_id = 7000
+slot = 4
+family = ""
+level = 4
+weight = 5
+stats = {
+"WT": 200
+}
+refine_stat = ""

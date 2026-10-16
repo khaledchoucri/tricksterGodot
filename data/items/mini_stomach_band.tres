@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"mini_stomach_band"
+display_name = "Mini Stomach Band"
+item_id = 5000
+slot = 3
+family = ""
+level = 4
+weight = 5
+stats = {
+"DP": 20
+}
+refine_stat = ""

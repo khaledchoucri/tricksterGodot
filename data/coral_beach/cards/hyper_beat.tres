@@ -10,3 +10,4 @@ skill_id = 1009
 base_value = 10.0
 per_level = 6.0
 text = "Attack {v}% faster."
+requires = {&"bulls_eye": 2}
