@@ -50,7 +50,10 @@ The original Trickster sprites, maps, sounds and data are placeholders for proto
 | `scripts/autoload/` | `Run` (run state), `Audio`, and `Events` (signal bus) |
 | `scripts/data/` | Resource classes: `RegionData`, `RoomData`, `EnemyData`, `CardData` |
 | `data/coral_beach/` | The Coral Beach region: rooms, enemies and cards as `.tres` files |
+| `scripts/player/` | The player: core states and dash, `ComboAttack` (basic attack chain), `SkillCaster` (skill slots) |
 | `scripts/skills/` | One script per active skill, extending `Skill` |
+| `scenes/hud.tscn`, `scenes/ui/`, `ui/hud_theme.tres` | The HUD, its skill slot and pick option scenes, and its theme |
+| `data/combos/` | Basic attack chains as `ComboData` (sword for Buffalo, punch for Bunny later) |
 | `scripts/fx/` | Effects: slashes, waves, bolts, the thrown blade, tornado, sparks, health bars, silhouette |
 | `scripts/` | Room building, combat, AI, HUD, held weapon and props |
 | `tools/` | Converters for Trickster sprites, maps, data and audio |
@@ -74,3 +77,4 @@ The test plays through room loading, combat, pathfinding, card and level-up pick
 - `timing-reference.md`: Hades II timing values the combat started from.
 - `map-format.md`: the Trickster map file format.
 - `actor-art.md`: what actor sprites and weapons need to provide (for the AI art).
+- `qa-backlog.md`: known issues to fix.

@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="ComboData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/combo_step.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/combo_data.gd" id="2_c"]
+
+[sub_resource type="Resource" id="step_0"]
+script = ExtResource("1_s")
+anim = "weapon_crit"
+frames = Vector2i(3, 7)
+duration = 0.32
+windows = Array[Vector2]([Vector2(0.06, 0.14)])
+chain_at = 0.13
+dash_cancel = 0.07
+free_at = 0.22
+damage = 22.0
+reach = 60.0
+arc_degrees = 150.0
+knockback = 140.0
+lunge = 70.0
+hitstop = 0.045
+sound = "weapon001.wav"
+slash = true
+clockwise = true
+
+[sub_resource type="Resource" id="step_1"]
+script = ExtResource("1_s")
+anim = "weapon_crit"
+frames = Vector2i(7, 2)
+duration = 0.32
+windows = Array[Vector2]([Vector2(0.06, 0.14)])
+chain_at = 0.13
+dash_cancel = 0.07
+free_at = 0.22
+damage = 24.0
+reach = 60.0
+arc_degrees = 150.0
+knockback = 140.0
+lunge = 70.0
+hitstop = 0.045
+sound = "weapon001.wav"
+slash = true
+clockwise = false
+
+[sub_resource type="Resource" id="step_2"]
+script = ExtResource("1_s")
+anim = "weapon_crit"
+frames = Vector2i(3, 7)
+duration = 0.46
+windows = Array[Vector2]([Vector2(0.14, 0.24)])
+chain_at = 99.0
+dash_cancel = 0.12
+free_at = 0.38
+damage = 40.0
+reach = 70.0
+arc_degrees = 230.0
+knockback = 300.0
+lunge = 120.0
+hitstop = 0.075
+finisher = true
+sound = "sachr002_1.wav"
+slash = true
+clockwise = true
+
+[resource]
+script = ExtResource("2_c")
+steps = Array[ExtResource("1_s")]([SubResource("step_0"), SubResource("step_1"), SubResource("step_2")])

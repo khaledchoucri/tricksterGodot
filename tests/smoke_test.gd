@@ -57,7 +57,7 @@ func _run() -> void:
 	target.global_position = player.global_position + Vector2(30, 6)
 	for _i in 2:
 		player.aim = Combat.ground(target.global_position - player.global_position).normalized()
-		player._start_attack(0)
+		player.attack.start(0)
 		for _f in 20:
 			player.aim = Combat.ground(target.global_position - player.global_position).normalized()
 			await get_tree().physics_frame
@@ -88,7 +88,7 @@ func _run() -> void:
 				break
 		var at := spot + Combat.screen(ground_dir) * reach
 		player.global_position = spot
-		player._enter(Player.State.MOVE)
+		player.enter(Player.State.MOVE)
 		var dummy: Enemy = room.spawn(&"torobbie", at)
 		await wait(0.6)
 		var before := dummy.hp
@@ -96,9 +96,9 @@ func _run() -> void:
 		Run.loadout[0] = id
 		Run.mp = Run.MAX_MP
 		Run.hp = Run.max_hp
-		player.slot_ready_at[0] = 0.0
+		player.skills.slot_ready_at[0] = 0.0
 		player.aim = ground_dir
-		var cast := player._try_cast(0)
+		var cast := player.skills.try_cast(0)
 		for _f in 90:
 			if is_instance_valid(dummy):
 				dummy.global_position = at
@@ -150,11 +150,10 @@ func _run() -> void:
 			break
 	if vault_from != Vector2.INF:
 		player.global_position = vault_from
-		player._enter(Player.State.MOVE)
+		player.enter(Player.State.MOVE)
 		player.dash_ready_at = 0.0
 		Input.action_press("dash")
-		player._buffered = "dash"
-		player._buffered_at = player.now()
+		player.buffer_action("dash")
 		player.aim = Combat.ground(vault_dir).normalized()
 		await get_tree().physics_frame
 		Input.action_release("dash")

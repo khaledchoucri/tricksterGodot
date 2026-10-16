@@ -1,0 +1,108 @@
+class_name ComboAttack
+extends Node
+## The player's basic attack chain (a ComboData): plays each swing, applies
+## its hit windows, spawns the sword trail, and hands control back to the
+## player for chaining, dash-cancels and moving off.
+
+## MP restored per enemy struck.
+@export var mp_per_hit := 5
+
+const HIT_SOUNDS: Array[String] = ["dmg_normal_a.wav", "dmg_normal_b.wav", "dmg_normal_c.wav", "dmg_normal_d.wav"]
+
+var step := 0
+## Aim locked in for the current swing.
+var swing_aim := Vector2.RIGHT
+
+var _t := 0.0
+var _window := -1
+var _hit_this_window: Array[Enemy] = []
+
+@onready var player: Player = get_parent()
+
+
+func _steps() -> Array[ComboStep]:
+	return player.combo.steps
+
+
+func start(index: int) -> void:
+	step = index
+	_t = 0.0
+	_window = -1
+	var s := _steps()[index]
+	player.enter(Player.State.ATTACK)
+	swing_aim = player.aim  # each swing commits to the aim it started with
+	var speed := Run.attack_speed_mult()
+	player.sprite.play_action(s.anim, Combat.screen(swing_aim), s.duration / speed, true, s.frame_range())
+	if s.slash:
+		var w := s.windows[0]
+		player.weapon.swing(swing_aim, s.arc(), _clockwise(s), w.x / speed, w.y / speed)
+	Audio.play(s.sound, -6.0)
+
+
+## Runs one physics frame of the current swing.
+func update(delta: float) -> void:
+	_t += delta
+	var s := _steps()[step]
+	var speed := Run.attack_speed_mult()
+	var t := _t * speed  # swing time at normal speed
+	var lunge := s.lunge if t < s.windows[s.windows.size() - 1].y else 0.0
+	player.velocity = Combat.screen(swing_aim) * lunge + player.knock
+	for i in s.windows.size():
+		var w := s.windows[i]
+		if t >= w.x and t <= w.y:
+			if _window != i:
+				_window = i
+				_hit_this_window.clear()
+				if s.slash:
+					_spawn_slash(s, (w.y - w.x) / speed)
+			_apply(s)
+	if t >= s.dash_cancel and player.take_buffer("dash") and player.can_dash():
+		player.start_dash()
+		return
+	if t >= s.chain_at and step + 1 < _steps().size() and player.take_buffer("attack"):
+		start(step + 1)
+		return
+	if t >= s.free_at:
+		if player.move_input() != Vector2.ZERO or t >= s.duration:
+			player.enter(Player.State.MOVE)
+		else:
+			player.try_actions()
+
+
+func _apply(s: ComboStep) -> void:
+	var landed := false
+	var crit_any := false
+	for e in player.room.enemies:
+		if e in _hit_this_window or not e.is_hittable():
+			continue
+		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, s.reach, s.arc(), e.body_radius):
+			_hit_this_window.append(e)
+			crit_any = player.deal_hit(e, s.damage, Run.attack_mult(), s.knockback, s.finisher, _talent_fx(s)) or crit_any
+			Run.gain_mp(mp_per_hit)
+			landed = true
+	if landed:
+		Audio.play(HIT_SOUNDS[randi() % HIT_SOUNDS.size()], -4.0)
+		Events.hitstop_requested.emit(s.hitstop * (1.6 if crit_any else 1.0))
+		Events.shake_requested.emit(4.5 if s.finisher else 2.5)
+
+
+## Talent effects carried by basic attacks.
+func _talent_fx(s: ComboStep) -> Dictionary:
+	var fx := {}
+	if Run.card_level(&"flaming_fist") > 0:
+		fx.burn = Run.card_value(&"flaming_fist")
+	if s.finisher and Run.card_level(&"uppercut") > 0:
+		fx.stun = Run.card_value(&"uppercut")
+	return fx
+
+
+## The sword art strikes clockwise facing right and counter-clockwise facing
+## left; blade and trail follow it.
+func _clockwise(s: ComboStep) -> bool:
+	return s.clockwise if swing_aim.x >= 0.0 else not s.clockwise
+
+
+func _spawn_slash(s: ComboStep, sweep: float) -> void:
+	Slash.spawn(player.room, player.global_position + Vector2(0, -16), {"radius": s.reach, "arc": s.arc(),
+		"dir": swing_aim, "clockwise": _clockwise(s), "sweep_time": maxf(sweep, 0.05), "life": sweep + 0.16,
+		"width": 18.0 if s.finisher else 13.0})

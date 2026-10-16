@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pick_option.gd" id="1_option"]
+
+[node name="PickOption" type="Button"]
+custom_minimum_size = Vector2(520, 64)
+script = ExtResource("1_option")
+
+[node name="Text" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 8.0
+mouse_filter = 2
+
+[node name="Head" type="Label" parent="Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="Body" type="Label" parent="Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.659, 0.847, 0.855, 1)
+theme_override_font_sizes/font_size = 13

@@ -20,7 +20,7 @@ func _run() -> void:
 		e.global_position = game.room.random_spot(player.global_position, 60.0).lerp(player.global_position, 0.5)
 	await get_tree().create_timer(0.7).timeout
 	player.aim = Combat.ground(Vector2(1, 0.4))
-	player._start_attack(0)
+	player.attack.start(0)
 	await get_tree().create_timer(0.12).timeout
 	get_viewport().get_texture().get_image().save_png(out)
 	print("saved ", ProjectSettings.globalize_path(out))
