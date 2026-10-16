@@ -1,0 +1,87 @@
+{
+  "action": "weapon_crit",
+  "actor": "buffalo",
+  "canvas": 512,
+  "dir": "se",
+  "feet": [
+    256,
+    420
+  ],
+  "frame_ms": [
+    80,
+    80,
+    200,
+    30,
+    30,
+    80,
+    80,
+    180
+  ],
+  "scale": 4.32432432432432,
+  "sockets": [
+    {
+      "frame": 0,
+      "front": true,
+      "hand": [
+        165,
+        273
+      ]
+    },
+    {
+      "frame": 1,
+      "front": true,
+      "hand": [
+        157,
+        282
+      ]
+    },
+    {
+      "frame": 2,
+      "front": true,
+      "hand": [
+        148,
+        282
+      ]
+    },
+    {
+      "frame": 3,
+      "front": false,
+      "hand": [
+        355,
+        217
+      ]
+    },
+    {
+      "frame": 4,
+      "front": true,
+      "hand": [
+        360,
+        342
+      ]
+    },
+    {
+      "frame": 5,
+      "front": true,
+      "hand": [
+        321,
+        377
+      ]
+    },
+    {
+      "frame": 6,
+      "front": true,
+      "hand": [
+        321,
+        377
+      ]
+    },
+    {
+      "frame": 7,
+      "front": true,
+      "hand": [
+        321,
+        377
+      ]
+    }
+  ]
+}
