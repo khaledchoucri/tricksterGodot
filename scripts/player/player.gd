@@ -63,6 +63,16 @@ func now() -> float:
 	return Time.get_ticks_msec() / 1000.0
 
 
+## Keeps the camera inside `rect` plus a margin.
+func set_camera_limits(rect: Rect2, margin: int) -> void:
+	camera.limit_left = int(rect.position.x) - margin
+	camera.limit_top = int(rect.position.y) - margin
+	camera.limit_right = int(rect.end.x) + margin
+	camera.limit_bottom = int(rect.end.y) + margin
+	camera.make_current()
+	camera.reset_smoothing()
+
+
 ## Called by the room: shows the silhouette while scenery hides the player.
 func set_hidden_behind_scenery(hidden: bool) -> void:
 	silhouette.visible = hidden and state != State.DEAD
@@ -276,6 +286,12 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float) -> void:
 	Events.shake_requested.emit(5.0)
 	invulnerable_until = now() + hurt_invuln
 	knock = Combat.screen(from_dir) * knockback
+	if Run.hp <= 0 and Run.try_revive():
+		# Rollback Cache: survive the blow, with a moment to recover.
+		invulnerable_until = now() + 1.5
+		Ring.spawn(room.ground_fx, global_position, 70.0, 0.5, Color(0.8, 0.6, 1.0, 0.9))
+		Audio.play("eff_healing1.wav", -2.0)
+		Events.revived.emit()
 	if Run.hp <= 0:
 		_die()
 		return

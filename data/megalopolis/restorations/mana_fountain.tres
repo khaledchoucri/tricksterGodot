@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"mana_fountain"
+display_name = "Mana Fountain"
+text = "Recover +{v} more MP on entering each room."
+max_level = 2
+per_level = 15.0
+effect = "room_mp"
+tm_costs = Array[int]([300, 700])
+shard_costs = Array[int]([0, 0])

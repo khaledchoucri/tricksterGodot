@@ -19,3 +19,5 @@ signal player_died
 signal skill_cast(slot: int)
 ## The player tried a skill without enough MP.
 signal mp_short
+## The Rollback Cache saved the player from a fatal blow.
+signal revived

@@ -6,6 +6,7 @@ extends Node
 signal leveled_up(new_level: int)
 
 const REGION_PATH := "res://data/coral_beach/region.tres"
+const HUB_PATH := "res://data/megalopolis/hub.tres"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
 const STAT_KEYS: Array[String] = ["AP", "DX", "MA", "LK", "HP", "DP"]
 const STATS := {
@@ -44,6 +45,10 @@ var kills := 0
 var time := 0.0
 var won := false
 var pending_levels := 0
+var revives := 0
+## How the last run ended, for the hub to report: {"won", "depth", "tm", "shards"}.
+var last_result: Dictionary = {}
+var hub: HubData
 
 
 ## A room in this run's plan: which room, and how it's modified.
@@ -60,6 +65,7 @@ class RoomPlan:
 
 func _ready() -> void:
 	region = load(REGION_PATH)
+	hub = load(HUB_PATH)
 	if FileAccess.file_exists(MONSTERS_PATH):
 		monster_data = JSON.parse_string(FileAccess.get_file_as_string(MONSTERS_PATH))
 
@@ -83,7 +89,62 @@ func new_run() -> void:
 	time = 0.0
 	won = false
 	pending_levels = 0
+	revives = 0
+	_apply_restorations()
 	plan = _plan_rooms()
+
+
+## Permanent bonuses from the city's restorations (Profile).
+func _apply_restorations() -> void:
+	if hub == null:
+		return
+	for r in hub.restorations:
+		var lvl := Profile.level(r.id)
+		if lvl <= 0:
+			continue
+		match r.effect:
+			"max_hp":
+				max_hp += roundi(r.per_level * lvl)
+				hp = max_hp
+			"revive":
+				revives += lvl
+			"second_skill":
+				var pool: Array[StringName] = []
+				for card in region.cards:
+					if card.is_skill() and card.id != STARTER_SKILL:
+						pool.append(card.id)
+				if pool.size() > 0:
+					var pick: StringName = pool[randi() % pool.size()]
+					cards[pick] = 1
+					loadout[1] = pick
+
+
+## Extra MP recovered on entering a room, from restorations.
+func room_mp_bonus() -> int:
+	if hub == null:
+		return 0
+	var bonus := 0
+	for r in hub.restorations:
+		if r.effect == "room_mp":
+			bonus += roundi(r.per_level * Profile.level(r.id))
+	return bonus
+
+
+## Spends a revive (Rollback Cache) if one is left: back to 30% HP.
+func try_revive() -> bool:
+	if revives <= 0:
+		return false
+	revives -= 1
+	hp = maxi(1, int(max_hp * 0.3))
+	Events.player_hp_changed.emit()
+	return true
+
+
+## Banks the finished run into the profile and remembers it for the hub.
+func finish(p_won: bool) -> void:
+	var reached := depth + (1 if p_won else 0)
+	last_result = {"won": p_won, "depth": reached, "tm": tm, "shards": shards}
+	Profile.bank_run(p_won, reached, tm, shards)
 
 
 func _plan_rooms() -> Array[RoomPlan]:

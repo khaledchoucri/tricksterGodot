@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"training_hall"
+display_name = "Training Hall"
+text = "Start every run with +{v} max HP."
+max_level = 3
+per_level = 15.0
+effect = "max_hp"
+tm_costs = Array[int]([400, 800, 1200])
+shard_costs = Array[int]([0, 0, 0])

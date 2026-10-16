@@ -27,8 +27,17 @@ The original Trickster sprites, maps, sounds and data are placeholders for proto
 | Q or L | Skill slot 2 |
 | E or ; | Skill slot 3 |
 | Space or Shift | Dash (invulnerable, passes through enemies, vaults obstacles when there's room to land, cancels attacks) |
+| F or Enter | Talk / read (in Megalopolis); advance dialogue |
 | 1 / 2 / 3 or click | Choose a card or stat |
-| R | Log in again after the run ends |
+| R | Return to Megalopolis after the run ends |
+
+## Megalopolis
+
+The game starts in Megalopolis Square, the city of a world whose servers have just shut down. You're the last player.
+
+- Don Cavalier, Miranda Watty and Star Gazer Stella have conversations that change as you play (`data/megalopolis/story.json`): who they are, the rollback, the first Harkon Shard, the first clear. The statue's copper plate shows the service termination notice.
+- Walk into the **Coral Beach Gate** to start a run.
+- Every run ends by banking its Time Marks (TM) and Harkon Shards into your profile (`user://profile.json`). Don Cavalier spends them on **restorations**, permanent bonuses for every run: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
 
 ## A run
 
@@ -40,16 +49,20 @@ The original Trickster sprites, maps, sounds and data are placeholders for proto
 - MP refills from sword hits and on entering a room.
 - Scenery that hides Buffalo or an enemy fades, and Buffalo shows as an outline while hidden.
 - Kills give EXP; each level lets you raise one of AP, DX, MA, LK, HP or DP after the fight.
-- Death is a "rollback": the results screen shows what the run earned.
+- Death is a "rollback": the results screen shows what the run earned, and you return to Megalopolis.
 
 ## Project layout
 
 | Path | Contents |
 |---|---|
 | `scenes/` | Game, player, enemy, boss, door and projectile scenes |
-| `scripts/autoload/` | `Run` (run state), `Audio`, and `Events` (signal bus) |
+| `scripts/autoload/` | `Run` (run state), `Profile` (saved progress), `Audio`, and `Events` (signal bus) |
 | `scripts/data/` | Resource classes: `RegionData`, `RoomData`, `EnemyData`, `CardData` |
 | `data/coral_beach/` | The Coral Beach region: rooms, enemies and cards as `.tres` files |
+| `data/megalopolis/` | The hub: its room, people (`NpcData`), restorations (`RestorationData`) and story |
+| `scripts/story/`, `scenes/ui/dialogue_box.tscn` | Conversation selection and the dialogue box |
+| `scenes/hub.tscn`, `scripts/hub.gd` | Megalopolis between runs (the main scene) |
+| `scenes/tools/` | Art pipeline tools: pose guides, art import, art lab |
 | `scripts/player/` | The player: core states and dash, `ComboAttack` (basic attack chain), `SkillCaster` (skill slots) |
 | `scripts/skills/` | One script per active skill, extending `Skill` |
 | `scenes/hud.tscn`, `scenes/ui/`, `ui/hud_theme.tres` | The HUD, its skill slot and pick option scenes, and its theme |
@@ -62,6 +75,8 @@ Actors announce effects (hit-stop, shake, damage numbers, deaths) on `Events`; t
 
 To add a skill, write a script extending `Skill` in `scripts/skills/`, create a `CardData` with `kind` Skill, its MP cost, cooldown and that script as `behavior`, and add it to `region.tres`.
 
+To add a conversation, add an entry to the NPC's list in `data/megalopolis/story.json`. Entries are checked in order and the first whose conditions hold is used; conditions are story flags (`met_cavalier`, `!mir_remember`) and run statistics (`deaths>=1`, `clears>=1`, `shards_found>=1`). `set` lists flags to set afterwards, and `"then": "restore"` opens the restoration menu.
+
 To add a room, create a `RoomData` resource with a map name and a rectangle (`tools/find_rooms.py` suggests open areas) and add it to `region.tres`. To tune a monster, edit its `EnemyData`; the base numbers for each attack pattern are in `Enemy.KINDS`.
 
 ## Tests
@@ -70,7 +85,7 @@ To add a room, create a `RoomData` resource with a map name and a rectangle (`to
 godot --headless --path . res://tests/smoke_test.tscn
 ```
 
-The test plays through room loading, combat, pathfinding, card and level-up picks, doors, Clione's projectiles, the boss and its summons, and death.
+The test plays through room loading, combat, every skill, the dash vault, scenery fading, pathfinding, card and level-up picks, doors, Clione's projectiles, the boss and its summons, death and banking, then Megalopolis: its people, conversations, flags and restorations. It uses a throwaway profile, never your save.
 
 ## Reference
 

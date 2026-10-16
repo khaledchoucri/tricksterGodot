@@ -37,7 +37,12 @@ func clear_room() -> void:
 		await wait(0.5)
 
 
+func profile() -> Node:
+	return get_node("/root/Profile")
+
+
 func _run() -> void:
+	profile().use_path("user://smoke_test_profile.json", true)  # never touch the real save
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	var Run := run_state()
@@ -234,6 +239,37 @@ func _run() -> void:
 	game.player.take_hit(50, Vector2.RIGHT, 0.0)
 	await wait(2.6)
 	check(game.hud.results_panel.visible and game.phase == game.Phase.DEAD, "dying shows the rollback results")
+	var P := profile()
+	check(P.stats.runs == 1 and P.stats.deaths == 1 and P.tm == Run.tm, "the rollback banks the run (%d TM)" % P.tm)
+
+	# Megalopolis: people, the gate, conversations and restorations.
+	Engine.time_scale = 1.0
+	get_tree().paused = false
+	game.queue_free()
+	await get_tree().process_frame
+	var hub = load("res://scenes/hub.tscn").instantiate()
+	get_tree().root.add_child(hub)
+	await wait(1.0)
+	check(hub.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
+		"the hub builds Megalopolis with %d people and the gate" % hub.npcs.size())
+	check(hub.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
+	var guide: Npc = hub._npc(&"cavalier")
+	hub.player.global_position = guide.global_position + Vector2(0, 20)
+	hub.talk(guide)
+	for _i in 30:
+		await wait(0.05)
+		hub.dialogue._typing = false
+		hub.dialogue._advanced.emit()
+	check(P.has_flag("met_cavalier") and not hub.talking, "finishing a conversation sets its flag")
+	check(hub.story.conversation_for("cavalier").get("id") == "cav_rollback", "after a death he remembers the rollback")
+	P.tm = 1000
+	var hall: RestorationData = Run.hub.restorations[0]
+	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 1000 - hall.tm_cost(1), "restoring the Training Hall spends TM")
+	Run.new_run()
+	check(Run.max_hp == Run.BASE_HP + 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
+	var reach: float = Combat.ground(hub.room.nearest_reachable(Run.hub.gate_position) - hub.gate.global_position).length()
+	check(reach < 1.0, "the expedition gate stands on reachable ground")
+	hub.queue_free()
 
 	print("\n%s: %d failure(s)" % ["OK" if failures == 0 else "FAILED", failures])
 	Engine.time_scale = 1.0

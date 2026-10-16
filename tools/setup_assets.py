@@ -36,8 +36,16 @@ ACTORS = {
     'little_cora': ('data/monster/mon254.nri', '', None),
     'blue_penguin': ('data/monster/mon021.nri', '', None),
     'golden_mole': ('data/monster/mon103.nri', '', None),
+    # Megalopolis people
+    'cavalier': ('data/npc/npc001.nri', '', None),
+    'miranda': ('data/npc/npc003.nri', '', None),
+    'stella': ('data/npc/npc222.nri', '', None),
+    'copper_plate': ('data/npc/npc270.nri', '', None),
 }
-MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b']
+# Dialogue portraits: name -> NPC illustration
+PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003_illu.nri',
+             'stella': 'data/npc/npc222_illu.nri'}
+MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00']
 SOUNDS = [
     'sachr002.wav', 'sachr002_1.wav', 'shchr002.wav', 'weapon001.wav', 'etc_miss.wav',
     'dmg_normal_a.wav', 'dmg_normal_b.wav', 'dmg_normal_c.wav', 'dmg_normal_d.wav',
@@ -51,7 +59,7 @@ SKILL_SOUNDS = [
     'snd_skl_common_ki.wav', 'snd_p_207_ap.wav', 'snd_p_205_ap.wav', 'snd_p_208_ht.wav', 'snd_p_206_ht.wav',
     'snd_p_305_ht.wav', 'snd_p_305_ht2.wav', 'snd_skl_p_008_sbg.wav', 'snd_p_603_ht.wav', 'snd_skl_p_015_ebg1.wav',
 ]
-MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3']
+MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3']
 
 
 def monster_ids():
@@ -96,6 +104,9 @@ def main():
             pivot_file, section = sockets
             args += ['--pivots', os.path.join(client, pivot_file), '--pivot-section', section]
         run(*args)
+    for name, rel in PORTRAITS.items():
+        run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel),
+            os.path.join(OUT, 'portraits', name + '.png'))
     os.makedirs(os.path.join(OUT, 'weapons'), exist_ok=True)
     for name, rel in WEAPONS.items():
         run(os.path.join(HERE, 'export_weapon.py'), os.path.join(client, rel),

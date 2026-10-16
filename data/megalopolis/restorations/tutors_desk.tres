@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tutors_desk"
+display_name = "Tutor's Desk"
+text = "Start every run with a second random skill."
+max_level = 1
+per_level = 1.0
+effect = "second_skill"
+tm_costs = Array[int]([600])
+shard_costs = Array[int]([3])

@@ -35,7 +35,9 @@ def md3_sections(b: bytes) -> dict:
         t, c, r, cw, ch = struct.unpack_from('<5i', b, p)
         if c <= 0 or r <= 0 or c * r > len(b) - p - 20 or cw <= 0:
             break
-        out[t] = (c, r, cw, b[p + 20:p + 20 + c * r])
+        # Some town maps repeat a type with a tiny coarse grid; keep the
+        # first (full-resolution) section of each type.
+        out.setdefault(t, (c, r, cw, b[p + 20:p + 20 + c * r]))
         p += 20 + c * r
     return out
 

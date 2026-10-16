@@ -33,7 +33,7 @@ import pivots  # noqa: E402
 EQUIPPED = '장비'  # title suffix of the poses that hold a weapon
 
 ACTIONS = {
-    '서있기': 'idle', '걷기': 'walk', '달리기': 'run', '피격': 'hit', '기절': 'faint',
+    '서있기': 'idle', '정지': 'idle', '자동행동1': 'idle_auto', '걷기': 'walk', '달리기': 'run', '피격': 'hit', '기절': 'faint',
     '공격': 'attack', '공격2': 'attack2', '마법': 'cast', '자동행동': 'idle_auto',
     '자동행동2': 'idle_auto2', '회피': 'dodge', '피하기': 'dodge', '방어': 'guard',
     '막기': 'guard', '방패막기': 'shield_block', '기뻐하기': 'happy', '화내기': 'angry',
@@ -56,6 +56,8 @@ DIR_ORDER = ['e', 'se', 's', 'sw', 'w', 'nw', 'n', 'ne']
 def parse_title(title):
     """'걷기_위' -> ('walk', 'n', False); '걷기_위_장비' -> ('walk', 'n', True)."""
     parts = title.split('_')
+    if len(parts) == 1:
+        return 'idle', 's', False  # a single still (signs, plaques)
     if len(parts) not in (2, 3) or (len(parts) == 3 and parts[2] != EQUIPPED):
         return None
     act, d = parts[0], parts[1]

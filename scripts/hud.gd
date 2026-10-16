@@ -18,6 +18,7 @@ const LOG_LINES := 6
 @onready var _slots: Array[SkillSlot] = [$Root/SlotBar/Slot1, $Root/SlotBar/Slot2, $Root/SlotBar/Slot3]
 
 var _pick_count := 0
+var _hub_mode := false
 
 
 func _ready() -> void:
@@ -30,7 +31,19 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- updates
 
+## In the city: no combat status or skill slots; shows banked progress.
+func set_hub_mode(on: bool) -> void:
+	_hub_mode = on
+	$Root/Status.visible = not on
+	%SlotBar.visible = not on
+	%CardsLabel.visible = not on
+	$Root/Hint.text = "WASD move  ·  F talk  ·  Space dash" if on 		else "WASD move  ·  LMB sword combo  ·  RMB / Q / E skills  ·  Space dash"
+
+
 func refresh(player: Player) -> void:
+	if _hub_mode:
+		%GalderLabel.text = "%d TM  ·  %d Harkon Shard%s" % [Profile.tm, Profile.shards, "" if Profile.shards == 1 else "s"]
+		return
 	var hp: ProgressBar = %HpBar
 	hp.max_value = Run.max_hp
 	hp.value = Run.hp
@@ -70,6 +83,11 @@ func _refresh_slots(player: Player) -> void:
 func _flash(node: CanvasItem, color: Color) -> void:
 	node.modulate = color
 	node.create_tween().tween_property(node, "modulate", Color.WHITE, 0.25)
+
+
+## Hides the system log (behind the dialogue box, for example).
+func set_log_visible(on: bool) -> void:
+	%LogBox.visible = on
 
 
 func set_room(text: String) -> void:

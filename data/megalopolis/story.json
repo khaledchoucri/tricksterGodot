@@ -1,0 +1,127 @@
+{
+  "_doc": "Hub conversations. Each NPC's list is checked in order; the first entry whose 'if' conditions all hold is used. Conditions: 'flag' (set), '!flag' (not set), 'stat>=n' / 'stat<n' on Profile.stats (runs, deaths, clears, best_depth, shards_found, tm_earned). 'set' lists flags to set when the conversation ends. 'then': 'restore' opens the restoration menu afterwards. Lines are [speaker, text]; speaker is an NPC id, or 'system' for game notices.",
+  "npcs": {
+    "cavalier": [
+      {
+        "id": "cav_intro",
+        "if": ["!met_cavalier"],
+        "set": ["met_cavalier"],
+        "lines": [
+          ["cavalier", "Well, well. Footsteps. Real footsteps!"],
+          ["cavalier", "Forgive an old man for staring. It has been a while since anyone logged in. Weeks? The clock tower stopped counting."],
+          ["cavalier", "The notice went up at midnight. 'Service has ended. Thank you for playing.' And then, one by one, everyone simply... stopped."],
+          ["cavalier", "But not you. Curious."],
+          ["cavalier", "Something is wrong past the gate. Coral Beach keeps resetting itself, and the monsters wake angrier every time."],
+          ["cavalier", "Someone who can still leave the square might see why. The gate is just north of the fountain. And do come back. Please."]
+        ]
+      },
+      {
+        "id": "cav_rollback",
+        "if": ["deaths>=1", "!cav_rollback"],
+        "set": ["cav_rollback"],
+        "then": "restore",
+        "lines": [
+          ["cavalier", "You came back! I watched the beach fold up like a map, and the whole world... rewound."],
+          ["cavalier", "We call it a rollback. When it happens, the city forgets the last few hours. Usually."],
+          ["cavalier", "But I remember you leaving. That shouldn't be possible."],
+          ["cavalier", "Bring back what you find out there. Time Marks, shards. The city keeps what you carry home. Perhaps together we can mend a few things."]
+        ]
+      },
+      {
+        "id": "cav_clear",
+        "if": ["clears>=1", "!cav_clear"],
+        "set": ["cav_clear"],
+        "then": "restore",
+        "lines": [
+          ["cavalier", "The Golden Mole, beaten? So that's why the lights steadied for a moment."],
+          ["cavalier", "Every time you push back the rot out there, a little more of the world holds together. I felt the fountain run warm."],
+          ["cavalier", "Coral Beach is only the edge of it. But it's a start. Let's see how long we can keep the lights on."]
+        ]
+      },
+      {
+        "id": "cav_default",
+        "if": [],
+        "then": "restore",
+        "lines": [
+          ["cavalier", "Ah, my favourite player. My only player, but still my favourite. What shall we mend today?"]
+        ]
+      }
+    ],
+    "miranda": [
+      {
+        "id": "mir_intro",
+        "if": ["!met_miranda"],
+        "set": ["met_miranda"],
+        "lines": [
+          ["miranda", "Oh! A customer! Wait. Are you real? Not one of the echoes?"],
+          ["miranda", "Sorry. Since the notice, the square fills up with shapes that look like players. They walk the old routes, then fade."],
+          ["miranda", "The shop's closed, I'm afraid. No suppliers, no customers. Just me and a lot of potions nobody needs."]
+        ]
+      },
+      {
+        "id": "mir_remember",
+        "if": ["deaths>=1", "met_miranda", "!mir_remember"],
+        "set": ["mir_remember"],
+        "lines": [
+          ["miranda", "This will sound strange, but... did you die today?"],
+          ["miranda", "I dreamt of sand and a golden mole, and then everything snapped back like a rubber band. You were there."],
+          ["miranda", "Nobody remembers the rollbacks. So why do I?"]
+        ]
+      },
+      {
+        "id": "mir_default",
+        "if": [],
+        "lines": [
+          ["miranda", "If the shop ever reopens, you get the first discount. Being the only customer has its perks."]
+        ]
+      }
+    ],
+    "stella": [
+      {
+        "id": "stel_intro",
+        "if": ["!met_stella"],
+        "set": ["met_stella"],
+        "lines": [
+          ["stella", "Shh. Look up. Count them with me."],
+          ["stella", "Every star up there is a world like ours. A server. Every night there are fewer."],
+          ["stella", "When a star goes out, it doesn't fall. It just... isn't."],
+          ["stella", "Ours is still burning. Faintly."]
+        ]
+      },
+      {
+        "id": "stel_shard",
+        "if": ["shards_found>=1", "!stel_shard"],
+        "set": ["stel_shard"],
+        "lines": [
+          ["stella", "You're carrying a Harkon Shard. Can you feel it hum?"],
+          ["stella", "It's warm the way the sky used to be. I think it's a piece of our star that refuses to go out."],
+          ["stella", "Bring them home. If enough of them gather here, maybe the light holds."]
+        ]
+      },
+      {
+        "id": "stel_default",
+        "if": [],
+        "lines": [
+          ["stella", "Still burning. Still here. Good."]
+        ]
+      }
+    ],
+    "copper_plate": [
+      {
+        "id": "plate_clear",
+        "if": ["clears>=1"],
+        "lines": [
+          ["system", "SERVICE TERMINATION NOTICE. This world will end service at 00:00. All data will be deleted. Thank you for playing."],
+          ["system", "Someone has scratched a line under the notice: 'Not yet.'"]
+        ]
+      },
+      {
+        "id": "plate_default",
+        "if": [],
+        "lines": [
+          ["system", "SERVICE TERMINATION NOTICE. This world will end service at 00:00. All data will be deleted. Thank you for playing."]
+        ]
+      }
+    ]
+  }
+}

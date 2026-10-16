@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="NpcData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/npc_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"copper_plate"
+display_name = "Statue's Copper Plate"
+actor = "copper_plate"
+portrait = ""
+position = Vector2(2340, 2380)
+facing = Vector2(0, 1)
+is_object = true

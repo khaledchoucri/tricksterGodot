@@ -1,10 +1,12 @@
 extends Node2D
 ## Runs one Coral Beach expedition: loads rooms cut from the original maps,
-## hands out rewards and level-ups, and ends in a rollback or a clear.
+## hands out rewards and level-ups, and ends in a rollback or a clear, which
+## banks the run into the Profile and returns to Megalopolis (scenes/hub.tscn).
 ## Presents combat feedback (hit-stop, shake, damage numbers) announced on
 ## the Events bus.
 
 const PLAYER_SCENE := preload("res://scenes/player.tscn")
+const HUB_SCENE := "res://scenes/hub.tscn"
 const REWARD_POOL: Array[String] = ["card", "card", "upgrade", "heal", "galder", "shard"]
 const CAMERA_MARGIN := 60
 ## MP restored on entering a room.
@@ -37,6 +39,9 @@ func _ready() -> void:
 	Events.boss_health_changed.connect(func(e: Enemy) -> void: hud.show_boss(e.display_name, e.hp, e.max_hp))
 	Events.boss_spoke.connect(func(text: String) -> void: hud.log_line("[Real Golden Mole] " + text, Color("e0b54d")))
 	Events.player_died.connect(_on_player_died)
+	Events.revived.connect(func() -> void:
+		hud.log_line("[System] Rollback Cache restored you.", Color("c9a4ff"))
+		hud.notice("Saved by the Rollback Cache"))
 	if not FileAccess.file_exists("res://original_assets/actors/buffalo/buffalo.json") \
 			or not FileAccess.file_exists("res://original_assets/maps/map_fd11d/map.json"):
 		phase = Phase.MISSING
@@ -48,10 +53,11 @@ func _ready() -> void:
 	_load_room()
 
 
+## After a run: back to the city.
 func _restart() -> void:
 	Engine.time_scale = 1.0
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	get_tree().change_scene_to_file(HUB_SCENE)
 
 
 # ---------------------------------------------------------------- rooms
@@ -74,7 +80,7 @@ func _load_room() -> void:
 	room.cleared.connect(_on_room_cleared)
 	room.door_entered.connect(_on_door_entered)
 	_spawn_player(room.entry)
-	Run.gain_mp(ROOM_MP)
+	Run.gain_mp(ROOM_MP + Run.room_mp_bonus())
 	Audio.play_music(Run.region.boss_music if plan.boss else Run.region.field_music)
 	Audio.play_ambience(Run.region.boss_ambience if plan.boss else Run.region.field_ambience)
 	hud.set_room("%s  ·  %d / %d" % [plan.data.display_name, Run.depth + 1, Run.plan.size()])
@@ -96,13 +102,7 @@ func _spawn_player(at: Vector2) -> void:
 	player.position = at
 	room.player = player
 	room.world.add_child(player)
-	var cam := player.camera
-	cam.limit_left = int(room.rect.position.x) - CAMERA_MARGIN
-	cam.limit_top = int(room.rect.position.y) - CAMERA_MARGIN
-	cam.limit_right = int(room.rect.end.x) + CAMERA_MARGIN
-	cam.limit_bottom = int(room.rect.end.y) + CAMERA_MARGIN
-	cam.make_current()
-	cam.reset_smoothing()
+	player.set_camera_limits(room.rect, CAMERA_MARGIN)
 
 
 func _on_room_cleared() -> void:
@@ -242,6 +242,7 @@ func _on_picked(i: int) -> void:
 
 func _on_player_died() -> void:
 	phase = Phase.DEAD
+	Run.finish(false)
 	Audio.play("shchr002.wav")
 	await get_tree().create_timer(1.2).timeout
 	hud.log_line("[System] Connection lost.", Color("f07a62"))
@@ -254,6 +255,7 @@ func _win() -> void:
 	phase = Phase.WON
 	Run.won = true
 	Run.shards += 2
+	Run.finish(true)
 	Audio.play("guild_battlewin.wav")
 	hud.log_line("[Notice] Coral Beach cleared. The Harkon Shards resonate.", Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout

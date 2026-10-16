@@ -9,6 +9,7 @@ const REWARDS := {
 	"galder": {"label": "Galder", "color": Color(1.0, 0.82, 0.35)},
 	"shard": {"label": "Harkon Shard", "color": Color(0.8, 0.6, 1.0)},
 	"boss": {"label": "Boss", "color": Color(1.0, 0.35, 0.3)},
+	"expedition": {"label": "Coral Beach Gate", "color": Color(0.35, 0.85, 0.85)},
 }
 
 var reward := "card"
