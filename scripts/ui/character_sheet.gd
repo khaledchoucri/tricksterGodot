@@ -5,6 +5,7 @@ extends PanelContainer
 ## and skill cards. Opens over the game without pausing it.
 
 @onready var _left: RichTextLabel = %Left
+@onready var _middle: RichTextLabel = %Middle
 @onready var _right: RichTextLabel = %Right
 
 
@@ -19,16 +20,24 @@ func toggle() -> void:
 
 
 func refresh() -> void:
-	_left.text = _stats_text()
+	_left.text = _header_text() + "
+" + _types_text(["power", "magic"])
+	_middle.text = "
+
+" + _types_text(["sense", "charm"])
 	_right.text = _gear_text()
 
 
-func _stats_text() -> String:
+func _header_text() -> String:
+	return "[font_size=18]%s  ·  %s[/font_size]   Lv %d
+[color=#9fb2c0]HP %d / %d   MP %d / %d   %d Galder   %d %ss[/color]" % [
+		Run.cls.display_name, Run.job.display_name, Run.level, Run.hp, Run.max_hp, Run.mp, Run.max_mp, Run.galder,
+		Run.ore, Run.ORE_NAME]
+
+
+func _types_text(types: Array) -> String:
 	var lines: PackedStringArray = []
-	lines.append("[font_size=18]%s  ·  %s[/font_size]   Lv %d" % [Run.cls.display_name, Run.job.display_name, Run.level])
-	lines.append("[color=#9fb2c0]HP %d / %d   MP %d / %d   %d Galder   %d %ss[/color]" % [Run.hp, Run.max_hp,
-		Run.mp, Run.max_mp, Run.galder, Run.ore, Run.ORE_NAME])
-	for t: String in Stats.TYPE_ORDER:
+	for t: String in types:
 		var info: Dictionary = Stats.TYPES[t]
 		lines.append("")
 		lines.append("[color=#%s][b]%s[/b]  %d points[/color]" % [info.color.to_html(false), info.name, Run.type_points[t]])
@@ -41,7 +50,8 @@ func _stats_text() -> String:
 			var on: bool = Run.type_points[t] >= Stats.THRESHOLDS[i]
 			lines.append("  [color=#%s]%s %d · %s[/color]" % ["e8e0c0" if on else "5a6b7c",
 				"●" if on else "○", Stats.THRESHOLDS[i], tr.name])
-	return "\n".join(lines)
+	return "
+".join(lines)
 
 
 func _gear_text() -> String:

@@ -25,3 +25,23 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.659, 0.847, 0.855, 1)
 theme_override_font_sizes/font_size = 13
+
+[node name="Icon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -70.0
+offset_top = -24.0
+offset_right = -14.0
+offset_bottom = 24.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5

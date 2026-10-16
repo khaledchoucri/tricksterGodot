@@ -53,7 +53,7 @@ static func roll(p_data: ItemData, quality: float) -> GearItem:
 	var p := ""
 	var options: Array[String] = []
 	for key: String in PREFIXES:
-		if p_data.slot in PREFIXES[key].slots:
+		if p_data.slot in PREFIXES[key].slots and not p_data.display_name.begins_with(PREFIXES[key].name):
 			options.append(key)
 	if options.size() > 0 and randf() < 0.3 + 0.4 * quality:
 		p = options[randi() % options.size()]

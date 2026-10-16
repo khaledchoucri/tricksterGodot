@@ -18,6 +18,16 @@ import nori  # noqa: E402
 from export_actor import blit, write_png  # noqa: E402
 
 
+def _inside(p, w, h, margin=0.25):
+    """True if p lies well inside the w x h image, away from every edge."""
+    return margin * w < p[0] < (1 - margin) * w and margin * h < p[1] < (1 - margin) * h
+
+
+def _mass(pixels, p, r=5):
+    """Opaque pixels within r of p: a hammer head is heavier than its handle."""
+    return sum(1 for q in pixels if abs(q[0] - p[0]) <= r and abs(q[1] - p[1]) <= r)
+
+
 def export(nri_path, out_png):
     """Writes out_png and its .json; returns False if no right-pointing frame exists."""
     item = nori.read(nri_path)
@@ -28,14 +38,18 @@ def export(nri_path, out_png):
         img = bytearray(bm.w * bm.h * 4)
         blit(img, bm.w, bm.h, bm, 0, 0, p.flip & 1, p.flip & 2)
         grip = (-p.x, -p.y)
+        pixels = [(x, y) for y in range(bm.h) for x in range(bm.w) if img[(y * bm.w + x) * 4 + 3]]
+        if not pixels:
+            continue
         # Blade direction: from the grip toward the farthest opaque pixel.
-        far, tip = -1.0, (0, 0)
-        for y in range(bm.h):
-            for x in range(bm.w):
-                if img[(y * bm.w + x) * 4 + 3]:
-                    d = math.hypot(x - grip[0], y - grip[1])
-                    if d > far:
-                        far, tip = d, (x, y)
+        tip = max(pixels, key=lambda q: math.hypot(q[0] - grip[0], q[1] - grip[1]))
+        if _inside(grip, bm.w, bm.h):
+            # Some sprites (hammers, sticks) are centred on the art, not the
+            # hand: hold them by the end of the long axis with less mass.
+            a = tip
+            b = max(pixels, key=lambda q: math.hypot(q[0] - a[0], q[1] - a[1]))
+            grip, tip = (a, b) if _mass(pixels, a) < _mass(pixels, b) else (b, a)
+        far = math.hypot(tip[0] - grip[0], tip[1] - grip[1])
         if tip[0] > grip[0] and (best is None or far > best[3]):
             best = (bm, img, grip, far, tip)
     if not best:
