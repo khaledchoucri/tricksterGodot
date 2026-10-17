@@ -90,7 +90,7 @@ def export(base: str, out: str) -> dict:
         y0 = min(p.y for p in planes)
         x1 = max(p.x + m.bac.bitmaps[p.bmp].w for p in planes)
         y1 = max(p.y + m.bac.bitmaps[p.bmp].h for p in planes)
-        c = Canvas(x1 - x0, y1 - y0)
+        c = Canvas(x1 - x0, y1 - y0, transparent=True)
         draw_anim_frame(c, m.bac, a, -x0, -y0)
         sid = f'o{len(sprites):03d}'
         write_png(os.path.join(out, 'objects', sid + '.png'), c.w, c.h, bytes(c.px))

@@ -11,10 +11,18 @@ import trickster_map as tm  # noqa: E402
 from export_actor import write_png  # noqa: E402
 
 
+# Plane blend modes that darken what's below (canopy and ground shadows).
+DARKEN_MODES = {4, 6}
+
+
 class Canvas:
-    def __init__(self, w, h):
+    def __init__(self, w, h, transparent=False):
+        """`transparent`: a sprite's own canvas, drawn over the game later.
+        Darkening planes then become see-through shadow pixels instead of
+        being mixed into an opaque ground."""
         self.w, self.h = w, h
         self.px = bytearray(w * h * 4)
+        self.transparent = transparent
 
     def blit_tile(self, rgba, x0, y0, flip_h=False, alpha=1.0):
         for y in range(tm.TILE):
@@ -57,8 +65,24 @@ class Canvas:
                 row = b''.join(row[i:i + 4] for i in range(len(row) - 4, -4, -4))
             if mode == 0:
                 self._blend_row(row, x0, ty, alpha)
+            elif self.transparent and mode in DARKEN_MODES:
+                self._shadow_row(row, x0, ty, alpha)
             else:  # additive / darken modes approximated as half-strength blend
                 self._blend_row(row, x0, ty, 0.5 * alpha)
+
+    def _shadow_row(self, row, x0, ty, alpha):
+        """Darker source pixels make a stronger, still see-through shadow."""
+        for x in range(len(row) // 4):
+            if not row[x * 4 + 3]:
+                continue
+            tx = x0 + x
+            if not 0 <= tx < self.w:
+                continue
+            lum = (row[x * 4] + row[x * 4 + 1] + row[x * 4 + 2]) / (3 * 255)
+            a = int(255 * (1 - lum) * 0.5 * alpha)
+            o = (ty * self.w + tx) * 4
+            if self.px[o + 3] < a:
+                self.px[o:o + 4] = bytes((0, 0, 0, a))
 
 
 def render(m, draw_objects=True):
