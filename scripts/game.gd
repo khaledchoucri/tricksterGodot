@@ -40,6 +40,7 @@ var _return_to := ""  # "shop" or "compound" while one of them is open
 var _shop: Array[Dictionary] = []
 var _pending_mat: MaterialData
 var _legend: GearItem       # a boss's legendary drop, offered when the room is cleared
+var _rune_from: EnemyData   # an Echo beaten in this room: offer its runes
 var _boss_name := ""
 
 @onready var hud: Hud = $Hud
@@ -155,6 +156,8 @@ func _on_room_cleared() -> void:
 		_region_cleared()
 	if _legend:
 		_steps.append("legend")
+	if _rune_from:
+		_steps.append("rune")
 	if Run.job_change_due():
 		_steps.append("job")
 	_steps.append(reward_here)
@@ -219,6 +222,12 @@ func _grant(reward: String) -> void:
 			return
 		"port":
 			_open_port()
+			return
+		"rune":
+			var options: Array = _rune_from.runes.duplicate()
+			_rune_from = null
+			options.append(null)
+			_start_pick("rune", options)
 			return
 		"legend":
 			var g := _legend
@@ -402,6 +411,15 @@ The warehouse is full." if full else "
 Kept in the Megalopolis warehouse, refines and compounds included."),
 					"disabled": full})
 			title = "Portable Port  ·  save your progress"
+		"rune":
+			for c: CardData in options:
+				if c == null:
+					shown.append({"title": "Keep %s" % (Run.rune.display_name if Run.rune else "nothing"), "tag": "",
+						"text": "Leave the rune where it fell."})
+					continue
+				shown.append({"title": c.display_name, "tag": "Rune · Lv %d · [F]" % (1 + 2 * Run.region_index()),
+					"text": c.describe(1 + 2 * Run.region_index()) + ("\nReplaces %s." % Run.rune.display_name if Run.rune else "")})
+			title = "A sky-blue rune  ·  borrow a skill"
 	hud.show_pick(title, shown)
 	get_tree().paused = true
 
@@ -540,6 +558,12 @@ func _on_picked(i: int) -> void:
 			if phase == Phase.WON:
 				_show_win_results()
 				return
+		"rune":
+			var c: CardData = _pick_options[i]
+			if c:
+				Run.take_rune(c)
+				Audio.play("ui_unique_get.wav", -4.0)
+				hud.log_line("[System] The rune teaches you %s. Press F to cast it." % c.display_name, Color("8fd8ff"))
 		"anvil":
 			var k: String = _pick_options[i]
 			if k != "":
@@ -768,7 +792,7 @@ func _on_enemy_died(e: Enemy) -> void:
 		Audio.play("etc_money.wav", -10.0)
 	if drop.ore > 0:
 		hud.log_line("[System] Picked up %d %s%s." % [drop.ore, Run.ORE_NAME, "s" if drop.ore > 1 else ""], INFO)
-	if Run.roll_card(e.data.id, e.is_elite, e.is_boss):
+	if not e.data.echo and Run.roll_card(e.data.id, e.is_elite, e.is_boss):
 		var card_name := "%s Card" % e.display_name.trim_prefix("Elite ")
 		if Profile.add_card(e.data.id):
 			Audio.play("ui_card.wav")
@@ -783,6 +807,9 @@ func _on_enemy_died(e: Enemy) -> void:
 	if Run.level > before:
 		Audio.play("etc_levelup.wav", -2.0)
 		hud.notice("Level up! Lv %d  ·  invest in a type after the fight" % Run.level)
+	if e.data.echo:
+		_rune_from = e.data
+		hud.log_line("[System] The %s fades. A sky-blue rune is left behind." % e.display_name, Color("8fd8ff"))
 	if e.is_boss:
 		hud.hide_boss()
 		if e.data.drop_item and Run.system_on(&"smithing") and randf() < e.data.drop_chance:

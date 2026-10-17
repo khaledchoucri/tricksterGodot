@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/echoes/drip_bomb.tres" id="r_drip_bomb"]
+[ext_resource type="Resource" path="res://data/echoes/electro_attack.tres" id="r_electro_attack"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"echo_bard"
+kind = "shot"
+body_radius = 14.0
+cost = 99
+min_depth = 99
+tune = {"windup": 0.75, "shot_speed": 240.0, "keep_away": 170.0}
+echo = true
+stats_override = {"name": "Echo of a Bard", "stats": {"AP": 30, "AC": 60, "HP": 700, "DP": 20, "MD": 40, "HV": 10}, "exp": 900, "tm": 160, "galder": [80, 200], "walk_speed": 96.0, "run_speed": 140.0}
+runes = Array[ExtResource("2_c")]([ExtResource("r_drip_bomb"), ExtResource("r_electro_attack")])

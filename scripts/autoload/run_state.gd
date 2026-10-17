@@ -18,6 +18,9 @@ const MAX_MASTERY := 3
 const SLOTS := 3
 ## Equipment slots: the six core run-gear slots.
 const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc1", "acc2"]
+## Echoes of other classes that can haunt elite rooms after the first clear.
+const ECHO_PATHS: Array[String] = ["res://data/echoes/echo_bard.tres", "res://data/echoes/echo_explorer.tres",
+	"res://data/echoes/echo_entertainer.tres"]
 const ORE_NAME := "Bronze Fragment"
 ## Offsets that soften stat ratios (a stat twice the starting value is not
 ## twice the effect).
@@ -52,6 +55,10 @@ var loadout: Array[StringName] = [&"", &"", &""]
 ## EQUIP_SLOTS key -> GearItem.
 var equipment: Dictionary = {}
 var ore := 0
+## The sky-blue rune's borrowed skill (slot 4, key F) and its level.
+var rune: CardData
+var rune_level := 0
+var echoes: Array[EnemyData] = []
 ## Monster materials carried: MaterialData id -> count, and the data by id.
 var materials: Dictionary = {}
 var material_info: Dictionary = {}
@@ -106,6 +113,11 @@ func _ready() -> void:
 	cls = load(CLASS_PATH)
 	_index_cards()
 	_load_items()
+	for p in ECHO_PATHS:
+		var e: EnemyData = load(p)
+		echoes.append(e)
+		for c in e.runes:
+			_cards[c.id] = c
 	if FileAccess.file_exists(MONSTERS_PATH):
 		monster_data = JSON.parse_string(FileAccess.get_file_as_string(MONSTERS_PATH))
 
@@ -131,11 +143,14 @@ func card(id: StringName) -> CardData:
 	return _cards.get(id)
 
 
-## An enemy from any region.
+## An enemy from any region (or an Echo).
 func enemy(id: StringName) -> EnemyData:
 	for r in regions:
 		var e := r.enemy(id)
 		if e:
+			return e
+	for e in echoes:
+		if e.id == id:
 			return e
 	return null
 
@@ -158,6 +173,8 @@ func new_run() -> void:
 	jobs.clear()
 	equipment = {"weapon": GearItem.make(cls.start_weapon)}
 	ore = 0
+	rune = null
+	rune_level = 0
 	materials = {}
 	galder = 0
 	tm = 0
@@ -352,7 +369,24 @@ func final_boss() -> bool:
 
 
 func monster_stats(enemy: EnemyData) -> Dictionary:
+	if enemy == null:
+		return {}
+	if not enemy.stats_override.is_empty():
+		return enemy.stats_override
 	return monster_data.get(enemy.monster_id, {})
+
+
+## Whether an Echo joins this elite room (after the first clear).
+func echo_here() -> EnemyData:
+	if not current_room().elite or int(Profile.stats.get("clears", 0)) < 1 or randf() > 0.45:
+		return null
+	return echoes[randi() % echoes.size()]
+
+
+## Takes a sky-blue rune: its skill goes in slot 4, stronger in later regions.
+func take_rune(c: CardData) -> void:
+	rune = c
+	rune_level = 1 + 2 * region_index()
 
 
 # ---------------------------------------------------------------- stats
@@ -551,6 +585,8 @@ func all_cards() -> Array[CardData]:
 
 
 func card_level(id: StringName) -> int:
+	if rune and id == rune.id:
+		return rune_level
 	return cards.get(id, 0)
 
 
@@ -793,7 +829,8 @@ func attack_mult() -> float:
 ## Damage multiplier for a skill, from the stat it scales with.
 func skill_mult(c: CardData = null) -> float:
 	var scaling := c.scaling if c else "AP"
-	var m := _ratio(scaling, AP_SOFT if scaling == "AP" else MA_SOFT)
+	var soft: float = {"AP": AP_SOFT, "MA": MA_SOFT, "DA": 20.0, "DP": 60.0}.get(scaling, AP_SOFT)
+	var m := _ratio(scaling, soft)
 	if has_passive(&"arena_champion"):
 		m *= 1.15
 	return m * _berserk_mult()

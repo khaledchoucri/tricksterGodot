@@ -5,9 +5,10 @@ extends Node
 ## player is in the SKILL state.
 
 ## Input actions for skill slots 1-3.
-const SLOT_ACTIONS: Array[String] = ["skill", "skill_2", "skill_3"]
+## Slot 4 holds the sky-blue rune's borrowed skill (Run.rune).
+const SLOT_ACTIONS: Array[String] = ["skill", "skill_2", "skill_3", "skill_4"]
 
-var slot_ready_at: Array[float] = [0.0, 0.0, 0.0]
+var slot_ready_at: Array[float] = [0.0, 0.0, 0.0, 0.0]
 
 var _skill: Skill  # the cast in progress
 var _t := 0.0
@@ -17,7 +18,7 @@ var _t := 0.0
 
 ## Casts the skill in `slot` if one is equipped, off cooldown and affordable.
 func try_cast(slot: int) -> bool:
-	var id: StringName = Run.loadout[slot]
+	var id: StringName = Run.loadout[slot] if slot < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
 	if id == &"" or player.now() < slot_ready_at[slot]:
 		return false
 	var card := Run.card(id)

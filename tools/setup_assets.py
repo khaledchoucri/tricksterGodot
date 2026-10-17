@@ -47,6 +47,10 @@ ACTORS = {
     'cannon_shell': ('data/monster/mon005.nri', '', None),
     'basic_mummy': ('data/monster/mon153.nri', '', None),
     'tutankhamen': ('data/monster/mon163.nri', '', None),
+    # Echoes: other classes' characters
+    'echo_bard': ('data/character/chr003.nri', 'idle,walk,run,attack,hit,faint,cast', None),
+    'echo_explorer': ('data/character/chr005.nri', 'idle,walk,run,attack,hit,faint,throw', None),
+    'echo_entertainer': ('data/character/chr007.nri', 'idle,walk,run,attack,hit,faint', None),
     # Megalopolis people
     'cavalier': ('data/npc/npc001.nri', '', None),
     'miranda': ('data/npc/npc003.nri', '', None),

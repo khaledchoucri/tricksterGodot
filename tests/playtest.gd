@@ -48,6 +48,7 @@ func _ready() -> void:
 	if city == "full":
 		for r: RestorationData in Run.hub.restorations:
 			Profile.restorations[String(r.id)] = r.max_level
+		Profile.stats["clears"] = 1  # a veteran city: Echoes can appear
 	var left := heat
 	while left > 0:
 		var raised := false
@@ -94,7 +95,8 @@ func _one_run(index: int) -> void:
 	var r := {"run": index + 1, "won": game.phase == game.Phase.WON, "depth": Run.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
-		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate()}
+		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate(),
+		"rune": Run.rune.display_name if Run.rune else ""}
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
@@ -174,8 +176,8 @@ func _fight(player: Player, delta: float) -> void:
 				player.buffer_action("dash")
 				return
 	# Skills when they're ready and something is close.
-	for i in Run.loadout.size():
-		var id: StringName = Run.loadout[i]
+	for i in SkillCaster.SLOT_ACTIONS.size():
+		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
 		if id != &"" and best < 140.0 and player.now() >= player.skills.slot_ready_at[i] \
 				and Run.mp >= Run.card(id).mp_cost:
 			player.buffer_action(SkillCaster.SLOT_ACTIONS[i])
@@ -277,6 +279,8 @@ func _choose() -> void:
 					pick = i
 					break
 		"compound_target":
+			pick = 0
+		"rune":
 			pick = 0
 		"port":
 			pick = opts.size() - 1
@@ -416,7 +420,7 @@ func _report() -> void:
 		print("   gear: %s" % ", ".join(r.gear))
 		if not r.won:
 			print("   died near: %s" % ", ".join(r.around))
-		print("   cards: %s   ore %d  galder %d  materials %s" % [r.cards, r.ore, r.galder, r.materials])
+		print("   cards: %s   rune %s   ore %d  galder %d" % [r.cards, r.rune, r.ore, r.galder])
 		var rooms: PackedStringArray = []
 		for room in r.rooms:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])

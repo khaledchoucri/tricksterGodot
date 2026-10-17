@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/skills/galder_barrage.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"galder_barrage"
+display_name = "Galder Barrage"
+kind = 1
+skill_id = 4102
+base_value = 20.0
+per_level = 6.0
+text = "Spend 30 Galder to rain coins on the cursor, {v} damage per volley, more the richer you are. Scales with DP."
+mp_cost = 18
+cooldown = 5.0
+element = "none"
+scaling = "DP"
+behavior = ExtResource("2_b")

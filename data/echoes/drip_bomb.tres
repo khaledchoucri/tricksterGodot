@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/skills/drip_bomb.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"drip_bomb"
+display_name = "Drip Bomb"
+kind = 1
+skill_id = 2103
+base_value = 44.0
+per_level = 10.0
+text = "Lob a water bomb that bursts on everything around the cursor for {v} damage. Scales with MA."
+mp_cost = 24
+cooldown = 4.5
+element = "water"
+scaling = "MA"
+behavior = ExtResource("2_b")

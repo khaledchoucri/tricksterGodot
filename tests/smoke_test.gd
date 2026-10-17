@@ -114,6 +114,40 @@ func _run() -> void:
 			dummy.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.3)
 	player.invulnerable_until = 0.0
+	# Echo runes: a borrowed skill in slot 4.
+	for c: CardData in Run.echoes.reduce(func(acc: Array, e: EnemyData) -> Array: return acc + e.runes, []):
+		var spot2 := Vector2.INF
+		var dir2 := Vector2.ZERO
+		for _i in 300:
+			var p := room.random_spot(Vector2.ZERO, 0.0)
+			var d := Vector2.from_angle(TAU * (randi() % 8) / 8.0)
+			if room.line_clear(p, p + Combat.screen(d) * 130.0) and room.is_open_spot(p + Combat.screen(d) * 90.0):
+				spot2 = p
+				dir2 = d
+				break
+		player.global_position = spot2
+		player.enter(Player.State.MOVE)
+		var at2 := spot2 + Combat.screen(dir2) * 90.0
+		var target2: Enemy = room.spawn(&"torobbie", at2)
+		await wait(0.6)
+		var hp0 := target2.hp
+		Run.take_rune(c)
+		Run.mp = Run.max_mp
+		Run.galder = 500
+		player.skills.slot_ready_at[3] = 0.0
+		player.invulnerable_until = player.now() + 5.0
+		player.aim = dir2
+		var cast2 := player.skills.try_cast(3)
+		for _f in 90:
+			if is_instance_valid(target2):
+				target2.global_position = at2
+			await get_tree().physics_frame
+		check(cast2 and target2.hp < hp0, "rune skill %s casts from slot 4 (%d -> %d)" % [c.id, hp0, target2.hp])
+		if target2.is_hittable():
+			target2.take_hit(99999, Vector2.RIGHT, 0.0, true)
+		await wait(0.3)
+	Run.rune = null
+	player.invulnerable_until = 0.0
 	Run.cards = {Run.cls.start_job.starter.id: 1}
 	Run.loadout.assign([Run.cls.start_job.starter.id, &"piercing_wave", &"shockwave"])
 	Run.cards[&"piercing_wave"] = 2
@@ -437,13 +471,14 @@ func _systems(Run: Node) -> void:
 		"the shop sells gear and potions")
 	Run.depth = 4
 	Run.current_room().feature = &"blue_penguin"
-	var waves: Array = load("res://scripts/room.gd").new()._make_waves(4, false)
+	var roller = load("res://scripts/room.gd").new()
 	var penguins := 0
 	var total := 0
-	for w in waves:
-		for e in w:
-			total += 1
-			penguins += 1 if e.id == &"blue_penguin" else 0
+	for _r in 6:
+		for w in roller._make_waves(4, false):
+			for e in w:
+				total += 1
+				penguins += 1 if e.id == &"blue_penguin" else 0
 	check(penguins * 3 >= total, "a Blue Penguin den fills its waves with penguins (%d of %d)" % [penguins, total])
 
 	# Warehouse, heirlooms, level sync and rollback.
@@ -503,6 +538,19 @@ func _systems(Run: Node) -> void:
 	check(Run.quirk(&"elite_bane") and Run.stat("AP") == Run.cls.base.AP + 2 + 6 and mult_horn > 1.0,
 		"wearing Buffalo's Horn adds AP and its quirk")
 	Profile.wear("ear", &"")
+	Run.new_run()
+
+	# Echoes appear in elite rooms only after a first clear.
+	Run.new_run()
+	Run.depth = Run.regions[0].elite_depths[0]
+	var echo_seen := false
+	for _i in 40:
+		echo_seen = echo_seen or Run.echo_here() != null
+	check(not echo_seen or int(Profile.stats.get("clears", 0)) >= 1, "no Echoes before the first clear")
+	Profile.stats["clears"] = max(1, int(Profile.stats.get("clears", 0)))
+	for _i in 40:
+		echo_seen = echo_seen or Run.echo_here() != null
+	check(echo_seen, "after a clear, Echoes haunt elite rooms")
 	Run.new_run()
 
 	# Master Louis raises card caps.

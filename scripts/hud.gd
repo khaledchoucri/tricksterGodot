@@ -9,14 +9,14 @@ signal picked(index: int)
 signal restart_requested
 
 const MUTED := Color(1, 1, 1, 0.6)
-const SLOT_KEYS: Array[String] = ["RMB", "Q", "E"]
+const SLOT_KEYS: Array[String] = ["RMB", "Q", "E", "F"]
 const PICK_OPTION := preload("res://scenes/ui/pick_option.tscn")
 const LOG_LINES := 6
 
 @onready var pick_panel: PanelContainer = %PickPanel
 @onready var results_panel: PanelContainer = %ResultsPanel
 @onready var sheet: CharacterSheet = %CharacterSheet
-@onready var _slots: Array[SkillSlot] = [$Root/SlotBar/Slot1, $Root/SlotBar/Slot2, $Root/SlotBar/Slot3]
+@onready var _slots: Array[SkillSlot] = [$Root/SlotBar/Slot1, $Root/SlotBar/Slot2, $Root/SlotBar/Slot3, $Root/SlotBar/Slot4]
 
 var _pick_count := 0
 var _hub_mode := false
@@ -72,8 +72,9 @@ func refresh(player: Player) -> void:
 
 
 func _refresh_slots(player: Player) -> void:
+	_slots[3].visible = Run.rune != null
 	for i in _slots.size():
-		var id: StringName = Run.loadout[i]
+		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
 		if id == &"":
 			_slots[i].clear()
 			continue

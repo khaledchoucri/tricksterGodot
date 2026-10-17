@@ -21,6 +21,12 @@ extends Resource
 @export var scene: PackedScene
 @export var drop_item: ItemData
 @export var drop_chance := 0.0
+## Echoes: ghosts of former players of another class. Their stats come from
+## `stats_override` (a monster-row-like Dictionary), they ignore the region's
+## scales, and beating one offers one of its `runes` (borrowed skills).
+@export var echo := false
+@export var stats_override: Dictionary = {}
+@export var runes: Array[CardData] = []
 ## Signature drop for compounding, and the chance a kill drops one.
 @export var material: MaterialData
 @export var material_chance := 0.2

@@ -26,7 +26,7 @@ enum Kind { TALENT, SKILL }
 @export var cooldown := 0.0
 @export_enum("none", "fire", "water", "wind", "earth", "lightning") var element := "none"
 ## Stat the damage scales with: AP for weapon skills, MA for magic.
-@export_enum("AP", "MA") var scaling := "AP"
+@export_enum("AP", "MA", "DA", "DP") var scaling := "AP"
 ## Script extending Skill that performs it.
 @export var behavior: Script
 

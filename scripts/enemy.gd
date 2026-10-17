@@ -86,8 +86,10 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	elements = stats_row.get("elements", {})
 	# Deeper rooms field tougher monsters.
 	var depth_mult := 1.0 + DEPTH_HP * Run.depth
-	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * depth_mult * Run.region.hp_scale)
-	damage = roundi((6.0 + float(stats.get("AP", 4)) * 0.25) * DAMAGE_MULT * Run.region.damage_scale)
+	var hp_scale := 1.0 if data.echo else Run.region.hp_scale
+	var dmg_scale := 1.0 if data.echo else Run.region.damage_scale
+	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * depth_mult * hp_scale)
+	damage = roundi((6.0 + float(stats.get("AP", 4)) * 0.25) * DAMAGE_MULT * dmg_scale * (1.0 + 0.04 * Run.depth if data.echo else 1.0))
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
 	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
 	var stay: Array = stats_row.get("idle_stay", [3, 5])
@@ -114,6 +116,8 @@ func _ready() -> void:
 	add_to_group("enemies")
 	(shape.shape as CircleShape2D).radius = body_radius
 	sprite.setup(String(data.id))
+	if data.echo:
+		sprite.self_modulate = Color(0.7, 0.85, 1.4, 0.75)  # a ghost of a former player
 	if is_elite:
 		sprite.scale = Vector2(1.25, 1.25)
 		sprite.self_modulate = Color(1.2, 1.05, 0.7)

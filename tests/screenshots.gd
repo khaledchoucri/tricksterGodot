@@ -139,3 +139,9 @@ func _shoot_desert() -> void:
 			game.player.invulnerable_until = game.player.now() + 999.0
 		await _wait(1.5)
 		await _snap("20_desert_%d" % depth)
+		if depth == Run.regions[0].run_length + 1:
+			for i in Run.echoes.size():
+				game.room.spawn(Run.echoes[i].id, game.player.global_position + Vector2(-120 + 120 * i, -60))
+			Run.take_rune(Run.echoes[0].runes[0])
+			await _wait(1.0)
+			await _snap("21_echoes")

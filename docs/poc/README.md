@@ -98,6 +98,19 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
   - **Skills** go in the three skill slots and cost MP. Taking a new skill with full slots replaces one.
   - **Talents** are passive.
 
+### Echoes and runes
+
+- **Echoes.** After your first clear, elite rooms can be haunted by an **Echo**: the ghost of a former player of another class, in that class's original sprite. They are:
+  - the **Bard**, who casts from range;
+  - the **Explorer**, who lunges;
+  - the **Entertainer**, who spins.
+- **Sky-blue runes.** Beating an Echo leaves a rune, the original's cross-class rune. It lends one of that class's skills for the run, in a fourth skill slot (**F**), stronger in Desert Beach:
+  - Drip Bomb and Electro Attack scale with **MA**;
+  - Fan of Knives and Stone Strike scale with **DA**;
+  - Galder Barrage spends Galder and scales with **DP**.
+
+  So Magic, Sense and Charm points pay off for Buffalo too.
+
 ### Stats and types
 
 - Trickster's 12 stats in 4 types:

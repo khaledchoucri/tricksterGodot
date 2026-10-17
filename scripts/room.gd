@@ -351,6 +351,9 @@ func _make_waves(depth: int, elite: bool) -> Array:
 		if ServerSettings.pk_mode() and depth >= 1 and not wave_list.is_empty():
 			wave_list[0].elite = true
 		out.append(wave_list)
+	var echo := Run.echo_here() if elite else null
+	if echo:
+		out[out.size() - 1].append({"id": echo.id, "elite": false})
 	if elite:
 		# One elite in each of the last two waves.
 		for w in range(maxi(0, out.size() - 2), out.size()):

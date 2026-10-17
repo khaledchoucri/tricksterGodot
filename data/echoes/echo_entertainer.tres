@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/echoes/galder_barrage.tres" id="r_galder_barrage"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"echo_entertainer"
+kind = "spin"
+body_radius = 14.0
+cost = 99
+min_depth = 99
+tune = {"radius": 72.0}
+echo = true
+stats_override = {"name": "Echo of an Entertainer", "stats": {"AP": 32, "AC": 55, "HP": 820, "DP": 30, "HV": 15}, "exp": 900, "tm": 160, "galder": [80, 200], "walk_speed": 96.0, "run_speed": 140.0}
+runes = Array[ExtResource("2_c")]([ExtResource("r_galder_barrage")])
