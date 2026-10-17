@@ -129,8 +129,8 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
   | Champion | **Rush**: two quick jabs before the finisher, which stuns. |
   | Duelist | **Riposte**: dodging through an attack recharges the dash and makes the next hit a sure x2.5 critical. |
 
-  A job change also grants 4 type points in the job's types (which can unlock traits on the spot), turns your automatic growth toward them (`JobData.graph`), heals you fully, and dresses you in the job's outfit.
-- **Looks.** Hats, shields, masks, head pieces and your class's ears and tails show on the character, placed on every frame by the original pivot tables. Each job has its own outfit colours, and your innerwear colours the belt. `tests/look_gallery.tscn` renders them all.
+  A job change also grants 4 type points in the job's types (which can unlock traits on the spot), turns your automatic growth toward them (`JobData.graph`) and heals you fully. The techniques, bonus points and growth shift are this game's additions, not Trickster's; the original jobs differ by their skills.
+- **Looks follow the original.** As in Trickster, a job change turns you into another character (CharacterInfo): Fighter → Knight (`chr010`) → the Power 3rd-job body (`chr018`, Gladiator and Mercenary), and Schoolgirl → Boxer (`chr009`) → `chr017` (Champion and Duelist). Hats, shields, masks, head pieces and ears/tails are drawn wherever that character's own pivot file places them; a piece it has no pivots for doesn't show (in Trickster, fashion stops working after a job change), though its stats still count. `tests/look_gallery.tscn` renders every job with gear.
 
 - **The Trickster** is the custom class.
   - It unlocks after a 3rd-job clear with both Buffalo and Bunny.

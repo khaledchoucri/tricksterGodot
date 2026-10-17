@@ -74,7 +74,7 @@ var _steps: Array[ComboStep] = []
 
 func _ready() -> void:
 	add_to_group("player")
-	sprite.setup(Run.cls.actor)
+	sprite.setup(Run.actor())
 	refresh_gear()
 	sprite.play_action("idle", Vector2(1, 1))
 
@@ -184,8 +184,14 @@ func dodged() -> void:
 		_riposte()
 
 
-## Worn gear and wardrobe pieces on the sprite, and the job's outfit.
+## The job's character, with worn gear and wardrobe pieces. A piece shows
+## only where that character's pivot file places it (as in Trickster, where a
+## job change leaves fashion behind); its stats apply regardless.
 func dress() -> void:
+	if sprite.actor_name != Run.actor():
+		var act := sprite.action if sprite.action != "" else "idle"
+		sprite.setup(Run.actor())
+		sprite.play_action(act, sprite.facing, 0.0, true)
 	for slot: String in ["hat", "shield"]:
 		var g := Run.equipped(slot)
 		sprite.wear(slot, g.data.worn_sprite() if g else "")
@@ -196,12 +202,6 @@ func dress() -> void:
 		sprite.wear(slot, fashion.get(slot, ""))
 	if fashion.get("head", "") != "":
 		sprite.wear("hat", "")  # fashion headwear is shown instead of the hat
-	var dyes: Dictionary = Run.job.outfit.duplicate() if Run.job else {}
-	var belt := Run.equipped("innerwear")
-	var belts := sprite.outfit_variants("w2")
-	if belt and belts > 0:
-		dyes["w2"] = belt.data.item_id % belts  # each innerwear has its own colour
-	sprite.set_outfit(dyes)
 
 
 func combo_steps() -> Array[ComboStep]:

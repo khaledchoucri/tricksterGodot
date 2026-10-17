@@ -723,13 +723,16 @@ func techniques() -> void:
 	var saved_clears: int = int(Profile.stats.get("clears", 0))
 	Run.take_damage(30)
 	var power: int = Run.type_points.power
+	check(p.sprite.actor_name == Run.cls.actor, "a run starts as the class's own character")
 	var unlocked: Array = Run.start_job(load("res://data/jobs/knight.tres"))
 	p.refresh_gear()
+	check(p.sprite.actor_name == "knight" and Run.actor() == "knight", "becoming a Knight turns you into the Knight")
 	var steps: Array[ComboStep] = p.combo_steps()
 	check(steps[steps.size() - 1].arc_degrees == 360.0 and Run.type_points.power == power + 2 and Run.hp == Run.max_hp,
 		"Knight: a Whirlwind finisher, +2 Power and a full heal on the job change")
 	Run.start_job(load("res://data/jobs/gladiator.tres"))
 	p.refresh_gear()
+	check(p.sprite.actor_name == "power_m", "a Gladiator takes the Power 3rd-job body")
 	steps = p.combo_steps()
 	var speed: float = Run.attack_speed_mult()
 	for i in Run.MOMENTUM_MAX:

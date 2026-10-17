@@ -1,5 +1,5 @@
 extends Node2D
-## Visual check for character looks: every job's outfit with worn hats,
+## Visual check for character looks: every job's own character with worn hats,
 ## shields and wardrobe pieces, in several directions and actions. Saves
 ## <out>/looks_<actor>.png. Run windowed (it renders):
 ##   godot res://tests/look_gallery.tscn -- out=C:/path
@@ -41,9 +41,8 @@ func _go() -> void:
 			for c in ACTS.size():
 				var s := ActorSprite.new()
 				add_child(s)
-				s.setup(cls.actor)
+				s.setup(jobs[r].actor if jobs[r].actor != "" else cls.actor)
 				s.position = Vector2(60 + c * CELL.x * 1.5, 105 + r * CELL.y)
-				s.set_outfit(jobs[r].outfit)
 				var set: Array = worn_sets[r % worn_sets.size()]
 				s.wear("hat", set[0])
 				s.wear("shield", set[1])

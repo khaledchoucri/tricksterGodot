@@ -12,7 +12,7 @@
 script = ExtResource("1_s")
 id = &"duelist"
 display_name = "Duelist"
-outfit = {"w1": 5, "w4": 5, "p": 2}
+actor = "power_f"
 technique = &"riposte"
 technique_name = "Riposte"
 technique_text = "Dodge through an attack to recharge your dash; your next hit is a sure critical at x2.5."

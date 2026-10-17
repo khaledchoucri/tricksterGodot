@@ -16,9 +16,10 @@ extends Resource
 @export var passive_name := ""
 @export_multiline var passive_text := ""
 @export_multiline var text := ""
-## The job's look: outfit dyes for ActorSprite.set_outfit (garment -> variant,
-## e.g. {"w1": 6} a white shirt). Empty keeps the class's base colours.
-@export var outfit: Dictionary = {}
+## The character this job turns you into (an exported actor). In Trickster a
+## job change replaces the character: Knight and Boxer at the 2nd job, and at
+## the 3rd one body per type and sex. Empty keeps the previous job's.
+@export var actor := ""
 @export_group("Job change")
 ## How the job changes the way you fight, checked by code through
 ## Run.has_technique(): whirlwind, momentum, blade_dash, footwork, rush, riposte.

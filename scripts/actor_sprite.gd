@@ -30,6 +30,7 @@ var prefer_mirror := false
 
 var _anchor := Vector2.ZERO
 var _cell := Vector2.ZERO
+var actor_name := ""
 var _stop_at := -1  # frame to hold on when playing part of a clip
 var _last_dir: Dictionary = {}  # action -> direction last used, for tie-breaking
 var _palette: Dictionary = {}   # {"base": [[r, g, b] x256], "parts": {"w13": {index: [r, g, b]}}}
@@ -40,11 +41,22 @@ var _worn: Dictionary = {}      # slot -> {"item", "sprite": Sprite2D, "frames":
 
 ## Loads <folder>/<actor_name>/<actor_name>.json and .tres. Original sprites
 ## live in original_assets/actors/; imported new art in art_build/.
-func setup(actor_name: String, folder := "res://original_assets/actors") -> bool:
-	var base := "%s/%s/%s" % [folder, actor_name, actor_name]
+func setup(p_actor: String, folder := "res://original_assets/actors") -> bool:
+	var base := "%s/%s/%s" % [folder, p_actor, p_actor]
 	if not ResourceLoader.exists(base + ".tres") or not FileAccess.file_exists(base + ".json"):
-		push_warning("Missing exported sprites for %s; run tools/export_actor.py" % actor_name)
+		push_warning("Missing exported sprites for %s; run tools/export_actor.py" % p_actor)
 		return false
+	# Setting up again (a job change) replaces everything from the last actor.
+	for slot: String in _worn:
+		(_worn[slot].sprite as Node).queue_free()
+	_worn.clear()
+	_equip = {}
+	_palette = {}
+	available.clear()
+	lengths.clear()
+	sockets.clear()
+	_last_dir.clear()
+	actor_name = p_actor
 	sprite_frames = load(base + ".tres")
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(base + ".json"))
 	centered = false
@@ -55,8 +67,9 @@ func setup(actor_name: String, folder := "res://original_assets/actors") -> bool
 	scale = Vector2(s, s)
 	if manifest.get("filter", "") == "linear":
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	material = null
 	if manifest.has("palette"):
-		_palette = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/%s" % [folder, actor_name, manifest.palette]))
+		_palette = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/%s" % [folder, p_actor, manifest.palette]))
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		var mat := ShaderMaterial.new()
 		mat.shader = PALETTE_SHADER
@@ -177,9 +190,10 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- outfits
 
-## Dyes the outfit: `dyes` maps a garment to a variant, e.g. {"w1": 5} (shirt,
-## black). Garments: w0 shoes, w1 shirt, w2 belt, w3 trousers, w4 wristbands,
-## w5 extra; "p" the hair or headwear. Missing ones keep the base colours.
+## Recolours from the character's original palettes: "p" is the hair colour
+## chosen at character creation in Trickster (part/<chr>_N.pal), e.g.
+## {"p": 3}. The "w" sets (wear_parts) exist in the data too, but how the
+## original used them is unconfirmed, so nothing applies them yet.
 func set_outfit(dyes: Dictionary) -> void:
 	if _palette.is_empty():
 		return

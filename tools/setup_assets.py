@@ -17,19 +17,28 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, 'original_assets')
 
-# Hand sockets for Buffalo: the character's pivot file and the section for
-# the sword weapon type.
+# Hand sockets: the character's pivot file and the section for the sword
+# weapon type.
 BUFFALO_SOCKETS = ('data/character/chr002.pvt', 'weapon001.nri')
+# Actions the playable characters export (the punchers never draw a weapon).
+ARMED_ACTIONS = ('idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,'
+                 'guard,jump,attack_ready,drill0,combat_stance')
+FIST_ACTIONS = 'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,guard,jump'
+
 # Held weapons: name -> item sprite.
 WEAPONS = {'long_sword': 'data/equip/weapon_ex_009.nri'}
 
 # actor name -> (sprite file, actions to export or '' for all, hand sockets or None)
 ACTORS = {
-    'buffalo': ('data/character/chr002.nri',
-                'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,'
-                'guard,jump,attack_ready,drill0,combat_stance', BUFFALO_SOCKETS),
-    'bunny': ('data/character/chr001.nri',
-              'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,guard,jump', None),
+    'buffalo': ('data/character/chr002.nri', ARMED_ACTIONS, BUFFALO_SOCKETS),
+    'bunny': ('data/character/chr001.nri', FIST_ACTIONS, None),
+    # Job changes turn you into another character (CharacterInfo 9, 10, 17,
+    # 18): Knight and Boxer at the 2nd job; at the 3rd, one body per type and
+    # sex (power_m: Gladiator and Mercenary, power_f: Champion and Duelist).
+    'knight': ('data/character/chr010.nri', ARMED_ACTIONS, ('data/character/chr010.pvt', 'weapon001.nri')),
+    'power_m': ('data/character/chr018.nri', ARMED_ACTIONS, ('data/character/chr018.pvt', 'weapon001.nri')),
+    'boxer': ('data/character/chr009.nri', FIST_ACTIONS, None),
+    'power_f': ('data/character/chr017.nri', FIST_ACTIONS, None),
     'torobbie': ('data/monster/mon249.nri', '', None),
     'bad_fury': ('data/monster/mon250.nri', '', None),
     'tottochi': ('data/monster/mon251.nri', '', None),
@@ -134,7 +143,9 @@ def skill_ids():
 
 # Playable characters: palette-index sheets (outfits are dyed in game) and
 # the pivot file that places worn items (hats, shields, masks) on them.
-PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr001.pvo'}
+PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr001.pvo',
+           'knight': 'data/character/chr010.pvo', 'power_m': 'data/character/chr018.pvo',
+           'boxer': 'data/character/chr009.pvo', 'power_f': 'data/character/chr017.pvo'}
 
 
 def worn_sprites(client):

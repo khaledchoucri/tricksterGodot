@@ -234,7 +234,6 @@ func build_trickster() -> ClassData:
 	j.passive = &"data_bleed"
 	j.passive_name = "Data Bleed"
 	j.passive_text = "Skill card rewards offer one more choice."
-	j.outfit = {"w1": 1, "w3": 4, "p": 1} if not fists else {"w1": 2, "w4": 2, "p": 2}
 	var pool: Array[CardData] = []
 	for c2 in classes[0].start_job.cards:
 		pool.append(c2)
@@ -687,6 +686,15 @@ func start_job(j: JobData) -> Array[Dictionary]:
 		mp = max_mp
 		Events.player_hp_changed.emit()
 	return unlocked
+
+
+## The character on screen: the latest job's (a job change replaces the
+## character), else the class's.
+func actor() -> String:
+	for i in range(jobs.size() - 1, -1, -1):
+		if jobs[i].actor != "":
+			return jobs[i].actor
+	return cls.actor if cls else "buffalo"
 
 
 func has_technique(id: StringName) -> bool:

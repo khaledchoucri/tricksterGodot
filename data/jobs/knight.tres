@@ -14,7 +14,7 @@
 script = ExtResource("1_s")
 id = &"knight"
 display_name = "Knight"
-outfit = {"w0": 5, "w1": 6, "w3": 1, "p": 6}
+actor = "knight"
 technique = &"whirlwind"
 technique_name = "Whirlwind"
 technique_text = "Your combo finisher is a full spin with longer reach: it hits everything around you."

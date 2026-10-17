@@ -11,7 +11,7 @@
 script = ExtResource("1_s")
 id = &"mercenary"
 display_name = "Mercenary"
-outfit = {"w0": 5, "w1": 5, "w3": 5, "p": 2}
+actor = "power_m"
 technique = &"blade_dash"
 technique_name = "Blade Dash"
 technique_text = "Your dash cuts through every monster in its path. A kill with it recharges the dash."
