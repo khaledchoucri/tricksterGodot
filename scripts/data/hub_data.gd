@@ -14,4 +14,6 @@ extends Resource
 ## Wardrobe pieces in the game, and the Card Hunter's bestiary sets.
 @export var wardrobe: Array[WardrobeData] = []
 @export var card_sets: Array[CardSetData] = []
+## Drills Driller Marky sells (the first comes free with the Drill Shop).
+@export var drills: Array[DrillData] = []
 @export var ambience := ""

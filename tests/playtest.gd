@@ -118,6 +118,9 @@ func _one_run(index: int) -> void:
 # ---------------------------------------------------------------- the bot
 
 func _tick(delta: float) -> void:
+	if game.hud.drill.visible:
+		_dig(game.hud.drill)
+		return
 	if game.hud.pick_panel.visible:
 		_release()
 		_choose()
@@ -242,6 +245,17 @@ func _press(dir: Vector2) -> void:
 func _release() -> void:
 	for a in MOVES:
 		Input.action_release(a)
+
+
+## Strikes when the marker is in the sweet spot (a decent player's timing).
+var digs := 0
+
+
+func _dig(p: DrillPanel) -> void:
+	if p._left == p._drill.strikes and p._t < 0.02:
+		digs += 1
+	if p._left > 0 and absf(p._marker() - p._spot) < p._zone * (0.35 if randf() < 0.7 else 0.9):
+		p._strike()
 
 
 # ---------------------------------------------------------------- choices
@@ -431,4 +445,4 @@ func _report() -> void:
 		for room in r.rooms:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])
 		print("   rooms (time/hp lost): %s" % "  ".join(rooms))
-	print("clears %d / %d, average room reached %.1f" % [clears, results.size(), depth / maxf(results.size(), 1)])
+	print("clears %d / %d, average room reached %.1f, dig sites %d" % [clears, results.size(), depth / maxf(results.size(), 1), digs])

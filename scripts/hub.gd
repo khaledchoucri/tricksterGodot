@@ -155,6 +155,8 @@ func talk(npc: Npc) -> void:
 			await _cards_menu(npc)
 		"mastery":
 			await _mastery_menu(npc)
+		"drills":
+			await _drill_menu(npc)
 		"compound":
 			await _compound_menu(npc)
 	_set_talking(false)
@@ -356,6 +358,35 @@ func _album(npc: Npc, sets: bool) -> void:
 			Profile.wear(piece.slot, piece.id)
 		Audio.play("ui_unique_get.wav", -4.0)
 		hud.log_line("[System] %s added to your wardrobe." % piece.display_name, Color("e0b54d"))
+
+
+## Driller Marky: the first drill is free; buy deeper ones, choose which to carry.
+func _drill_menu(npc: Npc) -> void:
+	if not hub.drills.is_empty() and not String(hub.drills[0].id) in Profile.drills:
+		Profile.drills.append(String(hub.drills[0].id))
+		Profile.drill = String(hub.drills[0].id)
+		Profile.save()
+		hud.log_line("[System] You got a %s." % hub.drills[0].display_name, Color("e0b54d"))
+	while true:
+		var options: Array = []
+		for d in hub.drills:
+			var owned := String(d.id) in Profile.drills
+			var tag := "Carried" if Profile.drill == String(d.id) else ("Owned" if owned else "%d TM%s" % [d.price_tm,
+				" + %d Shard%s" % [d.price_shards, "" if d.price_shards == 1 else "s"] if d.price_shards else ""])
+			options.append({"title": d.display_name, "tag": tag, "icon": d.icon(), "text": d.describe(),
+				"disabled": not owned and (Profile.tm < d.price_tm or Profile.shards < d.price_shards)})
+		options.append({"title": "Leave", "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
+		var pick := await dialogue.choose(_line(String(npc.data.id), "Pick a drill. Carry one at a time!"), options)
+		if pick < 0 or pick >= hub.drills.size():
+			return
+		var d := hub.drills[pick]
+		if not String(d.id) in Profile.drills:
+			Profile.tm -= d.price_tm
+			Profile.shards -= d.price_shards
+			Profile.drills.append(String(d.id))
+			Audio.play("etc_money.wav")
+		Profile.drill = String(d.id)
+		Profile.save()
 
 
 ## Master Louis raises skill card caps with banked materials and Galder.

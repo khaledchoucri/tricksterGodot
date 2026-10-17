@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="HubData" load_steps=52 format=3]
+[gd_resource type="Resource" script_class="HubData" load_steps=59 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/hub_data.gd" id="1"]
 [ext_resource type="Resource" path="res://data/megalopolis/hub_room.tres" id="2"]
@@ -25,6 +25,13 @@
 [ext_resource type="Resource" path="res://data/megalopolis/npcs/eugene.tres" id="23"]
 [ext_resource type="Resource" path="res://data/megalopolis/restorations/skill_shrine.tres" id="26"]
 [ext_resource type="Resource" path="res://data/megalopolis/npcs/louis.tres" id="27"]
+[ext_resource type="Resource" path="res://data/megalopolis/restorations/drill_shop.tres" id="28"]
+[ext_resource type="Resource" path="res://data/megalopolis/npcs/marky.tres" id="29"]
+[ext_resource type="Script" path="res://scripts/data/drill_data.gd" id="30"]
+[ext_resource type="Resource" path="res://data/drills/basic_drill.tres" id="d_basic_drill"]
+[ext_resource type="Resource" path="res://data/drills/cleaner_drill.tres" id="d_cleaner_drill"]
+[ext_resource type="Resource" path="res://data/drills/tornado_drill.tres" id="d_tornado_drill"]
+[ext_resource type="Resource" path="res://data/drills/diamond_drill.tres" id="d_diamond_drill"]
 [ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="24"]
 [ext_resource type="Script" path="res://scripts/data/card_set_data.gd" id="25"]
 [ext_resource type="Resource" path="res://data/wardrobe/buffalo_horn.tres" id="w_buffalo_horn"]
@@ -56,11 +63,12 @@
 script = ExtResource("1")
 display_name = "Megalopolis"
 room = ExtResource("2")
-npcs = Array[ExtResource("11")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("13"), ExtResource("14"), ExtResource("15"), ExtResource("21"), ExtResource("23"), ExtResource("27")])
-restorations = Array[ExtResource("12")]([ExtResource("16"), ExtResource("17"), ExtResource("18"), ExtResource("19"), ExtResource("20"), ExtResource("22"), ExtResource("26"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10")])
+npcs = Array[ExtResource("11")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("13"), ExtResource("14"), ExtResource("15"), ExtResource("21"), ExtResource("23"), ExtResource("27"), ExtResource("29")])
+restorations = Array[ExtResource("12")]([ExtResource("16"), ExtResource("17"), ExtResource("18"), ExtResource("19"), ExtResource("20"), ExtResource("22"), ExtResource("26"), ExtResource("28"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10")])
 gate_position = Vector2(2340, 2050)
 story = "res://data/megalopolis/story.json"
 music = "Megalopolis_Night.mp3"
 ambience = ""
 wardrobe = Array[ExtResource("24")]([ExtResource("w_buffalo_horn"), ExtResource("w_bunny_ears"), ExtResource("w_cats_ears"), ExtResource("w_fox_ears"), ExtResource("w_buffalo_tail"), ExtResource("w_raccoon_tail"), ExtResource("w_dragon_tail"), ExtResource("w_black_sunglasses"), ExtResource("w_sleep_mask"), ExtResource("w_don_mask"), ExtResource("w_omnipotent_umbrella"), ExtResource("w_eternal_sunshine"), ExtResource("w_solar_cape_jr"), ExtResource("w_job_cloak"), ExtResource("w_newbie_sprint"), ExtResource("w_dashing_sprint"), ExtResource("w_levitation_charm")])
 card_sets = Array[ExtResource("25")]([ExtResource("s_shore_critters"), ExtResource("s_coral_deep"), ExtResource("s_coral_beach"), ExtResource("s_sands"), ExtResource("s_dunes"), ExtResource("s_pyramid"), ExtResource("s_desert_beach")])
+drills = Array[ExtResource("30")]([ExtResource("d_basic_drill"), ExtResource("d_cleaner_drill"), ExtResource("d_tornado_drill"), ExtResource("d_diamond_drill")])

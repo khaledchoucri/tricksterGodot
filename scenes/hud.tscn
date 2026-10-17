@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
 [ext_resource type="Theme" path="res://ui/hud_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/skill_slot.tscn" id="3_slot"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_sheet.tscn" id="9_sheet"]
+[ext_resource type="PackedScene" path="res://scenes/ui/drill_panel.tscn" id="10_drill"]
 
 [sub_resource type="StyleBoxFlat" id="xp_fill"]
 bg_color = Color(0.878, 0.71, 0.302, 1)
@@ -316,5 +317,9 @@ layout_mode = 2
 text = "Return to Megalopolis  [R]"
 
 [node name="CharacterSheet" parent="Root" instance=ExtResource("9_sheet")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="DrillPanel" parent="Root" instance=ExtResource("10_drill")]
 unique_name_in_owner = true
 layout_mode = 1

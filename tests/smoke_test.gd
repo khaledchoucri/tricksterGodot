@@ -569,6 +569,15 @@ func _systems(Run: Node) -> void:
 	Profile.class_id = "buffalo"
 	Run.new_run()
 
+	# Drilling.
+	Profile.restorations["drill_shop"] = 1
+	var drill: DrillData = Run.drill()
+	check(drill != null and drill.id == &"basic_drill", "the Drill Shop gives a Basic Drill")
+	var shallow: Dictionary = Run.dig_rewards(10)
+	var deep: Dictionary = Run.dig_rewards(80)
+	check(shallow.ore > 0 and shallow.material == null and deep.material != null and deep.shard == 1,
+		"deeper digs bring up materials and Harkon Shards")
+
 	# Master Louis raises card caps.
 	var wave: CardData = Run.card(&"shockwave")
 	Profile.materials[String(wave.master_material.id)] = 6

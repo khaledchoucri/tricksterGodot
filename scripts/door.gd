@@ -12,6 +12,7 @@ const REWARDS := {
 	"anvil": {"label": "Anvil", "color": Color(0.75, 0.8, 0.9)},
 	"compound": {"label": "Compounder", "color": Color(0.55, 0.85, 0.75)},
 	"shop": {"label": "Shop", "color": Color(1.0, 0.9, 0.55)},
+	"dig": {"label": "Dig Site", "color": Color(0.8, 0.65, 0.45)},
 	"boss": {"label": "Boss", "color": Color(1.0, 0.35, 0.3)},
 	"expedition": {"label": "Coral Beach Gate", "color": Color(0.35, 0.85, 0.85)},
 }

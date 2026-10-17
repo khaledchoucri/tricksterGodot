@@ -562,6 +562,49 @@
      ]
     ]
    }
+  ],
+  "marky": [
+   {
+    "id": "marky_intro",
+    "if": [
+     "!met_marky"
+    ],
+    "set": [
+     "met_marky"
+    ],
+    "then": "drills",
+    "lines": [
+     [
+      "marky",
+      "Shop's open! Driller Marky! Drills, drills and more drills!"
+     ],
+     [
+      "marky",
+      "Take a Basic Drill, on the house. Find a Dig Site out there and hit the ground when the marker's in the green."
+     ],
+     [
+      "marky",
+      "Gold zone in the middle digs half again. Miss too often and you'll wake something that lives down there."
+     ],
+     [
+      "marky",
+      "Basic gets you ore and bits. Want gear and Harkon Shards? You'll need to dig deeper. I sell deeper."
+     ]
+    ]
+   },
+   {
+    "id": "marky_default",
+    "if": [
+     "met_marky"
+    ],
+    "then": "drills",
+    "lines": [
+     [
+      "marky",
+      "Deeper is better! What'll it be?"
+     ]
+    ]
+   }
   ]
  }
 }

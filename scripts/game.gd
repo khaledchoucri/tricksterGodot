@@ -10,12 +10,15 @@ const PLAYER_SCENE := preload("res://scenes/player.tscn")
 const HUB_SCENE := "res://scenes/hub.tscn"
 ## Door rewards, weighted by repetition (two different ones are offered).
 const REWARD_POOL: Array[String] = ["card", "card", "card", "card", "upgrade", "upgrade", "gear", "gear", "anvil",
-	"compound", "compound", "shop", "shop", "heal", "galder", "shard"]
+	"compound", "compound", "shop", "shop", "dig", "dig", "heal", "galder", "shard"]
 const CAMERA_MARGIN := 60
 ## MP restored on entering a room.
 const ROOM_MP := 40
 ## Rewards that need a city system: reward -> Run.system_on() id.
-const REWARD_SYSTEMS := {"gear": &"smithing", "anvil": &"smithing", "shop": &"smithing", "compound": &"compounding"}
+const REWARD_SYSTEMS := {"gear": &"smithing", "anvil": &"smithing", "shop": &"smithing", "compound": &"compounding",
+	"dig": &"drilling"}
+## Misses at a Dig Site that wake an ambush.
+const DIG_NOISE := 3
 ## Bronze Fragments waiting at an anvil, and Galder for scrapping gear.
 const ANVIL_ORE := 2
 const SCRAP_GALDER := 25
@@ -42,6 +45,7 @@ var _pending_mat: MaterialData
 var _legend: GearItem       # a boss's legendary drop, offered when the room is cleared
 var _rune_from: EnemyData   # an Echo beaten in this room: offer its runes
 var _boss_name := ""
+var _ambush := false  # an ambush from a Dig Site is being fought
 
 @onready var hud: Hud = $Hud
 
@@ -139,6 +143,12 @@ func _spawn_player(at: Vector2) -> void:
 func _on_room_cleared() -> void:
 	if not is_instance_valid(player) or player.state == Player.State.DEAD:
 		return
+	if _ambush:
+		_ambush = false
+		phase = Phase.REWARD
+		hud.log_line("[System] The Dig Site is quiet again.", Color("94a7b2"))
+		_next_step()
+		return
 	if Run.final_boss():
 		_win()
 		return
@@ -223,6 +233,17 @@ func _grant(reward: String) -> void:
 		"port":
 			_open_port()
 			return
+		"dig":
+			var d := Run.drill()
+			if d:
+				Audio.play_ambience("")
+				hud.drill.start(d, Run.stat("DA") / 400.0)
+				get_tree().paused = true
+				var result: Array = await hud.drill.finished
+				get_tree().paused = false
+				Audio.play_ambience(Run.region.field_ambience)
+				_dug(result[0], result[1])
+				return
 		"rune":
 			var options: Array = _rune_from.runes.duplicate()
 			_rune_from = null
@@ -669,6 +690,47 @@ func _open_port() -> void:
 			opts.append(g)
 	opts.append(null)
 	_start_pick("port", opts)
+
+
+## Hands out what the dig brought up, or wakes an ambush.
+func _dug(depth: int, misses: int) -> void:
+	var r := Run.dig_rewards(depth)
+	var found: PackedStringArray = []
+	if r.ore > 0:
+		Run.ore += r.ore
+		found.append("%d %s%s" % [r.ore, Run.ORE_NAME, "s" if r.ore > 1 else ""])
+	if r.material:
+		Run.add_material(r.material, r.count)
+		found.append("%d %s" % [r.count, r.material.display_name])
+	if r.shard > 0:
+		Run.shards += r.shard
+		found.append("a Harkon Shard")
+	hud.log_line("[System] Dug %d deep: %s." % [depth, ", ".join(found) if found.size() else "nothing but dirt"], INFO)
+	if found.size():
+		hud.notice("Dug up " + ", ".join(found))
+	if misses >= DIG_NOISE:
+		_start_ambush()
+		return
+	if r.gear:
+		Audio.play("etc_item1.wav", -4.0)
+		_start_pick("gear", [r.gear])
+		return
+	_next_step()
+
+
+## Too much noise at a Dig Site: something climbs out.
+func _start_ambush() -> void:
+	_ambush = true
+	phase = Phase.FIGHT
+	Audio.play("snd_ui_crazydrill_boom.wav")
+	Events.shake_requested.emit(6.0)
+	hud.notice("You woke something up!")
+	hud.log_line("[System] The noise woke the monsters below!", Color("f07a62"))
+	var wave := room._make_waves(Run.local_depth(), true)
+	room.waves = [wave[wave.size() - 1]]
+	room.wave = -1
+	room._cleared = false
+	room._next_wave()
 
 
 func _open_anvil() -> void:

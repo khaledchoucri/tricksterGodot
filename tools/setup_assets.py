@@ -64,12 +64,13 @@ ACTORS = {
     'sabrina': ('data/npc/npc043.nri', '', None),
     'eugene': ('data/npc/npc153.nri', '', None),
     'louis': ('data/npc/npc017.nri', '', None),
+    'marky': ('data/npc/npc180.nri', '', None),
 }
 # Dialogue portraits: name -> NPC illustration
 PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003_illu.nri',
              'julio': 'data/npc/npc046_illu.nri', 'paul': 'data/npc/npc040_illu.nri', 'marx': 'data/npc/npc119_illu.nri',
              'sabrina': 'data/npc/npc043_illu.nri', 'eugene': 'data/npc/npc153_illu.nri',
-             'louis': 'data/npc/npc017_illu.nri',
+             'louis': 'data/npc/npc017_illu.nri', 'marky': 'data/npc/npc180_illu.nri',
              'stella': 'data/npc/npc222_illu.nri'}
 MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00', 'mapf01g', 'mapf01f', 'mapf01d']
 SOUNDS = [
@@ -81,7 +82,7 @@ SOUNDS = [
     'sgmon103.wav', 'sdmon103.wav', 'samon021.wav', 'bgs_beach.wav', 'bgs_cave01.wav',
     'weapon002.wav', 'weapon003.wav', 'etc_item1.wav', 'ui_refine_proceed.wav', 'ui_refine_success.wav',
     'ui_refine_fail.wav', 'ui_compose_success.wav', 'bgs_blacksmith.wav', 'bgs_sandwind.wav',
-    'bgs_pyramid_loop_evening.wav',
+    'bgs_pyramid_loop_evening.wav', 'snd_ui_crazydrill_boom.wav', 'ui_drillboy1.wav', 'ui_drillboy2.wav',
 ]
 # From data/sound/skillsound.
 SKILL_SOUNDS = [
@@ -107,9 +108,9 @@ def monster_ids():
 
 
 def item_ids():
-    """Original item IDs referenced by items, materials and wardrobe pieces."""
+    """Original item IDs referenced by items, materials, wardrobe pieces and drills."""
     ids = []
-    for f in sorted(os.path.join(sub, n) for sub in ('items', 'materials', 'wardrobe')
+    for f in sorted(os.path.join(sub, n) for sub in ('items', 'materials', 'wardrobe', 'drills')
                     if os.path.isdir(os.path.join(ROOT, 'data', sub))
                     for n in os.listdir(os.path.join(ROOT, 'data', sub))):
         if f.endswith('.tres'):

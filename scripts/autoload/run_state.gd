@@ -739,6 +739,39 @@ func roll_card(enemy_id: StringName, elite: bool, boss: bool) -> bool:
 	return randf() < chance
 
 
+## The drill carried (the first one once the Drill Shop is restored).
+func drill() -> DrillData:
+	if hub == null or hub.drills.is_empty() or not system_on(&"drilling"):
+		return null
+	for d in hub.drills:
+		if String(d.id) == Profile.drill and String(d.id) in Profile.drills:
+			return d
+	return hub.drills[0]
+
+
+## What a dig to `depth` brings up: ore, then the region's materials, then
+## gear, then a Harkon Shard.
+func dig_rewards(depth_reached: int) -> Dictionary:
+	var out := {"ore": 0, "material": null, "count": 0, "gear": null, "shard": 0}
+	if depth_reached >= 5:
+		out.ore = 1 + depth_reached / 10
+	if depth_reached >= 15:
+		var mats: Array[MaterialData] = []
+		for e in region.enemies:
+			if e.material and not e.is_boss:
+				mats.append(e.material)
+		if not mats.is_empty():
+			out.material = mats[randi() % mats.size()]
+			out.count = 2 + depth_reached / 20
+	if depth_reached >= 40:
+		var offers := gear_offers(1)
+		if not offers.is_empty():
+			out.gear = offers[0]
+	if depth_reached >= 70:
+		out.shard = 1
+	return out
+
+
 ## Every material the run can drop, by id (for city crafting).
 func material_by_id(id: StringName) -> MaterialData:
 	for r in regions:

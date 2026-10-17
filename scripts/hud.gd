@@ -16,6 +16,7 @@ const LOG_LINES := 6
 @onready var pick_panel: PanelContainer = %PickPanel
 @onready var results_panel: PanelContainer = %ResultsPanel
 @onready var sheet: CharacterSheet = %CharacterSheet
+@onready var drill: DrillPanel = %DrillPanel
 @onready var _slots: Array[SkillSlot] = [$Root/SlotBar/Slot1, $Root/SlotBar/Slot2, $Root/SlotBar/Slot3, $Root/SlotBar/Slot4]
 
 var _pick_count := 0

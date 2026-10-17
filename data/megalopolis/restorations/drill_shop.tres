@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"drill_shop"
+display_name = "Drill Shop"
+text = "Brings back Driller Marky and a Basic Drill. Dig Sites appear in runs: time your strikes to dig up ore, materials, gear and shards."
+max_level = 1
+per_level = 1.0
+effect = "system"
+system = &"drilling"
+tm_costs = Array[int]([3500])
+shard_costs = Array[int]([0])

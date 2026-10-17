@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DrillData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/drill_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tornado_drill"
+display_name = "Tornado Drill"
+item_id = 8004
+depth = 60
+zone = 0.09
+speed = 1.1
+scoop = 20
+strikes = 6
+price_tm = 9000
+price_shards = 1

@@ -73,6 +73,18 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 
   Wear them through Keeper Julio's warehouse menu.
 - **Skill Shrine** (5,000 TM + 1 shard) brings back **Master Louis**. Each skill card's level cap can rise from 5 to 8 with banked materials from its signature monster (Shockwave takes Hard Scales, Sonic Slash takes Cooling Fans) plus Galder. The cost grows with each level.
+- **Drill Shop** (3,500 TM) brings back **Driller Marky**, who gives you a Basic Drill and sells deeper ones. The drills use the original Item_DrillParam numbers.
+
+| Drill | Digs to | Cost |
+|---|---|---|
+| Basic | 20 | free |
+| Cleaner | 30 | 4,000 TM |
+| Tornado | 60 | 9,000 TM + 1 shard |
+| Diamond | 90 | 16,000 TM + 3 shards |
+
+  - **Dig Site** doors start a timing-bar minigame. Strike while the marker is in the green (the gold centre digs half again). DA widens the zone.
+  - Depth 5+ brings up ore, 15+ the region's materials, 40+ a piece of gear, and 70+ a Harkon Shard.
+  - Three misses wake an ambush.
 - **Other restorations** are permanent bonuses: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
 - **Pace.** In playtests the systems open over the first 3–4 runs.
 
