@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"job_cloak"
+display_name = "Job Advancement Cloak"
+item_id = 35492
+slot = "cape"
+stats = {
+"HP": 30
+}
+quirk = &"job_cloak"
+text = "Every job change also gives a free type point."
+price_tm = 10000
+price_shards = 2

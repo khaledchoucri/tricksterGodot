@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"solar_cape_jr"
+display_name = "Solar Cape Jr."
+item_id = 35018
+slot = "cape"
+stats = {
+"AP": 10,
+"DP": 10,
+"MD": 10
+}
+quirk = &""
+text = "A small cape from the summer festival."
+price_tm = 0
+price_shards = 0

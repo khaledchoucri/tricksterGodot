@@ -75,6 +75,7 @@ var max_mp: int:
 var _bonus_hp := 0          # from restorations
 var _stats: Dictionary = {}  # cache of stat totals
 var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned against
+var _baseline := false
 
 
 ## A room in this run's plan: which room, and how it's modified.
@@ -168,8 +169,11 @@ func new_run() -> void:
 	_bonus_hp = 0
 	_stats.clear()
 	_ref = {}
+	_baseline = true  # numbers are tuned against the bare level-1 character
 	for k in Stats.KEYS:
 		_ref[k] = stat(k)
+	_baseline = false
+	_stats.clear()
 	start_job(cls.start_job)
 	_carry_heirloom()
 	_apply_restorations()
@@ -373,6 +377,9 @@ func _compute_stats() -> void:
 		for k: String in gs:
 			s[k] = s.get(k, 0.0) + gs[k]
 	s.HP += _bonus_hp
+	for w in ([] if _baseline else worn_pieces()):
+		for k: String in w.stats:
+			s[k] = s.get(k, 0.0) + w.stats[k]
 	for k: String in s:
 		_stats[k] = maxi(0, floori(s[k]))
 
@@ -450,6 +457,8 @@ func heal(amount: int) -> void:
 func start_job(j: JobData) -> void:
 	job = j
 	jobs.append(j)
+	if jobs.size() > 1 and quirk(&"job_cloak"):
+		pending_levels += 1  # a free type point
 	if j.starter and card_level(j.starter.id) == 0:
 		add_card(j.starter.id)
 
@@ -616,6 +625,33 @@ func city_compound(index: int, mat: MaterialData) -> Dictionary:
 	return c
 
 
+## Wardrobe pieces worn (from the Profile).
+func worn_pieces() -> Array[WardrobeData]:
+	var out: Array[WardrobeData] = []
+	if hub == null:
+		return out
+	for w in hub.wardrobe:
+		if Profile.worn.get(w.slot, "") == String(w.id):
+			out.append(w)
+	return out
+
+
+## Whether a worn wardrobe piece has this quirk.
+func quirk(id: StringName) -> bool:
+	for w in worn_pieces():
+		if w.quirk == id:
+			return true
+	return false
+
+
+## Monster card drop for a kill (rare; elites and bosses more often).
+func roll_card(enemy_id: StringName, elite: bool, boss: bool) -> bool:
+	if not system_on(&"cards"):
+		return false
+	var chance := 0.5 if boss else (0.15 if elite else 0.02 + stat("DA") / 1000.0)
+	return randf() < chance
+
+
 ## Every material the run can drop, by id (for city crafting).
 func material_by_id(id: StringName) -> MaterialData:
 	for r in regions:
@@ -735,11 +771,16 @@ func attack_speed_mult() -> float:
 
 
 func speed_mult() -> float:
-	return 0.85 if overweight() else 1.0
+	var m := 0.85 if overweight() else 1.0
+	if quirk(&"swift"):
+		m *= 1.08
+	if quirk(&"swift_feet"):
+		m *= 1.1
+	return m
 
 
 func dash_cooldown_mult() -> float:
-	return 1.3 if overweight() else 1.0
+	return (1.3 if overweight() else 1.0) * (0.8 if quirk(&"quick_dash") else 1.0)
 
 
 func crit_chance() -> float:
@@ -761,6 +802,8 @@ func evade_chance(ac: int) -> float:
 	var c := hv / float(hv + ac + 150)
 	if has_trait(&"light_feet"):
 		c += 0.08
+	if quirk(&"catlike"):
+		c += 0.06
 	return minf(c, 0.6)
 
 
@@ -796,7 +839,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 		mat: MaterialData = null, mat_chance := 0.0) -> Dictionary:
 	kills += 1
 	tm += tm_amount
-	galder += int(galder_amount * (1.0 + stat("LK") / 100.0))
+	galder += int(galder_amount * (1.0 + stat("LK") / 100.0) * (1.2 if quirk(&"thrifty") else 1.0))
 	var found := 0
 	if boss:
 		found = 3
@@ -809,11 +852,13 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 			count = 3
 		elif elite:
 			count = 2
-		elif randf() < (mat_chance + stat("DA") / 200.0) * ServerSettings.drop_mult():
+		elif randf() < (mat_chance + stat("DA") / 200.0 + (0.1 if quirk(&"sly") else 0.0)) * ServerSettings.drop_mult():
 			count = 1
 		add_material(mat, count)
 	if card_level(&"adrenaline") > 0:
 		heal(int(card_value(&"adrenaline")))
+	if quirk(&"mana_tail"):
+		gain_mp(3)
 	gain_exp(exp_amount)
 	return {"ore": found, "material": mat if count > 0 else null, "count": count}
 
@@ -873,15 +918,16 @@ func element_attack() -> Dictionary:
 ## What a shop sells this visit: {"kind", "price", ...}.
 func shop_offers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
+	var cut := 0.8 if quirk(&"masked") else 1.0
 	for g in gear_offers(2):
-		out.append({"kind": "gear", "item": g, "price": 160 + 24 * g.data.level + 50 * g.slots})
-	out.append({"kind": "ore", "count": 3, "price": 180})
+		out.append({"kind": "gear", "item": g, "price": int((160 + 24 * g.data.level + 50 * g.slots) * cut)})
+	out.append({"kind": "ore", "count": 3, "price": int(180 * cut)})
 	var mats: Array[MaterialData] = []
 	for e in region.enemies:
 		if e.material and local_depth() >= e.min_depth and not e.is_boss:
 			mats.append(e.material)
 	if mats.size() > 0:
 		var m: MaterialData = mats[randi() % mats.size()]
-		out.append({"kind": "material", "material": m, "count": m.need, "price": 70 * m.need})
-	out.append({"kind": "potion", "heal": 0.4, "price": 160})
+		out.append({"kind": "material", "material": m, "count": m.need, "price": int(70 * m.need * cut)})
+	out.append({"kind": "potion", "heal": 0.4, "price": int(160 * cut)})
 	return out

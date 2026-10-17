@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dragon_tail"
+display_name = "Dragon's Tail"
+item_id = 6953
+slot = "tail"
+stats = {
+"MP": 40
+}
+quirk = &"mana_tail"
+text = "Every kill restores 3 MP."
+price_tm = 6000
+price_shards = 0

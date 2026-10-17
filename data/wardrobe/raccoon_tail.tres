@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"raccoon_tail"
+display_name = "Raccoon's Tail"
+item_id = 6957
+slot = "tail"
+stats = {
+"LK": 2
+}
+quirk = &"thrifty"
+text = "Monsters drop 20% more Galder."
+price_tm = 0
+price_shards = 0

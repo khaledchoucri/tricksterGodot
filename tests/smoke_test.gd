@@ -486,6 +486,25 @@ func _systems(Run: Node) -> void:
 	_restore_all(Run)
 	check(Run.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
 
+	# Monster cards and the wardrobe.
+	Profile.restorations["card_house"] = 1
+	var boss_cards := 0
+	for _i in 40:
+		boss_cards += 1 if Run.roll_card(&"golden_mole", false, true) else 0
+	check(boss_cards > 8 and boss_cards < 32, "bosses drop their cards half the time (%d / 40)" % boss_cards)
+	var shore: CardSetData = Run.hub.card_sets.filter(func(s: CardSetData) -> bool: return s.id == &"shore_critters")[0]
+	for m in shore.monsters:
+		Profile.add_card(m)
+	check(shore.complete() and shore.reward.id == &"bunny_ears", "three cards complete the Shore Critters set")
+	Profile.give_wardrobe(&"buffalo_horn")
+	Profile.wear("ear", &"buffalo_horn")
+	Run.new_run()
+	var mult_horn: float = Run.attack_mult()
+	check(Run.quirk(&"elite_bane") and Run.stat("AP") == Run.cls.base.AP + 2 + 6 and mult_horn > 1.0,
+		"wearing Buffalo's Horn adds AP and its quirk")
+	Profile.wear("ear", &"")
+	Run.new_run()
+
 	# Server Settings (Heat).
 	Profile.server_settings = {"server_load": 2, "pk_mode": 1, "hardcore": 1}
 	check(ServerSettings.heat() == 7 and is_equal_approx(ServerSettings.monster_hp_mult(), 1.3),

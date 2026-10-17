@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dashing_sprint"
+display_name = "Dashing Sprint"
+item_id = 19003
+slot = "speed"
+stats = {}
+quirk = &"quick_dash"
+text = "Your dash recovers 20% faster."
+price_tm = 7000
+price_shards = 0

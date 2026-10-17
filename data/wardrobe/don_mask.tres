@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"don_mask"
+display_name = "Don Guivanni's Mask"
+item_id = 15012
+slot = "face"
+stats = {
+"AC": 2
+}
+quirk = &"masked"
+text = "Shops sell for 20% less."
+price_tm = 6000
+price_shards = 0

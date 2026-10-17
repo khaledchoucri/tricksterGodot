@@ -59,6 +59,19 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
   - Each rank adds Heat, and every point of Heat banks 10% more TM.
   - Clearing at a new best Heat pays a Harkon Shard for each new level.
   - With the city fully restored, the bot clears 8/8 runs at Heat 0, 7/8 at Heat 6 and 2/8 at Heat 12.
+- **Card House** (3,000 TM) brings back **Card Hunter Eugene**.
+  - Monsters drop their cards: 2% (more with DA), 15% from elites, 50% from bosses. Cards go straight into his album.
+  - Completing a set (Shore Critters, Coral Deep, Coral Beach, The Sands, The Dunes, The Pyramid, Desert Beach) gives a **wardrobe** piece.
+  - He also sells pieces for TM and shards.
+- **Wardrobe.** The persistent slots (ear, tail, head, face, cape, speed) hold original items, each with small stats and one quirk. A few examples:
+  - Buffalo's Horn: +10% damage to elites and bosses.
+  - Raccoon's Tail: +20% Galder.
+  - Black Sunglasses: crits +25%.
+  - Omnipotent Umbrella: −25% projectile damage.
+  - Eternal Sunshine: four skill card choices.
+  - Levitation Charm: dash 25% farther.
+
+  Wear them through Keeper Julio's warehouse menu.
 - **Other restorations** are permanent bonuses: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
 - **Pace.** In playtests the systems open over the first 3–4 runs.
 

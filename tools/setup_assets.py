@@ -56,11 +56,12 @@ ACTORS = {
     'paul': ('data/npc/npc040.nri', '', None),
     'marx': ('data/npc/npc119.nri', '', None),
     'sabrina': ('data/npc/npc043.nri', '', None),
+    'eugene': ('data/npc/npc153.nri', '', None),
 }
 # Dialogue portraits: name -> NPC illustration
 PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003_illu.nri',
              'julio': 'data/npc/npc046_illu.nri', 'paul': 'data/npc/npc040_illu.nri', 'marx': 'data/npc/npc119_illu.nri',
-             'sabrina': 'data/npc/npc043_illu.nri',
+             'sabrina': 'data/npc/npc043_illu.nri', 'eugene': 'data/npc/npc153_illu.nri',
              'stella': 'data/npc/npc222_illu.nri'}
 MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00', 'mapf01g', 'mapf01f', 'mapf01d']
 SOUNDS = [
@@ -98,12 +99,13 @@ def monster_ids():
 
 
 def item_ids():
-    """Original item IDs referenced by the ItemData resources."""
-    folder = os.path.join(ROOT, 'data', 'items')
+    """Original item IDs referenced by items, materials and wardrobe pieces."""
     ids = []
-    for f in sorted(os.listdir(folder)):
+    for f in sorted(os.path.join(sub, n) for sub in ('items', 'materials', 'wardrobe')
+                    if os.path.isdir(os.path.join(ROOT, 'data', sub))
+                    for n in os.listdir(os.path.join(ROOT, 'data', sub))):
         if f.endswith('.tres'):
-            m = re.search(r'^item_id = (\d+)', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
+            m = re.search(r'^item_id = (\d+)', open(os.path.join(ROOT, 'data', f), encoding='utf-8').read(), re.M)
             if m:
                 ids.append(m.group(1))
     return ids

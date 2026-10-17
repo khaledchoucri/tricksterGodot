@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CardSetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_set_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/wardrobe/solar_cape_jr.tres" id="2_w"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"desert_beach"
+display_name = "Desert Beach"
+monsters = Array[StringName]([&"fanta_slime", &"shell_trap", &"field_mole", &"sea_scorpion", &"pineapple", &"fan_lizard", &"sand_demon", &"cannon_shell", &"basic_mummy", &"tutankhamen"])
+reward = ExtResource("2_w")

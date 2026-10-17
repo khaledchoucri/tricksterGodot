@@ -451,6 +451,49 @@
      ]
     ]
    }
+  ],
+  "eugene": [
+   {
+    "id": "eugene_intro",
+    "if": [
+     "!met_eugene"
+    ],
+    "set": [
+     "met_eugene"
+    ],
+    "then": "cards",
+    "lines": [
+     [
+      "eugene",
+      "A card hunter's work is never done. Even after the end of the world. Especially after."
+     ],
+     [
+      "eugene",
+      "Every monster out there carries a card, if you hit it right. Bring them home and they go in my album."
+     ],
+     [
+      "eugene",
+      "Finish a page and I'll give you something from my collection to wear. Ears, tails, the good stuff."
+     ],
+     [
+      "eugene",
+      "Or buy, if you're impatient. I take Time Marks. I'm not proud."
+     ]
+    ]
+   },
+   {
+    "id": "eugene_default",
+    "if": [
+     "met_eugene"
+    ],
+    "then": "cards",
+    "lines": [
+     [
+      "eugene",
+      "Let's see the album."
+     ]
+    ]
+   }
   ]
  }
 }

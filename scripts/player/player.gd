@@ -233,7 +233,10 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var el := Run.element_attack()
 	for k: String in el:
 		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
-	var amount := maxi(1, roundi(base * mult * element * (1.75 if crit else 1.0) * (0.5 if graze else 1.0) * e.defense_mult()))
+	if Run.quirk(&"elite_bane") and (e.is_elite or e.is_boss):
+		mult *= 1.1
+	var crit_mult := 2.0 if Run.quirk(&"sharp_eye") else 1.75
+	var amount := maxi(1, roundi(base * mult * element * (crit_mult if crit else 1.0) * (0.5 if graze else 1.0) * e.defense_mult()))
 	var effects := fx.duplicate()
 	effects.crit = crit
 	effects.graze = graze
@@ -262,9 +265,10 @@ func start_dash() -> void:
 	var input := move_input()
 	_dash_dir = input.normalized() if input != Vector2.ZERO else Combat.screen(aim).normalized()
 	# Vault over obstacles when there's open ground to land on past them.
-	var vault := room.vault_distance(global_position, _dash_dir, dash_distance, vault_extra)
+	var reach := dash_distance * (1.25 if Run.quirk(&"long_dash") else 1.0)
+	var vault := room.vault_distance(global_position, _dash_dir, reach, vault_extra)
 	_vaulting = vault > 0.0
-	_dash_len = dash_time * (vault / dash_distance if _vaulting else 1.0)
+	_dash_len = dash_time * (vault / dash_distance if _vaulting else reach / dash_distance)
 	set_collision_mask_value(1, not _vaulting)
 	dash_ready_at = now() + _dash_len + dash_cooldown * Run.dash_cooldown_mult()
 	_perfect_this_dash = false
@@ -361,7 +365,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 		Events.text_shown.emit(global_position + Vector2(0, -70), "Evade", Color(0.75, 0.95, 1.0))
 		Audio.play("etc_miss.wav", -8.0)
 		return
-	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic)))
+	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic) * (0.75 if magic and Run.quirk(&"umbrella") else 1.0)))
 	Run.take_damage(amount)
 	Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(1.0, 0.45, 0.4), false)
 	Audio.play("shchr002.wav", -6.0)

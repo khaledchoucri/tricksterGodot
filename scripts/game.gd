@@ -101,6 +101,8 @@ func _load_room() -> void:
 	room.door_entered.connect(_on_door_entered)
 	_spawn_player(room.entry)
 	Run.gain_mp(ROOM_MP + Run.room_mp_bonus())
+	if Run.quirk(&"well_rested"):
+		Run.heal(int(Run.max_hp * 0.08))
 	Audio.play_music(Run.region.boss_music if plan.boss else Run.region.field_music)
 	Audio.play_ambience(Run.region.boss_ambience if plan.boss else Run.region.field_ambience)
 	var heat := ServerSettings.heat()
@@ -141,6 +143,8 @@ func _on_room_cleared() -> void:
 		return
 	phase = Phase.REWARD
 	Audio.play("etc_monq_complete.wav", -4.0)
+	if Run.quirk(&"hearty"):
+		Run.heal(int(Run.max_hp * 0.05))
 	hud.log_line("[System] Room cleared.", Color("94a7b2"))
 	var cleared_room := room
 	await get_tree().create_timer(0.6).timeout
@@ -176,9 +180,10 @@ func _next_step() -> void:
 func _grant(reward: String) -> void:
 	match reward:
 		"card", "upgrade":
-			var opts := Run.card_offers(3, reward == "upgrade")
+			var n := 4 if Run.quirk(&"sunshine") else 3
+			var opts := Run.card_offers(n, reward == "upgrade")
 			if opts.is_empty():
-				opts = Run.card_offers(3, reward != "upgrade")
+				opts = Run.card_offers(n, reward != "upgrade")
 			if not opts.is_empty():
 				_start_pick("card", opts)
 				return
@@ -763,6 +768,14 @@ func _on_enemy_died(e: Enemy) -> void:
 		Audio.play("etc_money.wav", -10.0)
 	if drop.ore > 0:
 		hud.log_line("[System] Picked up %d %s%s." % [drop.ore, Run.ORE_NAME, "s" if drop.ore > 1 else ""], INFO)
+	if Run.roll_card(e.data.id, e.is_elite, e.is_boss):
+		var card_name := "%s Card" % e.display_name.trim_prefix("Elite ")
+		if Profile.add_card(e.data.id):
+			Audio.play("ui_card.wav")
+			hud.notice("New card: " + card_name)
+			hud.log_line("[System] %s added to Eugene's album!" % card_name, Color("e0b54d"))
+		else:
+			hud.log_line("[System] Picked up a %s." % card_name, INFO)
 	if drop.material:
 		var m: MaterialData = drop.material
 		hud.log_line("[System] Picked up %s%s (%d / %d)." % ["%d " % drop.count if drop.count > 1 else "", m.display_name,

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sleep_mask"
+display_name = "Sleep Mask"
+item_id = 15004
+slot = "face"
+stats = {
+"HP": 20
+}
+quirk = &"well_rested"
+text = "Recover 8% HP on entering each room."
+price_tm = 8000
+price_shards = 1

@@ -1,0 +1,35 @@
+class_name WardrobeData
+extends Resource
+## A wardrobe piece: one of the slow, persistent slots (ear, tail, head,
+## face, cape, speed) worn between runs. Small stats and one quirk, checked
+## by code through Run.quirk(). Earned from card sets or bought from the
+## Card Hunter with TM and shards.
+
+const SLOTS: Array[String] = ["ear", "tail", "head", "face", "cape", "speed"]
+const SLOT_NAMES := {"ear": "Ear", "tail": "Tail", "head": "Head", "face": "Face", "cape": "Cape", "speed": "Speed"}
+
+@export var id: StringName
+@export var display_name := ""
+## Row ID in the ItemParam tables (icon).
+@export var item_id := 0
+@export_enum("ear", "tail", "head", "face", "cape", "speed") var slot := "ear"
+## Stat key (Stats.KEYS) -> value.
+@export var stats: Dictionary = {}
+@export var quirk: StringName
+@export_multiline var text := ""
+## Card Hunter prices; 0 TM means it can only be earned from a card set.
+@export var price_tm := 0
+@export var price_shards := 0
+
+
+func icon() -> Texture2D:
+	var path := "res://original_assets/icons/items/%d.png" % item_id
+	return load(path) if ResourceLoader.exists(path) else null
+
+
+func describe() -> String:
+	var parts: PackedStringArray = []
+	for k in Stats.KEYS:
+		if stats.has(k):
+			parts.append("%s +%d" % [k, stats[k]])
+	return ("  ·  ".join(parts) + "\n" if parts.size() else "") + text

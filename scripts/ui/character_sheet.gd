@@ -68,6 +68,11 @@ func _gear_text() -> String:
 			lines.append("    [color=#a8d8da]%s[/color]" % g.summary())
 		else:
 			lines.append("[color=#5a6b7c]%s  empty[/color]" % label)
+	var worn: PackedStringArray = []
+	for w in Run.worn_pieces():
+		worn.append(w.display_name)
+	if worn.size():
+		lines.append("[color=#9fb2c0]Wardrobe[/color]  " + ", ".join(worn))
 	var el := Run.element_attack()
 	if not el.is_empty():
 		var parts: PackedStringArray = []

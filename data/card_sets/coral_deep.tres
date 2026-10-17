@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CardSetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_set_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/wardrobe/cats_ears.tres" id="2_w"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"coral_deep"
+display_name = "Coral Deep"
+monsters = Array[StringName]([&"bad_fury", &"blue_penguin", &"bustshell", &"clione"])
+reward = ExtResource("2_w")

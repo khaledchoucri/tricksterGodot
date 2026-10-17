@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"buffalo_tail"
+display_name = "Buffalo's Tail"
+item_id = 6951
+slot = "tail"
+stats = {
+"HP": 40
+}
+quirk = &"hearty"
+text = "Recover 5% HP whenever a room is cleared."
+price_tm = 4000
+price_shards = 0

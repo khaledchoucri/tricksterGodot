@@ -11,4 +11,7 @@ extends Resource
 ## JSON file with every NPC's conversations (see scripts/story/story.gd).
 @export_file("*.json") var story := ""
 @export var music := ""
+## Wardrobe pieces in the game, and the Card Hunter's bestiary sets.
+@export var wardrobe: Array[WardrobeData] = []
+@export var card_sets: Array[CardSetData] = []
 @export var ambience := ""

@@ -347,12 +347,32 @@ func _city_craft() -> void:
 			print("   city compound %s into %s: %s +%d" % [m.display_name, g.title(), c.stat, c.value])
 
 
-## Between runs, buy whatever the city can afford, in the guide's order.
+## Between runs, buy whatever the city can afford, in the guide's order,
+## then claim card sets and buy wardrobe pieces (worn if the slot is free).
 func _restore_city() -> void:
 	for r: RestorationData in Run.hub.restorations:
 		while Profile.can_buy(r):
 			Profile.buy(r)
 			print("   restored %s (%d TM, %d shards left)" % [r.display_name, Profile.tm, Profile.shards])
+	if not Run.system_on(&"cards"):
+		return
+	for s in Run.hub.card_sets:
+		if s.complete() and not s.claimed():
+			Profile.set_flag("set_" + String(s.id))
+			_take(s.reward, "claimed")
+	for w in Run.hub.wardrobe:
+		if w.price_tm > 0 and not Profile.owns(w.id) and Profile.tm >= w.price_tm and Profile.shards >= w.price_shards:
+			Profile.tm -= w.price_tm
+			Profile.shards -= w.price_shards
+			_take(w, "bought")
+	print("   cards %d, wardrobe %s" % [Profile.cards.size(), Profile.worn])
+
+
+func _take(w: WardrobeData, how: String) -> void:
+	Profile.give_wardrobe(w.id)
+	if not Profile.worn.has(w.slot):
+		Profile.wear(w.slot, w.id)
+	print("   %s %s" % [how, w.display_name])
 
 
 ## Between runs, carry the best item in the warehouse (as a player would).

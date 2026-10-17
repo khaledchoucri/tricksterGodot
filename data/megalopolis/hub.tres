@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="HubData" load_steps=22 format=3]
+[gd_resource type="Resource" script_class="HubData" load_steps=50 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/hub_data.gd" id="1"]
 [ext_resource type="Resource" path="res://data/megalopolis/hub_room.tres" id="2"]
@@ -21,14 +21,44 @@
 [ext_resource type="Resource" path="res://data/megalopolis/restorations/warehouse.tres" id="19"]
 [ext_resource type="Resource" path="res://data/megalopolis/restorations/gm_console.tres" id="20"]
 [ext_resource type="Resource" path="res://data/megalopolis/npcs/sabrina.tres" id="21"]
+[ext_resource type="Resource" path="res://data/megalopolis/restorations/card_house.tres" id="22"]
+[ext_resource type="Resource" path="res://data/megalopolis/npcs/eugene.tres" id="23"]
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="24"]
+[ext_resource type="Script" path="res://scripts/data/card_set_data.gd" id="25"]
+[ext_resource type="Resource" path="res://data/wardrobe/buffalo_horn.tres" id="w_buffalo_horn"]
+[ext_resource type="Resource" path="res://data/wardrobe/bunny_ears.tres" id="w_bunny_ears"]
+[ext_resource type="Resource" path="res://data/wardrobe/cats_ears.tres" id="w_cats_ears"]
+[ext_resource type="Resource" path="res://data/wardrobe/fox_ears.tres" id="w_fox_ears"]
+[ext_resource type="Resource" path="res://data/wardrobe/buffalo_tail.tres" id="w_buffalo_tail"]
+[ext_resource type="Resource" path="res://data/wardrobe/raccoon_tail.tres" id="w_raccoon_tail"]
+[ext_resource type="Resource" path="res://data/wardrobe/dragon_tail.tres" id="w_dragon_tail"]
+[ext_resource type="Resource" path="res://data/wardrobe/black_sunglasses.tres" id="w_black_sunglasses"]
+[ext_resource type="Resource" path="res://data/wardrobe/sleep_mask.tres" id="w_sleep_mask"]
+[ext_resource type="Resource" path="res://data/wardrobe/don_mask.tres" id="w_don_mask"]
+[ext_resource type="Resource" path="res://data/wardrobe/omnipotent_umbrella.tres" id="w_omnipotent_umbrella"]
+[ext_resource type="Resource" path="res://data/wardrobe/eternal_sunshine.tres" id="w_eternal_sunshine"]
+[ext_resource type="Resource" path="res://data/wardrobe/solar_cape_jr.tres" id="w_solar_cape_jr"]
+[ext_resource type="Resource" path="res://data/wardrobe/job_cloak.tres" id="w_job_cloak"]
+[ext_resource type="Resource" path="res://data/wardrobe/newbie_sprint.tres" id="w_newbie_sprint"]
+[ext_resource type="Resource" path="res://data/wardrobe/dashing_sprint.tres" id="w_dashing_sprint"]
+[ext_resource type="Resource" path="res://data/wardrobe/levitation_charm.tres" id="w_levitation_charm"]
+[ext_resource type="Resource" path="res://data/card_sets/shore_critters.tres" id="s_shore_critters"]
+[ext_resource type="Resource" path="res://data/card_sets/coral_deep.tres" id="s_coral_deep"]
+[ext_resource type="Resource" path="res://data/card_sets/coral_beach.tres" id="s_coral_beach"]
+[ext_resource type="Resource" path="res://data/card_sets/sands.tres" id="s_sands"]
+[ext_resource type="Resource" path="res://data/card_sets/dunes.tres" id="s_dunes"]
+[ext_resource type="Resource" path="res://data/card_sets/pyramid.tres" id="s_pyramid"]
+[ext_resource type="Resource" path="res://data/card_sets/desert_beach.tres" id="s_desert_beach"]
 
 [resource]
 script = ExtResource("1")
 display_name = "Megalopolis"
 room = ExtResource("2")
-npcs = Array[ExtResource("11")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("13"), ExtResource("14"), ExtResource("15"), ExtResource("21")])
-restorations = Array[ExtResource("12")]([ExtResource("16"), ExtResource("17"), ExtResource("18"), ExtResource("19"), ExtResource("20"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10")])
+npcs = Array[ExtResource("11")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("13"), ExtResource("14"), ExtResource("15"), ExtResource("21"), ExtResource("23")])
+restorations = Array[ExtResource("12")]([ExtResource("16"), ExtResource("17"), ExtResource("18"), ExtResource("19"), ExtResource("20"), ExtResource("22"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10")])
 gate_position = Vector2(2340, 2050)
 story = "res://data/megalopolis/story.json"
 music = "Megalopolis_Night.mp3"
 ambience = ""
+wardrobe = Array[ExtResource("24")]([ExtResource("w_buffalo_horn"), ExtResource("w_bunny_ears"), ExtResource("w_cats_ears"), ExtResource("w_fox_ears"), ExtResource("w_buffalo_tail"), ExtResource("w_raccoon_tail"), ExtResource("w_dragon_tail"), ExtResource("w_black_sunglasses"), ExtResource("w_sleep_mask"), ExtResource("w_don_mask"), ExtResource("w_omnipotent_umbrella"), ExtResource("w_eternal_sunshine"), ExtResource("w_solar_cape_jr"), ExtResource("w_job_cloak"), ExtResource("w_newbie_sprint"), ExtResource("w_dashing_sprint"), ExtResource("w_levitation_charm")])
+card_sets = Array[ExtResource("25")]([ExtResource("s_shore_critters"), ExtResource("s_coral_deep"), ExtResource("s_coral_beach"), ExtResource("s_sands"), ExtResource("s_dunes"), ExtResource("s_pyramid"), ExtResource("s_desert_beach")])

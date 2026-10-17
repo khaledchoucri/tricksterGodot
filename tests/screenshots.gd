@@ -84,6 +84,11 @@ func _shoot() -> void:
 
 func _shoot_hub() -> void:
 	Profile.set_flag("met_cavalier")
+	for r: RestorationData in Run.hub.restorations:
+		Profile.restorations[String(r.id)] = r.max_level
+	for m in [&"torobbie", &"tottochi", &"little_cora", &"blue_penguin", &"fanta_slime"]:
+		Profile.add_card(m)
+	Profile.tm = 9000
 	Run.new_run()
 	var sword := GearItem.make(load("res://data/items/wood_sword.tres"))
 	sword.refine = 4
@@ -99,11 +104,27 @@ func _shoot_hub() -> void:
 	for _i in 12:
 		await _wait(0.15)
 		hub.dialogue._typing = false
-		if hub.dialogue._choices.visible:
+		if hub.dialogue._scroll.visible:
 			break
 		hub.dialogue._advanced.emit()
 	await _wait(0.4)
 	await _snap("11_warehouse_menu")
+	hub.dialogue._chosen.emit(hub.dialogue._choices.get_child_count() - 1)
+	await _wait(0.5)
+	var eugene: Npc = hub._npc(&"eugene")
+	hub.talking = false
+	hub.player.global_position = eugene.global_position + Vector2(-40, 30)
+	hub.talk(eugene)
+	for _i in 12:
+		await _wait(0.15)
+		hub.dialogue._typing = false
+		if hub.dialogue._scroll.visible:
+			break
+		hub.dialogue._advanced.emit()
+	await _wait(0.4)
+	hub.dialogue._chosen.emit(0)
+	await _wait(0.5)
+	await _snap("12_card_album")
 
 
 func _shoot_desert() -> void:

@@ -17,6 +17,7 @@ var _typing := false
 @onready var _text: RichTextLabel = %Text
 @onready var _more: Label = %More
 @onready var _choices: VBoxContainer = %Choices
+@onready var _scroll: ScrollContainer = %ChoiceScroll
 
 
 func _ready() -> void:
@@ -27,7 +28,7 @@ func _ready() -> void:
 ## null), "text"}. Returns when the last is dismissed.
 func play(lines: Array) -> void:
 	visible = true
-	_choices.visible = false
+	_scroll.visible = false
 	for line: Dictionary in lines:
 		_show(line)
 		await _advanced
@@ -50,14 +51,15 @@ func choose(line: Dictionary, options: Array) -> int:
 		_choices.add_child(b)
 		b.setup(i, o.title, o.get("tag", ""), o.get("text", ""), o.get("icon"))
 		b.disabled = o.get("disabled", false)
-		b.custom_minimum_size = Vector2(440, 52)
+		b.custom_minimum_size.x = 440.0
 		b.pressed.connect(func() -> void: _chosen.emit(i))
-	_choices.visible = true
+	_scroll.visible = true
 	await get_tree().process_frame
+	_scroll.scroll_vertical = 0
 	if _choices.get_child_count() > 0:
 		(_choices.get_child(_choices.get_child_count() - options.size()) as Button).grab_focus()
 	var picked: int = await _chosen
-	_choices.visible = false
+	_scroll.visible = false
 	visible = false
 	return picked
 
@@ -83,7 +85,7 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not visible or _choices.visible:
+	if not visible or _scroll.visible:
 		return
 	var pressed := event.is_action_pressed("interact") or event.is_action_pressed("attack") \
 		or event.is_action_pressed("ui_accept")

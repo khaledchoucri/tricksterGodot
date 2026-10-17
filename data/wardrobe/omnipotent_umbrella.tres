@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"omnipotent_umbrella"
+display_name = "Omnipotent Umbrella"
+item_id = 14903
+slot = "head"
+stats = {
+"MD": 8
+}
+quirk = &"umbrella"
+text = "Projectiles deal 25% less damage to you."
+price_tm = 0
+price_shards = 0

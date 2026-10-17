@@ -148,6 +148,8 @@ func talk(npc: Npc) -> void:
 			await _server_menu(npc)
 		"forge":
 			await _forge_menu(npc)
+		"cards":
+			await _cards_menu(npc)
 		"compound":
 			await _compound_menu(npc)
 	_set_talking(false)
@@ -226,13 +228,18 @@ func _warehouse_menu(npc: Npc) -> void:
 			options.append({"title": g.title(), "tag": "Carried" if Profile.heirloom == i else g.data.slot_name(),
 				"icon": g.data.icon(), "text": g.summary()})
 		options.append({"title": "Carry nothing", "tag": "", "text": "Head out with only the Rookie Sword."})
+		options.append({"title": "Wardrobe", "tag": "%d pieces" % Profile.wardrobe.size(),
+			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints."})
 		options.append({"title": "Leave", "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
 		var line := "Which one goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
 		var pick := await dialogue.choose(_line(String(npc.data.id), line), options)
 		if pick == items.size():
 			Profile.set_heirloom(-1)
 			continue
-		if pick < 0 or pick > items.size():
+		if pick == items.size() + 1:
+			await _wardrobe_menu(npc)
+			continue
+		if pick < 0 or pick > items.size() + 1:
 			return
 		var g := items[pick]
 		var what := await dialogue.choose(_line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
@@ -252,6 +259,98 @@ func _stored_items() -> Array[GearItem]:
 	for d in Profile.warehouse:
 		out.append(GearItem.from_dict(d, Run.item_by_id))
 	return out
+
+
+func _piece(id: String) -> WardrobeData:
+	for w in hub.wardrobe:
+		if String(w.id) == id:
+			return w
+	return null
+
+
+## What's worn in each wardrobe slot; pick a slot to change it.
+func _wardrobe_menu(npc: Npc) -> void:
+	while true:
+		var options: Array = []
+		for slot: String in WardrobeData.SLOTS:
+			var w := _piece(Profile.worn.get(slot, ""))
+			options.append({"title": "%s: %s" % [WardrobeData.SLOT_NAMES[slot], w.display_name if w else "nothing"],
+				"tag": "", "icon": w.icon() if w else null, "text": w.describe() if w else "Empty."})
+		options.append({"title": "Done", "tag": "", "text": ""})
+		var pick := await dialogue.choose(_line(String(npc.data.id), "Dress up. It's still a game."), options)
+		if pick < 0 or pick >= WardrobeData.SLOTS.size():
+			return
+		var slot: String = WardrobeData.SLOTS[pick]
+		var pieces: Array[WardrobeData] = []
+		var choices: Array = []
+		for w in hub.wardrobe:
+			if w.slot == slot and Profile.owns(w.id):
+				pieces.append(w)
+				choices.append({"title": w.display_name, "tag": "Worn" if Profile.worn.get(slot, "") == String(w.id) else "",
+					"icon": w.icon(), "text": w.describe()})
+		choices.append({"title": "Wear nothing", "tag": "", "text": "" if pieces.size() else "You own nothing for this slot yet."})
+		var c := await dialogue.choose(_line(String(npc.data.id), "Which one?"), choices)
+		if c >= 0 and c < pieces.size():
+			Profile.wear(slot, pieces[c].id)
+			Audio.play("etc_item1.wav")
+		elif c == pieces.size():
+			Profile.wear(slot, &"")
+
+
+## Eugene's album: claim finished sets, or buy pieces with TM and shards.
+func _cards_menu(npc: Npc) -> void:
+	while true:
+		var page := await dialogue.choose(_line(String(npc.data.id), "The album, or the shop?"), [
+			{"title": "The album", "tag": "%d cards" % Profile.cards.size(), "text": "Card sets and their rewards."},
+			{"title": "The shop", "tag": "%d TM" % Profile.tm, "text": "Wardrobe pieces for Time Marks and shards."},
+			{"title": "Leave", "tag": "", "text": "Wear pieces through Keeper Julio's wardrobe."}])
+		if page == 0:
+			await _album(npc, true)
+		elif page == 1:
+			await _album(npc, false)
+		else:
+			return
+
+
+func _album(npc: Npc, sets: bool) -> void:
+	while true:
+		var options: Array = []
+		for s in (hub.card_sets if sets else []):
+			var done := s.complete()
+			var tag := "Claimed" if s.claimed() else ("Claim!" if done else "%d / %d" % [s.progress(), s.monsters.size()])
+			var missing: PackedStringArray = []
+			for m in s.monsters:
+				if int(Profile.cards.get(String(m), 0)) == 0:
+					missing.append(Run.monster_stats(Run.enemy(m)).get("name", String(m)))
+			options.append({"title": "%s set  →  %s" % [s.display_name, s.reward.display_name], "tag": tag,
+				"icon": s.reward.icon(), "text": s.reward.describe() + ("\nMissing: " + ", ".join(missing) if missing.size() else ""),
+				"disabled": s.claimed() or not done})
+		var shop: Array[WardrobeData] = []
+		for w in ([] if sets else hub.wardrobe):
+			if w.price_tm > 0 and not Profile.owns(w.id):
+				shop.append(w)
+				var price := "%d TM" % w.price_tm + (" + %d Shard%s" % [w.price_shards, "" if w.price_shards == 1 else "s"] if w.price_shards > 0 else "")
+				options.append({"title": "Buy %s" % w.display_name, "tag": price, "icon": w.icon(), "text": w.describe(),
+					"disabled": Profile.tm < w.price_tm or Profile.shards < w.price_shards})
+		options.append({"title": "Back", "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
+		var pick := await dialogue.choose(_line(String(npc.data.id), "The album, then." if sets else "Take your pick."), options)
+		var n_sets := hub.card_sets.size() if sets else 0
+		if pick < 0 or pick >= n_sets + shop.size():
+			return
+		var piece: WardrobeData
+		if pick < n_sets:
+			var s := hub.card_sets[pick]
+			Profile.set_flag("set_" + String(s.id))
+			piece = s.reward
+		else:
+			piece = shop[pick - n_sets]
+			Profile.tm -= piece.price_tm
+			Profile.shards -= piece.price_shards
+		Profile.give_wardrobe(piece.id)
+		if not Profile.worn.has(piece.slot):
+			Profile.wear(piece.slot, piece.id)
+		Audio.play("ui_unique_get.wav", -4.0)
+		hud.log_line("[System] %s added to your wardrobe." % piece.display_name, Color("e0b54d"))
 
 
 ## Marx refines stored items with banked Galder and Bronze Fragments.

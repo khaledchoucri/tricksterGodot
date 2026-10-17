@@ -27,6 +27,11 @@ var heirloom := -1
 ## GM console ranks (ServerSettings ids -> rank) and the best Heat cleared.
 var server_settings: Dictionary = {}
 var best_heat := -1
+## Monster cards collected (EnemyData id -> count), wardrobe pieces owned and
+## what's worn in each wardrobe slot.
+var cards: Dictionary = {}
+var wardrobe: Array = []
+var worn: Dictionary = {}
 
 
 func _ready() -> void:
@@ -54,6 +59,9 @@ func load_profile() -> void:
 	heirloom = -1
 	server_settings = {}
 	best_heat = -1
+	cards = {}
+	wardrobe = []
+	worn = {}
 	if not FileAccess.file_exists(path):
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -76,6 +84,10 @@ func load_profile() -> void:
 	for k: String in data.get("server_settings", {}):
 		server_settings[k] = int(data.server_settings[k])
 	best_heat = int(data.get("best_heat", -1))
+	for k: String in data.get("cards", {}):
+		cards[k] = int(data.cards[k])
+	wardrobe = data.get("wardrobe", [])
+	worn = data.get("worn", {})
 
 
 func save() -> void:
@@ -86,7 +98,8 @@ func save() -> void:
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "galder": galder, "ore": ore,
 		"materials": materials, "stats": stats,
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
-		"server_settings": server_settings, "best_heat": best_heat}, "  "))
+		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
+		"worn": worn}, "  "))
 
 
 func is_new() -> bool:
@@ -127,6 +140,34 @@ func bank_leftovers(won: bool, run_galder: int, run_ore: int, run_materials: Dic
 			kept.materials += n
 	save()
 	return kept
+
+
+## Registers a monster card. Returns true the first time.
+func add_card(enemy_id: StringName) -> bool:
+	var k := String(enemy_id)
+	var first := not cards.has(k)
+	cards[k] = int(cards.get(k, 0)) + 1
+	save()
+	return first
+
+
+func owns(piece: StringName) -> bool:
+	return String(piece) in wardrobe
+
+
+func give_wardrobe(piece: StringName) -> void:
+	if not owns(piece):
+		wardrobe.append(String(piece))
+		save()
+
+
+## Wears a piece in its slot (or takes it off when `piece` is empty).
+func wear(slot: String, piece: StringName) -> void:
+	if piece == &"":
+		worn.erase(slot)
+	else:
+		worn[slot] = String(piece)
+	save()
 
 
 # ---------------------------------------------------------------- warehouse

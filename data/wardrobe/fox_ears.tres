@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WardrobeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wardrobe_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"fox_ears"
+display_name = "Fox's Ears"
+item_id = 6904
+slot = "ear"
+stats = {
+"DA": 3
+}
+quirk = &"sly"
+text = "Monsters drop their materials 10% more often."
+price_tm = 5000
+price_shards = 0
