@@ -18,6 +18,8 @@ enum Kind { TALENT, SKILL }
 @export_multiline var text := ""
 ## Prerequisites from the original skill tree: card id -> level needed.
 @export var requires: Dictionary = {}
+## Monster material Master Louis takes to raise this card's level cap.
+@export var master_material: MaterialData
 
 @export_group("Skill")
 @export var mp_cost := 0

@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/skills/upper_smash.gd" id="2_b"]
+[ext_resource type="Resource" path="res://data/materials/duck_mole_paws.tres" id="m_master"]
 
 [resource]
 script = ExtResource("1_s")
@@ -17,3 +18,4 @@ mp_cost = 28
 cooldown = 6.0
 element = "none"
 behavior = ExtResource("2_b")
+master_material = ExtResource("m_master")

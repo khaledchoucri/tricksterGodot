@@ -329,8 +329,14 @@ func _score(g: GearItem) -> float:
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
 
 
-## Between runs, invest banked leftovers in the heirloom, as a player would.
+## Between runs, invest banked leftovers in the heirloom and in skill
+## mastery, as a player would.
 func _city_craft() -> void:
+	if Run.system_on(&"mastery"):
+		for c in Run.all_cards():
+			if c.master_material and Run.can_master(c):
+				Run.master_card(c)
+				print("   mastered %s (cap %d)" % [c.display_name, Run.card_cap(c.id)])
 	var h := Profile.heirloom
 	if h < 0 or not Run.system_on(&"warehouse"):
 		return

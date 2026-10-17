@@ -505,6 +505,18 @@ func _systems(Run: Node) -> void:
 	Profile.wear("ear", &"")
 	Run.new_run()
 
+	# Master Louis raises card caps.
+	var wave: CardData = Run.card(&"shockwave")
+	Profile.materials[String(wave.master_material.id)] = 6
+	Profile.galder = 600
+	check(Run.can_master(wave) and Run.card_cap(&"shockwave") == 5, "6 Hard Scales and 500 G can master Shockwave")
+	Run.master_card(wave)
+	Run.cards[&"shockwave"] = 5
+	Run.add_card(&"shockwave")
+	check(Run.card_cap(&"shockwave") == 6 and Run.card_level(&"shockwave") == 6, "a mastered Shockwave reaches Lv 6")
+	Profile.mastery = {}
+	Run.new_run()
+
 	# Server Settings (Heat).
 	Profile.server_settings = {"server_load": 2, "pk_mode": 1, "hardcore": 1}
 	check(ServerSettings.heat() == 7 and is_equal_approx(ServerSettings.monster_hp_mult(), 1.3),

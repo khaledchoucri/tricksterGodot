@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
 
 [resource]
 script = ExtResource("1_s")
@@ -11,3 +12,4 @@ base_value = 12.0
 per_level = 6.0
 text = "Hits expose enemies: they take +{v}% damage for 4 s."
 requires = {&"shockwave": 2}
+master_material = ExtResource("m_master")

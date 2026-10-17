@@ -494,6 +494,49 @@
      ]
     ]
    }
+  ],
+  "louis": [
+   {
+    "id": "louis_intro",
+    "if": [
+     "!met_louis"
+    ],
+    "set": [
+     "met_louis"
+    ],
+    "then": "mastery",
+    "lines": [
+     [
+      "louis",
+      "Hah! A student. I'd started teaching the pigeons."
+     ],
+     [
+      "louis",
+      "Master Louis. Power techniques are my art. Shockwave, Lacerator, all of it."
+     ],
+     [
+      "louis",
+      "Five levels is where most players stopped. Bring me what the monsters drop and I'll show you what comes after."
+     ],
+     [
+      "louis",
+      "A technique learns from the monster that tests it. Penguin ice, scorpion stings. Bring plenty."
+     ]
+    ]
+   },
+   {
+    "id": "louis_default",
+    "if": [
+     "met_louis"
+    ],
+    "then": "mastery",
+    "lines": [
+     [
+      "louis",
+      "Stance. Breath. Show me what you brought."
+     ]
+    ]
+   }
   ]
  }
 }

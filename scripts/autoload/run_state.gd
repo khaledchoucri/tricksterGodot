@@ -13,6 +13,8 @@ const CLASS_PATH := "res://data/classes/buffalo.tres"
 const ITEMS_DIR := "res://data/items/"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
 const MAX_CARD_LEVEL := 5
+## Master Louis raises a card's cap this many times at most.
+const MAX_MASTERY := 3
 const SLOTS := 3
 ## Equipment slots: the six core run-gear slots.
 const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc1", "acc2"]
@@ -496,7 +498,7 @@ func requirements_met(card: CardData) -> bool:
 ## slot, or in `slot` when given (replacing what was there).
 func add_card(id: StringName, slot := -1) -> void:
 	var is_new := card_level(id) == 0
-	cards[id] = mini(card_level(id) + 1, MAX_CARD_LEVEL)
+	cards[id] = mini(card_level(id) + 1, card_cap(id))
 	var c := card(id)
 	if not is_new or not c.is_skill():
 		return
@@ -511,6 +513,41 @@ func add_card(id: StringName, slot := -1) -> void:
 
 func free_slot() -> int:
 	return loadout.find(&"")
+
+
+## A card's level cap: 5, plus its master levels.
+func card_cap(id: StringName) -> int:
+	return MAX_CARD_LEVEL + int(Profile.mastery.get(String(id), 0))
+
+
+## What the next master level of a card costs: materials and Galder.
+func mastery_cost(c: CardData) -> Dictionary:
+	var lvl := int(Profile.mastery.get(String(c.id), 0)) + 1
+	return {"material": c.master_material, "count": 6 * lvl, "galder": 500 * lvl}
+
+
+func can_master(c: CardData) -> bool:
+	if c.master_material == null or int(Profile.mastery.get(String(c.id), 0)) >= MAX_MASTERY:
+		return false
+	var cost := mastery_cost(c)
+	return int(Profile.materials.get(String(cost.material.id), 0)) >= cost.count and Profile.galder >= cost.galder
+
+
+func master_card(c: CardData) -> void:
+	var cost := mastery_cost(c)
+	Profile.materials[String(cost.material.id)] = int(Profile.materials.get(String(cost.material.id), 0)) - cost.count
+	Profile.galder -= cost.galder
+	Profile.mastery[String(c.id)] = int(Profile.mastery.get(String(c.id), 0)) + 1
+	Profile.save()
+
+
+## Every card in the game (for the Skill Master's list).
+func all_cards() -> Array[CardData]:
+	var out: Array[CardData] = []
+	for c: CardData in _cards.values():
+		out.append(c)
+	out.sort_custom(func(a: CardData, b: CardData) -> bool: return a.display_name < b.display_name)
+	return out
 
 
 func card_level(id: StringName) -> int:
@@ -531,7 +568,7 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 	var talents: Array[CardData] = []
 	for c in (from_job.cards if from_job else card_pool()):
 		var lvl := card_level(c.id)
-		if (upgrade and lvl > 0 and lvl < MAX_CARD_LEVEL) or (not upgrade and lvl == 0 and requirements_met(c)):
+		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or (not upgrade and lvl == 0 and requirements_met(c)):
 			(skills if c.is_skill() else talents).append(c)
 	skills.shuffle()
 	talents.shuffle()

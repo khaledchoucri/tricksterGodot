@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
 
 [resource]
 script = ExtResource("1_s")
@@ -10,3 +11,4 @@ skill_id = 1103
 base_value = 0.5
 per_level = 0.15
 text = "Your finishing kick stuns enemies for {v} s."
+master_material = ExtResource("m_master")

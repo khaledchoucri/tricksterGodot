@@ -72,6 +72,7 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
   - Levitation Charm: dash 25% farther.
 
   Wear them through Keeper Julio's warehouse menu.
+- **Skill Shrine** (5,000 TM + 1 shard) brings back **Master Louis**. Each skill card's level cap can rise from 5 to 8 with banked materials from its signature monster (Shockwave takes Hard Scales, Sonic Slash takes Cooling Fans) plus Galder. The cost grows with each level.
 - **Other restorations** are permanent bonuses: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
 - **Pace.** In playtests the systems open over the first 3–4 runs.
 
