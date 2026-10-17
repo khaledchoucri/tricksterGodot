@@ -12,6 +12,7 @@ const CELL := 16
 const VIEW_MARGIN := 420.0
 ## How many enemies may wind up at once, so threats stay readable.
 const MAX_ATTACKERS := 2
+const MAX_SHOOTERS := 2
 ## Physics layers: 1 map obstacles, 2 player, 3 enemies, 4 room boundary.
 const BOUNDARY_LAYER_BIT := 8
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
@@ -334,8 +335,12 @@ func _make_waves(depth: int, elite: bool) -> Array:
 	for w in count:
 		var budget := 3.0 + depth * 1.2 + w * 1.5 + Run.region_index() * 2.0
 		var wave_list: Array[Dictionary] = []
+		var shooters := 0
 		while budget >= 1.0:
-			var options := pool.filter(func(e: EnemyData) -> bool: return e.cost <= budget)
+			# At most MAX_SHOOTERS ranged monsters a wave: a pack that backs off
+			# and fires leaves a melee build nothing to do but chase.
+			var options := pool.filter(func(e: EnemyData) -> bool:
+				return e.cost <= budget and (e.kind != "shot" or shooters < MAX_SHOOTERS))
 			if options.is_empty():
 				break
 			var pick: EnemyData = options[randi() % options.size()]
@@ -343,6 +348,8 @@ func _make_waves(depth: int, elite: bool) -> Array:
 			var featured := Run.enemy(Run.current_room().feature) if Run.current_room().feature != &"" else null
 			if featured and featured in options and randf() < 0.5:
 				pick = featured
+			if pick.kind == "shot":
+				shooters += 1
 			wave_list.append({"id": pick.id, "elite": false})
 			budget -= pick.cost
 		for _i in ServerSettings.extra_per_wave():

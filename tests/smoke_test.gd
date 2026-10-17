@@ -126,11 +126,17 @@ func _run() -> void:
 				spot2 = p
 				dir2 = d
 				break
+		if spot2 == Vector2.INF:  # no open line found: fall back to any open spot
+			spot2 = room.random_spot(Vector2.ZERO, 0.0)
+			dir2 = Vector2.RIGHT
 		player.global_position = spot2
 		player.enter(Player.State.MOVE)
-		var at2 := spot2 + Combat.screen(dir2) * 90.0
+		var at2 := spot2 + Combat.screen(dir2) * 70.0
 		var target2: Enemy = room.spawn(&"torobbie", at2)
-		await wait(0.6)
+		for _w in 30:
+			await wait(0.1)
+			if target2.is_hittable():
+				break
 		var hp0 := target2.hp
 		Run.take_rune(c)
 		Run.mp = Run.max_mp
@@ -289,6 +295,9 @@ func _run() -> void:
 			break
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
+
+	# Job techniques: each job changes how you fight, and they stack.
+	await techniques()
 
 	# Balance guards: monsters follow the depth curve, whatever their
 	# original stats say (Desert Beach's DP once made it ~5x tankier).
@@ -701,3 +710,94 @@ func _restore_all(Run: Node) -> void:
 	for r: RestorationData in Run.hub.restorations:
 		if r.effect == "system":
 			Profile.restorations[String(r.id)] = 1
+
+
+func techniques() -> void:
+	var p: Player = game.player
+	for e in enemies():
+		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
+	await wait(0.5)
+	p.global_position = game.room.random_spot(p.global_position, 0.0)
+	p.invulnerable_until = p.now() + 9999.0
+	p.aim = Vector2.RIGHT
+	var saved_clears: int = int(Profile.stats.get("clears", 0))
+	Run.take_damage(30)
+	var power: int = Run.type_points.power
+	var unlocked: Array = Run.start_job(load("res://data/jobs/knight.tres"))
+	p.refresh_gear()
+	var steps: Array[ComboStep] = p.combo_steps()
+	check(steps[steps.size() - 1].arc_degrees == 360.0 and Run.type_points.power == power + 2 and Run.hp == Run.max_hp,
+		"Knight: a Whirlwind finisher, +2 Power and a full heal on the job change")
+	Run.start_job(load("res://data/jobs/gladiator.tres"))
+	p.refresh_gear()
+	steps = p.combo_steps()
+	var speed: float = Run.attack_speed_mult()
+	for i in Run.MOMENTUM_MAX:
+		p.combo_landed(steps[0])
+	check(Run.momentum == Run.MOMENTUM_MAX and Run.attack_speed_mult() > speed * 1.2,
+		"Gladiator: combo hits build Momentum, which speeds the combo")
+	var target: Enemy = game.room.spawn("torobbie", p.global_position + Vector2(50, 0))
+	target.max_hp = 99999
+	target.hp = 99999
+	for i in 40:
+		if target.is_hittable():
+			break
+		await wait(0.1)
+	target.global_position = p.global_position + Vector2(50, 0)
+	for i in Run.MOMENTUM_MAX:
+		p.combo_landed(steps[0])
+	p.combo_landed(steps[steps.size() - 1])
+	check(Run.momentum == 0 and target.hp < 99999,
+		"a finisher at full Momentum releases a shockwave (momentum %d, hp %d)" % [Run.momentum, target.hp])
+	check(steps[steps.size() - 1].arc_degrees == 360.0, "a Gladiator keeps the Knight's Whirlwind")
+	await wait(3.0)
+	check(Run.momentum == 0, "Momentum fades without hits")
+
+	# Mercenary: the dash cuts through.
+	Run.new_run()
+	Run.start_job(load("res://data/jobs/knight.tres"))
+	Run.start_job(load("res://data/jobs/mercenary.tres"))
+	p.refresh_gear()
+	target.global_position = p.global_position + Vector2(50, 0)
+	var before: int = target.hp
+	p.dash_ready_at = 0.0
+	p.start_dash()
+	await wait(0.45)
+	check(target.hp < before, "Mercenary: Blade Dash cuts a monster in the dash's path")
+
+	# Bunny's line.
+	Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))
+	Profile.class_id = "bunny"
+	Run.new_run()
+	p.refresh_gear()
+	var plain: int = p.combo_steps().size()
+	Run.start_job(load("res://data/jobs/boxer.tres"))
+	p.refresh_gear()
+	check(Run.attack_speed_mult() > 1.1, "Boxer: Footwork quickens the combo")
+	p.global_position = target.global_position - Vector2(150, 0)
+	p.aim = Vector2.RIGHT
+	before = target.hp
+	p.dash_ready_at = 0.0
+	p.start_dash()
+	await wait(0.5)
+	check(target.hp < before, "Boxer: the dash ends in a jab")
+	Run.start_job(load("res://data/jobs/champion.tres"))
+	p.refresh_gear()
+	check(p.combo_steps().size() == plain + 2, "Champion: Rush adds two jabs before the finisher")
+	Run.new_run()
+	Run.start_job(load("res://data/jobs/boxer.tres"))
+	Run.start_job(load("res://data/jobs/duelist.tres"))
+	p.refresh_gear()
+	p.dash_ready_at = 0.0
+	p.start_dash()
+	p.take_hit(10, Vector2.LEFT, 0.0)
+	var ready: bool = p._riposte_ready and p.can_dash()
+	var crit: bool = p.deal_hit(target, 10.0, 1.0, 0.0, false)
+	check(ready and crit and not p._riposte_ready, "Duelist: dodging through an attack readies a sure-critical Riposte")
+	target.take_hit(999999, Vector2.RIGHT, 0.0, true)
+	Profile.class_id = "buffalo"
+	Profile.stats["clears"] = saved_clears
+	Run.new_run()
+	p.refresh_gear()
+	check(p.combo_steps().size() == p.combo.steps.size(), "a new run starts with the plain combo again")
+	await wait(0.5)

@@ -351,8 +351,15 @@ func _start_pick(kind: String, options: Array) -> void:
 		"job":
 			for j: JobData in options:
 				var text := j.text
+				if j.technique != &"":
+					text += "\nTechnique · %s: %s" % [j.technique_name, j.technique_text]
 				if j.passive != &"":
 					text += "\n%s: %s" % [j.passive_name, j.passive_text]
+				if not j.bonus_points.is_empty():
+					var parts: PackedStringArray = []
+					for t: String in j.bonus_points:
+						parts.append("+%d %s" % [j.bonus_points[t], Stats.TYPES[t].name])
+					text += "\n%s, and a full heal." % ", ".join(parts)
 				if not j.unlocked():
 					text = "Locked. " + j.unlock_text
 				shown.append({"title": j.display_name, "tag": "%s job" % ["1st", "2nd", "3rd"][j.tier - 1], "text": text,
@@ -445,6 +452,16 @@ Kept in the Megalopolis warehouse, refines and compounds included."),
 	get_tree().paused = true
 
 
+## The job change moment: a pillar of light and the new look.
+func _job_change_fx(j: JobData) -> void:
+	Audio.play("ui_unique_get.wav", -2.0)
+	Events.shake_requested.emit(6.0)
+	for i in 3:
+		Ring.spawn(room.ground_fx, player.global_position, 40.0 + 40.0 * i, 0.4 + 0.15 * i, Color(1.0, 0.85, 0.45, 0.9))
+	if j.technique != &"":
+		hud.log_line("[System] Technique learned: %s. %s" % [j.technique_name, j.technique_text], Color("e0b54d"))
+
+
 func _type_option(t: String) -> Dictionary:
 	var info: Dictionary = Stats.TYPES[t]
 	var pts: int = Run.type_points[t]
@@ -507,8 +524,11 @@ func _on_picked(i: int) -> void:
 				player.refresh_gear()
 		"job":
 			var j: JobData = _pick_options[i]
-			Run.start_job(j)
+			var unlocked := Run.start_job(j)
 			player.refresh_gear()
+			_job_change_fx(j)
+			for tr in unlocked:
+				hud.notice("%s unlocked" % tr.name)
 			hud.center("%s advanced to %s" % [Run.cls.display_name, j.display_name], 1.6)
 			hud.log_line("[Notice] %s has advanced to %s. Congratulations!" % [Run.cls.display_name, j.display_name],
 				Color("e0b54d"))

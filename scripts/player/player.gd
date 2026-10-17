@@ -13,6 +13,14 @@ enum State { MOVE, ATTACK, DASH, SKILL, HURT, DEAD }
 
 const BODY_RADIUS := 11.0
 const VAULT_HOP := 14.0
+## Job techniques.
+const MOMENTUM_HOLD := 2.5        # seconds without a hit before Momentum fades
+const SHOCKWAVE_RADIUS := 115.0
+const BLADE_DASH_DAMAGE := 26.0
+const DASH_JAB_DAMAGE := 26.0
+const DASH_JAB_REACH := 75.0
+const DASH_JAB_ARC := 150.0
+const RIPOSTE_MULT := 2.5
 const SHADOW_RADIUS := 70.0
 ## Basic combo for each weapon family.
 const FAMILY_COMBOS := {
@@ -51,6 +59,8 @@ var _phasing := false
 var _vaulting := false
 var _dash_len := 0.2
 var _perfect_this_dash := false
+var _momentum_until := 0.0
+var _riposte_ready := false
 var _chakra := 0.0
 var _steps: Array[ComboStep] = []
 
@@ -85,11 +95,93 @@ func refresh_gear() -> void:
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
 	_steps = combo.steps.duplicate()
 	dress()
+	_apply_techniques()
 	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
 		var extra: ComboStep = _steps[_steps.size() - 2].duplicate()
 		extra.clockwise = not extra.clockwise
 		extra.frames = Vector2i(extra.frames.y, extra.frames.x)
 		_steps.insert(_steps.size() - 1, extra)
+
+
+## Job techniques that reshape the basic combo.
+func _apply_techniques() -> void:
+	if _steps.is_empty():
+		return
+	var last := _steps.size() - 1
+	if Run.has_technique(&"whirlwind"):
+		var spin: ComboStep = _steps[last].duplicate()
+		spin.arc_degrees = 360.0
+		spin.reach *= 1.3
+		_steps[last] = spin
+	if Run.has_technique(&"rush") and _steps.size() >= 2:
+		for i in 2:
+			var jab: ComboStep = _steps[i % 2].duplicate()
+			jab.duration *= 0.7
+			jab.chain_at *= 0.7
+			jab.dash_cancel *= 0.7
+			jab.free_at *= 0.7
+			jab.damage *= 0.6
+			for w in jab.windows.size():
+				jab.windows[w] *= 0.7
+			_steps.insert(_steps.size() - 1, jab)
+
+
+## Called when a combo swing connects: Momentum builds, and a full stack
+## turns the finisher into a shockwave.
+func combo_landed(s: ComboStep) -> void:
+	if not Run.has_technique(&"momentum"):
+		return
+	_momentum_until = now() + MOMENTUM_HOLD
+	if s.finisher and Run.momentum >= Run.MOMENTUM_MAX:
+		Run.momentum = 0
+		_shockwave(s)
+	elif Run.momentum < Run.MOMENTUM_MAX:
+		Run.momentum += 1
+		if Run.momentum == Run.MOMENTUM_MAX:
+			Events.text_shown.emit(global_position + Vector2(0, -80), "Momentum!", Color(1.0, 0.55, 0.3))
+
+
+func _shockwave(s: ComboStep) -> void:
+	Ring.spawn(room.ground_fx, global_position, SHOCKWAVE_RADIUS, 0.35, Color(1.0, 0.55, 0.3, 0.9))
+	Audio.play("sachr002_1.wav", -2.0)
+	Events.shake_requested.emit(7.0)
+	for e in room.enemies:
+		if e.is_hittable() and Combat.in_circle(global_position, e.global_position, SHOCKWAVE_RADIUS, e.body_radius):
+			deal_hit(e, s.damage * 1.5, Run.attack_mult(), 220.0, true, {"stun": 0.4})
+
+
+## Footwork: the jab at the end of a dash.
+func _dash_jab() -> void:
+	var dir := Combat.ground(_dash_dir).normalized()
+	Slash.spawn(room, global_position + Vector2(0, -16), {"radius": DASH_JAB_REACH, "arc": deg_to_rad(DASH_JAB_ARC), "dir": dir,
+		"clockwise": true, "sweep_time": 0.08, "life": 0.2, "width": 12.0, "color": Color(1.0, 0.9, 0.6)})
+	var landed := false
+	for e in room.enemies:
+		if e.is_hittable() and Combat.in_wedge(global_position, e.global_position, dir, DASH_JAB_REACH, deg_to_rad(DASH_JAB_ARC), e.body_radius):
+			deal_hit(e, DASH_JAB_DAMAGE, Run.attack_mult(), 160.0, false)
+			Run.gain_mp(Run.mp_per_hit())
+			landed = true
+	if landed:
+		Audio.play(ComboAttack.HIT_SOUNDS[1], -4.0)
+		Events.hitstop_requested.emit(0.04)
+
+
+## Riposte: dodging through an attack recharges the dash and readies a sure
+## critical.
+func _riposte() -> void:
+	if _riposte_ready:
+		return
+	_riposte_ready = true
+	dash_ready_at = now()
+	Events.text_shown.emit(global_position + Vector2(0, -80), "Riposte", Color(0.75, 0.9, 1.0))
+	Ring.spawn(room.ground_fx, global_position, 34.0, 0.3, Color(0.75, 0.9, 1.0, 0.9))
+	Audio.play("etc_critical.wav", -8.0)
+
+
+## For projectiles that pass through a dash.
+func dodged() -> void:
+	if state == State.DASH and Run.has_technique(&"riposte"):
+		_riposte()
 
 
 ## Worn gear and wardrobe pieces on the sprite, and the job's outfit.
@@ -187,6 +279,8 @@ func try_actions() -> bool:
 # ---------------------------------------------------------------- states
 
 func _physics_process(delta: float) -> void:
+	if Run.momentum > 0 and now() > _momentum_until:
+		Run.momentum = 0
 	if state == State.DEAD:
 		return
 	var mouse := get_global_mouse_position()
@@ -248,6 +342,10 @@ func enter(s: State) -> void:
 ## direction. Returns true on a critical hit.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
 	var crit := randf() < Run.crit_chance()
+	if _riposte_ready:
+		_riposte_ready = false
+		crit = true
+		mult *= RIPOSTE_MULT / 1.75
 	if Run.card_level(&"suffocate") > 0 and e.state == Enemy.State.HURT:
 		mult *= 1.0 + Run.card_value(&"suffocate") / 100.0
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
@@ -314,6 +412,16 @@ func _state_dash() -> void:
 		for i in SkillCaster.SLOT_ACTIONS.size():
 			if take_buffer(SkillCaster.SLOT_ACTIONS[i]) and skills.try_cast(i):
 				return
+	if Run.has_technique(&"blade_dash"):
+		for e in room.enemies:
+			if e.is_hittable() and not e in _hit_this_dash and _touching(e, 14.0):
+				_hit_this_dash.append(e)
+				deal_hit(e, BLADE_DASH_DAMAGE, Run.attack_mult(), 90.0, false)
+				Run.gain_mp(Run.mp_per_hit())
+				Audio.play(ComboAttack.HIT_SOUNDS[2], -4.0)
+				Events.hitstop_requested.emit(0.025)
+				if e.hp <= 0:
+					dash_ready_at = now() + 0.05  # a kill recharges the dash
 	if Run.card_level(&"counter_punch") > 0:
 		for e in room.enemies:
 			if e.is_hittable() and not e in _hit_this_dash and _touching(e, 8.0):
@@ -325,6 +433,8 @@ func _state_dash() -> void:
 		sprite.position.y = -sin(PI * clampf(_t / _dash_len, 0.0, 1.0)) * VAULT_HOP
 	if _t >= _dash_len:
 		_end_vault()
+		if Run.has_technique(&"footwork"):
+			_dash_jab()
 		enter(State.MOVE)
 		if not try_actions():
 			_state_move()
@@ -378,6 +488,8 @@ func _overlapping_enemy() -> bool:
 ## attacker's AC, against the player's evasion.
 func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, accuracy := 50) -> void:
 	if is_invulnerable():
+		if state == State.DASH and Run.has_technique(&"riposte"):
+			_riposte()
 		if state == State.DASH and Run.has_trait(&"perfect_dodge") and not _perfect_this_dash:
 			_perfect_this_dash = true
 			dash_ready_at = now()

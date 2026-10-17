@@ -19,6 +19,7 @@ var room: Room
 var player: Player
 
 var _t := 0.0
+var _dodged := false
 
 
 func _physics_process(delta: float) -> void:
@@ -28,10 +29,13 @@ func _physics_process(delta: float) -> void:
 	if _t > life or not room.is_inside(ground_pos):
 		queue_free()
 		return
-	if is_instance_valid(player) and not player.is_invulnerable() \
-			and Combat.in_circle(ground_pos, player.global_position, radius, 10.0):
-		player.take_hit(damage, Combat.ground(direction).normalized(), 160.0, true, accuracy)
-		queue_free()
+	if is_instance_valid(player) and Combat.in_circle(ground_pos, player.global_position, radius, 10.0):
+		if not player.is_invulnerable():
+			player.take_hit(damage, Combat.ground(direction).normalized(), 160.0, true, accuracy)
+			queue_free()
+		elif not _dodged:
+			_dodged = true
+			player.dodged()
 	queue_redraw()
 
 

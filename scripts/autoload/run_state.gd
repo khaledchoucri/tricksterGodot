@@ -85,6 +85,15 @@ var max_mp: int:
 var _bonus_hp := 0          # from restorations
 var _stats: Dictionary = {}  # cache of stat totals
 var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned against
+## Automatic growth banked at the last graph change, the level it happened at,
+## and the graph in force since (class graph, then each job's).
+var _growth: Dictionary = {}
+var _growth_level := 1
+var _graph: Dictionary = {}
+## Gladiator's Momentum stacks (the player keeps them up by landing hits).
+var momentum := 0
+const MOMENTUM_MAX := 5
+const MOMENTUM_STEP := 0.05
 var _baseline := false
 
 
@@ -258,6 +267,10 @@ func new_run() -> void:
 	cards = {}
 	loadout = [&"", &"", &""]
 	jobs.clear()
+	_growth = {}
+	_growth_level = 1
+	_graph = cls.graph
+	momentum = 0
 	equipment = {"weapon": GearItem.make(cls.start_weapon)}
 	ore = 0
 	rune = null
@@ -460,13 +473,13 @@ func final_boss() -> bool:
 ## A normal monster at the median of its region, in room 1: effective HP
 ## (what it takes to kill through its DP) and damage per hit. The sword's
 ## first three hits (130 at x1.0) kill it; it lands 6% of a starting HP bar.
-const MOB_EHP := 115.0
-const MOB_HIT := 11.0
+const MOB_EHP := 128.0
+const MOB_HIT := 14.0
 ## Per room of depth: effective HP and damage growth. A par build's damage
-## grows faster than this (about x4 by room 16 against x2.65), so gear and
+## grows faster than this (about x4 by room 16 against x2.8), so gear and
 ## builds shorten fights instead of only keeping pace.
-const DEPTH_EHP := 0.10
-const DEPTH_HIT := 0.05
+const DEPTH_EHP := 0.12
+const DEPTH_HIT := 0.07
 ## How much of a monster's original toughness and hit strength (relative to
 ## its region's median) survives: 1 keeps the spread, 0 flattens it.
 const SPREAD_EHP := 0.7
@@ -561,7 +574,7 @@ func _compute_stats() -> void:
 	for k in Stats.KEYS:
 		s[k] = float(cls.base.get(k, 0))
 	for t: String in Stats.TYPE_ORDER:
-		var pts: float = type_points[t] + float(cls.graph.get(t, 0.0)) * (level - 1)
+		var pts: float = type_points[t] + auto_points(t)
 		var gain: Dictionary = Stats.TYPES[t].gain
 		for k: String in gain:
 			s[k] += gain[k] * pts
@@ -647,13 +660,46 @@ func heal(amount: int) -> void:
 
 # ---------------------------------------------------------------- jobs and cards
 
-func start_job(j: JobData) -> void:
+## Starts a job. After the first, a job change also grants the job's type
+## points (returns the traits they unlock), turns growth toward its types
+## and heals fully.
+func start_job(j: JobData) -> Array[Dictionary]:
+	var unlocked: Array[Dictionary] = []
 	job = j
 	jobs.append(j)
 	if jobs.size() > 1 and quirk(&"job_cloak"):
 		pending_levels += 1  # a free type point
 	if j.starter and card_level(j.starter.id) == 0:
 		add_card(j.starter.id)
+	if not j.graph.is_empty():
+		for t: String in Stats.TYPE_ORDER:
+			_growth[t] = auto_points(t)
+		_growth_level = level
+		_graph = j.graph
+	for t: String in j.bonus_points:
+		for i in int(j.bonus_points[t]):
+			var tr := apply_type(t)
+			if not tr.is_empty():
+				unlocked.append(tr)
+	stats_changed()
+	if jobs.size() > 1:
+		hp = max_hp
+		mp = max_mp
+		Events.player_hp_changed.emit()
+	return unlocked
+
+
+func has_technique(id: StringName) -> bool:
+	for j in jobs:
+		if j.technique == id:
+			return true
+	return false
+
+
+## Points a type has gained by itself with levels, along the growth graphs
+## in force at each level (the class's, then each job's).
+func auto_points(t: String) -> float:
+	return float(_growth.get(t, 0.0)) + float(_graph.get(t, 0.0)) * (level - _growth_level)
 
 
 ## Whether the run has reached its job change and the job has somewhere to go.
@@ -1035,7 +1081,10 @@ func skill_cooldown_mult() -> float:
 
 
 func attack_speed_mult() -> float:
-	return _ratio("DX", DX_SOFT) * (1.0 + card_value(&"hyper_beat") / 100.0)
+	var m := _ratio("DX", DX_SOFT) * (1.0 + card_value(&"hyper_beat") / 100.0)
+	if has_technique(&"footwork"):
+		m *= 1.15
+	return m * (1.0 + MOMENTUM_STEP * momentum)
 
 
 func speed_mult() -> float:
@@ -1048,7 +1097,8 @@ func speed_mult() -> float:
 
 
 func dash_cooldown_mult() -> float:
-	return (1.3 if overweight() else 1.0) * (0.8 if quirk(&"quick_dash") else 1.0)
+	var m := (1.3 if overweight() else 1.0) * (0.8 if quirk(&"quick_dash") else 1.0)
+	return m * (0.8 if not cls.armed else 1.0)  # fighting bare-handed keeps you light on your feet
 
 
 func crit_chance() -> float:

@@ -118,6 +118,20 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
   - Schoolgirl → Boxer (Boxer's Footwork: +15% punch damage) → **Champion** (Champion's Fury: +25% finishers) or **Duelist**. The Duelist is the hybrid: she learns the Knight tree, and gets +10% skill damage and −10% MP cost. It unlocks after a Champion clear.
   - Bunny is data only (`data/classes/bunny.tres` and four jobs), which proves new classes need no new systems.
 
+- **Job changes change how you fight.** Each 2nd and 3rd job brings a technique, and techniques stack down the line:
+
+  | Job | Technique |
+  |---|---|
+  | Knight | **Whirlwind**: the combo finisher is a full spin with longer reach. |
+  | Gladiator | **Momentum**: combo hits build up to 5 stacks, each +5% attack speed and damage; a finisher at 5 releases a shockwave. |
+  | Mercenary | **Blade Dash**: the dash cuts every monster it passes through; a kill recharges it. |
+  | Boxer | **Footwork**: the dash ends in a jab, and the combo is 15% faster. |
+  | Champion | **Rush**: two quick jabs before the finisher, which stuns. |
+  | Duelist | **Riposte**: dodging through an attack recharges the dash and makes the next hit a sure x2.5 critical. |
+
+  A job change also grants 4 type points in the job's types (which can unlock traits on the spot), turns your automatic growth toward them (`JobData.graph`), heals you fully, and dresses you in the job's outfit.
+- **Looks.** Hats, shields, masks, head pieces and your class's ears and tails show on the character, placed on every frame by the original pivot tables. Each job has its own outfit colours, and your innerwear colours the belt. `tests/look_gallery.tscn` renders them all.
+
 - **The Trickster** is the custom class.
   - It unlocks after a 3rd-job clear with both Buffalo and Bunny.
   - Create it at the gate: pick a kit (sword, hammer or fists), a type graph preset, and **two skill trees** from Knight, Boxer, Gladiator, Mercenary, Champion and Duelist, plus the Bard, Explorer and Entertainer trees, each of which unlocks once you've borrowed that Echo's rune.
@@ -164,7 +178,7 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 
 ### Equipment
 
-- **Six slots:** weapon, hat, shield, innerwear and two accessories.
+- **Six slots:** weapon, hat, shield, innerwear and two accessories. Hats and shields are drawn on the character; innerwear dyes the belt.
 - **Items:** 30 real Trickster items from Coral Beach's level range (`data/items/`), with their original stats, weights and icons. Deeper rooms drop higher-level items.
 - **Drops** roll stats around the base values, and can roll an original prefix: Sharp, Shrewd, Sensible, Solid, Clever, Spell or Lucky. DA raises roll quality.
 - **Weapon families** change the combo. Swords use `data/combos/sword.tres`. Hammers (Pretty Red Hammer, Bamboo Stick) use `data/combos/hammer.tres`: slower and heavier, ending in a full-circle ground pound.
@@ -211,7 +225,9 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 godot --headless --fixed-fps 60 res://tests/playtest.tscn -- runs=10 build=mixed
 ```
 
-The `build` option is `power`, `magic`, `sense`, `charm` or `mixed`. Add `city=full` to start with every restoration bought, and `heat=N` to play at a Heat. Right now the bot clears about 6 runs in 10, and most deaths come at the boss.
+The `build` option is `power`, `magic`, `sense`, `charm` or `mixed`. Add `city=full` to start with every restoration bought, `heat=N` to play at a Heat, `class=bunny`, `god=1` to measure the whole curve without dying, and `tag=x` to run several bots at once.
+
+The report includes combat feel: hits and seconds to kill normal and elite monsters by depth, and how hard monsters hit as a share of max HP. Monster HP and damage follow a depth curve (`Run.MOB_EHP`, `MOB_HIT`, `DEPTH_EHP`, `DEPTH_HIT`); the original stats only set each monster's toughness relative to its region. With every restoration bought, a Buffalo bot clears about 2 runs in 3 and a Bunny bot about 1 in 9. The bot is a weak stand-in for a player (it chases badly with short reach), so treat its numbers as a floor.
 
 Also:
 
@@ -253,7 +269,9 @@ To add a room, create a `RoomData` resource with a map name and a rectangle (`to
 godot --headless --path . res://tests/smoke_test.tscn
 ```
 
-The test plays through room loading, combat, every skill, the dash vault, scenery fading, pathfinding, card and level-up picks, doors, Clione's projectiles, the boss and its summons, death and banking, then Megalopolis: its people, conversations, flags and restorations. It uses a throwaway profile, never your save.
+The test plays through room loading, combat, every skill, the dash vault, scenery fading, pathfinding, card and level-up picks, doors, Clione's projectiles, the boss and its summons, death and banking, then Megalopolis: its people, conversations, flags and restorations. It uses a throwaway profile, never your save. It also checks every job technique, and guards the balance: every monster stays near the depth curve.
+
+`tests/ui_audit.tscn` (run windowed) fills a profile to its limits and opens every screen: every NPC menu and submenu, every pick list, the character sheet, the HUD and results. It flags anything off screen, options a player can't reach and cut text, and saves a screenshot of each. Use `size=WxH` for other windows and `noscale` for the editor's embedded game view.
 
 ## Reference
 

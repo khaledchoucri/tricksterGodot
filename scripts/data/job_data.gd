@@ -19,6 +19,17 @@ extends Resource
 ## The job's look: outfit dyes for ActorSprite.set_outfit (garment -> variant,
 ## e.g. {"w1": 6} a white shirt). Empty keeps the class's base colours.
 @export var outfit: Dictionary = {}
+@export_group("Job change")
+## How the job changes the way you fight, checked by code through
+## Run.has_technique(): whirlwind, momentum, blade_dash, footwork, rush, riposte.
+@export var technique: StringName
+@export var technique_name := ""
+@export_multiline var technique_text := ""
+## Type points granted when the job begins (type -> points).
+@export var bonus_points: Dictionary = {}
+## Automatic growth per level from the job change on (replaces the class graph).
+@export var graph: Dictionary = {}
+@export_group("")
 ## Jobs this one can change into.
 @export var next_jobs: Array[JobData] = []
 ## A branch that has to be earned: the Profile stat that unlocks it (e.g.

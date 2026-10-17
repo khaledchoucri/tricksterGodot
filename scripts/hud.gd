@@ -75,7 +75,12 @@ func refresh(player: Player) -> void:
 	if sheet.visible:
 		sheet.refresh()
 	if is_instance_valid(player):
-		%DashLabel.text = "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
+		var dash := "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
+		if Run.has_technique(&"momentum"):
+			dash += "   Momentum " + "●".repeat(Run.momentum) + "○".repeat(Run.MOMENTUM_MAX - Run.momentum)
+		if player._riposte_ready:
+			dash += "   Riposte ready"
+		%DashLabel.text = dash
 
 
 ## The type the class grows in most (Power for Buffalo and Bunny).

@@ -50,7 +50,7 @@ func update(delta: float) -> void:
 			if _window != i:
 				_window = i
 				_hit_this_window.clear()
-				if s.slash:
+				if s.slash or s.arc_degrees >= 300.0:  # a Whirlwind always shows its circle
 					_spawn_slash(s, (w.y - w.x) / speed)
 			_apply(s)
 	if t >= s.dash_cancel and player.take_buffer("dash") and player.can_dash():
@@ -78,13 +78,14 @@ func _apply(s: ComboStep) -> void:
 			Run.gain_mp(Run.mp_per_hit())
 			landed = true
 	if landed:
+		player.combo_landed(s)
 		Audio.play(HIT_SOUNDS[randi() % HIT_SOUNDS.size()], -4.0)
 		Events.hitstop_requested.emit(s.hitstop * (1.6 if crit_any else 1.0))
 		Events.shake_requested.emit(4.5 if s.finisher else 2.5)
 
 
 func _mult(s: ComboStep) -> float:
-	var m := Run.attack_mult()
+	var m := Run.attack_mult() * (1.0 + Run.MOMENTUM_STEP * Run.momentum)
 	if s.finisher:
 		m *= 1.0 + Run.card_value(&"pumping_heart") / 100.0
 		if Run.has_passive(&"champions_fury"):
@@ -102,6 +103,8 @@ func _talent_fx(s: ComboStep) -> Dictionary:
 			fx.stun = Run.card_value(&"uppercut")
 		if Run.has_trait(&"staggering_finish"):
 			fx.stun = maxf(fx.get("stun", 0.0), 0.35)
+		if Run.has_technique(&"rush"):
+			fx.stun = maxf(fx.get("stun", 0.0), 0.6)
 		if Run.has_trait(&"armor_crush"):
 			fx.break = 25.0
 	return fx
