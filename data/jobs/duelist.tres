@@ -12,6 +12,7 @@
 script = ExtResource("1_s")
 id = &"duelist"
 display_name = "Duelist"
+outfit = {"w1": 5, "w4": 5, "p": 2}
 tier = 3
 cards = Array[ExtResource("2_c")]([ExtResource("c_lacerator"), ExtResource("c_piercing_wave"), ExtResource("c_inferno_blade"), ExtResource("c_lightning_strike"), ExtResource("c_berserker")])
 passive = &"duelists_edge"

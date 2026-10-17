@@ -33,3 +33,8 @@ func describe() -> String:
 		if stats.has(k):
 			parts.append("%s +%d" % [k, stats[k]])
 	return ("  ·  ".join(parts) + "\n" if parts.size() else "") + text
+
+
+## The sprite worn on the character ("" for sprints, which aren't seen).
+func worn_sprite() -> String:
+	return ItemData.worn_sprite_for(item_id)

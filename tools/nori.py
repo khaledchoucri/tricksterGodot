@@ -46,6 +46,7 @@ class Nori:
     bpp: int
     bitmaps: list   # index = bitmap struct index (first image of each struct)
     anims: list
+    palette: list = None  # 256 (r, g, b) for 8-bit files
 
 
 def _inflate_if_needed(b: bytes) -> bytes:
@@ -153,7 +154,7 @@ def read(path: str, palette_override=None) -> Nori:
             planes = [Plane(*struct.unpack_from('<7i', b, r + 8 + 28 * k)) for k in range(max(n_planes, 0))]
             anim.frames.append(Frame(dur, planes))
         anims.append(anim)
-    return Nori(version, bpp, bitmaps, anims)
+    return Nori(version, bpp, bitmaps, anims, palette)
 
 
 if __name__ == '__main__':

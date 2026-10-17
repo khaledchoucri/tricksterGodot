@@ -132,6 +132,45 @@ def skill_ids():
     return ids
 
 
+# Playable characters: palette-index sheets (outfits are dyed in game) and
+# the pivot file that places worn items (hats, shields, masks) on them.
+PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr001.pvo'}
+
+
+def worn_sprites(client):
+    """Sprite files of the hats, shields and wardrobe pieces the game uses.
+    Also writes original_assets/equip/items.json: item id -> sprite name."""
+    sys.path.insert(0, HERE)
+    from export_items import load_items
+    rows = load_items(os.path.join(OUT, 'data', 'tables'))
+    files = set()
+    by_id = {}
+    for sub in ('items', 'wardrobe'):
+        folder = os.path.join(ROOT, 'data', sub)
+        for f in sorted(os.listdir(folder)):
+            if not f.endswith('.tres'):
+                continue
+            text = open(os.path.join(folder, f), encoding='utf-8').read()
+            m = re.search(r'^item_id = (\d+)', text, re.M)
+            slot = re.search(r'^slot = (\S+)', text, re.M)
+            # Items: slot 1 hat, 2 shield. Wardrobe: every slot but speed.
+            if not m:
+                continue
+            if sub == 'items' and (not slot or slot.group(1) not in ('1', '2')):
+                continue
+            if sub == 'wardrobe' and slot and 'speed' in slot.group(1):
+                continue
+            eq = (rows.get(m.group(1)) or {}).get('EquipFileName') or ''
+            if eq:
+                parts = eq.replace(chr(92), '/').split('/')
+                files.add(os.path.join(client, *parts))
+                by_id[m.group(1)] = os.path.splitext(parts[-1])[0].lower()
+    os.makedirs(os.path.join(OUT, 'equip'), exist_ok=True)
+    with open(os.path.join(OUT, 'equip', 'items.json'), 'w') as f:
+        json.dump(by_id, f, indent=1, sort_keys=True)
+    return sorted(files)
+
+
 def run(*args):
     subprocess.run([sys.executable, '-I', *args], check=True)
 
@@ -149,6 +188,8 @@ def main():
         if sockets:
             pivot_file, section = sockets
             args += ['--pivots', os.path.join(client, pivot_file), '--pivot-section', section]
+        if name in PLAYERS:
+            args += ['--indexed', os.path.join(client, 'data')]
         run(*args)
     for name, rel in PORTRAITS.items():
         run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel),
@@ -166,6 +207,10 @@ def main():
     run(os.path.join(HERE, 'export_icons.py'), client, os.path.join(OUT, 'data', 'tables', 'SkillParam2.json'),
         os.path.join(OUT, 'icons'), ','.join(skill_ids()))
     run(os.path.join(HERE, 'export_items.py'), client, os.path.join(OUT, 'data', 'tables'), OUT, ','.join(item_ids()))
+    worn = worn_sprites(client)
+    for name, pvo in PLAYERS.items():
+        run(os.path.join(HERE, 'export_equip.py'), client, os.path.join(OUT, 'actors', name), name,
+            os.path.join(client, pvo), *worn)
     audio = os.path.join(OUT, 'audio')
     os.makedirs(audio, exist_ok=True)
     for f in SOUNDS:

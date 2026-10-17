@@ -16,6 +16,9 @@ extends Resource
 @export var passive_name := ""
 @export_multiline var passive_text := ""
 @export_multiline var text := ""
+## The job's look: outfit dyes for ActorSprite.set_outfit (garment -> variant,
+## e.g. {"w1": 6} a white shirt). Empty keeps the class's base colours.
+@export var outfit: Dictionary = {}
 ## Jobs this one can change into.
 @export var next_jobs: Array[JobData] = []
 ## A branch that has to be earned: the Profile stat that unlocks it (e.g.

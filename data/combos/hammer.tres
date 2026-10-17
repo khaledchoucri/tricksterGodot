@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ComboData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="ComboData" format=3 uid="uid://c2ds37laipcl3"]
 
-[ext_resource type="Script" path="res://scripts/data/combo_step.gd" id="1_s"]
-[ext_resource type="Script" path="res://scripts/data/combo_data.gd" id="2_c"]
+[ext_resource type="Script" uid="uid://b3vjcd4hvquix" path="res://scripts/data/combo_step.gd" id="1_s"]
+[ext_resource type="Script" uid="uid://b5fegxd0610q2" path="res://scripts/data/combo_data.gd" id="2_c"]
 
 [sub_resource type="Resource" id="step_0"]
 script = ExtResource("1_s")
@@ -20,7 +20,6 @@ lunge = 50.0
 hitstop = 0.06
 sound = "weapon002.wav"
 slash = true
-clockwise = true
 
 [sub_resource type="Resource" id="step_1"]
 script = ExtResource("1_s")
@@ -59,7 +58,6 @@ hitstop = 0.09
 finisher = true
 sound = "weapon003.wav"
 slash = true
-clockwise = true
 
 [resource]
 script = ExtResource("2_c")

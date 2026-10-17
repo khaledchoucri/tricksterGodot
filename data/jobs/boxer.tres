@@ -13,6 +13,7 @@
 script = ExtResource("1_s")
 id = &"boxer"
 display_name = "Boxer"
+outfit = {"w1": 6, "w4": 5}
 tier = 2
 cards = Array[ExtResource("2_c")]([ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_guard")])
 passive = &"boxers_footwork"

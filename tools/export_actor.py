@@ -104,10 +104,18 @@ def main():
     ap.add_argument('--pivots', default='', help="the character's pivot file (.pvt), for hand sockets")
     ap.add_argument('--pivot-section', default='weapon001.nri',
                     help='pivot section to read sockets from (one per weapon type)')
+    ap.add_argument('--indexed', default='',
+                    help='8-bit sprites only: write palette-index sheets (index in red) and '
+                         '<name>_palette.json with the base palette and the outfit palettes '
+                         'found under this folder (wear_parts/<chr>_wNV.pal, part/<chr>_N.pal)')
     args = ap.parse_args()
     keep = set(filter(None, args.actions.split(',')))
 
     n = nori.read(args.nri)
+    if args.indexed:
+        write_palettes(n.palette, args.indexed, os.path.splitext(os.path.basename(args.nri))[0],
+                       os.path.join(args.out_dir, f'{args.name}_palette.json'))
+        n = nori.read(args.nri, [(i, 0, 0) for i in range(256)])
     places = pivots.read(args.pivots)[args.pivot_section] if args.pivots else {}
     groups = {}  # action -> {dir: (anim index, Anim)}
     for i, a in enumerate(n.anims):
@@ -137,6 +145,9 @@ def main():
     os.makedirs(args.out_dir, exist_ok=True)
     manifest = {'actor': args.name, 'source': os.path.basename(args.nri), 'cell': [cw, ch],
                 'anchor': list(anchor), 'actions': {}}
+    if args.indexed:
+        manifest['palette'] = f'{args.name}_palette.json'
+
     for act, dirs in sorted(groups.items()):
         dir_list = [d for d in DIR_ORDER if d in dirs]
         cols = max(len(dirs[d][1].frames) for d in dir_list)
@@ -153,7 +164,7 @@ def main():
                 for y in range(ch):
                     o = ((r * ch + y) * sw + c * cw) * 4
                     sheet[o:o + cw * 4] = cell[y * cw * 4:(y + 1) * cw * 4]
-                entry = {'col': c, 'row': r, 'ms': fr.duration}
+                entry = {'col': c, 'row': r, 'ms': fr.duration, 'src': [ai, c]}
                 place = places.get((ai, c))
                 if place:
                     entry['hand'] = [place[0], place[1]]
@@ -168,6 +179,31 @@ def main():
     if args.res_prefix:
         write_sprite_frames(manifest, args.out_dir, args.res_prefix.rstrip('/'))
     print(f'{args.name}: {len(groups)} actions, cell {cw}x{ch}, anchor {anchor}')
+
+
+def write_palettes(base, data_dir, chr_name, out_path):
+    """Base palette plus each outfit palette's overrides. Outfit palettes are
+    full 256-colour files where one filler colour (pure green, or black)
+    marks the entries they leave alone;
+    "w<part><variant>" recolour one garment (0 shoes, 1 shirt, 2 belt,
+    3 trousers, 4 wristbands, 5 extra), "p<variant>" the hair or headwear."""
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    parts = {}
+    for folder, prefix, key in (('wear_parts', f'{chr_name}_w', 'w'), ('part', f'{chr_name}_', 'p')):
+        d = os.path.join(data_dir, folder)
+        if not os.path.isdir(d):
+            continue
+        for f in sorted(os.listdir(d)):
+            stem = f[:-4]
+            if not f.endswith('.pal') or not stem.startswith(prefix) or not stem[len(prefix):].isdigit():
+                continue
+            raw = open(os.path.join(d, f), 'rb').read()[:768]
+            colours = [tuple(raw[i:i + 3]) for i in range(0, len(raw), 3)]
+            filler = max(set(colours), key=colours.count)  # green, or black in some sets
+            over = {str(i): list(c) for i, c in enumerate(colours) if c != filler}
+            parts[key + stem[len(prefix):]] = over
+    with open(out_path, 'w') as fh:
+        json.dump({'base': [list(c) for c in base], 'parts': parts}, fh)
 
 
 def write_sprite_frames(m, out_dir, res):

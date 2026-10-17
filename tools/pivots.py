@@ -28,22 +28,39 @@ def _is_record(b: bytes, p: int) -> bool:
 
 
 def read(path: str) -> dict:
-    """Returns {item file name: {(anim, frame): (x, y, item_frame, layer)}}."""
+    """Returns {item file name (lower case): {(anim, frame): (x, y, item_frame, layer)}}.
+
+    Sections are preceded by a u32 id. Most item sprites have no records of
+    their own: the file's index lists them as `u32 id, u16 type, char
+    name[32], u32 group`, and they share the records of the section whose id
+    is `group` (hat019.nri uses hat001.nri's pivots)."""
     b = open(path, 'rb').read()
-    names = [(m.start(), m.end(), m.group(1).decode()) for m in re.finditer(rb'([a-z_0-9]+\.nri)\x00', b)]
+    names = [(m.start(), m.end(), m.group(1).decode().lower())
+             for m in re.finditer(rb'([A-Za-z_0-9]+\.nri)\x00', b)]
     out = {}
-    for i, (_, end, name) in enumerate(names):
+    by_id = {}
+    refs = {}
+    for i, (start, end, name) in enumerate(names):
         stop = names[i + 1][0] if i + 1 < len(names) else len(b)
         # The header after the name varies in length; records start at the
         # first offset where several records line up.
         p = end
         while p < stop and not all(_is_record(b, p + k * RECORD) for k in range(3)):
             p += 1
-        recs = out.setdefault(name, {})
+        recs = {}
         while p < stop and _is_record(b, p):
             x, y, anim, frame = struct.unpack_from('<hhBB', b, p)
             recs.setdefault((anim, frame), (x, y, b[p + 12], b[p + 15]))
             p += RECORD
+        if recs:
+            out[name] = recs
+            if start >= 6:
+                by_id[struct.unpack_from('<I', b, start - 6)[0]] = name
+        elif start + 36 <= len(b):
+            refs[name] = struct.unpack_from('<I', b, start + 32)[0]
+    for name, group in refs.items():
+        if name not in out and group in by_id:
+            out[name] = out[by_id[group]]
     return out
 
 

@@ -14,6 +14,7 @@
 script = ExtResource("1_s")
 id = &"knight"
 display_name = "Knight"
+outfit = {"w0": 5, "w1": 6, "w3": 1, "p": 6}
 tier = 2
 cards = Array[ExtResource("2_c")]([ExtResource("c_lacerator"), ExtResource("c_piercing_wave"), ExtResource("c_inferno_blade"), ExtResource("c_lightning_strike"), ExtResource("c_berserker")])
 passive = &"sword_mastery"

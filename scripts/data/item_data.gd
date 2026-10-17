@@ -42,5 +42,21 @@ func icon() -> Texture2D:
 
 
 ## Name of the held sprite exported by tools/export_items.py.
+## The sprite worn on the character for hats and shields (an exported
+## original_assets/equip name), or "" if it has none.
+func worn_sprite() -> String:
+	return ItemData.worn_sprite_for(item_id)
+
+
+static var _worn_map: Dictionary = {}
+
+
+static func worn_sprite_for(id: int) -> String:
+	if _worn_map.is_empty():
+		var path := "res://original_assets/equip/items.json"
+		_worn_map = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {"": ""}
+	return _worn_map.get(str(id), "")
+
+
 func weapon_sprite() -> String:
 	return "item_%d" % item_id

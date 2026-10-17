@@ -8,6 +8,13 @@ extends AnimatedSprite2D
 ## and a missing side is drawn by mirroring the other (an art set may ship
 ## only s, se, e, ne, n). Frames can carry a hand socket, where a held weapon
 ## (HeldWeapon) attaches.
+##
+## Playable characters also have a palette (outfits dyed through
+## set_outfit) and worn items (hats, shields, masks: wear()) placed on every
+## frame from the original pivot tables (tools/export_equip.py).
+
+const PALETTE_SHADER := preload("res://shaders/palette.gdshader")
+const EQUIP_DIR := "res://original_assets/equip"
 
 const DIRS: Array[String] = ["e", "se", "s", "sw", "w", "nw", "n", "ne"]
 const MIRROR := {"e": "w", "se": "sw", "s": "s", "sw": "se", "w": "e", "nw": "ne", "n": "n", "ne": "nw"}
@@ -25,6 +32,10 @@ var _anchor := Vector2.ZERO
 var _cell := Vector2.ZERO
 var _stop_at := -1  # frame to hold on when playing part of a clip
 var _last_dir: Dictionary = {}  # action -> direction last used, for tie-breaking
+var _palette: Dictionary = {}   # {"base": [[r, g, b] x256], "parts": {"w13": {index: [r, g, b]}}}
+var _palette_tex: ImageTexture
+var _equip: Dictionary = {}     # {"groups": {group: {animation: [[x, y, frame, front] or 0]}}, "items": {item: group}}
+var _worn: Dictionary = {}      # slot -> {"item", "sprite": Sprite2D, "frames": Array, "group": String}
 
 
 ## Loads <folder>/<actor_name>/<actor_name>.json and .tres. Original sprites
@@ -44,6 +55,16 @@ func setup(actor_name: String, folder := "res://original_assets/actors") -> bool
 	scale = Vector2(s, s)
 	if manifest.get("filter", "") == "linear":
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	if manifest.has("palette"):
+		_palette = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/%s" % [folder, actor_name, manifest.palette]))
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var mat := ShaderMaterial.new()
+		mat.shader = PALETTE_SHADER
+		material = mat
+		set_outfit({})
+	var equip_path := base + "_equip.json"
+	if FileAccess.file_exists(equip_path):
+		_equip = JSON.parse_string(FileAccess.get_file_as_string(equip_path))
 	for act: String in manifest.actions:
 		var dirs: Dictionary = manifest.actions[act].dirs
 		available[act] = dirs.keys()
@@ -149,4 +170,89 @@ func _ready() -> void:
 	frame_changed.connect(func() -> void:
 		if _stop_at >= 0 and frame == _stop_at:
 			_stop_at = -1
-			pause())
+			pause()
+		_place_worn())
+	animation_changed.connect(_place_worn)
+
+
+# ---------------------------------------------------------------- outfits
+
+## Dyes the outfit: `dyes` maps a garment to a variant, e.g. {"w1": 5} (shirt,
+## black). Garments: w0 shoes, w1 shirt, w2 belt, w3 trousers, w4 wristbands,
+## w5 extra; "p" the hair or headwear. Missing ones keep the base colours.
+func set_outfit(dyes: Dictionary) -> void:
+	if _palette.is_empty():
+		return
+	var img := Image.create(256, 1, false, Image.FORMAT_RGBA8)
+	var base: Array = _palette.base
+	for i in 256:
+		var c: Array = base[i]
+		img.set_pixel(i, 0, Color8(int(c[0]), int(c[1]), int(c[2])))
+	for part: String in dyes:
+		var over: Dictionary = _palette.parts.get("%s%d" % [part, int(dyes[part])], {})
+		for k: String in over:
+			var c: Array = over[k]
+			img.set_pixel(int(k), 0, Color8(int(c[0]), int(c[1]), int(c[2])))
+	if _palette_tex:
+		_palette_tex.update(img)
+	else:
+		_palette_tex = ImageTexture.create_from_image(img)
+	(material as ShaderMaterial).set_shader_parameter("palette", _palette_tex)
+
+
+## Dye variants this character's art has for `part` (e.g. "w1" -> 7).
+func outfit_variants(part: String) -> int:
+	var n := 0
+	while _palette.get("parts", {}).has("%s%d" % [part, n]):
+		n += 1
+	return n
+
+
+# ---------------------------------------------------------------- worn items
+
+## Shows `item` (an exported equip sprite such as "hat019", or "" to take it
+## off) in `slot`. Items without pivots for this character stay hidden.
+func wear(slot: String, item: String) -> void:
+	var cur: Dictionary = _worn.get(slot, {})
+	if cur.get("item", "") == item:
+		return
+	if cur.has("sprite"):
+		(cur.sprite as Node).queue_free()
+	_worn.erase(slot)
+	var group: String = _equip.get("items", {}).get(item, "")
+	var info_path := "%s/%s.json" % [EQUIP_DIR, item]
+	if item == "" or group == "" or not FileAccess.file_exists(info_path):
+		return
+	var s := Sprite2D.new()
+	s.texture = load("%s/%s.png" % [EQUIP_DIR, item])
+	s.centered = false
+	s.region_enabled = true
+	s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(s)
+	_worn[slot] = {"item": item, "sprite": s, "group": group,
+		"frames": JSON.parse_string(FileAccess.get_file_as_string(info_path)).frames}
+	_place_worn()
+
+
+func worn_item(slot: String) -> String:
+	return _worn.get(slot, {}).get("item", "")
+
+
+func _place_worn() -> void:
+	for slot: String in _worn:
+		var w: Dictionary = _worn[slot]
+		var s: Sprite2D = w.sprite
+		var rows: Array = _equip.groups[w.group].get(animation, [])
+		var rec: Variant = rows[frame] if frame < rows.size() else 0
+		if not rec is Array or int(rec[2]) >= w.frames.size():
+			s.visible = false
+			continue
+		var f: Array = w.frames[int(rec[2])]
+		s.visible = true
+		s.region_rect = Rect2(f[0], 0, f[1], f[2])
+		var at := Vector2(float(rec[0]) + float(f[3]), float(rec[1]) + float(f[4]))
+		s.flip_h = flip_h
+		if flip_h:
+			at.x = -at.x - float(f[1])
+		s.position = at
+		s.show_behind_parent = int(rec[3]) == 0

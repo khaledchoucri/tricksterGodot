@@ -12,6 +12,7 @@
 script = ExtResource("1_s")
 id = &"champion"
 display_name = "Champion"
+outfit = {"w1": 2, "w4": 1, "p": 7}
 tier = 3
 cards = Array[ExtResource("2_c")]([ExtResource("c_adrenaline"), ExtResource("c_flaming_fist"), ExtResource("c_hyper_beat"), ExtResource("c_suffocate"), ExtResource("c_chakra_balance")])
 passive = &"champions_fury"

@@ -65,6 +65,12 @@ func _shoot() -> void:
 	for e in game.room.enemies:
 		e.global_position = player.global_position + Vector2(60, 20)
 	player.aim = Vector2(1, 0.3).normalized()
+	Run.equip(GearItem.make(load("res://data/items/marky_tricorn.tres")), "hat")
+	Run.equip(GearItem.make(load("res://data/items/teddy_bear_shield.tres")), "shield")
+	Run.start_job(load("res://data/jobs/knight.tres"))
+	player.refresh_gear()
+	await _wait(0.3)
+	await _snap("00_knight_dressed")
 	player.attack.start(0)
 	await _wait(0.12)
 	await _snap("01_hammer_swing")

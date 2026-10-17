@@ -13,6 +13,8 @@ var _body: AnimatedSprite2D
 var _weapon: Sprite2D
 var _body_copy := AnimatedSprite2D.new()
 var _weapon_copy := Sprite2D.new()
+var _worn_copies: Array[Sprite2D] = []
+var _mat: ShaderMaterial
 
 
 func _ready() -> void:
@@ -21,10 +23,10 @@ func _ready() -> void:
 	visible = false
 	_body = get_node(body_path)
 	_weapon = get_node_or_null(weapon_path)
-	var mat := ShaderMaterial.new()
-	mat.shader = SHADER
+	_mat = ShaderMaterial.new()
+	_mat.shader = SHADER
 	for copy: CanvasItem in [_body_copy, _weapon_copy]:
-		copy.material = mat
+		copy.material = _mat
 		add_child(copy)
 
 
@@ -47,3 +49,24 @@ func _process(_delta: float) -> void:
 		_weapon_copy.flip_v = _weapon.flip_v
 		_weapon_copy.position = _weapon.position
 		_weapon_copy.rotation = _weapon.rotation
+	# Worn items (hats, shields) are sprites under the body.
+	var worn: Array[Sprite2D] = []
+	for c in _body.get_children():
+		if c is Sprite2D:
+			worn.append(c)
+	while _worn_copies.size() < worn.size():
+		var copy := Sprite2D.new()
+		copy.material = _mat
+		_body_copy.add_child(copy)
+		_worn_copies.append(copy)
+	for i in _worn_copies.size():
+		var copy := _worn_copies[i]
+		copy.visible = i < worn.size() and worn[i].visible
+		if copy.visible:
+			var w := worn[i]
+			copy.texture = w.texture
+			copy.region_enabled = w.region_enabled
+			copy.region_rect = w.region_rect
+			copy.centered = w.centered
+			copy.flip_h = w.flip_h
+			copy.position = w.position

@@ -84,11 +84,32 @@ func refresh_gear() -> void:
 	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
 	_steps = combo.steps.duplicate()
+	dress()
 	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
 		var extra: ComboStep = _steps[_steps.size() - 2].duplicate()
 		extra.clockwise = not extra.clockwise
 		extra.frames = Vector2i(extra.frames.y, extra.frames.x)
 		_steps.insert(_steps.size() - 1, extra)
+
+
+## Worn gear and wardrobe pieces on the sprite, and the job's outfit.
+func dress() -> void:
+	for slot: String in ["hat", "shield"]:
+		var g := Run.equipped(slot)
+		sprite.wear(slot, g.data.worn_sprite() if g else "")
+	var fashion := {}
+	for w in Run.worn_pieces():
+		fashion[w.slot] = w.worn_sprite()
+	for slot: String in ["ear", "tail", "face", "head", "cape"]:
+		sprite.wear(slot, fashion.get(slot, ""))
+	if fashion.get("head", "") != "":
+		sprite.wear("hat", "")  # fashion headwear is shown instead of the hat
+	var dyes: Dictionary = Run.job.outfit.duplicate() if Run.job else {}
+	var belt := Run.equipped("innerwear")
+	var belts := sprite.outfit_variants("w2")
+	if belt and belts > 0:
+		dyes["w2"] = belt.data.item_id % belts  # each innerwear has its own colour
+	sprite.set_outfit(dyes)
 
 
 func combo_steps() -> Array[ComboStep]:
