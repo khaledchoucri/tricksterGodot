@@ -147,6 +147,8 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 - **Heirlooms.** In the city, Julio lets you pick one stored item to carry into every run.
 - **Level sync.** Coral Beach syncs a carried heirloom down. Its refine counts up to +3, and its base stats scale with the room's level (3 + 3 per room), so a Bamboo Sword starts weaker and is at full strength by about room 5.
 - **Death is a rollback.** Changes to a stored item since the last Port are undone, and the log says which.
+- **Leftovers bank.** With the Warehouse restored, a run's leftover Galder, Bronze Fragments and materials go to the city: all of them on a clear, half after a rollback.
+- **City crafting.** In Megalopolis, **Blacksmith Marx** refines stored items with banked Galder (3× an anvil's price) and Bronze, at the anvil's odds. **Compounder Paul** compounds banked materials into stored items' free slots. Heirlooms keep growing between runs.
 
 ### Balance
 

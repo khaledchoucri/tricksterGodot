@@ -349,7 +349,8 @@
       "paul",
       "Doors past the gate name the monsters behind them now. Pick the den with the material you need."
      ]
-    ]
+    ],
+    "then": "compound"
    },
    {
     "id": "paul_default",
@@ -359,9 +360,10 @@
     "lines": [
      [
       "paul",
-      "Four Cool Ice into a sword slot. Water attack on every swing. Never gets old."
+      "Leftover materials end up with me now. Pick a stored piece and we'll set something in it."
      ]
-    ]
+    ],
+    "then": "compound"
    }
   ],
   "marx": [
@@ -390,7 +392,8 @@
       "marx",
       "Shops are open too. Mostly mine."
      ]
-    ]
+    ],
+    "then": "forge"
    },
    {
     "id": "marx_default",
@@ -400,9 +403,10 @@
     "lines": [
      [
       "marx",
-      "+5 is where it gets interesting. And expensive."
+      "Bring me what's on Julio's shelves. Banked Galder, banked Bronze. The anvil does the rest."
      ]
-    ]
+    ],
+    "then": "forge"
    }
   ],
   "sabrina": [

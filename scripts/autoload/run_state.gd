@@ -313,6 +313,8 @@ func finish(p_won: bool) -> void:
 		Profile.best_heat = heat
 	last_result = {"won": p_won, "depth": reached, "tm": tm, "shards": shards, "heat": heat, "bounty": bounty}
 	Profile.bank_run(p_won, reached, tm, shards, String(job.id))
+	if system_on(&"warehouse"):
+		last_result.kept = Profile.bank_leftovers(p_won, galder, ore, materials)
 
 
 func _plan_rooms() -> Array[RoomPlan]:
@@ -570,6 +572,57 @@ func equip(item: GearItem, slot_key := "") -> GearItem:
 	if max_hp > before:
 		heal(max_hp - before)
 	return old
+
+
+## City refining costs this many times a run anvil's Galder.
+const CITY_COST := 3
+
+
+func city_refine_cost(g: GearItem) -> Dictionary:
+	var cost := g.refine_cost()
+	cost.galder *= CITY_COST
+	return cost
+
+
+func can_city_refine(g: GearItem) -> bool:
+	var cost := city_refine_cost(g)
+	return g.can_refine() and Profile.ore >= cost.ore and Profile.galder >= cost.galder
+
+
+## Marx refines stored item `index` with banked Galder and ore: "success",
+## "fail" or "drop". Saves the item.
+func city_refine(index: int, roll := -1.0) -> String:
+	var g := GearItem.from_dict(Profile.warehouse[index], item_by_id)
+	var cost := city_refine_cost(g)
+	Profile.ore -= cost.ore
+	Profile.galder -= cost.galder
+	var result := "fail"
+	if (randf() if roll < 0.0 else roll) < g.refine_chance():
+		g.refine += 1
+		result = "success"
+	elif g.refine >= 4 and randf() < 0.5:
+		g.refine -= 1
+		result = "drop"
+	Profile.update_item(index, g.to_dict())
+	return result
+
+
+## Paul compounds a banked material into stored item `index`. Returns the compound.
+func city_compound(index: int, mat: MaterialData) -> Dictionary:
+	var g := GearItem.from_dict(Profile.warehouse[index], item_by_id)
+	Profile.materials[String(mat.id)] = int(Profile.materials.get(String(mat.id), 0)) - mat.need
+	var c := g.compound(mat)
+	Profile.update_item(index, g.to_dict())
+	return c
+
+
+## Every material the run can drop, by id (for city crafting).
+func material_by_id(id: StringName) -> MaterialData:
+	for r in regions:
+		for e in r.enemies:
+			if e.material and e.material.id == id:
+				return e.material
+	return null
 
 
 ## Whether an equipped legend has this effect.

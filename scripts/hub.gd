@@ -91,6 +91,9 @@ func _welcome() -> void:
 	else:
 		hud.log_line("[System] Rollback complete. You remember everything.", Color("c9a4ff"))
 	hud.notice("Carried home: %d TM, %d Harkon Shard%s" % [r.tm, r.shards, "" if r.shards == 1 else "s"])
+	if r.has("kept"):
+		hud.log_line("[System] To the warehouse: %d Galder, %d Bronze Fragments, %d materials%s." % [r.kept.galder,
+			r.kept.ore, r.kept.materials, "" if r.won else " (half was lost in the rollback)"], Color("a8d8da"))
 
 
 func _npc(id: StringName) -> Npc:
@@ -143,6 +146,10 @@ func talk(npc: Npc) -> void:
 			await _warehouse_menu(npc)
 		"server":
 			await _server_menu(npc)
+		"forge":
+			await _forge_menu(npc)
+		"compound":
+			await _compound_menu(npc)
 	_set_talking(false)
 
 
@@ -238,6 +245,84 @@ func _warehouse_menu(npc: Npc) -> void:
 			hud.log_line("[System] You'll carry %s." % g.title(), Color("a8d8da"))
 		elif what == 1:
 			Profile.discard_item(pick)
+
+
+func _stored_items() -> Array[GearItem]:
+	var out: Array[GearItem] = []
+	for d in Profile.warehouse:
+		out.append(GearItem.from_dict(d, Run.item_by_id))
+	return out
+
+
+## Marx refines stored items with banked Galder and Bronze Fragments.
+func _forge_menu(npc: Npc) -> void:
+	while true:
+		var items := _stored_items()
+		var options: Array = []
+		for g in items:
+			if g == null or not g.can_refine():
+				options.append({"title": g.title() if g else "(unknown item)", "tag": "",
+					"text": "Can't be refined." if g else "", "disabled": true})
+				continue
+			var cost := Run.city_refine_cost(g)
+			options.append({"title": "%s  →  +%d" % [g.title(), g.refine + 1], "tag": g.data.refine_stat,
+				"icon": g.data.icon(), "text": "%d%% chance  ·  %d Bronze, %d Galder%s" % [roundi(g.refine_chance() * 100),
+					cost.ore, cost.galder, "  ·  failing may lose a level" if g.refine >= 4 else ""],
+				"disabled": not Run.can_city_refine(g)})
+		options.append({"title": "Leave", "tag": "", "text": "%d Galder and %d Bronze Fragments banked." % [Profile.galder, Profile.ore]})
+		var pick := await dialogue.choose(_line(String(npc.data.id), "Bring it to the anvil."), options)
+		if pick < 0 or pick >= items.size():
+			return
+		Audio.play("ui_refine_proceed.wav")
+		var result := Run.city_refine(pick)
+		var g := GearItem.from_dict(Profile.warehouse[pick], Run.item_by_id)
+		match result:
+			"success":
+				Audio.play("ui_refine_success.wav")
+				hud.log_line("[System] Marx refined it: %s." % g.title(), Color("e0b54d"))
+			"drop":
+				Audio.play("ui_refine_fail.wav")
+				hud.log_line("[System] The refine failed. %s lost a level." % g.title(), Color("f07a62"))
+			_:
+				Audio.play("ui_refine_fail.wav")
+				hud.log_line("[System] The refine failed. The materials are gone.", Color("f07a62"))
+
+
+## Paul compounds banked materials into stored items.
+func _compound_menu(npc: Npc) -> void:
+	while true:
+		var mats: Array[MaterialData] = []
+		var options: Array = []
+		for id: String in Profile.materials:
+			var m := Run.material_by_id(StringName(id))
+			if m == null or Profile.materials[id] <= 0:
+				continue
+			mats.append(m)
+			options.append({"title": m.display_name, "tag": "%d / %d" % [Profile.materials[id], m.need], "icon": m.icon(),
+				"text": "Compounds %s into a free slot of a stored item." % m.describe(),
+				"disabled": Profile.materials[id] < m.need})
+		options.append({"title": "Leave", "tag": "", "text": "" if mats.size() else "No materials banked yet."})
+		var pick := await dialogue.choose(_line(String(npc.data.id), "What are we setting today?"), options)
+		if pick < 0 or pick >= mats.size():
+			return
+		var m := mats[pick]
+		var items := _stored_items()
+		var targets: Array[int] = []
+		var item_opts: Array = []
+		for i in items.size():
+			if items[i] and items[i].free_slots() > 0:
+				targets.append(i)
+				item_opts.append({"title": items[i].title(), "tag": "%d free" % items[i].free_slots(),
+					"icon": items[i].data.icon(), "text": items[i].summary()})
+		item_opts.append({"title": "Back", "tag": "", "text": "" if targets.size() else "No stored item has a free slot."})
+		var t := await dialogue.choose(_line(String(npc.data.id), "Into which piece?"), item_opts)
+		if t < 0 or t >= targets.size():
+			continue
+		var g := items[targets[t]]
+		var c := Run.city_compound(targets[t], m)
+		Audio.play("ui_compose_success.wav")
+		hud.log_line("[System] Paul set %s into %s: %s +%d." % [m.display_name, g.title(),
+			c.stat + (" attack" if m.is_element() else ""), c.value], Color("e0b54d"))
 
 
 ## The GM console: raise or lower each Server Setting.

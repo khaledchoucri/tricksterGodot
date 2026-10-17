@@ -18,6 +18,10 @@ extends Resource
 ## follow on from the one before.
 @export var hp_scale := 1.0
 @export var damage_scale := 1.0
+## Scales on the TM and Galder monsters give (later regions' originals are
+## much larger than a roguelite's economy wants).
+@export var tm_scale := 1.0
+@export var galder_scale := 1.0
 @export var field_music := ""
 @export var boss_music := ""
 @export var field_ambience := ""

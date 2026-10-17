@@ -13,6 +13,10 @@ var path := DEFAULT_PATH
 
 var tm := 0
 var shards := 0
+## Run leftovers kept in the city for crafting on stored items.
+var galder := 0
+var ore := 0
+var materials: Dictionary = {}  # MaterialData id (String) -> count
 ## Lifetime totals and counters, used by story conditions.
 var stats := {"runs": 0, "deaths": 0, "clears": 0, "best_depth": 0, "shards_found": 0, "tm_earned": 0}
 var flags: Dictionary = {}         # String -> true
@@ -40,6 +44,9 @@ func use_path(p_path: String, wipe := false) -> void:
 func load_profile() -> void:
 	tm = 0
 	shards = 0
+	galder = 0
+	ore = 0
+	materials = {}
 	stats = {"runs": 0, "deaths": 0, "clears": 0, "best_depth": 0, "shards_found": 0, "tm_earned": 0}
 	flags = {}
 	restorations = {}
@@ -55,6 +62,10 @@ func load_profile() -> void:
 		return
 	tm = int(data.get("tm", 0))
 	shards = int(data.get("shards", 0))
+	galder = int(data.get("galder", 0))
+	ore = int(data.get("ore", 0))
+	for k: String in data.get("materials", {}):
+		materials[k] = int(data.materials[k])
 	for k: String in data.get("stats", {}):
 		stats[k] = int(data.stats[k])
 	flags = data.get("flags", {})
@@ -72,7 +83,8 @@ func save() -> void:
 	if f == null:
 		push_warning("Couldn't save the profile to %s" % path)
 		return
-	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "stats": stats,
+	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "galder": galder, "ore": ore,
+		"materials": materials, "stats": stats,
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
 		"server_settings": server_settings, "best_heat": best_heat}, "  "))
 
@@ -99,6 +111,22 @@ func bank_run(won: bool, depth: int, run_tm: int, run_shards: int, job := "") ->
 	tm += run_tm
 	shards += run_shards
 	save()
+
+
+## Banks a run's leftover Galder, ore and materials (all of it on a clear,
+## half after a rollback). Returns what was kept.
+func bank_leftovers(won: bool, run_galder: int, run_ore: int, run_materials: Dictionary) -> Dictionary:
+	var share := 1.0 if won else 0.5
+	var kept := {"galder": int(run_galder * share), "ore": int(run_ore * share), "materials": 0}
+	galder += kept.galder
+	ore += kept.ore
+	for id in run_materials:
+		var n := int(run_materials[id] * share)
+		if n > 0:
+			materials[String(id)] = int(materials.get(String(id), 0)) + n
+			kept.materials += n
+	save()
+	return kept
 
 
 # ---------------------------------------------------------------- warehouse

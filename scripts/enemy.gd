@@ -93,8 +93,9 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	var stay: Array = stats_row.get("idle_stay", [3, 5])
 	idle_stay = Vector2(stay[0], stay[1])
 	var g: Array = stats_row.get("galder", [0, 20])
-	rewards = {"exp": int(float(stats_row.get("exp", 100)) * 0.6), "tm": int(stats_row.get("tm", 30)),
-		"galder": randi_range(int(g[0]), int(g[1])) if randf() < 0.6 else 0}
+	rewards = {"exp": int(float(stats_row.get("exp", 100)) * 0.6),
+		"tm": int(float(stats_row.get("tm", 30)) * Run.region.tm_scale),
+		"galder": int(randi_range(int(g[0]), int(g[1])) * Run.region.galder_scale) if randf() < 0.6 else 0}
 	if elite:
 		display_name = "Elite " + display_name
 		max_hp = int(max_hp * 2.5)

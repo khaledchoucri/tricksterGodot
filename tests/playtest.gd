@@ -100,6 +100,7 @@ func _one_run(index: int) -> void:
 		r.level, r.job, r.time, r.kills])
 	_choose_heirloom()
 	_restore_city()
+	_city_craft()
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	game.queue_free()
@@ -326,6 +327,24 @@ func _score(g: GearItem) -> float:
 	return s.get("AP", 0) * 1.0 + s.get("DP", 0) * 0.8 + s.get("HP", 0) * 0.15 + s.get("MD", 0) * 0.3 \
 		+ s.get("LK", 0) * 2.0 + s.get("DA", 0) * 1.5 + s.get("AC", 0) * 0.5 + s.get("HV", 0) * 2.0 \
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
+
+
+## Between runs, invest banked leftovers in the heirloom, as a player would.
+func _city_craft() -> void:
+	var h := Profile.heirloom
+	if h < 0 or not Run.system_on(&"warehouse"):
+		return
+	for _i in 6:
+		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
+		if not Run.can_city_refine(g) or g.refine_chance() < 0.45:
+			break
+		print("   city refine %s: %s" % [g.title(), Run.city_refine(h)])
+	for id: String in Profile.materials.keys():
+		var m := Run.material_by_id(StringName(id))
+		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
+		if m and g.free_slots() > 0 and int(Profile.materials[id]) >= m.need:
+			var c := Run.city_compound(h, m)
+			print("   city compound %s into %s: %s +%d" % [m.display_name, g.title(), c.stat, c.value])
 
 
 ## Between runs, buy whatever the city can afford, in the guide's order.

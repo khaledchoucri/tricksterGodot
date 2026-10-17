@@ -217,7 +217,8 @@ func _run() -> void:
 	# Walk through a door into the next room.
 	var door: Door = room.doors[0]
 	await wait(0.7)
-	game.player.global_position = door.global_position
+	if game.room == room and is_instance_valid(door):  # it may already have walked into one
+		game.player.global_position = door.global_position
 	await wait(2.6)
 	check(Run.depth == 1 and game.room != room, "entering a door loads room 2 (%s)" % game.room.data.id)
 
@@ -472,6 +473,11 @@ func _systems(Run: Node) -> void:
 	Run.save_point()
 	Run.new_run()
 	check(Run.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
+	var kept: Dictionary = Profile.bank_leftovers(false, 101, 5, {&"cool_ice": 3})
+	check(kept.galder == 50 and Profile.ore == 2 and Profile.materials.get("cool_ice", 0) == 1,
+		"a rollback banks half the leftover Galder, ore and materials")
+	Profile.bank_leftovers(true, 100, 4, {&"cool_ice": 4})
+	check(Profile.galder == 150 and Profile.materials.cool_ice == 5, "a clear banks all of them")
 	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()
 	check(not Run.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")

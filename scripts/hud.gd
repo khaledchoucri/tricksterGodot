@@ -44,7 +44,8 @@ func set_hub_mode(on: bool) -> void:
 
 func refresh(player: Player) -> void:
 	if _hub_mode:
-		%GalderLabel.text = "%d TM  ·  %d Harkon Shard%s" % [Profile.tm, Profile.shards, "" if Profile.shards == 1 else "s"]
+		%GalderLabel.text = "%d TM  ·  %d Harkon Shard%s  ·  %d Galder  ·  %d Bronze" % [Profile.tm, Profile.shards,
+			"" if Profile.shards == 1 else "s", Profile.galder, Profile.ore]
 		return
 	var hp: ProgressBar = %HpBar
 	hp.max_value = Run.max_hp
