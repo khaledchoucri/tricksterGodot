@@ -12,6 +12,6 @@ kind = "slam"
 body_radius = 24.0
 cost = 0
 min_depth = 0
-hp_mult = 3.0
+hp_mult = 5.5
 is_boss = true
 material = ExtResource("m_mat")

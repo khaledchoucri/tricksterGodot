@@ -6,6 +6,8 @@ extends Resource
 @export var id: StringName
 ## Row ID in MonsterParamEx2 (HP, damage, speed, rewards).
 @export var monster_id := ""
+## Overrides the original name (where two monsters would share one).
+@export var display_name := ""
 ## Attack pattern in Enemy.KINDS: melee, lunge, slam, spin or shot.
 @export_enum("melee", "lunge", "slam", "spin", "shot") var kind := "melee"
 @export var body_radius := 14.0

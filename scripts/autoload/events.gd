@@ -1,6 +1,17 @@
 extends Node
 ## Game-wide signal bus (autoloaded as `Events`). Actors announce what
-## happened; the game, HUD and camera decide how to present it.
+## happened; the game, HUD and camera decide how to present it. Also keeps
+## the game clock.
+
+## Game time in seconds. It stops while the tree is paused (picks, menus)
+## and follows Engine.time_scale (hitstop), so cooldowns and windups behave
+## the same at any frame rate, including the headless playtest bot.
+var time := 0.0
+
+
+func _process(delta: float) -> void:
+	time += delta
+
 
 ## Freeze the action briefly to sell an impact.
 signal hitstop_requested(duration: float)

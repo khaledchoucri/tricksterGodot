@@ -16,6 +16,10 @@ var build := "mixed"
 ## Heat to play at (Server Settings applied in order), and "full" to start
 ## with every system restored instead of earning them.
 var heat := 0
+## god=1: the bot is healed every frame, to measure the whole curve.
+var god := false
+## tag=x: separate profile file, so several bots can run at once.
+var tag := ""
 var city := "earn"
 ## class=trickster: its two trees (e.g. trees=knight+bard_tree).
 var trees: PackedStringArray = ["knight", "bard_tree"]
@@ -49,10 +53,22 @@ func _ready() -> void:
 			city = kv[1]
 		elif kv.size() == 2 and kv[0] == "class":
 			Profile.class_id = kv[1]
+		elif kv.size() == 2 and kv[0] == "tag":
+			tag = kv[1]
+		elif kv.size() == 2 and kv[0] == "god":
+			god = kv[1] == "1"
 		elif kv.size() == 2 and kv[0] == "trees":
 			trees = kv[1].split("+")
+	Events.enemy_died.connect(func(e: Enemy) -> void:
+		if e.first_hit_at >= 0.0:
+			kill_log.append({"region": Run.region_index(), "depth": Run.depth, "elite": e.is_elite or e.is_boss,
+				"boss": e.is_boss, "ttk": e.now() - e.first_hit_at, "hits": e.hits_taken, "max_hp": e.max_hp}))
+	Events.player_hp_changed.connect(func() -> void:
+		if _hp_seen > Run.hp and Run.max_hp > 0:
+			hit_log.append({"region": Run.region_index(), "pct": 100.0 * (_hp_seen - Run.hp) / Run.max_hp})
+		_hp_seen = Run.hp)
 	var chosen := Profile.class_id
-	Profile.use_path("user://playtest_profile.json", true)
+	Profile.use_path("user://playtest_profile%s.json" % tag, true)
 	Profile.class_id = chosen
 	if chosen != "buffalo":
 		Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))  # the slot is open
@@ -134,6 +150,9 @@ func _tick(delta: float) -> void:
 		_release()
 		_choose()
 		return
+	if god and Run.hp > 0:
+		Run.hp = Run.max_hp
+		_hp_seen = Run.hp
 	var player: Player = game.player
 	if not is_instance_valid(player) or player.state == Player.State.DEAD:
 		_release()
@@ -184,6 +203,19 @@ func _fight(player: Player, delta: float) -> void:
 		_release()
 		return
 	player.aim = Combat.ground(target.global_position - player.global_position).normalized()
+	# Sidestep a shot that will reach us soon.
+	for n in room.world.get_children():
+		var shot := n as Projectile
+		if shot == null or not player.can_dash():
+			continue
+		var to_me := Combat.ground(player.global_position - shot.position)
+		var dir := Combat.ground(shot.direction).normalized()
+		var along := to_me.dot(dir)
+		if along > 0.0 and along < shot.speed * 0.45 and absf(to_me.dot(dir.orthogonal())) < 30.0:
+			var side := dir.orthogonal() * (1.0 if to_me.dot(dir.orthogonal()) >= 0.0 else -1.0)
+			_press(Combat.screen(side).normalized())
+			player.buffer_action("dash")
+			return
 	# Dodge a wind-up aimed at us.
 	for e in room.enemies:
 		if e.state == Enemy.State.WINDUP and e._t > e._state_len * 0.45:
@@ -258,6 +290,11 @@ func _release() -> void:
 
 ## Strikes when the marker is in the sweet spot (a decent player's timing).
 var digs := 0
+## Combat feel samples: per kill {region, depth, elite, ttk, hits, max_hp}
+## and per hit taken {region, pct of max HP}.
+var kill_log: Array[Dictionary] = []
+var hit_log: Array[Dictionary] = []
+var _hp_seen := -1
 ## Picks whose chosen option a player could not have clicked.
 var ui_bugs: PackedStringArray = []
 
@@ -442,6 +479,43 @@ func _end_room() -> void:
 		return
 	_room_log.append({"room": _last_depth + 1, "time": _room_t, "hp_lost": _room_hp - Run.hp, "hp": Run.hp,
 		"max_hp": Run.max_hp})
+	var mons: Array = kill_log.filter(func(k: Dictionary) -> bool: return k.depth == _last_depth and not k.elite)
+	var avg_hp := 0.0
+	for k in mons:
+		avg_hp += k.max_hp / float(mons.size())
+	print("  room %2d  Lv %2d  AP %3d  atk x%.2f  maxHP %4d  DP %3d  dmg-taken x%.2f  mob HP %4.0f  hp lost %d" % [_last_depth + 1,
+		Run.level, Run.stat("AP"), Run.attack_mult(), Run.max_hp, Run.stat("DP"), Run.damage_taken_mult(), avg_hp, _room_hp - Run.hp])
+
+
+## Hits and seconds to kill, and how hard monsters hit, by depth band.
+func _feel_report() -> void:
+	print("---- combat feel ----")
+	for band in [[0, 3], [4, 7], [8, 11], [12, 16]]:
+		var n := []
+		var e := []
+		for k in kill_log:
+			if k.depth >= band[0] and k.depth <= band[1] and not k.boss:
+				(e if k.elite else n).append(k)
+		print("rooms %d-%d  normal: %s   elite: %s" % [band[0] + 1, band[1] + 1, _kill_stats(n), _kill_stats(e)])
+	for r in 2:
+		var pcts: Array = hit_log.filter(func(h: Dictionary) -> bool: return h.region == r).map(func(h: Dictionary) -> float: return h.pct)
+		if pcts.size():
+			pcts.sort()
+			print("region %d: hits taken %d, median %.1f%% of max HP, 90th pct %.1f%%" % [r + 1, pcts.size(),
+				pcts[pcts.size() / 2], pcts[int(pcts.size() * 0.9)]])
+	for k in kill_log:
+		if k.boss:
+			print("boss r%d: %.1fs, %d hits" % [k.region + 1, k.ttk, k.hits])
+
+
+func _kill_stats(a: Array) -> String:
+	if a.is_empty():
+		return "-"
+	var t: Array = a.map(func(k: Dictionary) -> float: return k.ttk)
+	var h: Array = a.map(func(k: Dictionary) -> int: return k.hits)
+	t.sort(); h.sort()
+	return "n=%d  median %.1fs / %d hits (90th %.1fs / %d)" % [a.size(), t[t.size() / 2], h[h.size() / 2],
+		t[int(t.size() * 0.9)], h[int(h.size() * 0.9)]]
 
 
 func _report() -> void:
@@ -462,4 +536,5 @@ func _report() -> void:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])
 		print("   rooms (time/hp lost): %s" % "  ".join(rooms))
 	print("clears %d / %d, average room reached %.1f, dig sites %d" % [clears, results.size(), depth / maxf(results.size(), 1), digs])
+	_feel_report()
 	print("ui bugs: %s" % (", ".join(ui_bugs) if ui_bugs.size() else "none"))

@@ -824,7 +824,7 @@ func _region_cleared() -> void:
 func _region_boss_name() -> String:
 	for e in Run.region.enemies:
 		if e.is_boss:
-			return Run.monster_stats(e).get("name", String(e.id).capitalize())
+			return Run.monster_name(e)
 	return "Boss"
 
 

@@ -70,7 +70,7 @@ func _ready() -> void:
 
 
 func now() -> float:
-	return Time.get_ticks_msec() / 1000.0
+	return Events.time
 
 
 ## Matches the held weapon and the combo to the equipped weapon, and adds

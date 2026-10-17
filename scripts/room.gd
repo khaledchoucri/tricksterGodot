@@ -448,7 +448,7 @@ func open_doors(rewards: Array[String], features: Array[StringName] = []) -> voi
 		d.reward = rewards[i]
 		if i < features.size() and features[i] != &"":
 			d.feature = features[i]
-			d.feature_name = Run.monster_stats(Run.enemy(features[i])).get("name", String(features[i]).capitalize())
+			d.feature_name = Run.monster_name(Run.enemy(features[i]))
 		d.position = spots[i]
 		world.add_child(d)
 		doors.append(d)

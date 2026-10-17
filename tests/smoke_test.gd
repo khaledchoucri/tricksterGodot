@@ -268,11 +268,17 @@ func _run() -> void:
 	await wait(0.7)
 	# Somewhere in range with a clear line of fire.
 	var me: Vector2 = game.player.global_position
-	for _i in 300:
-		var p: Vector2 = game.room.random_spot(me, 160.0)
-		if Combat.ground(p - me).length() < 240.0 and game.room.line_clear(p, me):
+	var placed := false
+	for _i in 2000:
+		var p: Vector2 = game.room.random_spot(me, 120.0)
+		if Combat.ground(p - me).length() < 230.0 and game.room.line_clear(p, me):
 			clione.global_position = p
+			placed = true
 			break
+	if not placed:  # no open line near the player: bring both into the open
+		game.player.global_position = game.room.random_spot(me, 0.0)
+		me = game.player.global_position
+		clione.global_position = me + Vector2(140, 0)
 	var hp_start: int = Run.hp
 	var saw_shot := false
 	for _f in 400:
@@ -283,6 +289,31 @@ func _run() -> void:
 			break
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
+
+	# Balance guards: monsters follow the depth curve, whatever their
+	# original stats say (Desert Beach's DP once made it ~5x tankier).
+	var outliers: PackedStringArray = []
+	var base_depth := 0
+	for r in Run.regions:
+		var last_depth: int = base_depth + r.run_length - 1
+		for e in r.enemies:
+			if e.echo or e.min_depth >= 99:
+				continue
+			var st := Stats.from_monster(Run.monster_stats(e).get("stats", {}))
+			for d in [base_depth, last_depth]:
+				var par_ehp: float = Run.MOB_EHP * (1.0 + Run.DEPTH_EHP * d)
+				var par_hit: float = Run.MOB_HIT * (1.0 + Run.DEPTH_HIT * d)
+				var rel: float = Run.mob_ehp(st, r, d) * e.hp_mult / par_ehp
+				var hit: float = float(Run.mob_hit(st, r, d)) / par_hit
+				if e.is_boss:
+					# Sword hits at the expected attack for that room (x1 + 0.2 per room).
+					var hits: float = Run.mob_ehp(st, r, d) * e.hp_mult / (40.0 * (1.0 + 0.2 * d))
+					if d == last_depth and (hits < 25.0 or hits > 120.0):
+						outliers.append("%s boss takes %.0f hits" % [e.id, hits])
+				elif rel < 0.3 or rel > 2.5 or hit > 2.0:
+					outliers.append("%s at room %d: %.1fx HP, %.1fx hit" % [e.id, d + 1, rel, hit])
+		base_depth += r.run_length
+	check(outliers.is_empty(), "every monster follows the depth curve%s" % ("" if outliers.is_empty() else ": " + ", ".join(outliers)))
 
 	# UI audit: the worst-case pick lists fit on screen and can be left.
 	var saved_mats: Dictionary = Run.materials.duplicate()

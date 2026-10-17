@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_s")
 id = &"field_mole"
+display_name = "Field Mole"
 monster_id = "2035"
 kind = "lunge"
 body_radius = 16.0

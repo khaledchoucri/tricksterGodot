@@ -454,6 +454,72 @@ func final_boss() -> bool:
 	return current_room().boss and region == regions[regions.size() - 1]
 
 
+# ---------------------------------------------------------------- monster curve
+
+## A normal monster at the median of its region, in room 1: effective HP
+## (what it takes to kill through its DP) and damage per hit. The sword's
+## first three hits (130 at x1.0) kill it; it lands 6% of a starting HP bar.
+const MOB_EHP := 115.0
+const MOB_HIT := 11.0
+## Per room of depth: effective HP and damage growth. A par build's damage
+## grows faster than this (about x4 by room 16 against x2.65), so gear and
+## builds shorten fights instead of only keeping pace.
+const DEPTH_EHP := 0.10
+const DEPTH_HIT := 0.05
+## How much of a monster's original toughness and hit strength (relative to
+## its region's median) survives: 1 keeps the spread, 0 flattens it.
+const SPREAD_EHP := 0.7
+const SPREAD_HIT := 0.6
+const MAX_HIT_SPREAD := 2.5
+
+var _norms := {}
+
+
+static func raw_ehp(s: Dictionary) -> float:
+	return float(s.get("HP", 100)) * (100.0 + float(s.get("DP", 0))) / 100.0
+
+
+static func raw_hit(s: Dictionary) -> float:
+	return 6.0 + float(s.get("AP", 4)) * 0.25
+
+
+## The median effective HP and hit of a region's regular monsters.
+func region_norm(r: RegionData) -> Dictionary:
+	if _norms.has(r):
+		return _norms[r]
+	var ehp: Array[float] = []
+	var hit: Array[float] = []
+	for e in r.enemies:
+		if e.is_boss or e.echo or e.min_depth >= 99:
+			continue
+		var s := Stats.from_monster(monster_stats(e).get("stats", {}))
+		ehp.append(raw_ehp(s))
+		hit.append(raw_hit(s))
+	ehp.sort()
+	hit.sort()
+	_norms[r] = {"ehp": ehp[ehp.size() / 2] if ehp.size() else 250.0, "hit": hit[hit.size() / 2] if hit.size() else 11.0}
+	return _norms[r]
+
+
+## Effective HP of a monster with original stats `s` in region `r` at `depth`.
+func mob_ehp(s: Dictionary, r: RegionData, at_depth: int) -> float:
+	var rel := raw_ehp(s) / float(region_norm(r).ehp)
+	return MOB_EHP * r.hp_scale * pow(rel, SPREAD_EHP) * (1.0 + DEPTH_EHP * at_depth)
+
+
+func mob_hit(s: Dictionary, r: RegionData, at_depth: int) -> int:
+	var rel := minf(pow(raw_hit(s) / float(region_norm(r).hit), SPREAD_HIT), MAX_HIT_SPREAD)
+	return maxi(1, roundi(MOB_HIT * r.damage_scale * rel * (1.0 + DEPTH_HIT * at_depth)))
+
+
+func monster_name(enemy: EnemyData) -> String:
+	if enemy == null:
+		return ""
+	if enemy.display_name != "":
+		return enemy.display_name
+	return monster_stats(enemy).get("name", String(enemy.id).capitalize())
+
+
 func monster_stats(enemy: EnemyData) -> Dictionary:
 	if enemy == null:
 		return {}

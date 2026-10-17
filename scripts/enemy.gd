@@ -24,7 +24,7 @@ const KINDS := {
 		"length": 120.0, "width": 18.0, "poise": 0, "keep_away": 150.0, "shot_speed": 210.0},
 }
 const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
-## Monster damage over the original formula, and HP gained per room of depth.
+## Echoes keep the original formula: damage over it, HP per room of depth.
 const DAMAGE_MULT := 1.25
 const DEPTH_HP := 0.06
 
@@ -81,15 +81,18 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	body_radius = data.body_radius
 	is_boss = data.is_boss
 	is_elite = elite
-	display_name = stats_row.get("name", String(data.id).capitalize())
+	display_name = Run.monster_name(data) if data.display_name != "" or stats_row.is_empty() else stats_row.get("name", String(data.id).capitalize())
 	stats = Stats.from_monster(stats_row.get("stats", {}))
 	elements = stats_row.get("elements", {})
 	# Deeper rooms field tougher monsters.
-	var depth_mult := 1.0 + DEPTH_HP * Run.depth
-	var hp_scale := 1.0 if data.echo else Run.region.hp_scale
-	var dmg_scale := 1.0 if data.echo else Run.region.damage_scale
-	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * depth_mult * hp_scale)
-	damage = roundi((6.0 + float(stats.get("AP", 4)) * 0.25) * DAMAGE_MULT * dmg_scale * (1.0 + 0.04 * Run.depth if data.echo else 1.0))
+	if data.echo:
+		max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * (1.0 + DEPTH_HP * Run.depth))
+		damage = roundi(Run.raw_hit(stats) * DAMAGE_MULT * (1.0 + 0.04 * Run.depth))
+	else:
+		# The original stats only say how this monster compares to the rest of
+		# its region; the depth curve sets how tough a room is (Run.mob_ehp).
+		max_hp = roundi(Run.mob_ehp(stats, Run.region, Run.depth) * data.hp_mult * defense_mult())
+		damage = Run.mob_hit(stats, Run.region, Run.depth)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
 	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
 	var stay: Array = stats_row.get("idle_stay", [3, 5])
@@ -126,8 +129,13 @@ func _ready() -> void:
 	sprite.modulate.a = 0.0
 
 
+## When the player first landed a hit and how many hits it took (tuning data).
+var first_hit_at := -1.0
+var hits_taken := 0
+
+
 func now() -> float:
-	return Time.get_ticks_msec() / 1000.0
+	return Events.time
 
 
 ## Resistance to an element, in % (the original FireR, WaterR...).
@@ -343,6 +351,9 @@ func nudge(v: Vector2) -> void:
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
 	if not is_hittable():
 		return
+	if first_hit_at < 0.0:
+		first_hit_at = now()
+	hits_taken += 1
 	if now() < break_until:
 		amount = roundi(amount * (1.0 + break_bonus / 100.0))
 	hp = maxi(hp - amount, 0)
