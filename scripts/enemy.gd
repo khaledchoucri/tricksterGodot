@@ -103,6 +103,9 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 		cfg.poise = -1 if cfg.poise < 0 else cfg.poise + 2
 		for k: String in rewards:
 			rewards[k] *= 2
+	max_hp = roundi(max_hp * ServerSettings.monster_hp_mult())
+	damage = roundi(damage * ServerSettings.monster_damage_mult())
+	cfg.windup *= ServerSettings.windup_mult()
 	hp = max_hp
 
 

@@ -13,6 +13,10 @@ const ROOM_LIMIT := 150.0
 
 var runs := 4
 var build := "mixed"
+## Heat to play at (Server Settings applied in order), and "full" to start
+## with every system restored instead of earning them.
+var heat := 0
+var city := "earn"
 var game
 var results: Array[Dictionary] = []
 
@@ -36,7 +40,26 @@ func _ready() -> void:
 			runs = int(kv[1])
 		elif kv.size() == 2 and kv[0] == "build":
 			build = kv[1]
+		elif kv.size() == 2 and kv[0] == "heat":
+			heat = int(kv[1])
+		elif kv.size() == 2 and kv[0] == "city":
+			city = kv[1]
 	Profile.use_path("user://playtest_profile.json", true)
+	if city == "full":
+		for r: RestorationData in Run.hub.restorations:
+			Profile.restorations[String(r.id)] = r.max_level
+	var left := heat
+	while left > 0:
+		var raised := false
+		for id: String in ServerSettings.ORDER:
+			var s: Dictionary = ServerSettings.SETTINGS[id]
+			if left >= int(s.heat) and ServerSettings.rank(id) < int(s.max):
+				Profile.server_settings[id] = ServerSettings.rank(id) + 1
+				left -= int(s.heat)
+				raised = true
+		if not raised:
+			break
+	print("Heat %d: %s" % [ServerSettings.heat(), Profile.server_settings])
 	_play.call_deferred()
 
 

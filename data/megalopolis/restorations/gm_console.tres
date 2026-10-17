@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RestorationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/restoration_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gm_console"
+display_name = "GM Console"
+text = "Brings back Guide Sabrina and the server settings: make runs harder for more TM and Harkon Shards."
+max_level = 1
+per_level = 1.0
+effect = "system"
+system = &"server_settings"
+tm_costs = Array[int]([4000])
+shard_costs = Array[int]([1])

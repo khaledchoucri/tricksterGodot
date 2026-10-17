@@ -99,7 +99,9 @@ func _load_room() -> void:
 	Run.gain_mp(ROOM_MP + Run.room_mp_bonus())
 	Audio.play_music(Run.region.boss_music if plan.boss else Run.region.field_music)
 	Audio.play_ambience(Run.region.boss_ambience if plan.boss else Run.region.field_ambience)
-	hud.set_room("%s  ·  %d / %d" % [plan.data.display_name, Run.depth + 1, Run.plan.size()])
+	var heat := ServerSettings.heat()
+	hud.set_room("%s  ·  %d / %d%s" % [plan.data.display_name, Run.depth + 1, Run.plan.size(),
+		"  ·  Heat %d" % heat if heat > 0 else ""])
 	hud.hide_boss()
 	await hud.fade(0.0, 0.3)
 	var title := "Real Golden Mole" if plan.boss else plan.data.display_name
@@ -228,6 +230,8 @@ func _open_doors() -> void:
 		rewards = ["boss"]
 	else:
 		var pool := REWARD_POOL.filter(func(r: String) -> bool:
+			if r == "heal" and ServerSettings.hardcore():
+				return false
 			return not REWARD_SYSTEMS.has(r) or Run.system_on(REWARD_SYSTEMS[r]))
 		pool.shuffle()
 		rewards.append(pool[0])

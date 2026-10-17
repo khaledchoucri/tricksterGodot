@@ -404,6 +404,49 @@
      ]
     ]
    }
+  ],
+  "sabrina": [
+   {
+    "id": "sabrina_intro",
+    "if": [
+     "!met_sabrina"
+    ],
+    "set": [
+     "met_sabrina"
+    ],
+    "then": "server",
+    "lines": [
+     [
+      "sabrina",
+      "You found the support desk! Guide Sabrina. I was the last of the staff on shift when the lights went out."
+     ],
+     [
+      "sabrina",
+      "The GMs left their console unlocked. I shouldn't touch it. I've been touching it."
+     ],
+     [
+      "sabrina",
+      "I can make the server harder on you. Heavier load, laggier monsters, PK on. The harder it gets, the more TM sticks to you."
+     ],
+     [
+      "sabrina",
+      "And every time you clear at a new best Heat, I'll slip you a Harkon Shard for each level. Our secret."
+     ]
+    ]
+   },
+   {
+    "id": "sabrina_default",
+    "if": [
+     "met_sabrina"
+    ],
+    "then": "server",
+    "lines": [
+     [
+      "sabrina",
+      "Console's warm. What are we breaking today?"
+     ]
+    ]
+   }
   ]
  }
 }

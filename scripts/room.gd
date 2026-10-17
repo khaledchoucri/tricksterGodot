@@ -345,6 +345,11 @@ func _make_waves(depth: int, elite: bool) -> Array:
 				pick = featured
 			wave_list.append({"id": pick.id, "elite": false})
 			budget -= pick.cost
+		for _i in ServerSettings.extra_per_wave():
+			if not pool.is_empty():
+				wave_list.append({"id": pool[randi() % pool.size()].id, "elite": false})
+		if ServerSettings.pk_mode() and depth >= 1 and not wave_list.is_empty():
+			wave_list[0].elite = true
 		out.append(wave_list)
 	if elite:
 		# One elite in each of the last two waves.

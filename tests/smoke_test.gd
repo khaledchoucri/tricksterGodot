@@ -264,7 +264,7 @@ func _run() -> void:
 	# Death shows the rollback results.
 	Run.hp = 1
 	game.player.invulnerable_until = 0.0
-	game.player.take_hit(50, Vector2.RIGHT, 0.0)
+	game.player.take_hit(50, Vector2.RIGHT, 0.0, false, 1000000)  # perfect accuracy: no evade
 	await wait(2.6)
 	check(game.hud.results_panel.visible and game.phase == game.Phase.DEAD, "dying shows the rollback results")
 	var P := profile()
@@ -290,9 +290,9 @@ func _run() -> void:
 		hub.dialogue._advanced.emit()
 	check(P.has_flag("met_cavalier") and not hub.talking, "finishing a conversation sets its flag")
 	check(hub.story.conversation_for("cavalier").get("id") == "cav_rollback", "after a death he remembers the rollback")
-	P.tm = 1000
+	P.tm = 10000
 	var hall: RestorationData = Run.hub.restorations.filter(func(r: RestorationData) -> bool: return r.id == &"training_hall")[0]
-	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 1000 - hall.tm_cost(1), "restoring the Training Hall spends TM")
+	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 10000 - hall.tm_cost(1), "restoring the Training Hall spends TM")
 	Run.new_run()
 	check(Run.max_hp == Run.stat("HP") and Run._bonus_hp == 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
 	var reach: float = Combat.ground(hub.room.nearest_reachable(Run.hub.gate_position) - hub.gate.global_position).length()
@@ -472,6 +472,24 @@ func _systems(Run: Node) -> void:
 	check(not Run.job_change_due(), "without the Job Hall the trial room changes nothing")
 	_restore_all(Run)
 	check(Run.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
+
+	# Server Settings (Heat).
+	Profile.server_settings = {"server_load": 2, "pk_mode": 1, "hardcore": 1}
+	check(ServerSettings.heat() == 7 and is_equal_approx(ServerSettings.monster_hp_mult(), 1.3),
+		"Server Load 2 + PK Mode + Hardcore is Heat 7")
+	Run.new_run()
+	Run.revives = 1
+	check(not Run.try_revive(), "Hardcore Server allows no revives")
+	Run.tm = 1000
+	Run.shards = 0
+	Run.finish(true)
+	check(Run.last_result.tm == 1700 and Run.last_result.bounty == 7 and Profile.best_heat == 7,
+		"clearing at Heat 7 banks +70% TM and a 7-shard bounty")
+	Run.new_run()
+	Run.tm = 1000
+	Run.finish(true)
+	check(Run.last_result.bounty == 0, "the bounty is paid once per Heat level")
+	Profile.server_settings = {}
 	Run.new_run()
 
 

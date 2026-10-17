@@ -20,6 +20,9 @@ var restorations: Dictionary = {}  # restoration id -> level
 ## Items sent home (GearItem.to_dict()), and which one runs carry (-1: none).
 var warehouse: Array = []
 var heirloom := -1
+## GM console ranks (ServerSettings ids -> rank) and the best Heat cleared.
+var server_settings: Dictionary = {}
+var best_heat := -1
 
 
 func _ready() -> void:
@@ -42,6 +45,8 @@ func load_profile() -> void:
 	restorations = {}
 	warehouse = []
 	heirloom = -1
+	server_settings = {}
+	best_heat = -1
 	if not FileAccess.file_exists(path):
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -57,6 +62,9 @@ func load_profile() -> void:
 		restorations[k] = int(data.restorations[k])
 	warehouse = data.get("warehouse", [])
 	heirloom = int(data.get("heirloom", -1))
+	for k: String in data.get("server_settings", {}):
+		server_settings[k] = int(data.server_settings[k])
+	best_heat = int(data.get("best_heat", -1))
 
 
 func save() -> void:
@@ -65,7 +73,8 @@ func save() -> void:
 		push_warning("Couldn't save the profile to %s" % path)
 		return
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "stats": stats,
-		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom}, "  "))
+		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
+		"server_settings": server_settings, "best_heat": best_heat}, "  "))
 
 
 func is_new() -> bool:

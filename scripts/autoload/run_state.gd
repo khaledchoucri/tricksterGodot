@@ -244,6 +244,8 @@ func room_mp_bonus() -> int:
 
 ## Survives a fatal blow if a revive (Rollback Cache) or Second Wind is left.
 func try_revive() -> bool:
+	if ServerSettings.hardcore():
+		return false
 	if revives > 0:
 		revives -= 1
 	elif has_trait(&"second_wind") and not second_wind_used:
@@ -256,9 +258,17 @@ func try_revive() -> bool:
 
 
 ## Banks the finished run into the profile and remembers it for the hub.
+## Heat adds TM; clearing at a new best Heat pays a shard per new level.
 func finish(p_won: bool) -> void:
 	var reached := depth + (1 if p_won else 0)
-	last_result = {"won": p_won, "depth": reached, "tm": tm, "shards": shards}
+	var heat := ServerSettings.heat()
+	tm += int(tm * heat * ServerSettings.TM_PER_HEAT)
+	var bounty := 0
+	if p_won and heat > Profile.best_heat:
+		bounty = heat - maxi(Profile.best_heat, 0)
+		shards += bounty
+		Profile.best_heat = heat
+	last_result = {"won": p_won, "depth": reached, "tm": tm, "shards": shards, "heat": heat, "bounty": bounty}
 	Profile.bank_run(p_won, reached, tm, shards)
 
 
@@ -667,7 +677,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 	var found := 0
 	if boss:
 		found = 3
-	elif elite or randf() < 0.12 + stat("DA") / 400.0:
+	elif elite or randf() < (0.12 + stat("DA") / 400.0) * ServerSettings.drop_mult():
 		found = 1
 	ore += found
 	var count := 0
@@ -676,7 +686,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 			count = 3
 		elif elite:
 			count = 2
-		elif randf() < mat_chance + stat("DA") / 200.0:
+		elif randf() < (mat_chance + stat("DA") / 200.0) * ServerSettings.drop_mult():
 			count = 1
 		add_material(mat, count)
 	if card_level(&"adrenaline") > 0:

@@ -83,6 +83,9 @@ func _welcome() -> void:
 	if r.is_empty():
 		hud.log_line("[Megalopolis] Players online: 1", Color("94a7b2"))
 		return
+	if r.get("bounty", 0) > 0:
+		hud.log_line("[System] New best Heat %d cleared: +%d Harkon Shard%s." % [r.heat, r.bounty, "" if r.bounty == 1 else "s"],
+			Color("e0b54d"))
 	if r.won:
 		hud.log_line("[System] Expedition complete. Coral Beach is quiet, for now.", Color("e0b54d"))
 	else:
@@ -138,6 +141,8 @@ func talk(npc: Npc) -> void:
 			await _restore_menu(npc)
 		"warehouse":
 			await _warehouse_menu(npc)
+		"server":
+			await _server_menu(npc)
 	_set_talking(false)
 
 
@@ -233,6 +238,28 @@ func _warehouse_menu(npc: Npc) -> void:
 			hud.log_line("[System] You'll carry %s." % g.title(), Color("a8d8da"))
 		elif what == 1:
 			Profile.discard_item(pick)
+
+
+## The GM console: raise or lower each Server Setting.
+func _server_menu(npc: Npc) -> void:
+	while true:
+		var options: Array = []
+		for id: String in ServerSettings.ORDER:
+			var s: Dictionary = ServerSettings.SETTINGS[id]
+			var r := ServerSettings.rank(id)
+			options.append({"title": "%s  %d / %d" % [s.name, r, s.max],
+				"tag": "+%d Heat per rank" % s.heat, "text": s.text})
+		var heat := ServerSettings.heat()
+		options.append({"title": "Done", "tag": "Heat %d" % heat,
+			"text": "+%d%% TM per run. Best Heat cleared: %s." % [roundi(heat * ServerSettings.TM_PER_HEAT * 100),
+				str(Profile.best_heat) if Profile.best_heat >= 0 else "none"]})
+		var pick := await dialogue.choose(_line(String(npc.data.id),
+			"Server settings. Heat %d. Clear a run at a new best Heat and I'll find you a Harkon Shard per level." % heat),
+			options)
+		if pick < 0 or pick >= ServerSettings.ORDER.size():
+			return
+		ServerSettings.cycle(ServerSettings.ORDER[pick])
+		Audio.play("ui_btn_ok.wav")
 
 
 # ---------------------------------------------------------------- expedition

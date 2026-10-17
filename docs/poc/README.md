@@ -47,6 +47,18 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 | Compounder's Stall | 7,000 TM + 1 shard | Compounder Paul | Monster materials, Compounders, monster dens |
 | Warehouse | 6,000 TM + 2 shards | Keeper Julio | Portable Ports and heirlooms |
 
+- **GM Console** (4,000 TM and 1 shard) brings back **Guide Sabrina** and her **Server Settings**, our Pact of Punishment:
+  - The settings, and what each rank does:
+    - Server Load: +15% monster HP
+    - Packet Loss: +15% monster damage
+    - Lag Spike: shorter wind-ups
+    - Bot Swarm: +1 monster per wave
+    - PK Mode: an elite in every wave
+    - Hardcore Server: no healing doors or revives
+    - Drops Nerfed: half the material and ore drops
+  - Each rank adds Heat, and every point of Heat banks 10% more TM.
+  - Clearing at a new best Heat pays a Harkon Shard for each new level.
+  - With the city fully restored, the bot clears 8/8 runs at Heat 0, 7/8 at Heat 6 and 2/8 at Heat 12.
 - **Other restorations** are permanent bonuses: Training Hall (+max HP), Mana Fountain (+MP per room), Rollback Cache (survive one fatal blow per run) and Tutor's Desk (start with a second skill).
 - **Pace.** In playtests the systems open over the first 3–4 runs.
 
@@ -134,7 +146,7 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 godot --headless --fixed-fps 60 res://tests/playtest.tscn -- runs=10 build=mixed
 ```
 
-The `build` option is `power`, `magic`, `sense`, `charm` or `mixed`. Right now the bot clears about 6 runs in 10, and most deaths come at the boss.
+The `build` option is `power`, `magic`, `sense`, `charm` or `mixed`. Add `city=full` to start with every restoration bought, and `heat=N` to play at a Heat. Right now the bot clears about 6 runs in 10, and most deaths come at the boss.
 
 Also:
 
