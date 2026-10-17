@@ -225,9 +225,12 @@ func _run() -> void:
 	check(game.hud.pick_panel.visible and game._pick_kind == "anvil", "an Anvil reward opens the anvil")
 	var weapon: GearItem = Run.equipped("weapon")
 	Run.galder = 1000
+	var ore_before: int = Run.ore
+	var cost: Dictionary = weapon.refine_cost()
 	game.hud._on_pick(0)
 	await wait(1.0)
-	check(game._pick_kind == "anvil" and Run.ore < game.ANVIL_ORE + 5, "refining at the anvil returns to it (%s)" % weapon.title())
+	check(game._pick_kind == "anvil" and Run.ore == ore_before - cost.ore,
+		"refining at the anvil spends ore and returns to it (%s)" % weapon.title())
 	game.hud._on_pick(game._pick_options.size() - 1)
 	await wait(0.2)
 	Run.equip(GearItem.make(_item("pretty_hammer")))
