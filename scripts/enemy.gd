@@ -69,6 +69,11 @@ var break_bonus := 0.0
 var burn_until := 0.0
 var burn_dps := 0.0
 var _burn_tick := 0.0
+## Debuffs from the Power line's breaker talents: key -> [value, until].
+## "dp", "ac", "perception" and "luck" lower that stat by value %; "guard"
+## (Guard Break) leaves it unable to evade and without DP; "pinned"
+## (Suffocate) keeps it from hiding.
+var debuffs: Dictionary = {}
 
 @onready var sprite: ActorSprite = $Sprite
 @onready var shape: CollisionShape2D = $Shape
@@ -145,18 +150,38 @@ func resist(element: String) -> float:
 
 ## Damage multiplier from this monster's DP (or MD against magic).
 func defense_mult(magic := false) -> float:
-	var def: int = stats.get("MD" if magic else "DP", 0)
+	var def := float(stats.get("MD" if magic else "DP", 0))
+	if not magic:
+		def *= 0.0 if debuff("guard") > 0.0 else 1.0 - debuff("dp") / 100.0
 	return 100.0 / (100.0 + def)
 
 
 ## Chance an attack with accuracy `ac` only grazes this monster.
 func evade_chance(ac: int) -> float:
 	var hv: int = stats.get("HV", 0)
-	return hv / float(hv + ac + 150) if hv > 0 else 0.0
+	if hv <= 0 or debuff("guard") > 0.0:
+		return 0.0
+	return hv / float(hv + ac + 150)
 
 
 func accuracy() -> int:
-	return stats.get("AC", 50)
+	return roundi(stats.get("AC", 50) * (1.0 - debuff("ac") / 100.0))
+
+
+## A debuff's value while it lasts, else 0.
+func debuff(key: String) -> float:
+	var d: Array = debuffs.get(key, [])
+	return float(d[0]) if d.size() == 2 and now() < float(d[1]) else 0.0
+
+
+## Applies or refreshes a debuff (the stronger value wins while both last).
+func apply_debuff(key: String, value: float, seconds: float) -> void:
+	debuffs[key] = [maxf(value, debuff(key)), now() + seconds]
+
+
+## Burrowing and vanishing monsters check this first (Suffocate pins them).
+func can_hide() -> bool:
+	return debuff("pinned") <= 0.0
 
 
 func is_hittable() -> bool:
@@ -276,7 +301,9 @@ func _wander() -> void:
 
 func _start_windup() -> void:
 	_attack_dir = Combat.ground(player.global_position - global_position).normalized()
-	_enter(State.WINDUP, cfg.windup)
+	# Sense Breaker dulls its perception: it takes longer to see an attack through.
+	var windup: float = cfg.windup * (1.0 + debuff("perception") / 100.0)
+	_enter(State.WINDUP, windup)
 	_hits_taken = 0
 	var opts := {"dir": _attack_dir}
 	match cfg.shape:
@@ -288,7 +315,7 @@ func _start_windup() -> void:
 		"lane":
 			opts.length = cfg.length
 			opts.width = cfg.width
-	_telegraph = Telegraph.make(cfg.shape, cfg.windup, opts)
+	_telegraph = Telegraph.make(cfg.shape, windup, opts)
 	room.add_ground_fx(_telegraph, global_position)
 	# Hold the first frame of the attack as an anticipation pose.
 	sprite.play_action("attack", Combat.screen(_attack_dir), 0.0, true)
@@ -347,7 +374,8 @@ func nudge(v: Vector2) -> void:
 	_pull += v
 
 
-## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps), "crit" and "graze".
+## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps), "crit",
+## "graze" and "debuffs" ({key: [value, seconds]}, see `debuffs`).
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
 	if not is_hittable():
 		return
@@ -369,6 +397,9 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 	if fx.has("burn"):
 		burn_until = now() + 3.0
 		burn_dps = maxf(burn_dps, fx.burn)
+	var applied: Dictionary = fx.get("debuffs", {})
+	for k: String in applied:
+		apply_debuff(k, applied[k][0], applied[k][1])
 	var armored: bool = cfg.poise < 0 or (state == State.ATTACK and data.kind == "lunge")
 	_knock = Combat.screen(dir) * knockback * (0.35 if armored else 1.0)
 	if is_boss:

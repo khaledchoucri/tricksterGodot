@@ -2,25 +2,20 @@
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/sonic_slash.tres" id="c_sonic_slash"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/gale_strike.tres" id="c_gale_strike"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/chi_sword.tres" id="c_chi_sword"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/shadow.tres" id="c_shadow"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/suffocate.tres" id="c_suffocate"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/chakra_balance.tres" id="c_chakra_balance"]
+[ext_resource type="Resource" path="res://data/skills/power/shadow.tres" id="c_shadow"]
+[ext_resource type="Resource" path="res://data/skills/power/suffocate.tres" id="c_suffocate"]
+[ext_resource type="Resource" path="res://data/skills/power/sonic_slash.tres" id="c_sonic_slash"]
+[ext_resource type="Resource" path="res://data/skills/power/gale_strike.tres" id="c_gale_strike"]
+[ext_resource type="Resource" path="res://data/skills/power/chi_sword.tres" id="c_chi_sword"]
+[ext_resource type="Resource" path="res://data/skills/power/chakra_balance.tres" id="c_chakra_balance"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"gladiator"
 display_name = "Gladiator"
 actor = "power_m"
-technique = &"momentum"
-technique_name = "Momentum"
-technique_text = "Combo hits build Momentum (up to 5): +5% attack speed and damage each. A finisher at 5 releases a shockwave."
-bonus_points = {"power": 3, "sense": 1}
-graph = {"power": 0.55, "sense": 0.2, "charm": 0.15, "magic": 0.1}
 tier = 3
-cards = Array[ExtResource("2_c")]([ExtResource("c_sonic_slash"), ExtResource("c_gale_strike"), ExtResource("c_chi_sword"), ExtResource("c_shadow"), ExtResource("c_suffocate"), ExtResource("c_chakra_balance")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_shadow"), ExtResource("c_suffocate"), ExtResource("c_sonic_slash"), ExtResource("c_gale_strike"), ExtResource("c_chi_sword"), ExtResource("c_chakra_balance")])
 passive = &"arena_champion"
 passive_name = "Arena Champion"
 passive_text = "Your skills deal 15% more damage."

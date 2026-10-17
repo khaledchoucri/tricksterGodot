@@ -22,7 +22,7 @@ func try_cast(slot: int) -> bool:
 	if id == &"" or player.now() < slot_ready_at[slot]:
 		return false
 	var card := Run.card(id)
-	var cost := roundi(card.mp_cost * (0.9 if Run.has_passive(&"duelists_edge") else 1.0))
+	var cost := roundi(card.mp_at(Run.card_level(id)) * (0.9 if Run.has_passive(&"duelists_edge") else 1.0))
 	if not Run.spend_mp(cost):
 		Events.mp_short.emit()
 		return false

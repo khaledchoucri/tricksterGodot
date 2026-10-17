@@ -1,26 +1,27 @@
-[gd_resource type="Resource" script_class="JobData" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="JobData" load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/uppercut.tres" id="c_uppercut"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/quad_punch.tres" id="c_quad_punch"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/counter_punch.tres" id="c_counter_punch"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/guard.tres" id="c_guard"]
 [ext_resource type="Resource" path="res://data/jobs/champion.tres" id="j_champion"]
 [ext_resource type="Resource" path="res://data/jobs/duelist.tres" id="j_duelist"]
+[ext_resource type="Resource" path="res://data/skills/power/guard_break.tres" id="c_guard_break"]
+[ext_resource type="Resource" path="res://data/skills/power/boxer_dash.tres" id="c_boxer_dash"]
+[ext_resource type="Resource" path="res://data/skills/power/uppercut.tres" id="c_uppercut"]
+[ext_resource type="Resource" path="res://data/skills/power/quad_punch.tres" id="c_quad_punch"]
+[ext_resource type="Resource" path="res://data/skills/power/counter_punch.tres" id="c_counter_punch"]
+[ext_resource type="Resource" path="res://data/skills/power/eagle_eye.tres" id="c_eagle_eye"]
+[ext_resource type="Resource" path="res://data/skills/power/guard.tres" id="c_guard"]
+[ext_resource type="Resource" path="res://data/skills/power/tetra_punch.tres" id="c_tetra_punch"]
+[ext_resource type="Resource" path="res://data/skills/power/desperate_rally.tres" id="c_desperate_rally"]
+[ext_resource type="Resource" path="res://data/skills/power/clinch_release.tres" id="c_clinch_release"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"boxer"
 display_name = "Boxer"
 actor = "boxer"
-technique = &"footwork"
-technique_name = "Footwork"
-technique_text = "Your dash ends in a jab, and your combo is 15% faster."
-bonus_points = {"power": 2, "sense": 2}
-graph = {"power": 0.4, "sense": 0.35, "charm": 0.15, "magic": 0.1}
 tier = 2
-cards = Array[ExtResource("2_c")]([ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_guard")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_guard_break"), ExtResource("c_boxer_dash"), ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_eagle_eye"), ExtResource("c_guard"), ExtResource("c_tetra_punch"), ExtResource("c_desperate_rally"), ExtResource("c_clinch_release")])
 passive = &"boxers_footwork"
 passive_name = "Boxer's Footwork"
 passive_text = "Your punches deal 15% more damage."

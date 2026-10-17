@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cooling_fan.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"armor_breaker"
+display_name = "Armor Breaker"
+kind = 0
+skill_id = 1005
+text = "Your hits lower an enemy's DP by {v}% for {seconds} s."
+requires = {&"shockwave": 3}
+table = {"value": [14.0, 16.0, 20.0, 22.0, 26.0, 28.0, 32.0, 38.0], "seconds": [16.0, 18.0, 22.0, 24.0, 28.0, 30.0, 34.0, 40.0]}
+master_material = ExtResource("m_master")

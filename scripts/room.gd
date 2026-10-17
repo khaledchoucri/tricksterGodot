@@ -195,6 +195,15 @@ func add_ground_fx(node: Node2D, at: Vector2) -> void:
 	node.global_position = at
 
 
+## Monsters in the room that are still fighting.
+func live_enemies() -> int:
+	var n := 0
+	for e in enemies:
+		if is_instance_valid(e) and e.state != Enemy.State.DEAD:
+			n += 1
+	return n
+
+
 func request_attack_token(e: Enemy) -> bool:
 	if e in attackers:
 		return true

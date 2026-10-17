@@ -1,22 +1,26 @@
-[gd_resource type="Resource" script_class="JobData" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="JobData" load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/shockwave.tres" id="c_shockwave"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/bulls_eye.tres" id="c_bulls_eye"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/pumping_heart.tres" id="c_pumping_heart"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/armor_breaker.tres" id="c_armor_breaker"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/upper_smash.tres" id="c_upper_smash"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/hyper_beat.tres" id="c_hyper_beat"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/tornado_bomb.tres" id="c_tornado_bomb"]
 [ext_resource type="Resource" path="res://data/jobs/boxer.tres" id="j_boxer"]
+[ext_resource type="Resource" path="res://data/skills/power/shockwave.tres" id="c_shockwave"]
+[ext_resource type="Resource" path="res://data/skills/power/bulls_eye.tres" id="c_bulls_eye"]
+[ext_resource type="Resource" path="res://data/skills/power/burning_rave.tres" id="c_burning_rave"]
+[ext_resource type="Resource" path="res://data/skills/power/shockvibe.tres" id="c_shockvibe"]
+[ext_resource type="Resource" path="res://data/skills/power/sense_breaker.tres" id="c_sense_breaker"]
+[ext_resource type="Resource" path="res://data/skills/power/luck_breaker.tres" id="c_luck_breaker"]
+[ext_resource type="Resource" path="res://data/skills/power/pumping_heart.tres" id="c_pumping_heart"]
+[ext_resource type="Resource" path="res://data/skills/power/armor_breaker.tres" id="c_armor_breaker"]
+[ext_resource type="Resource" path="res://data/skills/power/upper_smash.tres" id="c_upper_smash"]
+[ext_resource type="Resource" path="res://data/skills/power/hyper_beat.tres" id="c_hyper_beat"]
+[ext_resource type="Resource" path="res://data/skills/power/tornado_bomb.tres" id="c_tornado_bomb"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"schoolgirl"
 display_name = "Schoolgirl"
 tier = 1
-cards = Array[ExtResource("2_c")]([ExtResource("c_shockwave"), ExtResource("c_bulls_eye"), ExtResource("c_pumping_heart"), ExtResource("c_armor_breaker"), ExtResource("c_upper_smash"), ExtResource("c_hyper_beat"), ExtResource("c_tornado_bomb")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_shockwave"), ExtResource("c_bulls_eye"), ExtResource("c_burning_rave"), ExtResource("c_shockvibe"), ExtResource("c_sense_breaker"), ExtResource("c_luck_breaker"), ExtResource("c_pumping_heart"), ExtResource("c_armor_breaker"), ExtResource("c_upper_smash"), ExtResource("c_hyper_beat"), ExtResource("c_tornado_bomb")])
 starter = ExtResource("c_shockwave")
 text = "Trained in close physical combat. Shares her skills with the Fighter."
 next_jobs = Array[ExtResource("1_s")]([ExtResource("j_boxer")])

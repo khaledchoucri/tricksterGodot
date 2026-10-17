@@ -1,25 +1,26 @@
-[gd_resource type="Resource" script_class="JobData" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="JobData" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/lacerator.tres" id="c_lacerator"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/piercing_wave.tres" id="c_piercing_wave"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/inferno_blade.tres" id="c_inferno_blade"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/lightning_strike.tres" id="c_lightning_strike"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/berserker.tres" id="c_berserker"]
+[ext_resource type="Resource" path="res://data/skills/power/faint.tres" id="c_faint"]
+[ext_resource type="Resource" path="res://data/skills/power/lacerator.tres" id="c_lacerator"]
+[ext_resource type="Resource" path="res://data/skills/power/berserker.tres" id="c_berserker"]
+[ext_resource type="Resource" path="res://data/skills/power/piercing_wave.tres" id="c_piercing_wave"]
+[ext_resource type="Resource" path="res://data/skills/power/aura_of_haste.tres" id="c_aura_of_haste"]
+[ext_resource type="Resource" path="res://data/skills/power/tidal_slash.tres" id="c_tidal_slash"]
+[ext_resource type="Resource" path="res://data/skills/power/earthquake_blade.tres" id="c_earthquake_blade"]
+[ext_resource type="Resource" path="res://data/skills/power/blazing_strike.tres" id="c_blazing_strike"]
+[ext_resource type="Resource" path="res://data/skills/power/inferno_blade.tres" id="c_inferno_blade"]
+[ext_resource type="Resource" path="res://data/skills/power/tempest_strike.tres" id="c_tempest_strike"]
+[ext_resource type="Resource" path="res://data/skills/power/lightning_strike.tres" id="c_lightning_strike"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"duelist"
 display_name = "Duelist"
 actor = "power_f"
-technique = &"riposte"
-technique_name = "Riposte"
-technique_text = "Dodge through an attack to recharge your dash; your next hit is a sure critical at x2.5."
-bonus_points = {"sense": 3, "power": 1}
-graph = {"sense": 0.45, "power": 0.35, "charm": 0.1, "magic": 0.1}
 tier = 3
-cards = Array[ExtResource("2_c")]([ExtResource("c_lacerator"), ExtResource("c_piercing_wave"), ExtResource("c_inferno_blade"), ExtResource("c_lightning_strike"), ExtResource("c_berserker")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_faint"), ExtResource("c_lacerator"), ExtResource("c_berserker"), ExtResource("c_piercing_wave"), ExtResource("c_aura_of_haste"), ExtResource("c_tidal_slash"), ExtResource("c_earthquake_blade"), ExtResource("c_blazing_strike"), ExtResource("c_inferno_blade"), ExtResource("c_tempest_strike"), ExtResource("c_lightning_strike")])
 passive = &"duelists_edge"
 passive_name = "Duelist's Edge"
 passive_text = "Your skills deal 10% more damage and cost 10% less MP."

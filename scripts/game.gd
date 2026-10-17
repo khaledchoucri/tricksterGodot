@@ -329,9 +329,15 @@ func _start_pick(kind: String, options: Array) -> void:
 		"card":
 			for card: CardData in options:
 				var lvl := Run.card_level(card.id)
-				shown.append({"title": card.display_name,
-					"tag": ("New skill" if card.is_skill() else "New talent") if lvl == 0 else "Lv %d → %d" % [lvl, lvl + 1],
-					"text": card.describe(lvl + 1)})
+				var tag := ("New skill" if card.is_skill() else "New talent") if lvl == 0 else "Lv %d → %d" % [lvl, lvl + 1]
+				var text := card.describe(lvl + 1)
+				if lvl == 0 and card.upgrades != &"":
+					var base := Run.card(card.upgrades)
+					text = card.describe(mini(Run.card_level(base.id), Run.card_cap(card.id)))
+					tag = "Upgrade"
+					text += "
+Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
+				shown.append({"title": card.display_name, "tag": tag, "text": text})
 			title = "Choose a %s skill card" % Run.job.display_name
 			Audio.play("ui_card.wav")
 		"replace":
@@ -351,15 +357,8 @@ func _start_pick(kind: String, options: Array) -> void:
 		"job":
 			for j: JobData in options:
 				var text := j.text
-				if j.technique != &"":
-					text += "\nTechnique · %s: %s" % [j.technique_name, j.technique_text]
 				if j.passive != &"":
 					text += "\n%s: %s" % [j.passive_name, j.passive_text]
-				if not j.bonus_points.is_empty():
-					var parts: PackedStringArray = []
-					for t: String in j.bonus_points:
-						parts.append("+%d %s" % [j.bonus_points[t], Stats.TYPES[t].name])
-					text += "\n%s, and a full heal." % ", ".join(parts)
 				if not j.unlocked():
 					text = "Locked. " + j.unlock_text
 				shown.append({"title": j.display_name, "tag": "%s job" % ["1st", "2nd", "3rd"][j.tier - 1], "text": text,
@@ -458,8 +457,6 @@ func _job_change_fx(j: JobData) -> void:
 	Events.shake_requested.emit(6.0)
 	for i in 3:
 		Ring.spawn(room.ground_fx, player.global_position, 40.0 + 40.0 * i, 0.4 + 0.15 * i, Color(1.0, 0.85, 0.45, 0.9))
-	if j.technique != &"":
-		hud.log_line("[System] Technique learned: %s. %s" % [j.technique_name, j.technique_text], Color("e0b54d"))
 
 
 func _type_option(t: String) -> Dictionary:
@@ -502,7 +499,7 @@ func _on_picked(i: int) -> void:
 	match _pick_kind:
 		"card":
 			var card: CardData = _pick_options[i]
-			if card.is_skill() and Run.card_level(card.id) == 0 and Run.free_slot() < 0:
+			if card.is_skill() and Run.card_level(card.id) == 0 and card.upgrades == &"" and Run.free_slot() < 0:
 				_pending_skill = card
 				_start_pick("replace", [0, 1, 2, -1])
 				return
@@ -524,11 +521,9 @@ func _on_picked(i: int) -> void:
 				player.refresh_gear()
 		"job":
 			var j: JobData = _pick_options[i]
-			var unlocked := Run.start_job(j)
+			Run.start_job(j)
 			player.refresh_gear()
 			_job_change_fx(j)
-			for tr in unlocked:
-				hud.notice("%s unlocked" % tr.name)
 			hud.center("%s advanced to %s" % [Run.cls.display_name, j.display_name], 1.6)
 			hud.log_line("[Notice] %s has advanced to %s. Congratulations!" % [Run.cls.display_name, j.display_name],
 				Color("e0b54d"))

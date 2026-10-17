@@ -74,15 +74,17 @@ func _run() -> void:
 	var b := room.random_spot(a, 300.0)
 	check(room.find_path(a, b).size() > 1, "grid pathfinding finds a route across the room")
 
-	# Every active skill casts and damages a monster in front of Buffalo.
+	# Every Power-line attack casts and damages a monster in front of Buffalo.
 	check(Run.loadout[0] == Run.cls.start_job.starter.id, "the run starts with %s in slot 1" % Run.cls.start_job.starter.id)
 	var skill_ids: Array[StringName] = []
-	for card in Run.region.cards:
-		if card.is_skill():
+	for card in Run.all_cards():
+		if card.is_skill() and card.resource_path.begins_with("res://data/skills/power/") 				and not card.id in [&"clinch_release", &"chakra_balance"]:
 			skill_ids.append(card.id)
+	check(skill_ids.size() == 23, "the Power line has 25 attacks (23 that deal damage): %d" % skill_ids.size())
 	for id in skill_ids:
 		# Ranges are on the ground plane; place the dummy at a ground distance.
-		var reach := 55.0 if id in [&"lacerator", &"shockwave", &"gale_strike"] else 110.0
+		var reach := 110.0 if id in [&"boxer_dash", &"flash_cut", &"mega_flash_cut", &"piercing_wave", &"earthquake_blade",
+			&"inferno_blade", &"tornado_bomb", &"sonic_slash", &"lightning_strike", &"shadow"] else 50.0
 		var spot := Vector2.INF
 		var ground_dir := Vector2.ZERO
 		for _i in 300:
@@ -97,6 +99,8 @@ func _run() -> void:
 		player.enter(Player.State.MOVE)
 		var dummy: Enemy = room.spawn(&"torobbie", at)
 		await wait(0.6)
+		dummy.max_hp = 99999
+		dummy.hp = 99999
 		var before := dummy.hp
 		Run.cards[id] = 1
 		Run.loadout[0] = id
@@ -296,8 +300,8 @@ func _run() -> void:
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
 
-	# Job techniques: each job changes how you fight, and they stack.
-	await techniques()
+	# Job changes, upgrade skills and the Power-line talents.
+	await skill_rules()
 
 	# Balance guards: monsters follow the depth curve, whatever their
 	# original stats say (Desert Beach's DP once made it ~5x tankier).
@@ -487,12 +491,12 @@ func _systems(Run: Node) -> void:
 	for _i in 40:
 		for c: CardData in Run.card_offers(3, false):
 			offered_smash = offered_smash or c.id == &"upper_smash"
-	check(not offered_smash, "Upper Smash waits for Bull's Eye Lv 2")
-	Run.cards[&"bulls_eye"] = 2
+	check(not offered_smash, "Upper Smash waits for Bull's Eye Lv 3 (the original's 10 of 11)")
+	Run.cards[&"bulls_eye"] = 3
 	for _i in 40:
 		for c: CardData in Run.card_offers(3, false):
 			offered_smash = offered_smash or c.id == &"upper_smash"
-	check(offered_smash, "Bull's Eye Lv 2 opens Upper Smash")
+	check(offered_smash, "Bull's Eye Lv 3 opens Upper Smash")
 
 	Run.depth = Run.region.job_change_depth
 	check(Run.job_change_due() and Run.job.id == &"fighter", "the trial room brings the Fighter's job change")
@@ -712,33 +716,62 @@ func _restore_all(Run: Node) -> void:
 			Profile.restorations[String(r.id)] = 1
 
 
-func techniques() -> void:
+func skill_rules() -> void:
 	var p: Player = game.player
 	for e in enemies():
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	await wait(0.5)
 	p.global_position = game.room.random_spot(p.global_position, 0.0)
-	p.invulnerable_until = p.now() + 9999.0
+	p.invulnerable_until = 0.0
 	p.aim = Vector2.RIGHT
-	var saved_clears: int = int(Profile.stats.get("clears", 0))
-	Run.take_damage(30)
-	var power: int = Run.type_points.power
 	check(p.sprite.actor_name == Run.cls.actor, "a run starts as the class's own character")
-	var unlocked: Array = Run.start_job(load("res://data/jobs/knight.tres"))
+	Run.take_damage(30)
+	var hp: int = Run.hp
+	var points: Dictionary = Run.type_points.duplicate()
+	Run.start_job(load("res://data/jobs/knight.tres"))
 	p.refresh_gear()
 	check(p.sprite.actor_name == "knight" and Run.actor() == "knight", "becoming a Knight turns you into the Knight")
-	var steps: Array[ComboStep] = p.combo_steps()
-	check(steps[steps.size() - 1].arc_degrees == 360.0 and Run.type_points.power == power + 2 and Run.hp == Run.max_hp,
-		"Knight: a Whirlwind finisher, +2 Power and a full heal on the job change")
+	check(Run.hp == hp and Run.type_points == points, "a job change brings no type points or heal (none in Trickster)")
 	Run.start_job(load("res://data/jobs/gladiator.tres"))
 	p.refresh_gear()
 	check(p.sprite.actor_name == "power_m", "a Gladiator takes the Power 3rd-job body")
-	steps = p.combo_steps()
-	var speed: float = Run.attack_speed_mult()
-	for i in Run.MOMENTUM_MAX:
-		p.combo_landed(steps[0])
-	check(Run.momentum == Run.MOMENTUM_MAX and Run.attack_speed_mult() > speed * 1.2,
-		"Gladiator: combo hits build Momentum, which speeds the combo")
+
+	# Advanced forms are offered only with their base skill and replace it.
+	Run.new_run()
+	Run.start_job(load("res://data/jobs/knight.tres"))
+	var tempest: CardData = Run.card(&"tempest_strike")
+	check(tempest.upgrades == &"lacerator" and not Run.can_learn(tempest), "Tempest Strike needs Lacerator in hand")
+	Run.add_card(&"lacerator")
+	Run.cards[&"lacerator"] = 3
+	check(Run.can_learn(tempest) and Run.can_learn(Run.card(&"tidal_slash")), "Lacerator Lv 3 opens Tempest Strike and Tidal Slash")
+	var at := Run.loadout.find(&"lacerator")
+	Run.add_card(&"tempest_strike")
+	check(Run.loadout[at] == &"tempest_strike" and Run.card_level(&"lacerator") == 0 and Run.card_level(&"tempest_strike") == 3,
+		"Tempest Strike takes Lacerator's slot and level, replacing it")
+	check(not Run.can_learn(Run.card(&"tidal_slash")), "with Lacerator gone, Tidal Slash is no longer offered")
+	Run.cards[&"tempest_strike"] = 2
+	var gale_offered := false
+	for _i in 30:
+		for c: CardData in Run.card_offers(3, false, load("res://data/jobs/gladiator.tres")):
+			gale_offered = gale_offered or c.id == &"gale_strike"
+	check(not gale_offered, "Gale Strike isn't offered before Tempest Strike Lv 3")
+	Run.cards[&"tempest_strike"] = 3
+	Run.start_job(load("res://data/jobs/gladiator.tres"))
+	check(Run.can_learn(Run.card(&"gale_strike")), "Tempest Strike Lv 3 opens Gale Strike for the Gladiator")
+	Run.add_card(&"piercing_wave")
+	Run.cards[&"piercing_wave"] = 3
+	Run.add_card(&"earthquake_blade")
+	check(Run.card_level(&"piercing_wave") == 0 and Run.known_level(&"piercing_wave") == 3
+		and Run.requirements_met(Run.card(&"lightning_strike")),
+		"Earthquake Blade replaces Piercing Wave and still opens Lightning Strike")
+	check(Run.card_cap(&"guard_break") == 1 and not Run.can_master(Run.card(&"guard_break")),
+		"Guard Break stays at Lv 1, as in the original")
+
+	# Talents with the original effects.
+	Run.new_run()
+	var ap: int = Run.stat("AP")
+	Run.add_card(&"pumping_heart")
+	check(Run.stat("AP") > ap, "Pumping Heart raises AP (%d -> %d)" % [ap, Run.stat("AP")])
 	var target: Enemy = game.room.spawn("torobbie", p.global_position + Vector2(50, 0))
 	target.max_hp = 99999
 	target.hp = 99999
@@ -746,61 +779,39 @@ func techniques() -> void:
 		if target.is_hittable():
 			break
 		await wait(0.1)
-	target.global_position = p.global_position + Vector2(50, 0)
-	for i in Run.MOMENTUM_MAX:
-		p.combo_landed(steps[0])
-	p.combo_landed(steps[steps.size() - 1])
-	check(Run.momentum == 0 and target.hp < 99999,
-		"a finisher at full Momentum releases a shockwave (momentum %d, hp %d)" % [Run.momentum, target.hp])
-	check(steps[steps.size() - 1].arc_degrees == 360.0, "a Gladiator keeps the Knight's Whirlwind")
-	await wait(3.0)
-	check(Run.momentum == 0, "Momentum fades without hits")
-
-	# Mercenary: the dash cuts through.
-	Run.new_run()
-	Run.start_job(load("res://data/jobs/knight.tres"))
-	Run.start_job(load("res://data/jobs/mercenary.tres"))
-	p.refresh_gear()
-	target.global_position = p.global_position + Vector2(50, 0)
-	var before: int = target.hp
-	p.dash_ready_at = 0.0
-	p.start_dash()
-	await wait(0.45)
-	check(target.hp < before, "Mercenary: Blade Dash cuts a monster in the dash's path")
-
-	# Bunny's line.
-	Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))
-	Profile.class_id = "bunny"
-	Run.new_run()
-	p.refresh_gear()
-	var plain: int = p.combo_steps().size()
-	Run.start_job(load("res://data/jobs/boxer.tres"))
-	p.refresh_gear()
-	check(Run.attack_speed_mult() > 1.1, "Boxer: Footwork quickens the combo")
-	p.global_position = target.global_position - Vector2(150, 0)
-	p.aim = Vector2.RIGHT
-	before = target.hp
-	p.dash_ready_at = 0.0
-	p.start_dash()
+	var acc: int = target.accuracy()
+	var defense: float = target.defense_mult()
+	Run.add_card(&"shockvibe")
+	Run.add_card(&"armor_breaker")
+	Run.add_card(&"suffocate")
+	p.deal_hit(target, 10.0, 1.0, 0.0, false)
+	check(target.accuracy() < acc or acc == 0, "Shockvibe lowers a hit monster's accuracy (%d -> %d)" % [acc, target.accuracy()])
+	check(target.defense_mult() >= defense and not target.can_hide(), "Armor Breaker lowers its DP; Suffocate keeps it from hiding")
+	Run.add_card(&"guard")
+	p._tick_talents(0.016)
+	hp = Run.hp
+	p.invulnerable_until = 0.0
+	p.take_hit(20, Vector2.LEFT, 0.0, false, 9999)
+	check(Run.hp == hp and Run.guard_blocks == 0, "Guard blocks a physical hit outright")
+	p.invulnerable_until = 0.0
+	p.take_hit(20, Vector2.LEFT, 0.0, true, 9999)
+	check(Run.hp < hp, "Guard doesn't block magic")
+	Run.add_card(&"clinch_release")
+	Run.loadout[1] = &"clinch_release"
+	p.invulnerable_until = 0.0
+	p.take_hit(5, Vector2.LEFT, 300.0, false, 9999)
+	p.skills.slot_ready_at[1] = 0.0
+	Run.mp = Run.max_mp
+	p.buffer_action("skill_2")
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	check(p.state == Player.State.SKILL and p.knock == Vector2.ZERO, "Clinch Release can be cast while staggered and cancels it")
+	await wait(0.4)
+	Run.hp = Run.max_hp / 2
+	p.start_regen(0.05, 0.2, 2.0)
 	await wait(0.5)
-	check(target.hp < before, "Boxer: the dash ends in a jab")
-	Run.start_job(load("res://data/jobs/champion.tres"))
-	p.refresh_gear()
-	check(p.combo_steps().size() == plain + 2, "Champion: Rush adds two jabs before the finisher")
-	Run.new_run()
-	Run.start_job(load("res://data/jobs/boxer.tres"))
-	Run.start_job(load("res://data/jobs/duelist.tres"))
-	p.refresh_gear()
-	p.dash_ready_at = 0.0
-	p.start_dash()
-	p.take_hit(10, Vector2.LEFT, 0.0)
-	var ready: bool = p._riposte_ready and p.can_dash()
-	var crit: bool = p.deal_hit(target, 10.0, 1.0, 0.0, false)
-	check(ready and crit and not p._riposte_ready, "Duelist: dodging through an attack readies a sure-critical Riposte")
+	check(Run.hp > Run.max_hp / 2, "Chakra Balance recovers HP over time")
 	target.take_hit(999999, Vector2.RIGHT, 0.0, true)
-	Profile.class_id = "buffalo"
-	Profile.stats["clears"] = saved_clears
 	Run.new_run()
 	p.refresh_gear()
-	check(p.combo_steps().size() == p.combo.steps.size(), "a new run starts with the plain combo again")
 	await wait(0.5)

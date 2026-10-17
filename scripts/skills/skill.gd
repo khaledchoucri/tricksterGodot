@@ -58,8 +58,43 @@ func once(t: float, when: float, key := "main") -> bool:
 	return true
 
 
+## A table number of this skill at its level (see CardData.table).
+func param(name: String, default := 0.0) -> float:
+	return card.param(name, level, default)
+
+
 func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}) -> void:
+	if card.element != "none" and not fx.has("element"):
+		fx = fx.duplicate()
+		fx.element = card.element
 	player.deal_hit(e, amount, 1.0, knockback, heavy, fx, player.global_position)
+
+
+## The enemy in the wedge closest to the caster, or null.
+func nearest_in_wedge(dir: Vector2, radius: float, arc: float) -> Enemy:
+	var best: Enemy = null
+	for e in enemies_in_wedge(player.global_position, dir, radius, arc):
+		if best == null or e.global_position.distance_squared_to(player.global_position) < best.global_position.distance_squared_to(player.global_position):
+			best = e
+	return best
+
+
+## Up to `n` enemies in the circle, closest to `center` first.
+func closest_in_circle(center: Vector2, radius: float, n: int) -> Array[Enemy]:
+	var pool := enemies_in_circle(center, radius)
+	pool.sort_custom(func(a: Enemy, b: Enemy) -> bool:
+		return a.global_position.distance_squared_to(center) < b.global_position.distance_squared_to(center))
+	return pool.slice(0, maxi(n, 1))
+
+
+## Throws an enemy's sprite into the air and lets it fall (it is stunned
+## meanwhile through the hit's "stun").
+func launch(e: Enemy, height := 34.0, time := 0.5) -> void:
+	if not is_instance_valid(e) or e.is_boss:
+		return
+	var tw := e.create_tween()
+	tw.tween_property(e.sprite, "position:y", -height, time * 0.45).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tw.tween_property(e.sprite, "position:y", 0.0, time * 0.55).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 
 
 func enemies_in_circle(center: Vector2, radius: float) -> Array[Enemy]:

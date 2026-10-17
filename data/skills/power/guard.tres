@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/ugly_pearl.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"guard"
+display_name = "Guard"
+kind = 0
+skill_id = 1107
+text = "Block up to {v} physical hits completely (not magic). A spent block returns after {cooldown} s."
+requires = {&"hyper_beat": 3}
+table = {"value": [1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0], "cooldown": [10.0, 10.0, 13.0, 13.0, 16.0, 16.0, 19.0, 22.0]}
+master_material = ExtResource("m_master")

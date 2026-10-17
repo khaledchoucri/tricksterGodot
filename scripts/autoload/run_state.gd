@@ -16,6 +16,9 @@ const MAX_CARD_LEVEL := 5
 ## Master Louis raises a card's cap this many times at most.
 const MAX_MASTERY := 3
 const SLOTS := 3
+## Guard (1107): blocks left, and when the next spent one returns.
+var guard_blocks := 0
+var guard_back_at := 0.0
 ## Equipment slots: the six core run-gear slots.
 const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc1", "acc2"]
 ## Echoes of other classes that can haunt elite rooms after the first clear.
@@ -85,15 +88,6 @@ var max_mp: int:
 var _bonus_hp := 0          # from restorations
 var _stats: Dictionary = {}  # cache of stat totals
 var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned against
-## Automatic growth banked at the last graph change, the level it happened at,
-## and the graph in force since (class graph, then each job's).
-var _growth: Dictionary = {}
-var _growth_level := 1
-var _graph: Dictionary = {}
-## Gladiator's Momentum stacks (the player keeps them up by landing hits).
-var momentum := 0
-const MOMENTUM_MAX := 5
-const MOMENTUM_STEP := 0.05
 var _baseline := false
 
 
@@ -266,10 +260,6 @@ func new_run() -> void:
 	cards = {}
 	loadout = [&"", &"", &""]
 	jobs.clear()
-	_growth = {}
-	_growth_level = 1
-	_graph = cls.graph
-	momentum = 0
 	equipment = {"weapon": GearItem.make(cls.start_weapon)}
 	ore = 0
 	rune = null
@@ -284,6 +274,8 @@ func new_run() -> void:
 	pending_levels = 0
 	revives = 0
 	second_wind_used = false
+	guard_blocks = 0
+	guard_back_at = 0.0
 	_bonus_hp = 0
 	_stats.clear()
 	_ref = {}
@@ -473,7 +465,7 @@ func final_boss() -> bool:
 ## (what it takes to kill through its DP) and damage per hit. The sword's
 ## first three hits (130 at x1.0) kill it; it lands 6% of a starting HP bar.
 const MOB_EHP := 128.0
-const MOB_HIT := 14.0
+const MOB_HIT := 12.5
 ## Per room of depth: effective HP and damage growth. A par build's damage
 ## grows faster than this (about x4 by room 16 against x2.8), so gear and
 ## builds shorten fights instead of only keeping pace.
@@ -585,6 +577,9 @@ func _compute_stats() -> void:
 	for w in ([] if _baseline else worn_pieces()):
 		for k: String in w.stats:
 			s[k] = s.get(k, 0.0) + w.stats[k]
+	# Power-line buffs, always on (Trickster's are timed casts).
+	s.AP *= 1.0 + (card_value(&"pumping_heart") + card_value(&"adrenaline")) / 100.0
+	s.AC *= 1.0 + (card_value(&"bulls_eye") + card_value(&"eagle_eye")) / 100.0
 	for k: String in s:
 		_stats[k] = maxi(0, floori(s[k]))
 
@@ -659,33 +654,16 @@ func heal(amount: int) -> void:
 
 # ---------------------------------------------------------------- jobs and cards
 
-## Starts a job. After the first, a job change also grants the job's type
-## points (returns the traits they unlock), turns growth toward its types
-## and heals fully.
-func start_job(j: JobData) -> Array[Dictionary]:
-	var unlocked: Array[Dictionary] = []
+## Starts a job. As in Trickster, a job change brings the job's character
+## and its skill tree, nothing else.
+func start_job(j: JobData) -> void:
 	job = j
 	jobs.append(j)
 	if jobs.size() > 1 and quirk(&"job_cloak"):
 		pending_levels += 1  # a free type point
 	if j.starter and card_level(j.starter.id) == 0:
 		add_card(j.starter.id)
-	if not j.graph.is_empty():
-		for t: String in Stats.TYPE_ORDER:
-			_growth[t] = auto_points(t)
-		_growth_level = level
-		_graph = j.graph
-	for t: String in j.bonus_points:
-		for i in int(j.bonus_points[t]):
-			var tr := apply_type(t)
-			if not tr.is_empty():
-				unlocked.append(tr)
 	stats_changed()
-	if jobs.size() > 1:
-		hp = max_hp
-		mp = max_mp
-		Events.player_hp_changed.emit()
-	return unlocked
 
 
 ## The character on screen: the latest job's (a job change replaces the
@@ -697,17 +675,9 @@ func actor() -> String:
 	return cls.actor if cls else "buffalo"
 
 
-func has_technique(id: StringName) -> bool:
-	for j in jobs:
-		if j.technique == id:
-			return true
-	return false
-
-
-## Points a type has gained by itself with levels, along the growth graphs
-## in force at each level (the class's, then each job's).
+## Points a type has gained by itself with levels, along the class's graph.
 func auto_points(t: String) -> float:
-	return float(_growth.get(t, 0.0)) + float(_graph.get(t, 0.0)) * (level - _growth_level)
+	return float(cls.graph.get(t, 0.0)) * (level - 1)
 
 
 ## Whether the run has reached its job change and the job has somewhere to go.
@@ -732,19 +702,56 @@ func card_pool() -> Array[CardData]:
 	return out
 
 
+## Prerequisites count a skill as known at its level while you have it, or
+## an advanced form of it (Tempest Strike still counts as Lacerator).
 func requirements_met(card: CardData) -> bool:
 	for id: StringName in card.requires:
-		if card_level(id) < int(card.requires[id]):
+		if known_level(id) < int(card.requires[id]):
 			return false
 	return true
 
 
+## A card's level, or that of the advanced form that replaced it.
+func known_level(id: StringName) -> int:
+	if card_level(id) > 0:
+		return card_level(id)
+	for owned: StringName in cards:
+		var c := card(owned)
+		var base := c.upgrades if c else &""
+		while base != &"":
+			if base == id:
+				return cards[owned]
+			base = card(base).upgrades if card(base) else &""
+	return 0
+
+
+## Whether a card can be offered as new: not known, prerequisites met, and
+## for an advanced form, its base skill is in hand.
+func can_learn(c: CardData) -> bool:
+	if card_level(c.id) > 0 or not requirements_met(c):
+		return false
+	return c.upgrades == &"" or card_level(c.upgrades) > 0
+
+
 ## Learns a card or raises its level. A new skill goes in the first free
-## slot, or in `slot` when given (replacing what was there).
+## slot, or in `slot` when given (replacing what was there). An advanced form
+## replaces its base skill: it takes the base's slot and level, and the base
+## is forgotten (in Trickster both are kept, the new one from Lv 1; with a
+## single slot to fill here, a Lv 1 upgrade would be a step down).
 func add_card(id: StringName, slot := -1) -> void:
 	var is_new := card_level(id) == 0
-	cards[id] = mini(card_level(id) + 1, card_cap(id))
 	var c := card(id)
+	if is_new and c.upgrades != &"" and card_level(c.upgrades) > 0:
+		var at := loadout.find(c.upgrades)
+		var base_level := card_level(c.upgrades)
+		cards.erase(c.upgrades)
+		cards[id] = mini(base_level, card_cap(id))
+		if at >= 0:
+			loadout[at] = id
+		stats_changed()
+		return
+	cards[id] = mini(card_level(id) + 1, card_cap(id))
+	stats_changed()
 	if not is_new or not c.is_skill():
 		return
 	if slot < 0:
@@ -760,8 +767,12 @@ func free_slot() -> int:
 	return loadout.find(&"")
 
 
-## A card's level cap: 5, plus its master levels.
+## A card's level cap: 5 (or the original's cap when lower), plus its
+## master levels.
 func card_cap(id: StringName) -> int:
+	var c := card(id)
+	if c and c.max_level > 0:
+		return c.max_level
 	return MAX_CARD_LEVEL + int(Profile.mastery.get(String(id), 0))
 
 
@@ -772,7 +783,7 @@ func mastery_cost(c: CardData) -> Dictionary:
 
 
 func can_master(c: CardData) -> bool:
-	if c.master_material == null or int(Profile.mastery.get(String(c.id), 0)) >= MAX_MASTERY:
+	if c.master_material == null or c.max_level > 0 or int(Profile.mastery.get(String(c.id), 0)) >= MAX_MASTERY:
 		return false
 	var cost := mastery_cost(c)
 	return int(Profile.materials.get(String(cost.material.id), 0)) >= cost.count and Profile.galder >= cost.galder
@@ -815,7 +826,7 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 	var talents: Array[CardData] = []
 	for c in (from_job.cards if from_job else card_pool()):
 		var lvl := card_level(c.id)
-		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or (not upgrade and lvl == 0 and requirements_met(c)):
+		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or (not upgrade and can_learn(c)):
 			(skills if c.is_skill() else talents).append(c)
 	skills.shuffle()
 	talents.shuffle()
@@ -1054,8 +1065,15 @@ func try_refine(g: GearItem, roll := -1.0) -> String:
 
 # ---------------------------------------------------------------- combat numbers
 
+## Berserker's rage, and Desperate Rally below its HP line (stronger the
+## lower HP gets, up to double at 0).
 func _berserk_mult() -> float:
-	return 1.0 + card_value(&"berserker") / 100.0 if hp * 2 < max_hp else 1.0
+	var m := 1.0 + card_value(&"berserker") / 100.0
+	var line := card(&"desperate_rally").param("hp", card_level(&"desperate_rally")) / 100.0 if card_level(&"desperate_rally") > 0 else 0.0
+	var frac := hp / float(maxi(max_hp, 1))
+	if line > 0.0 and frac < line:
+		m *= 1.0 + card_value(&"desperate_rally") / 100.0 * (1.0 + (line - frac) / line)
+	return m
 
 
 func _ratio(key: String, soft: float) -> float:
@@ -1089,10 +1107,7 @@ func skill_cooldown_mult() -> float:
 
 
 func attack_speed_mult() -> float:
-	var m := _ratio("DX", DX_SOFT) * (1.0 + card_value(&"hyper_beat") / 100.0)
-	if has_technique(&"footwork"):
-		m *= 1.15
-	return m * (1.0 + MOMENTUM_STEP * momentum)
+	return _ratio("DX", DX_SOFT) * (1.0 + (card_value(&"hyper_beat") + card_value(&"aura_of_haste")) / 100.0)
 
 
 func speed_mult() -> float:
@@ -1109,8 +1124,26 @@ func dash_cooldown_mult() -> float:
 	return m * (0.8 if not cls.armed else 1.0)  # fighting bare-handed keeps you light on your feet
 
 
-func crit_chance() -> float:
-	return 0.03 + stat("LK") / 250.0 + card_value(&"bulls_eye") / 100.0
+## Debuffs your hits carry from the breaker talents ({key: [value, seconds]},
+## see Enemy.debuffs).
+const BREAKERS := {&"armor_breaker": "dp", &"shockvibe": "ac", &"sense_breaker": "perception", &"luck_breaker": "luck"}
+
+
+func hit_debuffs() -> Dictionary:
+	var out := {}
+	for id: StringName in BREAKERS:
+		if card_level(id) > 0:
+			out[BREAKERS[id]] = [card_value(id), card(id).param("seconds", card_level(id))]
+	if card_level(&"suffocate") > 0:
+		out["pinned"] = [1.0, card_value(&"suffocate")]
+	return out
+
+
+## Critical chance, against `e` when given (Luck Breaker makes cursed
+## monsters easier to crit).
+func crit_chance(e: Enemy = null) -> float:
+	var c := 0.03 + stat("LK") / 250.0
+	return c * (1.0 + e.debuff("luck") / 100.0) if e else c
 
 
 ## Damage taken: DP against physical hits, MD against magic.
@@ -1119,7 +1152,7 @@ func damage_taken_mult(magic := false) -> float:
 	var m := (float(_ref.get(key, 0)) + DEF_SOFT) / (stat(key) + DEF_SOFT)
 	if has_passive(&"hired_blade"):
 		m *= 0.9
-	return m * (1.0 - card_value(&"guard") / 100.0)
+	return m
 
 
 ## Chance to evade an attack from a monster with accuracy `ac`.
@@ -1181,8 +1214,6 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 		elif randf() < (mat_chance + stat("DA") / 200.0 + (0.1 if quirk(&"sly") else 0.0)) * ServerSettings.drop_mult():
 			count = 1
 		add_material(mat, count)
-	if card_level(&"adrenaline") > 0:
-		heal(int(card_value(&"adrenaline")))
 	if quirk(&"mana_tail"):
 		gain_mp(3)
 	gain_exp(exp_amount)

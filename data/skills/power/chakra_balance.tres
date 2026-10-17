@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_ice.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/chakra_balance.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"chakra_balance"
+display_name = "Chakra Balance"
+kind = 1
+skill_id = 1506
+text = "Recover {v}% of your HP every {interval} s for {seconds} s, until you take a hit."
+requires = {&"chi_sword": 3}
+table = {"value": [1.0, 1.5, 2.5, 3.0, 4.0, 4.5, 5.5, 8.0], "mp": [58.0, 59.0, 62.0, 63.0, 66.0, 67.0, 69.0, 71.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "seconds": [30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0], "interval": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

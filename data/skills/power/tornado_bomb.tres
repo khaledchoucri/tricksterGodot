@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/tornado_bomb.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tornado_bomb"
+display_name = "Tornado Bomb"
+kind = 1
+skill_id = 1011
+text = "A spinning fist sends out a tornado that cuts enemies for {v} damage several times a second."
+requires = {&"armor_breaker": 1}
+table = {"value": [22.0, 24.0, 28.0, 30.0, 35.0, 37.0, 41.0, 48.0], "mp": [29.0, 30.0, 32.0, 33.0, 34.0, 35.0, 36.0, 38.0], "cooldown": [3.0, 3.0, 3.0, 5.0, 3.0, 3.0, 3.0, 3.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

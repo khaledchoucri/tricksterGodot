@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/acorn_nut.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"chi_sword"
+display_name = "Chi Sword"
+kind = 0
+skill_id = 1505
+text = "Your blade swells with chi: basic attacks reach {reach}% further and deal {v}% more damage."
+requires = {&"piercing_wave": 3}
+table = {"value": [2.0, 8.0, 20.0, 27.0, 39.0, 45.0, 58.0, 77.0], "reach": [0.0, 6.2, 19.0, 25.0, 38.0, 44.0, 56.0, 75.0]}
+master_material = ExtResource("m_master")

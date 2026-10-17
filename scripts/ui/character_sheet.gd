@@ -73,8 +73,6 @@ func _skills_text() -> String:
 	for j in Run.jobs:
 		if j.passive != &"":
 			lines.append("  [color=#e0b54d]%s[/color]  [color=#9fb2c0]%s[/color]" % [j.passive_name, j.passive_text])
-		if j.technique != &"":
-			lines.append("  [color=#e0b54d]%s[/color]  [color=#9fb2c0]%s[/color]" % [j.technique_name, j.technique_text])
 	return "\n".join(lines)
 
 

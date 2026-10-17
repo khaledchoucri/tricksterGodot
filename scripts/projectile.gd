@@ -19,7 +19,6 @@ var room: Room
 var player: Player
 
 var _t := 0.0
-var _dodged := false
 
 
 func _physics_process(delta: float) -> void:
@@ -33,9 +32,6 @@ func _physics_process(delta: float) -> void:
 		if not player.is_invulnerable():
 			player.take_hit(damage, Combat.ground(direction).normalized(), 160.0, true, accuracy)
 			queue_free()
-		elif not _dodged:
-			_dodged = true
-			player.dodged()
 	queue_redraw()
 
 

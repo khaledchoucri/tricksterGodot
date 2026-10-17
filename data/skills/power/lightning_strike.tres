@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sand_glass.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/lightning_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"lightning_strike"
+display_name = "Lightning Strike"
+kind = 1
+skill_id = 1211
+text = "Lightning strikes the nearest enemies (up to {targets}) for {v} damage, with a {chance}% chance to stun for {stun} s."
+requires = {&"piercing_wave": 3}
+table = {"value": [81.0, 86.0, 94.0, 99.0, 107.0, 112.0, 120.0, 133.0], "mp": [56.0, 58.0, 61.0, 62.0, 65.0, 66.0, 68.0, 72.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "targets": [2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0, 6.0], "stun": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0], "chance": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]}
+master_material = ExtResource("m_master")
+element = "lightning"
+behavior = ExtResource("2_b")

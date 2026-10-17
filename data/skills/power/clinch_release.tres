@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/hard_scales.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/clinch_release.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"clinch_release"
+display_name = "Clinch Release"
+kind = 1
+skill_id = 1110
+text = "Usable while staggered: shake off the hit, its knockback and anything holding you."
+requires = {&"desperate_rally": 3}
+max_level = 1
+table = {"value": [0.0], "mp": [58.0], "cooldown": [10.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

@@ -20,17 +20,6 @@ extends Resource
 ## job change replaces the character: Knight and Boxer at the 2nd job, and at
 ## the 3rd one body per type and sex. Empty keeps the previous job's.
 @export var actor := ""
-@export_group("Job change")
-## How the job changes the way you fight, checked by code through
-## Run.has_technique(): whirlwind, momentum, blade_dash, footwork, rush, riposte.
-@export var technique: StringName
-@export var technique_name := ""
-@export_multiline var technique_text := ""
-## Type points granted when the job begins (type -> points).
-@export var bonus_points: Dictionary = {}
-## Automatic growth per level from the job change on (replaces the class graph).
-@export var graph: Dictionary = {}
-@export_group("")
 ## Jobs this one can change into.
 @export var next_jobs: Array[JobData] = []
 ## A branch that has to be earned: the Profile stat that unlocks it (e.g.

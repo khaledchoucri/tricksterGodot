@@ -1,8 +1,8 @@
 extends Skill
 ## Sonic Slash (1502, Gladiator): rush forward faster than sound, cutting
-## every enemy along the line. Invulnerable for the rush.
+## the enemies along the line (up to the level's target count). Invulnerable
+## for the rush.
 
-const RUSH := 190.0
 const RUSH_TIME := 0.16
 const WIDTH := 34.0
 const COLOR := Color(0.75, 0.95, 1.0)
@@ -27,7 +27,7 @@ func start() -> void:
 
 
 func movement(t: float) -> Vector2:
-	return Combat.screen(aim).normalized() * (RUSH / RUSH_TIME) if t < RUSH_TIME else Vector2.ZERO
+	return Combat.screen(aim).normalized() * (param("range", 120.0) / RUSH_TIME) if t < RUSH_TIME else Vector2.ZERO
 
 
 func update(t: float, _delta: float) -> void:
@@ -37,7 +37,7 @@ func update(t: float, _delta: float) -> void:
 	var g_from := Combat.ground(_from)
 	var g_now := Combat.ground(player.global_position)
 	for e in room.enemies:
-		if not e.is_hittable() or e in _hit:
+		if not e.is_hittable() or e in _hit or _hit.size() >= int(param("targets", 5)):
 			continue
 		var g := Combat.ground(e.global_position)
 		var along := (g - g_from).dot((g_now - g_from).normalized()) if g_now != g_from else 0.0

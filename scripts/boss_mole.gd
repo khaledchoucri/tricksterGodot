@@ -42,7 +42,7 @@ func _state_chase() -> void:
 		super._state_chase()
 		return
 	var dist := Combat.ground(player.global_position - global_position).length()
-	if now() >= _burrow_ready_at and dist > SLAM_RANGE and room.request_attack_token(self):
+	if now() >= _burrow_ready_at and dist > SLAM_RANGE and can_hide() and room.request_attack_token(self):
 		_start_burrow()
 		return
 	super._state_chase()

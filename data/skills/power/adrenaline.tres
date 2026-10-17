@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/slime_husk.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"adrenaline"
+display_name = "Adrenaline"
+kind = 0
+skill_id = 1301
+text = "+{v}% AP."
+requires = {&"pumping_heart": 3}
+table = {"value": [2.0, 4.0, 8.0, 10.0, 14.0, 16.0, 20.0, 26.0]}
+master_material = ExtResource("m_master")

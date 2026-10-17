@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/acorn_nut.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"berserker"
+display_name = "Berserker"
+kind = 0
+skill_id = 1203
+text = "Rage: +{v}% AP, but you keep losing HP and MP while enemies are near."
+requires = {&"pumping_heart": 2}
+table = {"value": [5.3, 8.1, 15.0, 19.0, 29.0, 34.0, 47.0, 69.0]}
+master_material = ExtResource("m_master")

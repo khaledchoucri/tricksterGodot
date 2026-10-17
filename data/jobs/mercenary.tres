@@ -1,24 +1,25 @@
-[gd_resource type="Resource" script_class="JobData" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="JobData" load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/uppercut.tres" id="c_uppercut"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/quad_punch.tres" id="c_quad_punch"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/counter_punch.tres" id="c_counter_punch"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/guard.tres" id="c_guard"]
+[ext_resource type="Resource" path="res://data/skills/power/guard_break.tres" id="c_guard_break"]
+[ext_resource type="Resource" path="res://data/skills/power/boxer_dash.tres" id="c_boxer_dash"]
+[ext_resource type="Resource" path="res://data/skills/power/uppercut.tres" id="c_uppercut"]
+[ext_resource type="Resource" path="res://data/skills/power/quad_punch.tres" id="c_quad_punch"]
+[ext_resource type="Resource" path="res://data/skills/power/counter_punch.tres" id="c_counter_punch"]
+[ext_resource type="Resource" path="res://data/skills/power/eagle_eye.tres" id="c_eagle_eye"]
+[ext_resource type="Resource" path="res://data/skills/power/guard.tres" id="c_guard"]
+[ext_resource type="Resource" path="res://data/skills/power/tetra_punch.tres" id="c_tetra_punch"]
+[ext_resource type="Resource" path="res://data/skills/power/desperate_rally.tres" id="c_desperate_rally"]
+[ext_resource type="Resource" path="res://data/skills/power/clinch_release.tres" id="c_clinch_release"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"mercenary"
 display_name = "Mercenary"
 actor = "power_m"
-technique = &"blade_dash"
-technique_name = "Blade Dash"
-technique_text = "Your dash cuts through every monster in its path. A kill with it recharges the dash."
-bonus_points = {"power": 2, "magic": 2}
-graph = {"power": 0.35, "magic": 0.35, "sense": 0.15, "charm": 0.15}
 tier = 3
-cards = Array[ExtResource("2_c")]([ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_guard")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_guard_break"), ExtResource("c_boxer_dash"), ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_eagle_eye"), ExtResource("c_guard"), ExtResource("c_tetra_punch"), ExtResource("c_desperate_rally"), ExtResource("c_clinch_release")])
 passive = &"hired_blade"
 passive_name = "Hired Blade"
 passive_text = "You take 10% less damage."

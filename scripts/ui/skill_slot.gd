@@ -34,7 +34,7 @@ func show_skill(card: CardData, level: int, left: float, total: float, affordabl
 	_icon.texture = _icon_for(card)
 	_icon.modulate = Color.WHITE if affordable else POOR
 	_name.text = "%s %d" % [card.display_name, level]
-	_cost.text = str(card.mp_cost)
+	_cost.text = str(card.mp_at(level))
 	_timer.text = "%.1f" % left if left > 0.0 else ""
 	_set_shade(clampf(left / maxf(total, 0.01), 0.0, 1.0))
 

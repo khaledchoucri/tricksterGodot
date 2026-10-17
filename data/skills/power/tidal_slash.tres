@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/mole_feather.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/tidal_slash.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tidal_slash"
+display_name = "Tidal Slash"
+kind = 1
+skill_id = 1207
+text = "A wide Lacerator that slices the enemies in front and behind (up to {targets}) for {v} water damage."
+requires = {&"lacerator": 3}
+upgrades = &"lacerator"
+table = {"value": [64.0, 72.0, 90.0, 99.0, 116.0, 125.0, 142.0, 160.0], "mp": [49.0, 50.0, 53.0, 54.0, 56.0, 57.0, 59.0, 62.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [100.0, 103.0, 109.0, 112.0, 118.0, 121.0, 127.0, 136.0], "targets": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]}
+master_material = ExtResource("m_master")
+element = "water"
+behavior = ExtResource("2_b")

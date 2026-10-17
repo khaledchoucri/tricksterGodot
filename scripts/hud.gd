@@ -75,12 +75,7 @@ func refresh(player: Player) -> void:
 	if sheet.visible:
 		sheet.refresh()
 	if is_instance_valid(player):
-		var dash := "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
-		if Run.has_technique(&"momentum"):
-			dash += "   Momentum " + "●".repeat(Run.momentum) + "○".repeat(Run.MOMENTUM_MAX - Run.momentum)
-		if player._riposte_ready:
-			dash += "   Riposte ready"
-		%DashLabel.text = dash
+		%DashLabel.text = "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
 
 
 ## The type the class grows in most (Power for Buffalo and Bunny).
@@ -104,7 +99,7 @@ func _refresh_slots(player: Player) -> void:
 		var left := 0.0
 		if is_instance_valid(player):
 			left = maxf(0.0, player.skills.slot_ready_at[i] - player.now())
-		_slots[i].show_skill(card, level, left, card.cooldown_at(level) * Run.skill_cooldown_mult(), Run.mp >= card.mp_cost)
+		_slots[i].show_skill(card, level, left, card.cooldown_at(level) * Run.skill_cooldown_mult(), Run.mp >= card.mp_at(level))
 
 
 func _flash(node: CanvasItem, color: Color) -> void:

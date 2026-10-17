@@ -2,24 +2,19 @@
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/adrenaline.tres" id="c_adrenaline"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/flaming_fist.tres" id="c_flaming_fist"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/hyper_beat.tres" id="c_hyper_beat"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/suffocate.tres" id="c_suffocate"]
-[ext_resource type="Resource" path="res://data/coral_beach/cards/chakra_balance.tres" id="c_chakra_balance"]
+[ext_resource type="Resource" path="res://data/skills/power/flash_cut.tres" id="c_flash_cut"]
+[ext_resource type="Resource" path="res://data/skills/power/adrenaline.tres" id="c_adrenaline"]
+[ext_resource type="Resource" path="res://data/skills/power/flaming_fist.tres" id="c_flaming_fist"]
+[ext_resource type="Resource" path="res://data/skills/power/mega_flash_cut.tres" id="c_mega_flash_cut"]
+[ext_resource type="Resource" path="res://data/skills/power/chi_release.tres" id="c_chi_release"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"champion"
 display_name = "Champion"
 actor = "power_f"
-technique = &"rush"
-technique_name = "Rush"
-technique_text = "Two quick jabs before your finisher, and the finisher stuns."
-bonus_points = {"power": 3, "charm": 1}
-graph = {"power": 0.5, "charm": 0.25, "sense": 0.15, "magic": 0.1}
 tier = 3
-cards = Array[ExtResource("2_c")]([ExtResource("c_adrenaline"), ExtResource("c_flaming_fist"), ExtResource("c_hyper_beat"), ExtResource("c_suffocate"), ExtResource("c_chakra_balance")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_flash_cut"), ExtResource("c_adrenaline"), ExtResource("c_flaming_fist"), ExtResource("c_mega_flash_cut"), ExtResource("c_chi_release")])
 passive = &"champions_fury"
 passive_name = "Champion's Fury"
 passive_text = "Combo finishers deal 25% more damage."

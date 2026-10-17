@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/quad_punch.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tetra_punch"
+display_name = "Tetra Punch"
+kind = 1
+skill_id = 1108
+text = "Four blows at vital points, {v} damage and stronger with every one that lands."
+requires = {&"quad_punch": 3}
+upgrades = &"quad_punch"
+table = {"value": [29.0, 30.0, 32.0, 32.0, 34.0, 35.0, 37.0, 39.0], "mp": [36.0, 38.0, 42.0, 43.0, 46.0, 48.0, 50.0, 54.0], "cooldown": [7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

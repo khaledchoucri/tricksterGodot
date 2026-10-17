@@ -50,7 +50,7 @@ func update(delta: float) -> void:
 			if _window != i:
 				_window = i
 				_hit_this_window.clear()
-				if s.slash or s.arc_degrees >= 300.0:  # a Whirlwind always shows its circle
+				if s.slash:
 					_spawn_slash(s, (w.y - w.x) / speed)
 			_apply(s)
 	if t >= s.dash_cancel and player.take_buffer("dash") and player.can_dash():
@@ -72,39 +72,37 @@ func _apply(s: ComboStep) -> void:
 	for e in player.room.enemies:
 		if e in _hit_this_window or not e.is_hittable():
 			continue
-		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, s.reach, s.arc(), e.body_radius):
+		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius):
 			_hit_this_window.append(e)
 			crit_any = player.deal_hit(e, s.damage, _mult(s), s.knockback, s.finisher, _talent_fx(s)) or crit_any
 			Run.gain_mp(Run.mp_per_hit())
 			landed = true
 	if landed:
-		player.combo_landed(s)
 		Audio.play(HIT_SOUNDS[randi() % HIT_SOUNDS.size()], -4.0)
 		Events.hitstop_requested.emit(s.hitstop * (1.6 if crit_any else 1.0))
 		Events.shake_requested.emit(4.5 if s.finisher else 2.5)
 
 
 func _mult(s: ComboStep) -> float:
-	var m := Run.attack_mult() * (1.0 + Run.MOMENTUM_STEP * Run.momentum)
+	var m := Run.attack_mult() * (1.0 + Run.card_value(&"chi_sword") / 100.0)
 	if s.finisher:
-		m *= 1.0 + Run.card_value(&"pumping_heart") / 100.0
 		if Run.has_passive(&"champions_fury"):
 			m *= 1.25
 	return m
 
 
+## Reach of a swing; Chi Sword makes the blade bigger.
+func _reach(s: ComboStep) -> float:
+	var lvl := Run.card_level(&"chi_sword")
+	return s.reach * (1.0 + Run.card(&"chi_sword").param("reach", lvl) / 100.0) if lvl > 0 else s.reach
+
+
 ## Talent and trait effects carried by basic attacks.
 func _talent_fx(s: ComboStep) -> Dictionary:
 	var fx := {}
-	if Run.card_level(&"flaming_fist") > 0:
-		fx.burn = Run.card_value(&"flaming_fist")
 	if s.finisher:
-		if Run.card_level(&"uppercut") > 0:
-			fx.stun = Run.card_value(&"uppercut")
 		if Run.has_trait(&"staggering_finish"):
 			fx.stun = maxf(fx.get("stun", 0.0), 0.35)
-		if Run.has_technique(&"rush"):
-			fx.stun = maxf(fx.get("stun", 0.0), 0.6)
 		if Run.has_trait(&"armor_crush"):
 			fx.break = 25.0
 	return fx
@@ -117,6 +115,6 @@ func _clockwise(s: ComboStep) -> bool:
 
 
 func _spawn_slash(s: ComboStep, sweep: float) -> void:
-	Slash.spawn(player.room, player.global_position + Vector2(0, -16), {"radius": s.reach, "arc": s.arc(),
+	Slash.spawn(player.room, player.global_position + Vector2(0, -16), {"radius": _reach(s), "arc": s.arc(),
 		"dir": swing_aim, "clockwise": _clockwise(s), "sweep_time": maxf(sweep, 0.05), "life": sweep + 0.16,
 		"width": 18.0 if s.finisher else 13.0})

@@ -1,6 +1,7 @@
 extends Skill
-## Lightning Strike (1211): bolts fall on the nearest enemies one after
-## another and stun them. With nobody around, one bolt hits the cursor.
+## Lightning Strike (1211): bolts fall on the nearest enemies (up to the
+## level's target count) one after another, each with a chance to stun.
+## With nobody around, one bolt hits the cursor.
 
 const RANGE := 280.0
 const GAP := 0.09
@@ -19,7 +20,7 @@ func start() -> void:
 	var pool := enemies_in_circle(player.global_position, RANGE)
 	pool.sort_custom(func(a: Enemy, b: Enemy) -> bool:
 		return a.global_position.distance_squared_to(target) < b.global_position.distance_squared_to(target))
-	_targets = pool.slice(0, 3 + level / 2)
+	_targets = pool.slice(0, int(param("targets", 2)))
 	_spot = target
 	Audio.play("snd_skl_common_ki.wav", -8.0)
 
@@ -38,5 +39,9 @@ func _strike(at: Vector2, e: Enemy) -> void:
 	Bolt.strike(room, at)
 	Audio.play("snd_p_305_ht.wav" if randf() < 0.5 else "snd_p_305_ht2.wav", -6.0, 0.08)
 	feedback(0.04, 5.0)
-	for other in enemies_in_circle(at, 34.0):
-		hit(other, damage() * (1.0 if other == e else 0.5), 90.0, true, {"stun": 0.8})
+	if e == null:
+		for other in enemies_in_circle(at, 34.0):
+			hit(other, damage(), 90.0, true)
+		return
+	var fx := {"stun": param("stun", 3.0)} if randf() * 100.0 < param("chance", 50.0) else {}
+	hit(e, damage(), 90.0, true, fx)

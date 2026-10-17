@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/scorpion_sting.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/burning_rave.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"burning_rave"
+display_name = "Burning Rave"
+kind = 1
+skill_id = 1004
+text = "Two blows fused into one: a heavy strike for {v} damage."
+table = {"value": [55.0, 58.0, 64.0, 67.0, 72.0, 75.0, 81.0, 90.0], "mp": [15.0, 16.0, 17.0, 18.0, 19.0, 19.0, 20.0, 22.0], "cooldown": [2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_spring_water.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/blazing_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"blazing_strike"
+display_name = "Blazing Strike"
+kind = 1
+skill_id = 1205
+text = "Blazing-fast strikes on the nearest enemies (up to {targets}) for {v} damage each; more hits with more DX."
+requires = {&"aura_of_haste": 1}
+table = {"value": [73.0, 75.0, 78.0, 80.0, 84.0, 85.0, 89.0, 94.0], "mp": [42.0, 43.0, 46.0, 48.0, 50.0, 51.0, 54.0, 57.0], "cooldown": [7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0], "targets": [2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 5.0], "range": [120.0, 122.0, 126.0, 128.0, 132.0, 134.0, 138.0, 144.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

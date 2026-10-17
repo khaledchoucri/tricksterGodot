@@ -228,8 +228,10 @@ func _fight(player: Player, delta: float) -> void:
 	# Skills when they're ready and something is close.
 	for i in SkillCaster.SLOT_ACTIONS.size():
 		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
+		if id == &"clinch_release" or (id == &"chakra_balance" and Run.hp > Run.max_hp * 0.6):
+			continue  # Clinch Release is for staggers; Chakra Balance for when hurt
 		if id != &"" and best < 140.0 and player.now() >= player.skills.slot_ready_at[i] \
-				and Run.mp >= Run.card(id).mp_cost:
+				and Run.mp >= Run.card(id).mp_at(Run.card_level(id)):
 			player.buffer_action(SkillCaster.SLOT_ACTIONS[i])
 			_release()
 			return

@@ -13,15 +13,9 @@ enum State { MOVE, ATTACK, DASH, SKILL, HURT, DEAD }
 
 const BODY_RADIUS := 11.0
 const VAULT_HOP := 14.0
-## Job techniques.
-const MOMENTUM_HOLD := 2.5        # seconds without a hit before Momentum fades
-const SHOCKWAVE_RADIUS := 115.0
-const BLADE_DASH_DAMAGE := 26.0
-const DASH_JAB_DAMAGE := 26.0
-const DASH_JAB_REACH := 75.0
-const DASH_JAB_ARC := 150.0
-const RIPOSTE_MULT := 2.5
-const SHADOW_RADIUS := 70.0
+## Berserker's HP and MP loss per second while enemies are near (the
+## original drains 20 of each during the rage).
+const BERSERK_DRAIN := 1.0
 ## Basic combo for each weapon family.
 const FAMILY_COMBOS := {
 	"sword": preload("res://data/combos/sword.tres"),
@@ -59,9 +53,9 @@ var _phasing := false
 var _vaulting := false
 var _dash_len := 0.2
 var _perfect_this_dash := false
-var _momentum_until := 0.0
-var _riposte_ready := false
-var _chakra := 0.0
+var _drain := 0.0  # Berserker's HP and MP loss, accumulated
+## Chakra Balance's recovery: share of max HP per tick, tick length, end time.
+var _regen := {}
 var _steps: Array[ComboStep] = []
 
 @onready var sprite: ActorSprite = $Sprite
@@ -95,93 +89,11 @@ func refresh_gear() -> void:
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
 	_steps = combo.steps.duplicate()
 	dress()
-	_apply_techniques()
 	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
 		var extra: ComboStep = _steps[_steps.size() - 2].duplicate()
 		extra.clockwise = not extra.clockwise
 		extra.frames = Vector2i(extra.frames.y, extra.frames.x)
 		_steps.insert(_steps.size() - 1, extra)
-
-
-## Job techniques that reshape the basic combo.
-func _apply_techniques() -> void:
-	if _steps.is_empty():
-		return
-	var last := _steps.size() - 1
-	if Run.has_technique(&"whirlwind"):
-		var spin: ComboStep = _steps[last].duplicate()
-		spin.arc_degrees = 360.0
-		spin.reach *= 1.3
-		_steps[last] = spin
-	if Run.has_technique(&"rush") and _steps.size() >= 2:
-		for i in 2:
-			var jab: ComboStep = _steps[i % 2].duplicate()
-			jab.duration *= 0.7
-			jab.chain_at *= 0.7
-			jab.dash_cancel *= 0.7
-			jab.free_at *= 0.7
-			jab.damage *= 0.6
-			for w in jab.windows.size():
-				jab.windows[w] *= 0.7
-			_steps.insert(_steps.size() - 1, jab)
-
-
-## Called when a combo swing connects: Momentum builds, and a full stack
-## turns the finisher into a shockwave.
-func combo_landed(s: ComboStep) -> void:
-	if not Run.has_technique(&"momentum"):
-		return
-	_momentum_until = now() + MOMENTUM_HOLD
-	if s.finisher and Run.momentum >= Run.MOMENTUM_MAX:
-		Run.momentum = 0
-		_shockwave(s)
-	elif Run.momentum < Run.MOMENTUM_MAX:
-		Run.momentum += 1
-		if Run.momentum == Run.MOMENTUM_MAX:
-			Events.text_shown.emit(global_position + Vector2(0, -80), "Momentum!", Color(1.0, 0.55, 0.3))
-
-
-func _shockwave(s: ComboStep) -> void:
-	Ring.spawn(room.ground_fx, global_position, SHOCKWAVE_RADIUS, 0.35, Color(1.0, 0.55, 0.3, 0.9))
-	Audio.play("sachr002_1.wav", -2.0)
-	Events.shake_requested.emit(7.0)
-	for e in room.enemies:
-		if e.is_hittable() and Combat.in_circle(global_position, e.global_position, SHOCKWAVE_RADIUS, e.body_radius):
-			deal_hit(e, s.damage * 1.5, Run.attack_mult(), 220.0, true, {"stun": 0.4})
-
-
-## Footwork: the jab at the end of a dash.
-func _dash_jab() -> void:
-	var dir := Combat.ground(_dash_dir).normalized()
-	Slash.spawn(room, global_position + Vector2(0, -16), {"radius": DASH_JAB_REACH, "arc": deg_to_rad(DASH_JAB_ARC), "dir": dir,
-		"clockwise": true, "sweep_time": 0.08, "life": 0.2, "width": 12.0, "color": Color(1.0, 0.9, 0.6)})
-	var landed := false
-	for e in room.enemies:
-		if e.is_hittable() and Combat.in_wedge(global_position, e.global_position, dir, DASH_JAB_REACH, deg_to_rad(DASH_JAB_ARC), e.body_radius):
-			deal_hit(e, DASH_JAB_DAMAGE, Run.attack_mult(), 160.0, false)
-			Run.gain_mp(Run.mp_per_hit())
-			landed = true
-	if landed:
-		Audio.play(ComboAttack.HIT_SOUNDS[1], -4.0)
-		Events.hitstop_requested.emit(0.04)
-
-
-## Riposte: dodging through an attack recharges the dash and readies a sure
-## critical.
-func _riposte() -> void:
-	if _riposte_ready:
-		return
-	_riposte_ready = true
-	dash_ready_at = now()
-	Events.text_shown.emit(global_position + Vector2(0, -80), "Riposte", Color(0.75, 0.9, 1.0))
-	Ring.spawn(room.ground_fx, global_position, 34.0, 0.3, Color(0.75, 0.9, 1.0, 0.9))
-	Audio.play("etc_critical.wav", -8.0)
-
-
-## For projectiles that pass through a dash.
-func dodged() -> void:
-	if state == State.DASH and Run.has_technique(&"riposte"):
-		_riposte()
 
 
 ## The job's character, with worn gear and wardrobe pieces. A piece shows
@@ -279,8 +191,6 @@ func try_actions() -> bool:
 # ---------------------------------------------------------------- states
 
 func _physics_process(delta: float) -> void:
-	if Run.momentum > 0 and now() > _momentum_until:
-		Run.momentum = 0
 	if state == State.DEAD:
 		return
 	var mouse := get_global_mouse_position()
@@ -288,11 +198,7 @@ func _physics_process(delta: float) -> void:
 		aim = Combat.ground(mouse - global_position).normalized()
 	_t += delta
 	knock = knock.move_toward(Vector2.ZERO, 900.0 * delta)
-	if Run.card_level(&"chakra_balance") > 0:
-		_chakra += Run.card_value(&"chakra_balance") * delta
-		if _chakra >= 1.0:
-			Run.gain_mp(int(_chakra))
-			_chakra -= int(_chakra)
+	_tick_talents(delta)
 	match state:
 		State.MOVE:
 			_state_move()
@@ -304,12 +210,60 @@ func _physics_process(delta: float) -> void:
 			skills.update(delta)
 		State.HURT:
 			velocity = knock
-			if _t >= 0.18:
+			if _clinch_release():
+				pass
+			elif _t >= 0.18:
 				enter(State.MOVE)
 	move_and_slide()
 	if _phasing and state != State.DASH and state != State.SKILL and not _overlapping_enemy():
 		set_phasing(false)
 	_blink()
+
+
+## Recovers `share` of max HP every `interval` seconds for `seconds`, until
+## a hit lands.
+func start_regen(share: float, interval: float, seconds: float) -> void:
+	_regen = {"share": share, "interval": interval, "until": now() + seconds, "next": now() + interval}
+
+
+## Talents that run on their own: Berserker's drain, Guard's blocks, and
+## Chakra Balance's recovery.
+func _tick_talents(delta: float) -> void:
+	if not _regen.is_empty():
+		if now() >= float(_regen.until):
+			_regen = {}
+		elif now() >= float(_regen.next):
+			_regen.next = float(_regen.next) + float(_regen.interval)
+			var amount := maxi(1, roundi(Run.max_hp * float(_regen.share)))
+			Run.heal(amount)
+			Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(0.5, 1.0, 0.6), false)
+	var lvl := Run.card_level(&"guard")
+	if lvl > 0:
+		var most := int(Run.card_value(&"guard"))
+		if Run.guard_blocks >= most:
+			Run.guard_back_at = now() + Run.card(&"guard").param("cooldown", lvl)
+		elif now() >= Run.guard_back_at:
+			Run.guard_blocks += 1
+			Run.guard_back_at = now() + Run.card(&"guard").param("cooldown", lvl)
+	if Run.card_level(&"berserker") > 0 and room and room.live_enemies() > 0:
+		_drain += BERSERK_DRAIN * delta
+		if _drain >= 1.0:
+			var n := int(_drain)
+			_drain -= n
+			Run.mp = maxi(Run.mp - n, 0)
+			if Run.hp > n:
+				Run.take_damage(n)
+
+
+## Clinch Release can be cast while staggered: it cancels the hit.
+func _clinch_release() -> bool:
+	for i in SkillCaster.SLOT_ACTIONS.size():
+		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else &""
+		if id == &"clinch_release" and take_buffer(SkillCaster.SLOT_ACTIONS[i]):
+			knock = Vector2.ZERO
+			enter(State.MOVE)
+			return skills.try_cast(i)
+	return false
 
 
 func _state_move() -> void:
@@ -341,17 +295,15 @@ func enter(s: State) -> void:
 ## (combo, dash, skills) comes through here. `from` sets the knockback
 ## direction. Returns true on a critical hit.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
-	var crit := randf() < Run.crit_chance()
-	if _riposte_ready:
-		_riposte_ready = false
-		crit = true
-		mult *= RIPOSTE_MULT / 1.75
-	if Run.card_level(&"suffocate") > 0 and e.state == Enemy.State.HURT:
-		mult *= 1.0 + Run.card_value(&"suffocate") / 100.0
+	var crit := randf() < Run.crit_chance(e)
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
 	var graze := not crit and randf() < e.evade_chance(Run.stat("AC"))
 	# Elemental attack from compounds adds its % on top, less the monster's resistance.
 	var element := 1.0
+	# An elemental skill is resisted like its element.
+	var skill_el: String = fx.get("element", "none")
+	if skill_el != "none":
+		element *= 1.0 - e.resist(skill_el) / 100.0
 	var el := Run.element_attack()
 	for k: String in el:
 		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
@@ -362,8 +314,10 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var effects := fx.duplicate()
 	effects.crit = crit
 	effects.graze = graze
-	if Run.card_level(&"armor_breaker") > 0:
-		effects.break = maxf(effects.get("break", 0.0), Run.card_value(&"armor_breaker"))
+	var debuffs := Run.hit_debuffs()
+	debuffs.merge(effects.get("debuffs", {}), true)
+	if not debuffs.is_empty():
+		effects.debuffs = debuffs
 	if Run.legend_on(&"pharaohs_gold") and randf() < 0.2:
 		Run.galder += 4
 		Events.text_shown.emit(e.global_position + Vector2(0, -60), "+4 G", Color(1.0, 0.85, 0.35))
@@ -394,8 +348,6 @@ func start_dash() -> void:
 	set_collision_mask_value(1, not _vaulting)
 	dash_ready_at = now() + _dash_len + dash_cooldown * Run.dash_cooldown_mult()
 	_perfect_this_dash = false
-	if Run.card_level(&"shadow") > 0:
-		_shadow_strike(global_position)
 	invulnerable_until = maxf(invulnerable_until, now() + maxf(dash_invuln, _dash_len + 0.05))
 	set_phasing(true)  # pass through enemies, and don't shove them, while dashing
 	_hit_this_dash.clear()
@@ -412,44 +364,13 @@ func _state_dash() -> void:
 		for i in SkillCaster.SLOT_ACTIONS.size():
 			if take_buffer(SkillCaster.SLOT_ACTIONS[i]) and skills.try_cast(i):
 				return
-	if Run.has_technique(&"blade_dash"):
-		for e in room.enemies:
-			if e.is_hittable() and not e in _hit_this_dash and _touching(e, 14.0):
-				_hit_this_dash.append(e)
-				deal_hit(e, BLADE_DASH_DAMAGE, Run.attack_mult(), 90.0, false)
-				Run.gain_mp(Run.mp_per_hit())
-				Audio.play(ComboAttack.HIT_SOUNDS[2], -4.0)
-				Events.hitstop_requested.emit(0.025)
-				if e.hp <= 0:
-					dash_ready_at = now() + 0.05  # a kill recharges the dash
-	if Run.card_level(&"counter_punch") > 0:
-		for e in room.enemies:
-			if e.is_hittable() and not e in _hit_this_dash and _touching(e, 8.0):
-				_hit_this_dash.append(e)
-				deal_hit(e, Run.card_value(&"counter_punch"), Run.attack_mult(), 120.0, false)
-				Audio.play(ComboAttack.HIT_SOUNDS[0], -4.0)
-				Events.hitstop_requested.emit(0.03)
 	if _vaulting:
 		sprite.position.y = -sin(PI * clampf(_t / _dash_len, 0.0, 1.0)) * VAULT_HOP
 	if _t >= _dash_len:
 		_end_vault()
-		if Run.has_technique(&"footwork"):
-			_dash_jab()
 		enter(State.MOVE)
 		if not try_actions():
 			_state_move()
-
-
-## Shadow: a moment after a dash starts, the shadow left behind slashes.
-func _shadow_strike(at: Vector2) -> void:
-	await get_tree().create_timer(0.15).timeout
-	if not is_inside_tree() or room == null:
-		return
-	Slash.spawn(room, at + Vector2(0, -14), {"radius": SHADOW_RADIUS, "arc": TAU * 0.8, "dir": aim, "clockwise": true,
-		"sweep_time": 0.12, "life": 0.3, "width": 16.0, "color": Color(0.45, 0.4, 0.7)})
-	for e in room.enemies:
-		if e.is_hittable() and Combat.in_circle(at, e.global_position, SHADOW_RADIUS, e.body_radius):
-			deal_hit(e, Run.card_value(&"shadow"), Run.attack_mult(), 120.0, false, {}, at)
 
 
 func _end_vault() -> void:
@@ -488,13 +409,19 @@ func _overlapping_enemy() -> bool:
 ## attacker's AC, against the player's evasion.
 func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, accuracy := 50) -> void:
 	if is_invulnerable():
-		if state == State.DASH and Run.has_technique(&"riposte"):
-			_riposte()
 		if state == State.DASH and Run.has_trait(&"perfect_dodge") and not _perfect_this_dash:
 			_perfect_this_dash = true
 			dash_ready_at = now()
 			Events.text_shown.emit(global_position + Vector2(0, -70), "Perfect dodge", Color(1.0, 0.9, 0.5))
 			Ring.spawn(room.ground_fx, global_position, 40.0, 0.3, Color(1.0, 0.9, 0.5, 0.9))
+		return
+	# Guard blocks physical hits outright, not magic.
+	if not magic and Run.guard_blocks > 0:
+		Run.guard_blocks -= 1
+		invulnerable_until = now() + 0.25
+		Events.text_shown.emit(global_position + Vector2(0, -70), "Guard", Color(0.85, 0.9, 1.0))
+		Audio.play("weapon003.wav", -6.0)
+		Ring.spawn(room.ground_fx, global_position, 30.0, 0.25, Color(0.85, 0.9, 1.0, 0.9))
 		return
 	if randf() < Run.evade_chance(accuracy):
 		invulnerable_until = now() + 0.25
@@ -503,6 +430,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 		return
 	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic) * (0.75 if magic and Run.quirk(&"umbrella") else 1.0)))
 	Run.take_damage(amount)
+	_regen = {}  # Chakra Balance stops when you take damage
 	Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(1.0, 0.45, 0.4), false)
 	Audio.play("shchr002.wav", -6.0)
 	Events.hitstop_requested.emit(0.06)
