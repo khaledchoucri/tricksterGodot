@@ -244,9 +244,9 @@ func _run() -> void:
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
 
-	# Jump to the boss room.
+	# Jump to Coral Beach's boss room.
 	await clear_room()
-	Run.depth = Run.plan.size() - 1
+	Run.depth = Run.regions[0].run_length
 	game.get_tree().paused = false
 	game.hud.pick_panel.visible = false
 	game._load_room()

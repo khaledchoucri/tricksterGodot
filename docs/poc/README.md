@@ -64,9 +64,16 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 
 ## A run
 
-Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie Sword and Shockwave.
+Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie Sword and Shockwave, and crosses two regions (16 rooms).
 
-- Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then the boss. Rooms 4 and 7 add elite monsters, and elites also drop gear.
+- **Coral Beach.** Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then the Real Golden Mole in the Dark Cave.
+- **Desert Beach.** Seven rooms on Delta Island, the Statue of Anubis and Parasol River.
+  - Original monsters at levels 18–33: Fanta Slime, Shell Trap, Golden Mole, Sea Scorpion, Pineapple, Fan Lizard, Sand Demon and Cannon Shell.
+  - Then **Tutankhamen** at the Pyramid Steps. He slams up close, fans curse bolts at range, drops three sand coffins around you, and calls Basic Mummies at 66% and 33% HP. He can drop the legendary **Golden Sword** (Pharaoh's Gold: hits can scatter Galder).
+  - Desert Beach gear is the original level 25–40 items.
+  - Level sync allows +6 here.
+- Beating the Golden Mole gives a Harkon Shard and a Portable Port before Desert Beach.
+- Rooms 4 and 7 of each region add elite monsters, and elites also drop gear.
 - **Room 4 is the Fighter's trial.** Clearing it changes job to **Knight**: the Knight skill tree joins the card offers, you pick a Knight skill, and Sword Mastery makes the sword combo 15% stronger.
 - Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, **equipment**, an **anvil**, a **Compounder**, a **shop**, healing, Galder (with Bronze Fragments) or a Harkon Shard.
 - Each door also names a monster: the next room is that monster's **den**, and about half of its waves are that monster. That makes the door a choice of which material you farm.

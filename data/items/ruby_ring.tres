@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"ruby_ring"
+display_name = "Ruby Ring"
+item_id = 7007
+slot = 4
+family = ""
+level = 30
+weight = 40
+stats = {
+"MA": 8
+}
+compound_slots = 1
+refine_stat = ""

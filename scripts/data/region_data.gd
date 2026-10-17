@@ -14,6 +14,10 @@ extends Resource
 @export var job_change_depth := 3
 ## Level sync: the highest refine an heirloom counts as here.
 @export var refine_cap := 3
+## Scales on the original monsters' HP and damage, so a region's numbers
+## follow on from the one before.
+@export var hp_scale := 1.0
+@export var damage_scale := 1.0
 @export var field_music := ""
 @export var boss_music := ""
 @export var field_ambience := ""

@@ -86,8 +86,8 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	elements = stats_row.get("elements", {})
 	# Deeper rooms field tougher monsters.
 	var depth_mult := 1.0 + DEPTH_HP * Run.depth
-	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * depth_mult)
-	damage = roundi((6.0 + float(stats.get("AP", 4)) * 0.25) * DAMAGE_MULT)
+	max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * depth_mult * Run.region.hp_scale)
+	damage = roundi((6.0 + float(stats.get("AP", 4)) * 0.25) * DAMAGE_MULT * Run.region.damage_scale)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
 	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
 	var stay: Array = stats_row.get("idle_stay", [3, 5])

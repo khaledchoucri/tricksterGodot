@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"rudolph_health_band"
+display_name = "Rudolph Health Band"
+item_id = 5004
+slot = 3
+family = ""
+level = 28
+weight = 24
+stats = {
+"MD": 20,
+"DP": 20
+}
+compound_slots = 1
+refine_stat = ""

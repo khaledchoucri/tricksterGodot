@@ -84,7 +84,7 @@ func _gear_text() -> String:
 	lines.append("")
 	lines.append("[font_size=18]Skills[/font_size]")
 	for id: StringName in Run.cards:
-		var card := Run.region.card(id)
+		var card := Run.card(id)
 		lines.append("  %s  Lv %d%s" % [card.display_name, Run.cards[id], "" if card.is_skill() else "  [color=#9fb2c0](talent)[/color]"])
 	for j in Run.jobs:
 		if j.passive != &"":

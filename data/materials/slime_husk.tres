@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"slime_husk"
+display_name = "Slime Husk"
+item_id = 10446
+stat = "MP"
+min_value = 60
+max_value = 150
+need = 4

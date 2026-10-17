@@ -230,6 +230,9 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	effects.graze = graze
 	if Run.card_level(&"armor_breaker") > 0:
 		effects.break = maxf(effects.get("break", 0.0), Run.card_value(&"armor_breaker"))
+	if Run.legend_on(&"pharaohs_gold") and randf() < 0.2:
+		Run.galder += 4
+		Events.text_shown.emit(e.global_position + Vector2(0, -60), "+4 G", Color(1.0, 0.85, 0.35))
 	if crit:
 		Audio.play("etc_critical.wav", -6.0)
 		if Run.has_trait(&"lucky_strikes") and randf() < 0.3:

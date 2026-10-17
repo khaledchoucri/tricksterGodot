@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"golden_sword"
+display_name = "Golden Sword"
+item_id = 50001
+slot = 0
+family = "sword"
+level = 35
+weight = 70
+stats = {
+"AP": 140,
+"MA": 8,
+"DA": 8,
+"HV": 8
+}
+compound_slots = 4
+refine_stat = "AP"
+legend = true
+legend_effect = &"pharaohs_gold"
+legend_text = "Pharaoh's Gold: hits have a 20% chance to scatter 4 Galder."

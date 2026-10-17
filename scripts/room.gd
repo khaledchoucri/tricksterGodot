@@ -332,7 +332,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 	var out: Array = []
 	var count := 2 if depth < 3 else 3
 	for w in count:
-		var budget := 3.0 + depth * 1.2 + w * 1.5
+		var budget := 3.0 + depth * 1.2 + w * 1.5 + Run.region_index() * 2.0
 		var wave_list: Array[Dictionary] = []
 		while budget >= 1.0:
 			var options := pool.filter(func(e: EnemyData) -> bool: return e.cost <= budget)
@@ -340,7 +340,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 				break
 			var pick: EnemyData = options[randi() % options.size()]
 			# A featured monster (its den) fills about half of each wave.
-			var featured := Run.region.enemy(Run.current_room().feature) if Run.current_room().feature != &"" else null
+			var featured := Run.enemy(Run.current_room().feature) if Run.current_room().feature != &"" else null
 			if featured and featured in options and randf() < 0.5:
 				pick = featured
 			wave_list.append({"id": pick.id, "elite": false})
@@ -386,8 +386,9 @@ func spawn_with_warning(id: StringName, at: Vector2, delay: float, elite := fals
 
 
 func spawn(id: StringName, at: Vector2, elite := false) -> Enemy:
-	var enemy_data := Run.region.enemy(id)
-	var e: Enemy = (BOSS_SCENE if enemy_data.is_boss else ENEMY_SCENE).instantiate()
+	var enemy_data := Run.enemy(id)
+	var scene: PackedScene = enemy_data.scene if enemy_data.scene else (BOSS_SCENE if enemy_data.is_boss else ENEMY_SCENE)
+	var e: Enemy = scene.instantiate()
 	e.configure(enemy_data, Run.monster_stats(enemy_data), elite)
 	e.room = self
 	e.player = player
@@ -444,7 +445,7 @@ func open_doors(rewards: Array[String], features: Array[StringName] = []) -> voi
 		d.reward = rewards[i]
 		if i < features.size() and features[i] != &"":
 			d.feature = features[i]
-			d.feature_name = Run.monster_stats(Run.region.enemy(features[i])).get("name", String(features[i]).capitalize())
+			d.feature_name = Run.monster_stats(Run.enemy(features[i])).get("name", String(features[i]).capitalize())
 		d.position = spots[i]
 		world.add_child(d)
 		doors.append(d)

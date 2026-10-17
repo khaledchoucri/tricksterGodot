@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="RegionData" load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/region_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2_r"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="3_e"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/delta_island_a.tres" id="r_delta_island_a"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/delta_island_b.tres" id="r_delta_island_b"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/delta_island_c.tres" id="r_delta_island_c"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/anubis_a.tres" id="r_anubis_a"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/anubis_b.tres" id="r_anubis_b"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/anubis_c.tres" id="r_anubis_c"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/anubis_d.tres" id="r_anubis_d"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/parasol_river_a.tres" id="r_parasol_river_a"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/parasol_river_b.tres" id="r_parasol_river_b"]
+[ext_resource type="Resource" path="res://data/desert_beach/rooms/pyramid_steps.tres" id="r_pyramid_steps"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/fanta_slime.tres" id="e_fanta_slime"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/shell_trap.tres" id="e_shell_trap"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/field_mole.tres" id="e_field_mole"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/sea_scorpion.tres" id="e_sea_scorpion"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/pineapple.tres" id="e_pineapple"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/fan_lizard.tres" id="e_fan_lizard"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/sand_demon.tres" id="e_sand_demon"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/cannon_shell.tres" id="e_cannon_shell"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/basic_mummy.tres" id="e_basic_mummy"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/tutankhamen.tres" id="e_tutankhamen"]
+
+[resource]
+script = ExtResource("1_s")
+display_name = "Desert Beach"
+rooms = Array[ExtResource("2_r")]([ExtResource("r_delta_island_a"), ExtResource("r_delta_island_b"), ExtResource("r_delta_island_c"), ExtResource("r_anubis_a"), ExtResource("r_anubis_b"), ExtResource("r_anubis_c"), ExtResource("r_anubis_d"), ExtResource("r_parasol_river_a"), ExtResource("r_parasol_river_b")])
+boss_room = ExtResource("r_pyramid_steps")
+enemies = Array[ExtResource("3_e")]([ExtResource("e_fanta_slime"), ExtResource("e_shell_trap"), ExtResource("e_field_mole"), ExtResource("e_sea_scorpion"), ExtResource("e_pineapple"), ExtResource("e_fan_lizard"), ExtResource("e_sand_demon"), ExtResource("e_cannon_shell"), ExtResource("e_basic_mummy"), ExtResource("e_tutankhamen")])
+run_length = 7
+elite_depths = Array[int]([3, 6])
+job_change_depth = 3
+refine_cap = 6
+hp_scale = 0.55
+damage_scale = 0.6
+field_music = "crap.mp3"
+boss_music = "Boss_Monster.mp3"
+field_ambience = "bgs_sandwind.wav"
+boss_ambience = "bgs_pyramid_loop_evening.wav"

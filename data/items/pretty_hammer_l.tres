@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pretty_hammer_l"
+display_name = "Pretty Hammer"
+item_id = 3001
+slot = 0
+family = "hammer"
+level = 30
+weight = 18
+stats = {
+"AP": 60
+}
+compound_slots = 1
+refine_stat = "AP"

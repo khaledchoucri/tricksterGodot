@@ -6,7 +6,8 @@ extends Node
 
 signal leveled_up(new_level: int)
 
-const REGION_PATH := "res://data/coral_beach/region.tres"
+## Regions a run passes through, in order; the last one's boss ends it.
+const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATH := "res://data/classes/buffalo.tres"
 const ITEMS_DIR := "res://data/items/"
@@ -23,7 +24,11 @@ const MA_SOFT := 50.0
 const DX_SOFT := 60.0
 const DEF_SOFT := 100.0
 
-var region: RegionData
+var regions: Array[RegionData] = []
+## The region of the room the run is in.
+var region: RegionData:
+	get:
+		return plan[depth].region if depth < plan.size() else regions[0]
 var hub: HubData
 var cls: ClassData
 var items: Array[ItemData] = []
@@ -75,24 +80,61 @@ var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned agains
 ## A room in this run's plan: which room, and how it's modified.
 class RoomPlan:
 	var data: RoomData
+	var region: RegionData
+	## Depth within its region (elites, the trial and monster unlocks use it).
+	var local_depth := 0
 	var elite := false
 	var boss := false
 	## Monster the room's waves lean on (chosen with the door), or &"".
 	var feature: StringName
 
-	func _init(p_data: RoomData, p_elite := false, p_boss := false) -> void:
+	func _init(p_data: RoomData, p_region: RegionData, p_local := 0, p_elite := false, p_boss := false) -> void:
 		data = p_data
+		region = p_region
+		local_depth = p_local
 		elite = p_elite
 		boss = p_boss
 
 
 func _ready() -> void:
-	region = load(REGION_PATH)
+	for p in REGION_PATHS:
+		regions.append(load(p))
 	hub = load(HUB_PATH)
 	cls = load(CLASS_PATH)
+	_index_cards()
 	_load_items()
 	if FileAccess.file_exists(MONSTERS_PATH):
 		monster_data = JSON.parse_string(FileAccess.get_file_as_string(MONSTERS_PATH))
+
+
+var _cards: Dictionary = {}  # card id -> CardData, from every region and job
+
+
+func _index_cards() -> void:
+	for r in regions:
+		for c in r.cards:
+			_cards[c.id] = c
+	var jobs_left: Array[JobData] = [cls.start_job]
+	while not jobs_left.is_empty():
+		var j: JobData = jobs_left.pop_back()
+		for c in j.cards:
+			_cards[c.id] = c
+		if j.starter:
+			_cards[j.starter.id] = j.starter
+		jobs_left.append_array(j.next_jobs)
+
+
+func card(id: StringName) -> CardData:
+	return _cards.get(id)
+
+
+## An enemy from any region.
+func enemy(id: StringName) -> EnemyData:
+	for r in regions:
+		var e := r.enemy(id)
+		if e:
+			return e
+	return null
 
 
 func _load_items() -> void:
@@ -145,7 +187,7 @@ func _carry_heirloom() -> void:
 	if g == null:
 		return
 	g.stored = Profile.heirloom
-	g.refine_cap = region.refine_cap
+	g.refine_cap = regions[0].refine_cap
 	g.sync_level = sync_level()
 	equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
 
@@ -155,11 +197,12 @@ func sync_level() -> int:
 	return 3 + 3 * depth
 
 
-## Re-syncs carried heirlooms to the current depth (on entering a room).
+## Re-syncs carried heirlooms to the current depth and region (on entering a room).
 func sync_heirlooms() -> void:
 	for g: GearItem in equipment.values():
 		if g.sync_level >= 0:
 			g.sync_level = sync_level()
+			g.refine_cap = region.refine_cap
 	stats_changed()
 
 
@@ -213,9 +256,9 @@ func _apply_restorations() -> void:
 				revives += lvl
 			"second_skill":
 				var pool: Array[StringName] = []
-				for card in card_pool():
-					if card.is_skill() and card_level(card.id) == 0 and requirements_met(card):
-						pool.append(card.id)
+				for c in card_pool():
+					if c.is_skill() and card_level(c.id) == 0 and requirements_met(c):
+						pool.append(c.id)
 				if pool.size() > 0:
 					add_card(pool[randi() % pool.size()])
 
@@ -273,17 +316,31 @@ func finish(p_won: bool) -> void:
 
 
 func _plan_rooms() -> Array[RoomPlan]:
-	var pool := region.rooms.duplicate()
-	pool.shuffle()
 	var out: Array[RoomPlan] = []
-	for i in region.run_length:
-		out.append(RoomPlan.new(pool[i % pool.size()], i in region.elite_depths))
-	out.append(RoomPlan.new(region.boss_room, false, true))
+	for r in regions:
+		var pool := r.rooms.duplicate()
+		pool.shuffle()
+		for i in r.run_length:
+			out.append(RoomPlan.new(pool[i % pool.size()], r, i, i in r.elite_depths))
+		out.append(RoomPlan.new(r.boss_room, r, r.run_length, false, true))
 	return out
 
 
 func current_room() -> RoomPlan:
 	return plan[depth]
+
+
+func local_depth() -> int:
+	return plan[depth].local_depth if depth < plan.size() else depth
+
+
+func region_index() -> int:
+	return regions.find(region)
+
+
+## Whether the current room's boss ends the run (the last region's).
+func final_boss() -> bool:
+	return current_room().boss and region == regions[regions.size() - 1]
 
 
 func monster_stats(enemy: EnemyData) -> Dictionary:
@@ -397,7 +454,7 @@ func start_job(j: JobData) -> void:
 
 ## Whether the run has reached its job change and the job has somewhere to go.
 func job_change_due() -> bool:
-	return depth == region.job_change_depth and job.next_jobs.size() > 0 and system_on(&"jobs")
+	return local_depth() == region.job_change_depth and job.next_jobs.size() > 0 and system_on(&"jobs")
 
 
 func has_passive(id: StringName) -> bool:
@@ -429,8 +486,8 @@ func requirements_met(card: CardData) -> bool:
 func add_card(id: StringName, slot := -1) -> void:
 	var is_new := card_level(id) == 0
 	cards[id] = mini(card_level(id) + 1, MAX_CARD_LEVEL)
-	var card := region.card(id)
-	if not is_new or not card.is_skill():
+	var c := card(id)
+	if not is_new or not c.is_skill():
 		return
 	if slot < 0:
 		slot = loadout.find(&"")
@@ -450,8 +507,8 @@ func card_level(id: StringName) -> int:
 
 
 func card_value(id: StringName) -> float:
-	var card := region.card(id)
-	return card.value_at(card_level(id)) if card else 0.0
+	var c := card(id)
+	return c.value_at(card_level(id)) if c else 0.0
 
 
 ## Up to `n` card offers from the current jobs' trees (or only `from_job`'s):
@@ -461,10 +518,10 @@ func card_value(id: StringName) -> float:
 func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardData]:
 	var skills: Array[CardData] = []
 	var talents: Array[CardData] = []
-	for card in (from_job.cards if from_job else card_pool()):
-		var lvl := card_level(card.id)
-		if (upgrade and lvl > 0 and lvl < MAX_CARD_LEVEL) or (not upgrade and lvl == 0 and requirements_met(card)):
-			(skills if card.is_skill() else talents).append(card)
+	for c in (from_job.cards if from_job else card_pool()):
+		var lvl := card_level(c.id)
+		if (upgrade and lvl > 0 and lvl < MAX_CARD_LEVEL) or (not upgrade and lvl == 0 and requirements_met(c)):
+			(skills if c.is_skill() else talents).append(c)
 	skills.shuffle()
 	talents.shuffle()
 	var out: Array[CardData] = []
@@ -515,6 +572,14 @@ func equip(item: GearItem, slot_key := "") -> GearItem:
 	return old
 
 
+## Whether an equipped legend has this effect.
+func legend_on(effect: StringName) -> bool:
+	for g: GearItem in equipment.values():
+		if g.data.legend and g.data.legend_effect == effect:
+			return true
+	return false
+
+
 func weapon_family() -> String:
 	var w := equipped("weapon")
 	return w.data.family if w else "sword"
@@ -538,8 +603,9 @@ func overweight() -> bool:
 ## Up to `n` different items that can drop at this depth, rolled with DA.
 func gear_offers(n: int) -> Array[GearItem]:
 	var pool: Array[ItemData] = []
+	var top := 1 + 3 * depth
 	for it in items:
-		if it.level <= 1 + 3 * depth and it != cls.start_weapon:
+		if it.level <= top and it.level >= top - 24 and not it.legend and it != cls.start_weapon:
 			pool.append(it)
 	pool.shuffle()
 	var out: Array[GearItem] = []
@@ -755,7 +821,7 @@ func shop_offers() -> Array[Dictionary]:
 	out.append({"kind": "ore", "count": 3, "price": 180})
 	var mats: Array[MaterialData] = []
 	for e in region.enemies:
-		if e.material and depth >= e.min_depth and not e.is_boss:
+		if e.material and local_depth() >= e.min_depth and not e.is_boss:
 			mats.append(e.material)
 	if mats.size() > 0:
 		var m: MaterialData = mats[randi() % mats.size()]

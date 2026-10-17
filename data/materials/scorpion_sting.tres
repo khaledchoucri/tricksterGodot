@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"scorpion_sting"
+display_name = "Scorpion's Sting"
+item_id = 10401
+stat = "AP"
+min_value = 12
+max_value = 28
+need = 4

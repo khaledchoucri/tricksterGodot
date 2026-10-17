@@ -61,7 +61,7 @@ func refresh(player: Player) -> void:
 	%GalderLabel.text = "%d Galder  ·  %d Bronze" % [Run.galder, Run.ore]
 	var owned: PackedStringArray = []
 	for id: StringName in Run.cards:
-		owned.append("%s %d" % [Run.region.card(id).display_name, Run.cards[id]])
+		owned.append("%s %d" % [Run.card(id).display_name, Run.cards[id]])
 	%CardsLabel.text = "  ·  ".join(owned)
 	_refresh_slots(player)
 	if sheet.visible:
@@ -76,7 +76,7 @@ func _refresh_slots(player: Player) -> void:
 		if id == &"":
 			_slots[i].clear()
 			continue
-		var card := Run.region.card(id)
+		var card := Run.card(id)
 		var level := Run.card_level(id)
 		var left := 0.0
 		if is_instance_valid(player):
@@ -196,11 +196,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func show_results(won: bool) -> void:
 	var title: Label = %ResultsTitle
-	title.text = "Coral Beach cleared" if won else "Rollback"
+	title.text = "%s cleared" % Run.region.display_name if won else "Rollback"
 	title.add_theme_color_override("font_color", Color("e0b54d") if won else Color("f07a62"))
 	var cards: PackedStringArray = []
 	for id: StringName in Run.cards:
-		cards.append("%s Lv %d" % [Run.region.card(id).display_name, Run.cards[id]])
+		cards.append("%s Lv %d" % [Run.card(id).display_name, Run.cards[id]])
 	var gear: PackedStringArray = []
 	for k in Run.EQUIP_SLOTS:
 		if Run.equipped(k):

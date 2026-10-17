@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"parasol_river_a"
+display_name = "Parasol River"
+map = "mapf01d"
+rect = Rect2i(2368, 2944, 1120, 680)

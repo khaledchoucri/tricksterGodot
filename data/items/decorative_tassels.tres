@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"decorative_tassels"
+display_name = "Decorative Tassels"
+item_id = 4032
+slot = 1
+family = ""
+level = 30
+weight = 12
+stats = {
+"MD": 4,
+"LK": 1,
+"DP": 12
+}
+compound_slots = 2
+refine_stat = "DP"

@@ -182,7 +182,10 @@ func summary(other: GearItem = null) -> String:
 		parts.append("%s %d" % [k, el[k]])
 	if slots > 0:
 		parts.append("slots %d/%d" % [compounds.size(), slots])
-	return "  ·  ".join(parts)
+	var text := "  ·  ".join(parts)
+	if data.legend and data.legend_text != "":
+		text += "\n" + data.legend_text
+	return text
 
 
 ## Rebuilds an item saved with to_dict(); `lookup` finds the ItemData by id.

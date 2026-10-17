@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sand_glass.tres" id="m_mat"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sand_demon"
+monster_id = "2043"
+kind = "spin"
+body_radius = 18.0
+cost = 3
+min_depth = 3
+tune = {"radius": 74.0}
+material = ExtResource("m_mat")

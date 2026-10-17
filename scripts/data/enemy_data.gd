@@ -16,6 +16,11 @@ extends Resource
 @export var speed_mult := 1.0
 @export var hp_mult := 1.0
 @export var is_boss := false
+## Bosses: their own scene (otherwise the plain enemy scene), and an item
+## they can drop on death (a legend), with its chance.
+@export var scene: PackedScene
+@export var drop_item: ItemData
+@export var drop_chance := 0.0
 ## Signature drop for compounding, and the chance a kill drops one.
 @export var material: MaterialData
 @export var material_chance := 0.2

@@ -36,6 +36,17 @@ ACTORS = {
     'little_cora': ('data/monster/mon254.nri', '', None),
     'blue_penguin': ('data/monster/mon021.nri', '', None),
     'golden_mole': ('data/monster/mon103.nri', '', None),
+    # Desert Beach
+    'fanta_slime': ('data/monster/mon116.nri', '', None),
+    'shell_trap': ('data/monster/mon117.nri', '', None),
+    'field_mole': ('data/monster/mon101.nri', '', None),
+    'sea_scorpion': ('data/monster/mon001.nri', '', None),
+    'pineapple': ('data/monster/mon119.nri', '', None),
+    'fan_lizard': ('data/monster/mon003.nri', '', None),
+    'sand_demon': ('data/monster/mon109.nri', '', None),
+    'cannon_shell': ('data/monster/mon005.nri', '', None),
+    'basic_mummy': ('data/monster/mon153.nri', '', None),
+    'tutankhamen': ('data/monster/mon163.nri', '', None),
     # Megalopolis people
     'cavalier': ('data/npc/npc001.nri', '', None),
     'miranda': ('data/npc/npc003.nri', '', None),
@@ -51,7 +62,7 @@ PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003
              'julio': 'data/npc/npc046_illu.nri', 'paul': 'data/npc/npc040_illu.nri', 'marx': 'data/npc/npc119_illu.nri',
              'sabrina': 'data/npc/npc043_illu.nri',
              'stella': 'data/npc/npc222_illu.nri'}
-MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00']
+MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00', 'mapf01g', 'mapf01f', 'mapf01d']
 SOUNDS = [
     'sachr002.wav', 'sachr002_1.wav', 'shchr002.wav', 'weapon001.wav', 'etc_miss.wav',
     'dmg_normal_a.wav', 'dmg_normal_b.wav', 'dmg_normal_c.wav', 'dmg_normal_d.wav',
@@ -60,25 +71,29 @@ SOUNDS = [
     'ui_card.wav', 'ui_btn_ok.wav', 'ui_unique_get.wav', 'guild_battlewin.wav',
     'sgmon103.wav', 'sdmon103.wav', 'samon021.wav', 'bgs_beach.wav', 'bgs_cave01.wav',
     'weapon002.wav', 'weapon003.wav', 'etc_item1.wav', 'ui_refine_proceed.wav', 'ui_refine_success.wav',
-    'ui_refine_fail.wav', 'ui_compose_success.wav', 'bgs_blacksmith.wav',
+    'ui_refine_fail.wav', 'ui_compose_success.wav', 'bgs_blacksmith.wav', 'bgs_sandwind.wav',
+    'bgs_pyramid_loop_evening.wav',
 ]
 # From data/sound/skillsound.
 SKILL_SOUNDS = [
     'snd_skl_common_ki.wav', 'snd_p_207_ap.wav', 'snd_p_205_ap.wav', 'snd_p_208_ht.wav', 'snd_p_206_ht.wav',
     'snd_p_305_ht.wav', 'snd_p_305_ht2.wav', 'snd_skl_p_008_sbg.wav', 'snd_p_603_ht.wav', 'snd_skl_p_015_ebg1.wav',
 ]
-MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3']
+MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3', 'crap.mp3']
 
 
 def monster_ids():
     """Monster row IDs referenced by the EnemyData resources."""
-    folder = os.path.join(ROOT, 'data', 'coral_beach', 'enemies')
     ids = []
-    for f in sorted(os.listdir(folder)):
-        if f.endswith('.tres'):
-            m = re.search(r'^monster_id = "(\d+)"', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
-            if m:
-                ids.append(m.group(1))
+    for region in sorted(os.listdir(os.path.join(ROOT, 'data'))):
+        folder = os.path.join(ROOT, 'data', region, 'enemies')
+        if not os.path.isdir(folder):
+            continue
+        for f in sorted(os.listdir(folder)):
+            if f.endswith('.tres'):
+                m = re.search(r'^monster_id = "(\d+)"', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
+                if m:
+                    ids.append(m.group(1))
     return ids
 
 

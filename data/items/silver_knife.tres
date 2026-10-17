@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"silver_knife"
+display_name = "Silver Knife"
+item_id = 501006
+slot = 0
+family = "sword"
+level = 28
+weight = 30
+stats = {
+"AP": 36,
+"DA": 2
+}
+compound_slots = 1
+refine_stat = "AP"

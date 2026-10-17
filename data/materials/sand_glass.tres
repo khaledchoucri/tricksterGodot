@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sand_glass"
+display_name = "Sand Glass"
+item_id = 10439
+stat = "Earth"
+min_value = 5
+max_value = 25
+need = 3

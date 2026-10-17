@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"anubis_d"
+display_name = "Statue of Anubis"
+map = "mapf01f"
+rect = Rect2i(1024, 2240, 1120, 680)

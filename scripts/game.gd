@@ -1,5 +1,6 @@
 extends Node2D
-## Runs one Coral Beach expedition: loads rooms cut from the original maps,
+## Runs one expedition through the regions (Coral Beach, then Desert Beach):
+## loads rooms cut from the original maps,
 ## hands out rewards (skill cards, gear, anvils, the job change) and
 ## level-ups, and ends in a rollback or a clear, which banks the run into the
 ## Profile and returns to Megalopolis (scenes/hub.tscn). Presents combat
@@ -37,6 +38,8 @@ var _steps: Array[String] = []  # reward steps left for this room
 var _return_to := ""  # "shop" or "compound" while one of them is open
 var _shop: Array[Dictionary] = []
 var _pending_mat: MaterialData
+var _legend: GearItem       # a boss's legendary drop, offered when the room is cleared
+var _boss_name := ""
 
 @onready var hud: Hud = $Hud
 
@@ -52,7 +55,7 @@ func _ready() -> void:
 	Events.enemy_spawned.connect(_on_enemy_spawned)
 	Events.enemy_died.connect(_on_enemy_died)
 	Events.boss_health_changed.connect(func(e: Enemy) -> void: hud.show_boss(e.display_name, e.hp, e.max_hp))
-	Events.boss_spoke.connect(func(text: String) -> void: hud.log_line("[Real Golden Mole] " + text, Color("e0b54d")))
+	Events.boss_spoke.connect(func(text: String) -> void: hud.log_line("[%s] %s" % [_boss_name, text], Color("e0b54d")))
 	Events.player_died.connect(_on_player_died)
 	Events.revived.connect(func() -> void:
 		hud.log_line("[System] You refused to log out.", Color("c9a4ff"))
@@ -104,7 +107,11 @@ func _load_room() -> void:
 		"  ·  Heat %d" % heat if heat > 0 else ""])
 	hud.hide_boss()
 	await hud.fade(0.0, 0.3)
-	var title := "Real Golden Mole" if plan.boss else plan.data.display_name
+	if plan.boss:
+		_boss_name = _region_boss_name()
+	var title := _region_boss_name() if plan.boss else plan.data.display_name
+	if plan.local_depth == 0 and not plan.boss:
+		title = "%s\n%s" % [Run.region.display_name, title]
 	if Run.job_change_due():
 		title += "\n%s's trial: clear it to change job" % Run.job.display_name
 	elif plan.elite:
@@ -113,7 +120,7 @@ func _load_room() -> void:
 	await get_tree().create_timer(0.9).timeout
 	if room and room.is_inside_tree():
 		phase = Phase.FIGHT
-		room.start_encounter(Run.depth, plan.elite, plan.boss)
+		room.start_encounter(Run.local_depth(), plan.elite, plan.boss)
 
 
 func _spawn_player(at: Vector2) -> void:
@@ -128,7 +135,7 @@ func _spawn_player(at: Vector2) -> void:
 func _on_room_cleared() -> void:
 	if not is_instance_valid(player) or player.state == Player.State.DEAD:
 		return
-	if Run.current_room().boss:
+	if Run.final_boss():
 		_win()
 		return
 	phase = Phase.REWARD
@@ -139,12 +146,16 @@ func _on_room_cleared() -> void:
 	if room != cleared_room:
 		return  # a different room loaded while we waited
 	_steps.clear()
+	if Run.current_room().boss:
+		_region_cleared()
+	if _legend:
+		_steps.append("legend")
 	if Run.job_change_due():
 		_steps.append("job")
 	_steps.append(reward_here)
 	if Run.current_room().elite and Run.system_on(&"smithing"):
 		_steps.append("gear")
-	if Run.depth == Run.region.job_change_depth and Run.system_on(&"warehouse"):
+	if (Run.local_depth() == Run.region.job_change_depth or Run.current_room().boss) and Run.system_on(&"warehouse"):
 		_steps.append("port")
 	_next_step()
 
@@ -203,6 +214,12 @@ func _grant(reward: String) -> void:
 		"port":
 			_open_port()
 			return
+		"legend":
+			var g := _legend
+			_legend = null
+			if g:
+				_start_pick("gear", [g])
+				return
 		"heal":
 			var amount := int(Run.max_hp * 0.35)
 			Run.heal(amount)
@@ -226,7 +243,8 @@ func _grant(reward: String) -> void:
 func _open_doors() -> void:
 	phase = Phase.DOORS
 	var rewards: Array[String] = []
-	if Run.depth + 1 >= Run.plan.size() - 1:
+	var next: Run.RoomPlan = Run.plan[mini(Run.depth + 1, Run.plan.size() - 1)]
+	if next.boss:
 		rewards = ["boss"]
 	else:
 		var pool := REWARD_POOL.filter(func(r: String) -> bool:
@@ -241,8 +259,8 @@ func _open_doors() -> void:
 				break
 	var features: Array[StringName] = []
 	var pool: Array[EnemyData] = []
-	for e in Run.region.enemies:
-		if not e.is_boss and e.min_depth <= Run.depth + 1:
+	for e in next.region.enemies:
+		if not e.is_boss and e.min_depth <= next.local_depth:
 			pool.append(e)
 	for r in rewards:
 		features.append(&"" if r == "boss" or pool.is_empty() else pool[randi() % pool.size()].id)
@@ -285,7 +303,7 @@ func _start_pick(kind: String, options: Array) -> void:
 				if slot < 0:
 					shown.append({"title": "Keep my skills", "tag": "", "text": "Skip %s." % _pending_skill.display_name})
 				else:
-					var old := Run.region.card(Run.loadout[slot])
+					var old := Run.card(Run.loadout[slot])
 					shown.append({"title": "Replace %s" % old.display_name, "tag": "[%s]" % Hud.SLOT_KEYS[slot],
 						"text": "%s takes this slot (Lv %d is lost)." % [_pending_skill.display_name, Run.card_level(old.id)]})
 			title = "Skill slots are full"
@@ -529,6 +547,9 @@ func _resume() -> void:
 			_open_shop()
 		"compound":
 			_open_compounder()
+		"win":
+			_return_to = ""
+			_finish_win()
 		_:
 			_next_step()
 
@@ -672,12 +693,39 @@ func _win() -> void:
 	Run.shards += 2
 	Run.finish(true)
 	Audio.play("guild_battlewin.wav")
-	hud.log_line("[Notice] Coral Beach cleared. The Harkon Shards resonate.", Color("e0b54d"))
+	hud.log_line("[Notice] %s cleared. The Harkon Shards resonate." % Run.region.display_name, Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout
+	if _legend:
+		_return_to = "win"
+		var g := _legend
+		_legend = null
+		_start_pick("gear", [g])
+		return
+	_finish_win()
+
+
+func _finish_win() -> void:
 	if Run.system_on(&"warehouse"):
 		_open_port()
 	else:
 		_show_win_results()
+
+
+## A region's boss (not the last) is down: a shard, then on to the next region.
+func _region_cleared() -> void:
+	Run.shards += 1
+	Audio.play("guild_battlewin.wav", -4.0)
+	var next: Run.RoomPlan = Run.plan[Run.depth + 1]
+	hud.center("%s cleared\n%s ahead" % [Run.region.display_name, next.region.display_name], 2.0)
+	hud.log_line("[Notice] %s cleared. A Harkon Shard hums. %s lies ahead." % [Run.region.display_name,
+		next.region.display_name], Color("e0b54d"))
+
+
+func _region_boss_name() -> String:
+	for e in Run.region.enemies:
+		if e.is_boss:
+			return Run.monster_stats(e).get("name", String(e.id).capitalize())
+	return "Boss"
 
 
 func _show_win_results() -> void:
@@ -698,6 +746,7 @@ func _process(delta: float) -> void:
 
 func _on_enemy_spawned(e: Enemy) -> void:
 	if e.is_boss:
+		_boss_name = e.display_name
 		hud.show_boss(e.display_name, e.hp, e.max_hp)
 
 
@@ -719,6 +768,10 @@ func _on_enemy_died(e: Enemy) -> void:
 		hud.notice("Level up! Lv %d  ·  invest in a type after the fight" % Run.level)
 	if e.is_boss:
 		hud.hide_boss()
+		if e.data.drop_item and Run.system_on(&"smithing") and randf() < e.data.drop_chance:
+			_legend = GearItem.roll(e.data.drop_item, clampf(Run.stat("DA") / 60.0, 0.0, 1.0))
+			Audio.play("ui_unique_get.wav")
+			hud.log_line("[Notice] %s dropped the legendary %s!" % [e.display_name, _legend.title()], Color("e0b54d"))
 
 
 func _on_hitstop(duration: float) -> void:

@@ -176,7 +176,7 @@ func _fight(player: Player, delta: float) -> void:
 	for i in Run.loadout.size():
 		var id: StringName = Run.loadout[i]
 		if id != &"" and best < 140.0 and player.now() >= player.skills.slot_ready_at[i] \
-				and Run.mp >= Run.region.card(id).mp_cost:
+				and Run.mp >= Run.card(id).mp_cost:
 			player.buffer_action(SkillCaster.SLOT_ACTIONS[i])
 			_release()
 			return

@@ -20,7 +20,7 @@ func try_cast(slot: int) -> bool:
 	var id: StringName = Run.loadout[slot]
 	if id == &"" or player.now() < slot_ready_at[slot]:
 		return false
-	var card := Run.region.card(id)
+	var card := Run.card(id)
 	if not Run.spend_mp(card.mp_cost):
 		Events.mp_short.emit()
 		return false

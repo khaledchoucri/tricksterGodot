@@ -32,6 +32,10 @@ func _shoot() -> void:
 		await _shoot_hub()
 		get_tree().quit()
 		return
+	if "desert" in OS.get_cmdline_user_args():
+		await _shoot_desert()
+		get_tree().quit()
+		return
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(3.0)
@@ -100,3 +104,17 @@ func _shoot_hub() -> void:
 		hub.dialogue._advanced.emit()
 	await _wait(0.4)
 	await _snap("11_warehouse_menu")
+
+
+func _shoot_desert() -> void:
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.0)
+	for depth in [Run.regions[0].run_length + 1, Run.regions[0].run_length + 5, Run.plan.size() - 1]:
+		Run.depth = depth
+		game._load_room()
+		await _wait(3.5)
+		if is_instance_valid(game.player):
+			game.player.invulnerable_until = game.player.now() + 999.0
+		await _wait(1.5)
+		await _snap("20_desert_%d" % depth)

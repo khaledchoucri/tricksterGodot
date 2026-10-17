@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pineapple_mask"
+display_name = "Pineapple Mask"
+item_id = 10449
+stat = "DP"
+min_value = 12
+max_value = 28
+need = 4

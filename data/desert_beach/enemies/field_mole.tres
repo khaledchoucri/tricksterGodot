@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/mole_feather.tres" id="m_mat"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"field_mole"
+monster_id = "2035"
+kind = "lunge"
+body_radius = 16.0
+cost = 2
+min_depth = 1
+material = ExtResource("m_mat")

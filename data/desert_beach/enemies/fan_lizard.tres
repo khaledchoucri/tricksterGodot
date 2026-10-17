@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cooling_fan.tres" id="m_mat"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"fan_lizard"
+monster_id = "2002"
+kind = "shot"
+body_radius = 18.0
+cost = 2
+min_depth = 2
+material = ExtResource("m_mat")

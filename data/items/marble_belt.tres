@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"marble_belt"
+display_name = "Marble Belt"
+item_id = 5009
+slot = 3
+family = ""
+level = 38
+weight = 20
+stats = {
+"AP": 40,
+"LK": 4,
+"HV": 4
+}
+compound_slots = 1
+refine_stat = ""

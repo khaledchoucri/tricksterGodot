@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"body_charm"
+display_name = "Body Charm"
+item_id = 7058
+slot = 4
+family = ""
+level = 32
+weight = 12
+stats = {
+"HP": 300,
+"DP": 18
+}
+compound_slots = 1
+refine_stat = ""

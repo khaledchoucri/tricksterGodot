@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pirates_shield"
+display_name = "Pirate's Shield"
+item_id = 6630
+slot = 2
+family = ""
+level = 34
+weight = 30
+stats = {
+"MD": 16,
+"LK": 1,
+"HP": 120,
+"DP": 32
+}
+compound_slots = 2
+refine_stat = "DP"
