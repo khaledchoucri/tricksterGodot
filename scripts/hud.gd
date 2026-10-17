@@ -70,7 +70,7 @@ func refresh(player: Player) -> void:
 	var owned: PackedStringArray = []
 	for id: StringName in Run.cards:
 		owned.append("%s %d" % [Run.card(id).display_name, Run.cards[id]])
-	%CardsLabel.text = "  ·  ".join(owned)
+	%CardsLabel.text = _pack(owned, %CardsLabel)
 	_refresh_slots(player)
 	if sheet.visible:
 		sheet.refresh()
@@ -266,6 +266,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		restart_requested.emit()
 
 
+## Joins entries with dots, breaking lines only between whole entries.
+func _pack(entries: PackedStringArray, label: Label) -> String:
+	var font := label.get_theme_font("font")
+	var size := label.get_theme_font_size("font_size")
+	var width := maxf(label.size.x, 200.0)
+	var lines: PackedStringArray = []
+	var line := ""
+	for e in entries:
+		var next := e if line == "" else line + "  ·  " + e
+		if line != "" and font.get_string_size(next, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > width:
+			lines.append(line)
+			line = e
+		else:
+			line = next
+	if line != "":
+		lines.append(line)
+	return "
+".join(lines)
+
+
 func show_results(won: bool) -> void:
 	var title: Label = %ResultsTitle
 	title.text = "%s cleared" % Run.region.display_name if won else "Rollback"
@@ -277,18 +297,15 @@ func show_results(won: bool) -> void:
 	for k in Run.EQUIP_SLOTS:
 		if Run.equipped(k):
 			gear.append(Run.equipped(k).title())
-	%ResultsBody.text = "\n".join([
-		"Rooms cleared    %d / %d" % [Run.depth + (1 if won else 0), Run.plan.size()],
-		"Time             %d:%04.1f" % [int(Run.time) / 60, fmod(Run.time, 60.0)],
-		"Level            %d  %s" % [Run.level, Run.job.display_name],
-		"Monsters         %d" % Run.kills,
-		"",
-		"Carried home",
-		"  TM             %d" % Run.tm,
-		"  Harkon shards  %d" % Run.shards,
-		"  Galder         %d" % Run.galder,
-		"",
-		"Cards  " + (", ".join(cards) if cards.size() else "none"),
-		"Gear   " + ", ".join(gear),
-	])
+	var rows := [["Rooms cleared", "%d / %d" % [Run.depth + (1 if won else 0), Run.plan.size()]],
+		["Time", "%d:%04.1f" % [int(Run.time) / 60, fmod(Run.time, 60.0)]],
+		["Level", "%d  %s" % [Run.level, Run.job.display_name]],
+		["Monsters", str(Run.kills)],
+		["TM carried home", str(Run.tm)], ["Harkon Shards", str(Run.shards)], ["Galder", str(Run.galder)]]
+	var t := "[table=2]"
+	for r: Array in rows:
+		t += "[cell][color=#9fb2c0]%s[/color]     [/cell][cell]%s[/cell]" % r
+	t += "[/table]\n\n[color=#9fb2c0]Cards[/color]  %s\n[color=#9fb2c0]Gear[/color]  %s" % [
+		", ".join(cards) if cards.size() else "none", ", ".join(gear) if gear.size() else "none"]
+	%ResultsBody.text = t
 	results_panel.visible = true

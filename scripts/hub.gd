@@ -207,7 +207,7 @@ func _restore_menu(npc: Npc) -> void:
 			options.append({"title": "%s  (%d/%d)" % [r.display_name, lvl, r.max_level],
 				"tag": "Restored" if maxed else cost, "text": r.describe(maxi(lvl, 1)),
 				"disabled": maxed or not Profile.can_buy(r)})
-		options.append({"title": "Leave", "tag": "", "text": "You have %d TM and %d Harkon Shards." % [Profile.tm, Profile.shards]})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "You have %d TM and %d Harkon Shards." % [Profile.tm, Profile.shards]})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "What shall we restore?"), options)
 		if pick < 0 or pick >= hub.restorations.size():
 			return
@@ -237,7 +237,7 @@ func _warehouse_menu(npc: Npc) -> void:
 		options.append({"title": "Carry nothing", "tag": "", "text": "Head out with only the Rookie Sword."})
 		options.append({"title": "Wardrobe", "tag": "%d pieces" % Profile.wardrobe.size(),
 			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints."})
-		options.append({"title": "Leave", "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
 		var line := "Which one goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
 		var pick := await dialogue.choose(_line(String(npc.data.id), line), options)
 		if pick == items.size():
@@ -252,7 +252,7 @@ func _warehouse_menu(npc: Npc) -> void:
 		var what := await dialogue.choose(_line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
 			{"title": "Carry it as my heirloom", "tag": "", "text": "Equipped at the start of every run, synced to the area's level."},
 			{"title": "Throw it away", "tag": "", "text": "Frees the shelf. It can't be undone."},
-			{"title": "Back", "tag": "", "text": ""}])
+			{"title": "Back", "cancel": true, "tag": "", "text": ""}])
 		if what == 0:
 			Profile.set_heirloom(pick)
 			Audio.play("etc_item1.wav")
@@ -283,7 +283,7 @@ func _wardrobe_menu(npc: Npc) -> void:
 			var w := _piece(Profile.worn.get(slot, ""))
 			options.append({"title": "%s: %s" % [WardrobeData.SLOT_NAMES[slot], w.display_name if w else "nothing"],
 				"tag": "", "icon": w.icon() if w else null, "text": w.describe() if w else "Empty."})
-		options.append({"title": "Done", "tag": "", "text": ""})
+		options.append({"title": "Done", "cancel": true, "tag": "", "text": ""})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "Dress up. It's still a game."), options)
 		if pick < 0 or pick >= WardrobeData.SLOTS.size():
 			return
@@ -310,7 +310,7 @@ func _cards_menu(npc: Npc) -> void:
 		var page := await dialogue.choose(_line(String(npc.data.id), "The album, or the shop?"), [
 			{"title": "The album", "tag": "%d cards" % Profile.cards.size(), "text": "Card sets and their rewards."},
 			{"title": "The shop", "tag": "%d TM" % Profile.tm, "text": "Wardrobe pieces for Time Marks and shards."},
-			{"title": "Leave", "tag": "", "text": "Wear pieces through Keeper Julio's wardrobe."}])
+			{"title": "Leave", "cancel": true, "tag": "", "text": "Wear pieces through Keeper Julio's wardrobe."}])
 		if page == 0:
 			await _album(npc, true)
 		elif page == 1:
@@ -339,7 +339,7 @@ func _album(npc: Npc, sets: bool) -> void:
 				var price := "%d TM" % w.price_tm + (" + %d Shard%s" % [w.price_shards, "" if w.price_shards == 1 else "s"] if w.price_shards > 0 else "")
 				options.append({"title": "Buy %s" % w.display_name, "tag": price, "icon": w.icon(), "text": w.describe(),
 					"disabled": Profile.tm < w.price_tm or Profile.shards < w.price_shards})
-		options.append({"title": "Back", "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
+		options.append({"title": "Back", "cancel": true, "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "The album, then." if sets else "Take your pick."), options)
 		var n_sets := hub.card_sets.size() if sets else 0
 		if pick < 0 or pick >= n_sets + shop.size():
@@ -375,7 +375,7 @@ func _drill_menu(npc: Npc) -> void:
 				" + %d Shard%s" % [d.price_shards, "" if d.price_shards == 1 else "s"] if d.price_shards else ""])
 			options.append({"title": d.display_name, "tag": tag, "icon": d.icon(), "text": d.describe(),
 				"disabled": not owned and (Profile.tm < d.price_tm or Profile.shards < d.price_shards)})
-		options.append({"title": "Leave", "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "Pick a drill. Carry one at a time!"), options)
 		if pick < 0 or pick >= hub.drills.size():
 			return
@@ -405,7 +405,7 @@ func _mastery_menu(npc: Npc) -> void:
 			options.append({"title": "%s  ·  cap Lv %d%s" % [c.display_name, Run.card_cap(c.id), "" if maxed else " → %d" % (Run.card_cap(c.id) + 1)],
 				"tag": "Mastered" if maxed else "%d %s (%d)  ·  %d G" % [cost.count, cost.material.display_name, have, cost.galder],
 				"icon": cost.material.icon(), "text": c.describe(Run.card_cap(c.id)), "disabled": not Run.can_master(c)})
-		options.append({"title": "Leave", "tag": "", "text": "%d Galder banked." % Profile.galder})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder banked." % Profile.galder})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "Which technique do you want to take further?"), options)
 		if pick < 0 or pick >= cards.size():
 			return
@@ -429,7 +429,7 @@ func _forge_menu(npc: Npc) -> void:
 				"icon": g.data.icon(), "text": "%d%% chance  ·  %d Bronze, %d Galder%s" % [roundi(g.refine_chance() * 100),
 					cost.ore, cost.galder, "  ·  failing may lose a level" if g.refine >= 4 else ""],
 				"disabled": not Run.can_city_refine(g)})
-		options.append({"title": "Leave", "tag": "", "text": "%d Galder and %d Bronze Fragments banked." % [Profile.galder, Profile.ore]})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder and %d Bronze Fragments banked." % [Profile.galder, Profile.ore]})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "Bring it to the anvil."), options)
 		if pick < 0 or pick >= items.size():
 			return
@@ -461,7 +461,7 @@ func _compound_menu(npc: Npc) -> void:
 			options.append({"title": m.display_name, "tag": "%d / %d" % [Profile.materials[id], m.need], "icon": m.icon(),
 				"text": "Compounds %s into a free slot of a stored item." % m.describe(),
 				"disabled": Profile.materials[id] < m.need})
-		options.append({"title": "Leave", "tag": "", "text": "" if mats.size() else "No materials banked yet."})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "" if mats.size() else "No materials banked yet."})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "What are we setting today?"), options)
 		if pick < 0 or pick >= mats.size():
 			return
@@ -474,7 +474,7 @@ func _compound_menu(npc: Npc) -> void:
 				targets.append(i)
 				item_opts.append({"title": items[i].title(), "tag": "%d free" % items[i].free_slots(),
 					"icon": items[i].data.icon(), "text": items[i].summary()})
-		item_opts.append({"title": "Back", "tag": "", "text": "" if targets.size() else "No stored item has a free slot."})
+		item_opts.append({"title": "Back", "cancel": true, "tag": "", "text": "" if targets.size() else "No stored item has a free slot."})
 		var t := await dialogue.choose(_line(String(npc.data.id), "Into which piece?"), item_opts)
 		if t < 0 or t >= targets.size():
 			continue
@@ -495,7 +495,7 @@ func _server_menu(npc: Npc) -> void:
 			options.append({"title": "%s  %d / %d" % [s.name, r, s.max],
 				"tag": "+%d Heat per rank" % s.heat, "text": s.text})
 		var heat := ServerSettings.heat()
-		options.append({"title": "Done", "tag": "Heat %d" % heat,
+		options.append({"title": "Done", "cancel": true, "tag": "Heat %d" % heat,
 			"text": "+%d%% TM per run. Best Heat cleared: %s." % [roundi(heat * ServerSettings.TM_PER_HEAT * 100),
 				str(Profile.best_heat) if Profile.best_heat >= 0 else "none"]})
 		var pick := await dialogue.choose(_line(String(npc.data.id),
@@ -526,7 +526,7 @@ func _choose_character() -> void:
 		"disabled": not Run.trickster_unlocked()})
 	if made:
 		options.append({"title": "Remake the Trickster", "tag": "", "text": "Choose a new kit, graph and trees."})
-	options.append({"title": "Not yet", "tag": "", "text": "Stay in the city."})
+	options.append({"title": "Not yet", "cancel": true, "tag": "", "text": "Stay in the city."})
 	var pick := await dialogue.choose({"name": "Character select", "portrait": null,
 		"text": "Who logs in to Coral Beach?"}, options)
 	var n := Run.classes.size()
@@ -558,7 +558,7 @@ func _create_trickster() -> bool:
 		{"title": "Sword", "tag": "", "text": "Buffalo's look and the sword combo."},
 		{"title": "Hammer", "tag": "", "text": "Buffalo's look and the heavy hammer combo."},
 		{"title": "Fists", "tag": "", "text": "Bunny's look and the punch combo, weapon sheathed."},
-		{"title": "Cancel", "tag": "", "text": ""}])
+		{"title": "Cancel", "cancel": true, "tag": "", "text": ""}])
 	if k < 0 or k >= kits.size():
 		return false
 	var graphs: Array = Run.TRICKSTER_GRAPHS.keys()

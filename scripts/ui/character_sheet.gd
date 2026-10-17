@@ -22,15 +22,14 @@ func toggle() -> void:
 func refresh() -> void:
 	_left.text = _header_text() + "
 " + _types_text(["power", "magic"])
-	_middle.text = "
-
-" + _types_text(["sense", "charm"])
+	_middle.text = _types_text(["sense", "charm"]).trim_prefix("\n") + "\n\n" + _skills_text()
 	_right.text = _gear_text()
 
 
 func _header_text() -> String:
 	return "[font_size=18]%s  ·  %s[/font_size]   Lv %d
-[color=#9fb2c0]HP %d / %d   MP %d / %d   %d Galder   %d %ss[/color]" % [
+[color=#9fb2c0]HP %d / %d   MP %d / %d
+%d Galder   %d %ss[/color]" % [
 		Run.cls.display_name, Run.job.display_name, Run.level, Run.hp, Run.max_hp, Run.mp, Run.max_mp, Run.galder,
 		Run.ore, Run.ORE_NAME]
 
@@ -52,6 +51,18 @@ func _types_text(types: Array) -> String:
 				"●" if on else "○", Stats.THRESHOLDS[i], tr.name])
 	return "
 ".join(lines)
+
+
+func _skills_text() -> String:
+	var lines: PackedStringArray = []
+	lines.append("[font_size=18]Skills[/font_size]")
+	for id: StringName in Run.cards:
+		var card := Run.card(id)
+		lines.append("  %s  Lv %d%s" % [card.display_name, Run.cards[id], "" if card.is_skill() else "  [color=#9fb2c0](talent)[/color]"])
+	for j in Run.jobs:
+		if j.passive != &"":
+			lines.append("  [color=#e0b54d]%s[/color]  [color=#9fb2c0]%s[/color]" % [j.passive_name, j.passive_text])
+	return "\n".join(lines)
 
 
 func _gear_text() -> String:
@@ -79,19 +90,16 @@ func _gear_text() -> String:
 		for k: String in el:
 			parts.append("%s %d" % [k, el[k]])
 		lines.append("[color=#9fb2c0]Elemental attack[/color]  " + "  ".join(parts))
-	var mats: PackedStringArray = []
+	var kinds := 0
+	var ready: PackedStringArray = []
 	for id: StringName in Run.materials:
 		if Run.materials[id] > 0:
+			kinds += 1
 			var m: MaterialData = Run.material_info[id]
-			mats.append("%s %d/%d" % [m.display_name, Run.materials[id], m.need])
-	if mats.size():
-		lines.append("[color=#9fb2c0]Materials[/color]  " + ", ".join(mats))
-	lines.append("")
-	lines.append("[font_size=18]Skills[/font_size]")
-	for id: StringName in Run.cards:
-		var card := Run.card(id)
-		lines.append("  %s  Lv %d%s" % [card.display_name, Run.cards[id], "" if card.is_skill() else "  [color=#9fb2c0](talent)[/color]"])
-	for j in Run.jobs:
-		if j.passive != &"":
-			lines.append("  [color=#e0b54d]%s[/color]  [color=#9fb2c0]%s[/color]" % [j.passive_name, j.passive_text])
+			if Run.materials[id] >= m.need:
+				ready.append(m.display_name)
+	if kinds:
+		var shown := ", ".join(ready.slice(0, 3)) + (" +%d more" % (ready.size() - 3) if ready.size() > 3 else "")
+		lines.append("[color=#9fb2c0]Materials[/color]  %d kind%s carried%s" % [kinds, "" if kinds == 1 else "s",
+			("  ·  ready to compound: " + shown) if ready.size() else ""])
 	return "\n".join(lines)

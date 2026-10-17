@@ -317,10 +317,15 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 
-[node name="ResultsBody" type="Label" parent="Root/ResultsPanel/Box"]
+[node name="ResultsBody" type="RichTextLabel" parent="Root/ResultsPanel/Box"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/normal_font_size = 14
+theme_override_font_sizes/bold_font_size = 14
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
 
 [node name="AgainButton" type="Button" parent="Root/ResultsPanel/Box"]
 unique_name_in_owner = true

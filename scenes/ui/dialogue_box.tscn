@@ -86,6 +86,22 @@ grow_horizontal = 0
 grow_vertical = 0
 horizontal_scroll_mode = 0
 
+[node name="ChoiceFooter" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -520.0
+offset_top = -246.0
+offset_right = -40.0
+offset_bottom = -180.0
+grow_horizontal = 0
+grow_vertical = 0
+
 [node name="Choices" type="VBoxContainer" parent="ChoiceScroll"]
 unique_name_in_owner = true
 layout_mode = 2
