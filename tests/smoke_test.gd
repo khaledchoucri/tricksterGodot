@@ -81,7 +81,7 @@ func _run() -> void:
 			skill_ids.append(card.id)
 	for id in skill_ids:
 		# Ranges are on the ground plane; place the dummy at a ground distance.
-		var reach := 55.0 if id in [&"lacerator", &"shockwave"] else 110.0
+		var reach := 55.0 if id in [&"lacerator", &"shockwave", &"gale_strike"] else 110.0
 		var spot := Vector2.INF
 		var ground_dir := Vector2.ZERO
 		for _i in 300:
@@ -113,6 +113,7 @@ func _run() -> void:
 		if dummy.is_hittable():
 			dummy.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.3)
+	player.invulnerable_until = 0.0
 	Run.cards = {Run.cls.start_job.starter.id: 1}
 	Run.loadout.assign([Run.cls.start_job.starter.id, &"piercing_wave", &"shockwave"])
 	Run.cards[&"piercing_wave"] = 2
@@ -388,7 +389,13 @@ func _systems(Run: Node) -> void:
 	var knight: JobData = Run.job.next_jobs[0]
 	Run.start_job(knight)
 	var knight_only: bool = Run.card_offers(3, false, knight).all(func(c: CardData) -> bool: return c in knight.cards)
-	check(Run.job.id == &"knight" and not Run.job_change_due() and knight_only, "advancing to Knight opens the Knight tree")
+	check(Run.job.id == &"knight" and knight_only, "advancing to Knight opens the Knight tree")
+	var third: Array = Run.job.next_jobs.map(func(j: JobData) -> String: return String(j.id))
+	check(third == ["gladiator", "mercenary"] and Run.job.next_jobs[0].unlocked() and not Run.job.next_jobs[1].unlocked(),
+		"a Knight goes on to Gladiator, or Mercenary once a Gladiator clear unlocks it")
+	Profile.stats["clears_gladiator"] = 1
+	check(Run.job.next_jobs[1].unlocked(), "a Gladiator clear unlocks the Mercenary")
+	Profile.stats.erase("clears_gladiator")
 	check(Run.attack_mult() > sword_mult * 1.1, "Sword Mastery strengthens the sword combo")
 
 	Run.new_run()

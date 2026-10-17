@@ -247,7 +247,15 @@ func _choose() -> void:
 				if opts[i].is_skill() and Run.free_slot() >= 0:
 					pick = i
 		"replace":
+			# Make room for the new job's skills by dropping the lowest-level one.
 			pick = opts.size() - 1
+			if game._pending_skill in Run.job.cards:
+				var low := 99
+				for i in opts.size() - 1:
+					var lvl := Run.card_level(Run.loadout[opts[i]])
+					if lvl < low:
+						low = lvl
+						pick = i
 		"type":
 			pick = _type_pick(opts)
 		"gear":

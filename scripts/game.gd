@@ -8,8 +8,9 @@ extends Node2D
 
 const PLAYER_SCENE := preload("res://scenes/player.tscn")
 const HUB_SCENE := "res://scenes/hub.tscn"
-const REWARD_POOL: Array[String] = ["card", "card", "upgrade", "gear", "gear", "anvil", "compound", "shop", "heal",
-	"galder", "shard"]
+## Door rewards, weighted by repetition (two different ones are offered).
+const REWARD_POOL: Array[String] = ["card", "card", "card", "card", "upgrade", "upgrade", "gear", "gear", "anvil",
+	"compound", "compound", "shop", "shop", "heal", "galder", "shard"]
 const CAMERA_MARGIN := 60
 ## MP restored on entering a room.
 const ROOM_MP := 40
@@ -317,7 +318,10 @@ func _start_pick(kind: String, options: Array) -> void:
 				var text := j.text
 				if j.passive != &"":
 					text += "\n%s: %s" % [j.passive_name, j.passive_text]
-				shown.append({"title": j.display_name, "tag": "%s job" % ["1st", "2nd", "3rd"][j.tier - 1], "text": text})
+				if not j.unlocked():
+					text = "Locked. " + j.unlock_text
+				shown.append({"title": j.display_name, "tag": "%s job" % ["1st", "2nd", "3rd"][j.tier - 1], "text": text,
+					"disabled": not j.unlocked()})
 			title = "Job change  ·  the %s's trial is passed" % Run.job.display_name
 			Audio.play("ui_unique_get.wav", -4.0)
 		"gear":

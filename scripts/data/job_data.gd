@@ -18,3 +18,12 @@ extends Resource
 @export_multiline var text := ""
 ## Jobs this one can change into.
 @export var next_jobs: Array[JobData] = []
+## A branch that has to be earned: the Profile stat that unlocks it (e.g.
+## "clears_gladiator"), how much of it, and the hint shown while locked.
+@export var unlock_stat := ""
+@export var unlock_count := 0
+@export var unlock_text := ""
+
+
+func unlocked() -> bool:
+	return unlock_stat == "" or int(Profile.stats.get(unlock_stat, 0)) >= unlock_count

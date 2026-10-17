@@ -83,11 +83,14 @@ func is_new() -> bool:
 
 # ---------------------------------------------------------------- runs
 
-## Banks what a finished run carried home.
-func bank_run(won: bool, depth: int, run_tm: int, run_shards: int) -> void:
+## Banks what a finished run carried home. `job` is the job it ended in
+## (clears per job unlock branches like the Mercenary).
+func bank_run(won: bool, depth: int, run_tm: int, run_shards: int, job := "") -> void:
 	stats.runs += 1
 	if won:
 		stats.clears += 1
+		if job != "":
+			stats["clears_" + job] = int(stats.get("clears_" + job, 0)) + 1
 	else:
 		stats.deaths += 1
 	stats.best_depth = maxi(stats.best_depth, depth)

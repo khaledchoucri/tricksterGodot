@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="JobData" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="JobData" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/gladiator.tres" id="j_gladiator"]
+[ext_resource type="Resource" path="res://data/jobs/mercenary.tres" id="j_mercenary"]
 [ext_resource type="Resource" path="res://data/coral_beach/cards/lacerator.tres" id="c_lacerator"]
 [ext_resource type="Resource" path="res://data/coral_beach/cards/piercing_wave.tres" id="c_piercing_wave"]
 [ext_resource type="Resource" path="res://data/coral_beach/cards/inferno_blade.tres" id="c_inferno_blade"]
@@ -18,3 +20,4 @@ passive = &"sword_mastery"
 passive_name = "Sword Mastery"
 passive_text = "Your sword combo deals 15% more damage."
 text = "Versatile in combat. Not as powerful as a Boxer, but a Knight attacks many targets at once."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_gladiator"), ExtResource("j_mercenary")])

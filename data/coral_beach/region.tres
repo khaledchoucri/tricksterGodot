@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="RegionData" load_steps=42 format=3]
+[gd_resource type="Resource" script_class="RegionData" load_steps=48 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/region_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2_r"]
@@ -41,6 +41,12 @@
 [ext_resource type="Resource" path="res://data/coral_beach/cards/uppercut.tres" id="c_uppercut"]
 [ext_resource type="Resource" path="res://data/coral_beach/cards/bulls_eye.tres" id="c_bulls_eye"]
 [ext_resource type="Resource" path="res://data/coral_beach/cards/pumping_heart.tres" id="c_pumping_heart"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/chakra_balance.tres" id="c_chakra_balance"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/suffocate.tres" id="c_suffocate"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/shadow.tres" id="c_shadow"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/chi_sword.tres" id="c_chi_sword"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/gale_strike.tres" id="c_gale_strike"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/sonic_slash.tres" id="c_sonic_slash"]
 
 [resource]
 script = ExtResource("1_s")
@@ -48,7 +54,7 @@ display_name = "Coral Beach"
 rooms = Array[ExtResource("2_r")]([ExtResource("5_r"), ExtResource("6_r"), ExtResource("7_r"), ExtResource("8_r"), ExtResource("9_r"), ExtResource("10_r"), ExtResource("11_r"), ExtResource("12_r"), ExtResource("13_r"), ExtResource("14_r"), ExtResource("15_r")])
 boss_room = ExtResource("16_r")
 enemies = Array[ExtResource("3_r")]([ExtResource("17_r"), ExtResource("18_r"), ExtResource("19_r"), ExtResource("20_r"), ExtResource("21_r"), ExtResource("22_r"), ExtResource("23_r"), ExtResource("24_r")])
-cards = Array[ExtResource("4_r")]([ExtResource("c_adrenaline"), ExtResource("c_armor_breaker"), ExtResource("c_berserker"), ExtResource("c_counter_punch"), ExtResource("c_flaming_fist"), ExtResource("c_guard"), ExtResource("c_hyper_beat"), ExtResource("c_inferno_blade"), ExtResource("c_lacerator"), ExtResource("c_lightning_strike"), ExtResource("c_piercing_wave"), ExtResource("c_shockwave"), ExtResource("c_tornado_bomb"), ExtResource("c_upper_smash"), ExtResource("c_uppercut"), ExtResource("c_bulls_eye"), ExtResource("c_pumping_heart")])
+cards = Array[ExtResource("4_r")]([ExtResource("c_adrenaline"), ExtResource("c_armor_breaker"), ExtResource("c_berserker"), ExtResource("c_counter_punch"), ExtResource("c_flaming_fist"), ExtResource("c_guard"), ExtResource("c_hyper_beat"), ExtResource("c_inferno_blade"), ExtResource("c_lacerator"), ExtResource("c_lightning_strike"), ExtResource("c_piercing_wave"), ExtResource("c_shockwave"), ExtResource("c_tornado_bomb"), ExtResource("c_upper_smash"), ExtResource("c_uppercut"), ExtResource("c_bulls_eye"), ExtResource("c_pumping_heart"), ExtResource("c_sonic_slash"), ExtResource("c_gale_strike"), ExtResource("c_chi_sword"), ExtResource("c_shadow"), ExtResource("c_suffocate"), ExtResource("c_chakra_balance")])
 run_length = 7
 elite_depths = Array[int]([3, 6])
 job_change_depth = 3

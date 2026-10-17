@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/skills/gale_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gale_strike"
+display_name = "Gale Strike"
+kind = 1
+skill_id = 1504
+base_value = 11.0
+per_level = 3.0
+text = "Spin into a whirl of wind for a second, cutting everything around you for {v} damage again and again."
+mp_cost = 30
+cooldown = 7.0
+element = "none"
+behavior = ExtResource("2_b")

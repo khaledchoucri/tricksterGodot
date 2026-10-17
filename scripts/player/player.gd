@@ -13,6 +13,7 @@ enum State { MOVE, ATTACK, DASH, SKILL, HURT, DEAD }
 
 const BODY_RADIUS := 11.0
 const VAULT_HOP := 14.0
+const SHADOW_RADIUS := 70.0
 ## Basic combo for each weapon family.
 const FAMILY_COMBOS := {
 	"sword": preload("res://data/combos/sword.tres"),
@@ -50,6 +51,7 @@ var _phasing := false
 var _vaulting := false
 var _dash_len := 0.2
 var _perfect_this_dash := false
+var _chakra := 0.0
 var _steps: Array[ComboStep] = []
 
 @onready var sprite: ActorSprite = $Sprite
@@ -168,6 +170,11 @@ func _physics_process(delta: float) -> void:
 		aim = Combat.ground(mouse - global_position).normalized()
 	_t += delta
 	knock = knock.move_toward(Vector2.ZERO, 900.0 * delta)
+	if Run.card_level(&"chakra_balance") > 0:
+		_chakra += Run.card_value(&"chakra_balance") * delta
+		if _chakra >= 1.0:
+			Run.gain_mp(int(_chakra))
+			_chakra -= int(_chakra)
 	match state:
 		State.MOVE:
 			_state_move()
@@ -217,6 +224,8 @@ func enter(s: State) -> void:
 ## direction. Returns true on a critical hit.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
 	var crit := randf() < Run.crit_chance()
+	if Run.card_level(&"suffocate") > 0 and e.state == Enemy.State.HURT:
+		mult *= 1.0 + Run.card_value(&"suffocate") / 100.0
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
 	var graze := not crit and randf() < e.evade_chance(Run.stat("AC"))
 	# Elemental attack from compounds adds its % on top, less the monster's resistance.
@@ -259,6 +268,8 @@ func start_dash() -> void:
 	set_collision_mask_value(1, not _vaulting)
 	dash_ready_at = now() + _dash_len + dash_cooldown * Run.dash_cooldown_mult()
 	_perfect_this_dash = false
+	if Run.card_level(&"shadow") > 0:
+		_shadow_strike(global_position)
 	invulnerable_until = maxf(invulnerable_until, now() + maxf(dash_invuln, _dash_len + 0.05))
 	set_phasing(true)  # pass through enemies, and don't shove them, while dashing
 	_hit_this_dash.clear()
@@ -289,6 +300,18 @@ func _state_dash() -> void:
 		enter(State.MOVE)
 		if not try_actions():
 			_state_move()
+
+
+## Shadow: a moment after a dash starts, the shadow left behind slashes.
+func _shadow_strike(at: Vector2) -> void:
+	await get_tree().create_timer(0.15).timeout
+	if not is_inside_tree() or room == null:
+		return
+	Slash.spawn(room, at + Vector2(0, -14), {"radius": SHADOW_RADIUS, "arc": TAU * 0.8, "dir": aim, "clockwise": true,
+		"sweep_time": 0.12, "life": 0.3, "width": 16.0, "color": Color(0.45, 0.4, 0.7)})
+	for e in room.enemies:
+		if e.is_hittable() and Combat.in_circle(at, e.global_position, SHADOW_RADIUS, e.body_radius):
+			deal_hit(e, Run.card_value(&"shadow"), Run.attack_mult(), 120.0, false, {}, at)
 
 
 func _end_vault() -> void:

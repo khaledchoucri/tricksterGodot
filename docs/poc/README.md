@@ -77,6 +77,9 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
 - **Room 4 is the Fighter's trial.** Clearing it changes job to **Knight**: the Knight skill tree joins the card offers, you pick a Knight skill, and Sword Mastery makes the sword combo 15% stronger.
 - Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, **equipment**, an **anvil**, a **Compounder**, a **shop**, healing, Galder (with Bronze Fragments) or a Harkon Shard.
 - Each door also names a monster: the next room is that monster's **den**, and about half of its waves are that monster. That makes the door a choice of which material you farm.
+- **Desert Beach's trial (room 12) is the 3rd job change.**
+  - **Gladiator** (pure): Sonic Slash (rush through a line, invulnerable), Gale Strike (a steerable whirlwind), Chi Sword (three chi blades), and the talents Shadow (your dash leaves a slashing shadow), Suffocate (+damage to staggered enemies) and Chakra Balance (MP regen). Its passive, Arena Champion, gives +15% skill damage.
+  - **Mercenary** (hybrid): learns the Boxer tree (Uppercut, Quad Punch, Counter Punch, Guard). Its passive, Hired Blade, cuts damage taken by 10%. It unlocks after you clear a run as a Gladiator, and the job pick shows it locked until then.
 - Skill cards come from your jobs' real skill trees, with the original prerequisites. Upper Smash and Hyper Beat need Bull's Eye Lv 2, Armor Breaker needs Shockwave Lv 2, Tornado Bomb needs Armor Breaker, and Berserker needs Pumping Heart Lv 2. Cards go up to level 5.
   - **Skills** go in the three skill slots and cost MP. Taking a new skill with full slots replaces one.
   - **Talents** are passive.

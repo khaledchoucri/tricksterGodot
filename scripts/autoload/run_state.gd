@@ -312,7 +312,7 @@ func finish(p_won: bool) -> void:
 		shards += bounty
 		Profile.best_heat = heat
 	last_result = {"won": p_won, "depth": reached, "tm": tm, "shards": shards, "heat": heat, "bounty": bounty}
-	Profile.bank_run(p_won, reached, tm, shards)
+	Profile.bank_run(p_won, reached, tm, shards, String(job.id))
 
 
 func _plan_rooms() -> Array[RoomPlan]:
@@ -665,9 +665,11 @@ func attack_mult() -> float:
 
 
 ## Damage multiplier for a skill, from the stat it scales with.
-func skill_mult(card: CardData = null) -> float:
-	var scaling := card.scaling if card else "AP"
+func skill_mult(c: CardData = null) -> float:
+	var scaling := c.scaling if c else "AP"
 	var m := _ratio(scaling, AP_SOFT if scaling == "AP" else MA_SOFT)
+	if has_passive(&"arena_champion"):
+		m *= 1.15
 	return m * _berserk_mult()
 
 
@@ -695,6 +697,8 @@ func crit_chance() -> float:
 func damage_taken_mult(magic := false) -> float:
 	var key := "MD" if magic else "DP"
 	var m := (float(_ref.get(key, 0)) + DEF_SOFT) / (stat(key) + DEF_SOFT)
+	if has_passive(&"hired_blade"):
+		m *= 0.9
 	return m * (1.0 - card_value(&"guard") / 100.0)
 
 
