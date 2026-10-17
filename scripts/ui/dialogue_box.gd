@@ -68,7 +68,7 @@ func choose(line: Dictionary, options: Array) -> int:
 			key += 1
 			b.setup(str(key) if key <= 9 else "", o.title, o.get("tag", ""), o.get("text", ""), o.get("icon"))
 		b.disabled = o.get("disabled", false)
-		b.custom_minimum_size.x = 440.0
+		b.fit(440.0)
 		_solid(b)
 		b.pressed.connect(func() -> void: _chosen.emit(i))
 		_buttons.append(b)
@@ -76,8 +76,6 @@ func choose(line: Dictionary, options: Array) -> int:
 	_scroll.offset_bottom = -252.0 if _footer.visible else -180.0
 	_scroll.visible = true
 	await get_tree().process_frame
-	for b in _buttons:
-		b.fit()
 	if _footer.visible:
 		_footer.offset_top = _footer.offset_bottom - _footer.get_combined_minimum_size().y
 		_scroll.offset_bottom = _footer.offset_top - 6.0

@@ -1,25 +1,25 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://cotbanfplcc1u"]
 
-[ext_resource type="Script" path="res://scripts/boss_mole.gd" id="1_boss"]
-[ext_resource type="Script" path="res://scripts/actor_sprite.gd" id="2_sprite"]
-[ext_resource type="Script" path="res://scripts/fx/health_bar.gd" id="3_bar"]
+[ext_resource type="Script" uid="uid://dy88dbew14xnc" path="res://scripts/boss_mole.gd" id="1_boss"]
+[ext_resource type="Script" uid="uid://j20yybbccj6p" path="res://scripts/actor_sprite.gd" id="2_sprite"]
+[ext_resource type="Script" uid="uid://cfiknaqcc4tce" path="res://scripts/fx/health_bar.gd" id="3_bar"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 resource_local_to_scene = true
 radius = 24.0
 
-[node name="BossMole" type="CharacterBody2D"]
+[node name="BossMole" type="CharacterBody2D" unique_id=1252074700]
 collision_layer = 4
 collision_mask = 15
 script = ExtResource("1_boss")
 
-[node name="Shape" type="CollisionShape2D" parent="."]
+[node name="Shape" type="CollisionShape2D" parent="." unique_id=21284246]
 shape = SubResource("CircleShape2D_body")
 
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=1309568396]
 script = ExtResource("2_sprite")
 
-[node name="HealthBar" type="Node2D" parent="."]
+[node name="HealthBar" type="Node2D" parent="." unique_id=1609185647]
 z_index = 25
 position = Vector2(0, 10)
 script = ExtResource("3_bar")

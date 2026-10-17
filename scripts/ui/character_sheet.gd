@@ -16,7 +16,18 @@ func _ready() -> void:
 func toggle() -> void:
 	visible = not visible
 	if visible:
+		_fit()
 		refresh()
+
+
+## Fits the window: narrower screens get narrower columns, not a cut sheet.
+func _fit() -> void:
+	var view := get_viewport().get_visible_rect().size
+	var w := minf(1060.0, view.x - 32.0)
+	var h := minf(530.0, view.y - 120.0)
+	custom_minimum_size = Vector2(w, h)
+	size = custom_minimum_size
+	position = ((view - size) / 2.0).round()
 
 
 func refresh() -> void:

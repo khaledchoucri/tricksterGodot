@@ -788,6 +788,8 @@ func _on_player_died() -> void:
 
 
 func _win() -> void:
+	if phase == Phase.WON:
+		return
 	phase = Phase.WON
 	Run.won = true
 	Run.shards += 2

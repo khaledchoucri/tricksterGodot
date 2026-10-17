@@ -362,6 +362,8 @@ func _make_waves(depth: int, elite: bool) -> Array:
 
 
 func _next_wave() -> void:
+	if _cleared:
+		return
 	wave += 1
 	if wave >= waves.size():
 		_cleared = true
@@ -421,8 +423,11 @@ func _on_enemy_died(e: Enemy) -> void:
 			if other.is_hittable():
 				other.take_hit(9999, Vector2.DOWN, 0.0, true)
 	if alive <= 0 and pending <= 0 and not _cleared:
+		# Several deaths at once (a boss taking its summons with it) each get
+		# here; only the first advances the wave.
+		var at_wave := wave
 		await get_tree().create_timer(1.0).timeout
-		if is_inside_tree() and alive <= 0 and pending <= 0:
+		if is_inside_tree() and alive <= 0 and pending <= 0 and wave == at_wave and not _cleared:
 			_next_wave()
 
 

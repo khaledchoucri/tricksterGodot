@@ -14,10 +14,17 @@ var screens := 0
 
 
 func _ready() -> void:
-	get_window().size = Vector2i(1280, 720)
+	var size := Vector2i(1280, 720)
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("out="):
 			out = a.substr(4)
+		elif a == "noscale":
+			get_window().content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+		elif a.begins_with("size="):
+			var wh := a.substr(5).split("x")
+			size = Vector2i(int(wh[0]), int(wh[1]))
+	get_window().size = size
+	print("window %s, viewport %s" % [size, get_viewport().get_visible_rect().size])
 	DirAccess.make_dir_recursive_absolute(out)
 	Profile.use_path("user://ui_audit_profile.json", true)
 	_run.call_deferred()
@@ -54,11 +61,21 @@ func audit(screen: String) -> void:
 			continue  # scrolled content may extend past; its scroll area is checked
 		if not view.encloses(r):
 			problems.append("%s: %s is off screen (%s)" % [screen, _path(c), r])
+		if c is PickOption:
+			var need := 18.0
+			for l: Label in [c.get_node("%Head"), c.get_node("%Body")]:
+				if l.text != "":
+					need += l.get_line_count() * l.get_line_height() + 4.0
+			if c.size.y > need + 36.0:
+				problems.append("%s: %s is %d px tall for %d px of text" % [screen, _path(c), c.size.y, need])
+			elif c.size.y < need - 6.0:
+				problems.append("%s: %s cuts its text (%d px for %d)" % [screen, _path(c), c.size.y, need])
 		if c is RichTextLabel and not (c as RichTextLabel).scroll_active and not (c as RichTextLabel).fit_content 				and (c as RichTextLabel).get_content_height() > c.size.y + 2.0:
 			problems.append("%s: text cut off at the bottom of %s" % [screen, _path(c)])
 		if c is RichTextLabel and (c as RichTextLabel).scroll_active and (c as RichTextLabel).get_content_height() > c.size.y + 2.0:
 			print("note  %s: %s scrolls (%d of %d px shown)" % [screen, _path(c), c.size.y, (c as RichTextLabel).get_content_height()])
-		if c is Label and (c as Label).clip_text and (c as Label).text != "":
+		var trimmed := c is Label and (c as Label).text_overrun_behavior != TextServer.OVERRUN_NO_TRIMMING
+		if c is Label and (c as Label).clip_text and (c as Label).text != "" and not trimmed:
 			var l := c as Label
 			var w := l.get_theme_font("font").get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1,
 				l.get_theme_font_size("font_size")).x

@@ -134,6 +134,11 @@ func log_line(text: String, color := MUTED) -> void:
 	l.add_theme_font_size_override("font_size", 13)
 	l.add_theme_color_override("font_color", color)
 	var box: VBoxContainer = %LogBox
+	# Keep clear of the centred skill bar on narrow screens.
+	var room := (get_viewport().get_visible_rect().size.x - (%SlotBar as Control).size.x) / 2.0 - 36.0
+	box.size.x = clampf(room, 220.0, 460.0)
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	l.clip_text = true
 	box.add_child(l)
 	while box.get_child_count() > LOG_LINES:
 		box.get_child(0).free()
@@ -201,9 +206,8 @@ func show_pick(title: String, options: Array) -> void:
 		_pick_buttons.append(option)
 	footer.visible = footer.get_child_count() > 0
 	pick_panel.visible = true
+	_fit_pick_panel()
 	await get_tree().process_frame
-	for b in _pick_buttons:
-		b.fit()
 	_fit_pick_panel()
 	(%PickScroll as ScrollContainer).scroll_vertical = 0
 	for b in _pick_buttons:
@@ -308,4 +312,10 @@ func show_results(won: bool) -> void:
 	t += "[/table]\n\n[color=#9fb2c0]Cards[/color]  %s\n[color=#9fb2c0]Gear[/color]  %s" % [
 		", ".join(cards) if cards.size() else "none", ", ".join(gear) if gear.size() else "none"]
 	%ResultsBody.text = t
+	pick_panel.visible = false
+	var sb := results_panel.get_theme_stylebox("panel")
+	if sb is StyleBoxFlat and (sb as StyleBoxFlat).bg_color.a < 1.0:
+		var solid := (sb as StyleBoxFlat).duplicate() as StyleBoxFlat
+		solid.bg_color.a = 1.0
+		results_panel.add_theme_stylebox_override("panel", solid)
 	results_panel.visible = true

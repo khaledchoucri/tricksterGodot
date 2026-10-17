@@ -16,13 +16,25 @@ func setup(key: Variant, title: String, tag: String, text: String, icon_tex: Tex
 	icon_rect.texture = icon_tex
 	icon_rect.visible = icon_tex != null
 	(%Text as Control).offset_right = -ICON_ROOM if icon_tex else -14.0
-	# Grow for bodies longer than one line.
-	custom_minimum_size.y = maxf(custom_minimum_size.y, 46.0 + LINE_HEIGHT * text.count("
-") + LINE_HEIGHT)
+	fit(custom_minimum_size.x)
 
 
-## Grows to fit wrapped text once laid out at its real width.
-func fit() -> void:
-	var need := (%Text as Control).get_combined_minimum_size().y + 16.0
-	if need > custom_minimum_size.y:
-		custom_minimum_size.y = need
+## Sizes the row for its text wrapped at `width`. Measured from the fonts,
+## not from layout (which may not have run yet, and once made rows huge).
+func fit(width: float) -> void:
+	var text_w := width - 14.0 - (ICON_ROOM if (%Icon as Control).visible else 14.0)
+	var gap := float((%Text as VBoxContainer).get_theme_constant("separation"))
+	var h := _text_height(%Head, text_w) + gap + _text_height(%Body, text_w) + 18.0
+	custom_minimum_size = Vector2(width, maxf(64.0, ceilf(h)))
+
+
+static func _text_height(l: Label, width: float) -> float:
+	if l.text == "":
+		return 0.0
+	var font := l.get_theme_font("font")
+	var size := l.get_theme_font_size("font_size")
+	var lines := l.text.split("\n")
+	var h := 0.0
+	for line in lines:
+		h += font.get_multiline_string_size(line if line != "" else " ", HORIZONTAL_ALIGNMENT_LEFT, width, size).y
+	return h + float(l.get_theme_constant("line_spacing")) * (lines.size() - 1)
