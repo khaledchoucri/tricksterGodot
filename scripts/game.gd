@@ -193,7 +193,7 @@ func _next_step() -> void:
 func _grant(reward: String) -> void:
 	match reward:
 		"card", "upgrade":
-			var n := 4 if Run.quirk(&"sunshine") else 3
+			var n := (4 if Run.quirk(&"sunshine") else 3) + (1 if Run.has_passive(&"data_bleed") else 0)
 			var opts := Run.card_offers(n, reward == "upgrade")
 			if opts.is_empty():
 				opts = Run.card_offers(n, reward != "upgrade")

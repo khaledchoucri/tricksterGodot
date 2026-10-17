@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/echoes/galder_barrage.tres" id="c_galder_barrage"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"entertainer_tree"
+display_name = "Entertainer"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_galder_barrage")])
+text = "The Entertainer tree, learned from an Echo's rune."
+unlock_stat = "runes_echo_entertainer"
+unlock_count = 1
+unlock_text = "Borrow a rune from an Echo of a Entertainer to unlock."

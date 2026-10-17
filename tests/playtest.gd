@@ -17,6 +17,8 @@ var build := "mixed"
 ## with every system restored instead of earning them.
 var heat := 0
 var city := "earn"
+## class=trickster: its two trees (e.g. trees=knight+bard_tree).
+var trees: PackedStringArray = ["knight", "bard_tree"]
 var game
 var results: Array[Dictionary] = []
 
@@ -46,11 +48,17 @@ func _ready() -> void:
 			city = kv[1]
 		elif kv.size() == 2 and kv[0] == "class":
 			Profile.class_id = kv[1]
+		elif kv.size() == 2 and kv[0] == "trees":
+			trees = kv[1].split("+")
 	var chosen := Profile.class_id
 	Profile.use_path("user://playtest_profile.json", true)
 	Profile.class_id = chosen
 	if chosen != "buffalo":
 		Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))  # the slot is open
+	if chosen == "trickster":
+		for k in ["clears_gladiator", "clears_champion", "runes_echo_bard", "runes_echo_explorer", "runes_echo_entertainer"]:
+			Profile.stats[k] = 1
+		Profile.custom = {"kit": "sword", "graph": "Balanced", "trees": Array(trees)}
 	if city == "full":
 		for r: RestorationData in Run.hub.restorations:
 			Profile.restorations[String(r.id)] = r.max_level

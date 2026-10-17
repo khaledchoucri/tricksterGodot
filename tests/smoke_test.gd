@@ -581,6 +581,26 @@ func _systems(Run: Node) -> void:
 	check(shallow.ore > 0 and shallow.material == null and deep.material != null and deep.shard == 1,
 		"deeper digs bring up materials and Harkon Shards")
 
+	# The custom Trickster.
+	check(not Run.trickster_unlocked(), "the Trickster is locked at first")
+	Profile.stats["clears_gladiator"] = 1
+	Profile.stats["clears_champion"] = 1
+	Profile.stats["runes_echo_bard"] = 1
+	check(Run.trickster_unlocked(), "a 3rd-job clear with Buffalo and with Bunny unlocks the Trickster")
+	Profile.custom = {"kit": "fists", "graph": "Magic / Sense", "trees": ["knight", "bard_tree"]}
+	Profile.class_id = "trickster"
+	Run.new_run()
+	var pool_ids: Array = Run.card_pool().map(func(c: CardData) -> String: return String(c.id))
+	check(Run.cls.id == &"trickster" and not Run.cls.armed and "lacerator" in pool_ids and "drip_bomb" in pool_ids
+		and "shockwave" in pool_ids and Run.has_passive(&"data_bleed"),
+		"a fists Trickster with Knight and Bard trees offers Lacerator, Drip Bomb and the Fighter tree")
+	check(float(Run.cls.graph.magic) == 0.5, "its type graph is the Magic / Sense preset")
+	Profile.class_id = "buffalo"
+	Profile.custom = {}
+	for k in ["clears_gladiator", "clears_champion", "runes_echo_bard"]:
+		Profile.stats.erase(k)
+	Run.new_run()
+
 	# Master Louis raises card caps.
 	var wave: CardData = Run.card(&"shockwave")
 	Profile.materials[String(wave.master_material.id)] = 6

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/echoes/drip_bomb.tres" id="c_drip_bomb"]
+[ext_resource type="Resource" path="res://data/echoes/electro_attack.tres" id="c_electro_attack"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"bard_tree"
+display_name = "Bard"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_drip_bomb"), ExtResource("c_electro_attack")])
+text = "The Bard tree, learned from an Echo's rune."
+unlock_stat = "runes_echo_bard"
+unlock_count = 1
+unlock_text = "Borrow a rune from an Echo of a Bard to unlock."

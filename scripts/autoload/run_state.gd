@@ -168,8 +168,80 @@ func _load_items() -> void:
 			items.append(load(ITEMS_DIR + f))
 
 
+## Trees a Trickster can pick from: every class's 2nd and 3rd jobs, and
+## the other classes' trees learned through Echo runes.
+const TRICKSTER_TREES: Array[String] = ["res://data/jobs/knight.tres", "res://data/jobs/boxer.tres",
+	"res://data/jobs/gladiator.tres", "res://data/jobs/mercenary.tres", "res://data/jobs/champion.tres",
+	"res://data/jobs/duelist.tres", "res://data/jobs/bard_tree.tres", "res://data/jobs/explorer_tree.tres",
+	"res://data/jobs/entertainer_tree.tres"]
+## Type graphs a Trickster can be created with (auto points per level).
+const TRICKSTER_GRAPHS := {
+	"Power / Charm": {"power": 0.5, "charm": 0.3, "sense": 0.1, "magic": 0.1},
+	"Magic / Sense": {"magic": 0.5, "sense": 0.3, "power": 0.1, "charm": 0.1},
+	"Sense / Power": {"sense": 0.45, "power": 0.35, "charm": 0.1, "magic": 0.1},
+	"Charm / Magic": {"charm": 0.45, "magic": 0.35, "power": 0.1, "sense": 0.1},
+	"Balanced": {"power": 0.25, "magic": 0.25, "sense": 0.25, "charm": 0.25},
+}
+
+
+## The custom class opens once a 3rd job has been cleared with two characters.
+func trickster_unlocked() -> bool:
+	var s := Profile.stats
+	var buffalo := int(s.get("clears_gladiator", 0)) + int(s.get("clears_mercenary", 0))
+	var bunny := int(s.get("clears_champion", 0)) + int(s.get("clears_duelist", 0))
+	return buffalo > 0 and bunny > 0
+
+
+func trickster_trees() -> Array[JobData]:
+	var out: Array[JobData] = []
+	for p in TRICKSTER_TREES:
+		var j: JobData = load(p)
+		out.append(j)
+		for c in j.cards:
+			_cards[c.id] = c
+	return out
+
+
+## Builds the Trickster from Profile.custom: {"kit", "graph", "trees"}.
+func build_trickster() -> ClassData:
+	var spec: Dictionary = Profile.custom
+	var fists: bool = spec.get("kit", "sword") == "fists"
+	var c := ClassData.new()
+	c.id = &"trickster"
+	c.display_name = "Trickster"
+	c.actor = "bunny" if fists else "buffalo"
+	c.base = {}
+	for k in Stats.KEYS:
+		c.base[k] = int((int(classes[0].base.get(k, 0)) + int(classes[1].base.get(k, 0))) / 2)
+	c.graph = TRICKSTER_GRAPHS.get(spec.get("graph", "Balanced"), TRICKSTER_GRAPHS.Balanced)
+	c.start_weapon = classes[0].start_weapon
+	c.combo = classes[1].combo if fists else null
+	c.armed = not fists
+	var j := JobData.new()
+	j.id = &"trickster"
+	j.display_name = "Trickster"
+	j.tier = 3
+	j.starter = card(&"shockwave")
+	j.passive = &"data_bleed"
+	j.passive_name = "Data Bleed"
+	j.passive_text = "Skill card rewards offer one more choice."
+	var pool: Array[CardData] = []
+	for c2 in classes[0].start_job.cards:
+		pool.append(c2)
+	for t in trickster_trees():
+		if String(t.id) in spec.get("trees", []):
+			for c2 in t.cards:
+				if not c2 in pool:
+					pool.append(c2)
+	j.cards = pool
+	c.start_job = j
+	return c
+
+
 ## The class chosen in the Profile (falls back to the first).
 func chosen_class() -> ClassData:
+	if Profile.class_id == "trickster" and trickster_unlocked() and not Profile.custom.is_empty():
+		return build_trickster()
 	for c in classes:
 		if String(c.id) == Profile.class_id and c.unlocked():
 			return c
@@ -401,6 +473,10 @@ func echo_here() -> EnemyData:
 func take_rune(c: CardData) -> void:
 	rune = c
 	rune_level = 1 + 2 * region_index()
+	for e in echoes:
+		if c in e.runes:
+			Profile.stats["runes_" + String(e.id)] = int(Profile.stats.get("runes_" + String(e.id), 0)) + 1
+			Profile.save()
 
 
 # ---------------------------------------------------------------- stats

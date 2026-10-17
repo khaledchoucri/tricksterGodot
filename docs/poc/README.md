@@ -118,6 +118,12 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
   - Schoolgirl → Boxer (Boxer's Footwork: +15% punch damage) → **Champion** (Champion's Fury: +25% finishers) or **Duelist**. The Duelist is the hybrid: she learns the Knight tree, and gets +10% skill damage and −10% MP cost. It unlocks after a Champion clear.
   - Bunny is data only (`data/classes/bunny.tres` and four jobs), which proves new classes need no new systems.
 
+- **The Trickster** is the custom class.
+  - It unlocks after a 3rd-job clear with both Buffalo and Bunny.
+  - Create it at the gate: pick a kit (sword, hammer or fists), a type graph preset, and **two skill trees** from Knight, Boxer, Gladiator, Mercenary, Champion and Duelist, plus the Bard, Explorer and Entertainer trees, each of which unlocks once you've borrowed that Echo's rune.
+  - It always gets the Fighter tree too, and its passive Data Bleed adds a choice to every skill card reward.
+  - The Trickster is built at runtime from the profile; no new systems were needed.
+
 ### Echoes and runes
 
 - **Echoes.** After your first clear, elite rooms can be haunted by an **Echo**: the ghost of a former player of another class, in that class's original sprite. They are:

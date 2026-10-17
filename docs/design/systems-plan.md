@@ -1,5 +1,29 @@
 # Last Login: game systems plan
 
+## Status (2026-10-17)
+
+Built:
+- 12 stats in 4 types with traits.
+- Two regions (Coral Beach, Desert Beach) with job changes 1st → 2nd → 3rd. Buffalo becomes a Gladiator or Mercenary; Bunny becomes a Champion or Duelist.
+- Six run-gear slots, refining, compounding with monster materials, monster dens and shops.
+- The warehouse, heirlooms with level sync, Ports and rollback.
+- City restorations that switch systems on.
+- Server Settings (Heat).
+- Monster cards, card sets and the six-slot wardrobe.
+- The Skill Master.
+- Echoes and sky-blue runes.
+- Drilling.
+- The custom Trickster class.
+
+Still to do:
+- Type skills, the original stat-locked skills.
+- A guardian companion (pets).
+- Spell cards.
+- More regions.
+- The fashion tab.
+
+
+
 Draft 2, 2026-10-17. Draft 1 listed Trickster's systems. This draft decides
 what each one is *for* in a Hades-like run, changes what doesn't fit, and cuts
 what doesn't earn its place.

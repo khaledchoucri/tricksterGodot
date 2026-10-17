@@ -36,6 +36,9 @@ var worn: Dictionary = {}
 var mastery: Dictionary = {}
 ## The class played (ClassData id).
 var class_id := "buffalo"
+## The custom Trickster: {"kit": sword/hammer/fists, "graph": preset name,
+## "trees": [JobData ids]}.
+var custom: Dictionary = {}
 ## Drills owned and the one carried (DrillData ids).
 var drills: Array = []
 var drill := ""
@@ -73,6 +76,7 @@ func load_profile() -> void:
 	class_id = "buffalo"
 	drills = []
 	drill = ""
+	custom = {}
 	if not FileAccess.file_exists(path):
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -103,6 +107,7 @@ func load_profile() -> void:
 		mastery[k] = int(data.mastery[k])
 	class_id = data.get("class_id", "buffalo")
 	drills = data.get("drills", [])
+	custom = data.get("custom", {})
 	drill = data.get("drill", "")
 
 
@@ -115,7 +120,8 @@ func save() -> void:
 		"materials": materials, "stats": stats,
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
-		"worn": worn, "mastery": mastery, "class_id": class_id, "drills": drills, "drill": drill}, "  "))
+		"worn": worn, "mastery": mastery, "class_id": class_id, "drills": drills, "drill": drill,
+		"custom": custom}, "  "))
 
 
 func is_new() -> bool:

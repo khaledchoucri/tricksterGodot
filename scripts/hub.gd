@@ -118,7 +118,7 @@ func _physics_process(_delta: float) -> void:
 			talk(nearest)
 			return
 	if gate.ready_to_enter() and Combat.ground(player.global_position - gate.global_position).length() < GATE_RANGE:
-		if Run.classes.filter(func(c: ClassData) -> bool: return c.unlocked()).size() > 1:
+		if Run.classes.filter(func(c: ClassData) -> bool: return c.unlocked()).size() > 1 or Run.trickster_unlocked():
 			_choose_character()
 		else:
 			_depart()
@@ -516,16 +516,84 @@ func _choose_character() -> void:
 	for c in Run.classes:
 		options.append({"title": c.display_name, "tag": "Playing" if String(c.id) == Profile.class_id else "",
 			"text": c.text if c.unlocked() else "Locked. " + c.unlock_text, "disabled": not c.unlocked()})
+	var made := not Profile.custom.is_empty()
+	options.append({"title": "Trickster" if made else "Create a Trickster",
+		"tag": "Playing" if Profile.class_id == "trickster" else "",
+		"text": ("Your own class: %s kit, %s, trees: %s." % [Profile.custom.get("kit", ""), Profile.custom.get("graph", ""),
+			", ".join(Profile.custom.get("trees", []))]) if made else
+			("The server's class data has started to bleed together. Build a class of your own." if Run.trickster_unlocked()
+			else "Locked. Reach a 3rd job and clear a run with both Buffalo and Bunny."),
+		"disabled": not Run.trickster_unlocked()})
+	if made:
+		options.append({"title": "Remake the Trickster", "tag": "", "text": "Choose a new kit, graph and trees."})
 	options.append({"title": "Not yet", "tag": "", "text": "Stay in the city."})
 	var pick := await dialogue.choose({"name": "Character select", "portrait": null,
 		"text": "Who logs in to Coral Beach?"}, options)
+	var n := Run.classes.size()
+	if pick == n or (made and pick == n + 1):
+		if not made or pick == n + 1:
+			if not await _create_trickster():
+				_set_talking(false)
+				player.global_position += Vector2(0, 60)
+				return
+		Profile.class_id = "trickster"
+		Profile.save()
+		_set_talking(false)
+		_depart()
+		return
 	_set_talking(false)
-	if pick < 0 or pick >= Run.classes.size():
+	if pick < 0 or pick >= n:
 		player.global_position += Vector2(0, 60)
 		return
 	Profile.class_id = String(Run.classes[pick].id)
 	Profile.save()
 	_depart()
+
+
+## Character creation for the custom class: kit, type graph, two trees.
+func _create_trickster() -> bool:
+	var line := {"name": "Character creation", "portrait": null, "text": "Choose a fighting style."}
+	var kits := ["sword", "hammer", "fists"]
+	var k := await dialogue.choose(line, [
+		{"title": "Sword", "tag": "", "text": "Buffalo's look and the sword combo."},
+		{"title": "Hammer", "tag": "", "text": "Buffalo's look and the heavy hammer combo."},
+		{"title": "Fists", "tag": "", "text": "Bunny's look and the punch combo, weapon sheathed."},
+		{"title": "Cancel", "tag": "", "text": ""}])
+	if k < 0 or k >= kits.size():
+		return false
+	var graphs: Array = Run.TRICKSTER_GRAPHS.keys()
+	var g_opts: Array = []
+	for name: String in graphs:
+		var parts: PackedStringArray = []
+		var gr: Dictionary = Run.TRICKSTER_GRAPHS[name]
+		for t: String in Stats.TYPE_ORDER:
+			parts.append("%s %d%%" % [Stats.TYPES[t].name, roundi(float(gr[t]) * 100)])
+		g_opts.append({"title": name, "tag": "", "text": "Grows: " + "  ·  ".join(parts)})
+	line.text = "Draw the type graph: how the class grows on its own."
+	var g := await dialogue.choose(line, g_opts)
+	if g < 0 or g >= graphs.size():
+		return false
+	var trees := Run.trickster_trees()
+	var chosen: Array = []
+	for round_i in 2:
+		var t_opts: Array = []
+		for t in trees:
+			var names: PackedStringArray = []
+			for c in t.cards:
+				names.append(c.display_name)
+			t_opts.append({"title": "%s tree" % t.display_name, "tag": "Chosen" if String(t.id) in chosen else "",
+				"text": ", ".join(names) if t.unlocked() else "Locked. " + t.unlock_text,
+				"disabled": not t.unlocked() or String(t.id) in chosen})
+		line.text = "Pick the %s skill tree. The Fighter's tree comes with every Trickster." % ["first", "second"][round_i]
+		var pick := await dialogue.choose(line, t_opts)
+		if pick < 0 or pick >= trees.size():
+			return false
+		chosen.append(String(trees[pick].id))
+	Profile.custom = {"kit": kits[k], "graph": graphs[g], "trees": chosen}
+	Profile.save()
+	Audio.play("ui_unique_get.wav", -4.0)
+	hud.log_line("[System] A Trickster logs in for the first time.", Color("e0b54d"))
+	return true
 
 
 func _depart() -> void:

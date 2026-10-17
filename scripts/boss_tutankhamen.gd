@@ -57,14 +57,16 @@ func _curse() -> void:
 	var warn := Telegraph.make("wedge", 0.45, {"dir": _attack_dir, "radius": 120.0, "arc": CURSE_SPREAD + 0.3})
 	room.add_ground_fx(warn, global_position)
 	await get_tree().create_timer(0.45).timeout
-	if state == State.DEAD or not is_inside_tree():
+	if state == State.DEAD or not is_inside_tree() or not is_instance_valid(room) or not is_instance_valid(player):
 		return
 	if is_instance_valid(warn):
 		warn.trigger()
 	Audio.play("samon021.wav", -4.0)
 	for i in CURSE_BOLTS:
 		var a := lerpf(-CURSE_SPREAD / 2.0, CURSE_SPREAD / 2.0, float(i) / (CURSE_BOLTS - 1))
-		var p: Projectile = PROJECTILE_SCENE.instantiate()
+		var p := PROJECTILE_SCENE.instantiate() as Projectile
+		if p == null:
+			return
 		p.direction = Combat.screen(_attack_dir.rotated(a)).normalized()
 		p.speed = CURSE_SPEED
 		p.damage = damage

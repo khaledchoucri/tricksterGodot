@@ -81,7 +81,8 @@ func refresh_gear() -> void:
 		weapon.use(w.data.weapon_sprite())
 	weapon.visible = Run.cls.armed
 	weapon.set_process(Run.cls.armed)
-	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(Run.weapon_family(), combo)
+	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
+	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
 	_steps = combo.steps.duplicate()
 	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
 		var extra: ComboStep = _steps[_steps.size() - 2].duplicate()
