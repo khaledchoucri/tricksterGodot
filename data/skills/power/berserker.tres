@@ -11,5 +11,6 @@ kind = 0
 skill_id = 1203
 text = "Rage: +{v}% AP, but you keep losing HP and MP while enemies are near."
 requires = {&"pumping_heart": 2}
+jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [5.3, 8.1, 15.0, 19.0, 29.0, 34.0, 47.0, 69.0]}
 master_material = ExtResource("m_master")

@@ -11,6 +11,7 @@ kind = 0
 skill_id = 1201
 text = "Shockwave has a {v}% chance to make an enemy faint for {seconds} s."
 requires = {&"shockwave": 1}
+jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 max_level = 1
 table = {"value": [40.0], "seconds": [5.0]}
 master_material = ExtResource("m_master")

@@ -101,6 +101,19 @@ SKILL_SOUNDS = [
 MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3', 'crap.mp3']
 
 
+def card_sounds():
+    """Original sounds the generated skill cards name (their `sounds` rows)."""
+    out = []
+    for dirpath, _dirs, files in os.walk(os.path.join(ROOT, 'data', 'skills')):
+        for f in sorted(files):
+            if f.endswith('.tres'):
+                m = re.search(r'^sounds = \{(.*)\}$', open(os.path.join(dirpath, f), encoding='utf-8').read(), re.M)
+                for name in re.findall(r'"[a-z]+": "([^"]+)"', m.group(1)) if m else []:
+                    if name not in out and name not in SOUNDS + SKILL_SOUNDS:
+                        out.append(name)
+    return out
+
+
 def monster_ids():
     """Monster row IDs referenced by the EnemyData resources."""
     ids = []
@@ -130,14 +143,16 @@ def item_ids():
 
 
 def skill_ids():
-    """Original skill IDs referenced by the card resources."""
-    folder = os.path.join(ROOT, 'data', 'coral_beach', 'cards')
+    """Original skill IDs referenced by the card resources (generated skill
+    trees and the Echoes' runes)."""
     ids = []
-    for f in sorted(os.listdir(folder)):
-        if f.endswith('.tres'):
-            m = re.search(r'^skill_id = (\d+)', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
-            if m:
-                ids.append(m.group(1))
+    for top in ('skills', 'echoes'):
+        for dirpath, _dirs, files in os.walk(os.path.join(ROOT, 'data', top)):
+            for f in sorted(files):
+                if f.endswith('.tres'):
+                    m = re.search(r'^skill_id = (\d+)', open(os.path.join(dirpath, f), encoding='utf-8').read(), re.M)
+                    if m and m.group(1) not in ids:
+                        ids.append(m.group(1))
     return ids
 
 
@@ -228,10 +243,21 @@ def main():
         shutil.copy2(os.path.join(client, 'data', 'sound', f), audio)
     for f in SKILL_SOUNDS:
         shutil.copy2(os.path.join(client, 'data', 'sound', 'skillsound', f), audio)
+    extra = []
+    for f in card_sounds():
+        # Skill sounds sit in skillsound/, the generic magic effects one level up.
+        for folder in (('data', 'sound', 'skillsound'), ('data', 'sound')):
+            src = os.path.join(client, *folder, f)
+            if os.path.exists(src):
+                shutil.copy2(src, audio)
+                extra.append(f)
+                break
+        else:
+            print(f'audio: {f} not found in the client')
     for f in MUSIC:
         shutil.copy2(os.path.join(client, 'data', 'music', f), audio)
-    run(os.path.join(HERE, 'convert_audio.py'), *[os.path.join(audio, f) for f in SOUNDS + SKILL_SOUNDS])
-    print(f'audio: {len(SOUNDS) + len(SKILL_SOUNDS)} sounds, {len(MUSIC)} music tracks')
+    run(os.path.join(HERE, 'convert_audio.py'), *[os.path.join(audio, f) for f in SOUNDS + SKILL_SOUNDS + extra])
+    print(f'audio: {len(SOUNDS) + len(SKILL_SOUNDS) + len(extra)} sounds, {len(MUSIC)} music tracks')
 
 
 if __name__ == '__main__':

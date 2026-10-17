@@ -12,6 +12,7 @@ kind = 1
 skill_id = 1302
 text = "Close {range} in a flash and strike for {v} damage."
 requires = {&"boxer_dash": 1, &"uppercut": 3}
+jobs = Array[StringName]([&"champion"])
 table = {"value": [52.0, 65.0, 91.0, 104.0, 130.0, 144.0, 170.0, 209.0], "mp": [42.0, 42.0, 44.0, 45.0, 46.0, 47.0, 48.0, 50.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 9.0, 8.0], "range": [200.0, 210.0, 230.0, 240.0, 260.0, 270.0, 290.0, 320.0]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

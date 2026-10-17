@@ -706,7 +706,10 @@ func card_pool() -> Array[CardData]:
 ## an advanced form of it (Tempest Strike still counts as Lacerator).
 func requirements_met(card: CardData) -> bool:
 	for id: StringName in card.requires:
-		if known_level(id) < int(card.requires[id]):
+		# A class can stand its own basic spell in for another (Sheep's Mana
+		# Ring where the original asks for Mana Arrow).
+		var need: StringName = cls.swap_requires.get(id, id) if cls else id
+		if known_level(need) < int(card.requires[id]):
 			return false
 	return true
 
@@ -730,6 +733,13 @@ func known_level(id: StringName) -> int:
 func can_learn(c: CardData) -> bool:
 	if card_level(c.id) > 0 or not requirements_met(c):
 		return false
+	if cls and c.id in cls.excluded_cards:
+		return false
+	if not c.jobs.is_empty() and job and job.id != &"trickster" and not job.id in c.jobs:
+		return false
+	for other: StringName in c.excludes:
+		if card_level(other) > 0:
+			return false
 	return c.upgrades == &"" or card_level(c.upgrades) > 0
 
 

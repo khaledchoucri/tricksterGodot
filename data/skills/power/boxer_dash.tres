@@ -12,6 +12,7 @@ kind = 1
 skill_id = 1102
 text = "Step in front of the enemy you aim at (up to {range} away) before it can react, striking for {v} damage."
 requires = {&"hyper_beat": 1}
+jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 max_level = 1
 table = {"value": [29.0], "mp": [32.0], "cooldown": [6.0], "range": [500.0]}
 master_material = ExtResource("m_master")

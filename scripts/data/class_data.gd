@@ -19,6 +19,17 @@ extends Resource
 @export var combo: ComboData
 ## Whether the held weapon is drawn (a boxer keeps it sheathed).
 @export var armed := true
+## A spell cast on the basic attack instead of the combo, at no MP (Sheep's
+## Mana Ring, Dragon's Mana Arrow). Its card is the class's starter.
+@export var basic_skill: CardData
+## Share of max MP regenerated per second (mages only).
+@export var mp_regen := 0.0
+## Spells cast by this class can't be interrupted by hits (Invincible Casting).
+@export var steady_casting := false
+## Cards this class is never offered (the other mage's basic spell).
+@export var excluded_cards: Array[StringName] = []
+## Prerequisites this class meets with another card: id -> id.
+@export var swap_requires: Dictionary = {}
 ## A class that has to be earned: Profile stat, amount, and the hint.
 @export var unlock_stat := ""
 @export var unlock_count := 0

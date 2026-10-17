@@ -12,6 +12,7 @@ kind = 1
 skill_id = 1501
 text = "Shadows of you ({count}) strike the enemy you aim at from every side, {v} damage each."
 requires = {&"blazing_strike": 3}
+jobs = Array[StringName]([&"gladiator"])
 table = {"value": [52.0, 54.0, 59.0, 61.0, 65.0, 67.0, 72.0, 78.0], "mp": [34.0, 38.0, 45.0, 48.0, 53.0, 55.0, 59.0, 65.0], "cooldown": [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0], "count": [1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 4.0, 5.0]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

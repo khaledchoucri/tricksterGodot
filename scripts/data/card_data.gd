@@ -24,6 +24,14 @@ enum Kind { TALENT, SKILL }
 ## The skill this one is an advanced form of (Gale Strike -> Tempest Strike).
 ## It's only offered while that skill is known, and learning it replaces it.
 @export var upgrades: StringName
+## Jobs that may learn it (the original's Job field); empty: anyone whose
+## jobs include the tree it's in. A Priest can't learn dark magic.
+@export var jobs: Array[StringName] = []
+## Cards that can't be held together with this one (the Seals and Pacts:
+## Seal of Water shuts out Seal of Fire and Seal of Earth).
+@export var excludes: Array[StringName] = []
+## The original's sounds: "ap" (cast), "ht" (hit), "fl" (flight), "ke" (lasting).
+@export var sounds: Dictionary = {}
 ## Highest level without mastery; 0 for the usual cap. Skills the original
 ## caps at level 1 (Dash, Faint...) have 1 and can't be mastered.
 @export var max_level := 0
@@ -37,7 +45,8 @@ enum Kind { TALENT, SKILL }
 @export_group("Skill")
 @export var mp_cost := 0
 @export var cooldown := 0.0
-@export_enum("none", "fire", "water", "wind", "earth", "lightning") var element := "none"
+## The original element names (the monster tables' resistances use them).
+@export_enum("none", "Fire", "Water", "Wind", "Earth", "Elec", "Light", "Dark") var element := "none"
 ## Stat the damage scales with: AP for weapon skills, MA for magic.
 @export_enum("AP", "MA", "DA", "DP") var scaling := "AP"
 ## Script extending Skill that performs it.
@@ -62,6 +71,17 @@ func value_at(level: int) -> float:
 	if table.has("value"):
 		return param("value", level)
 	return base_value + per_level * (level - 1)
+
+
+## Seconds a spell takes to cast before its effect (half the original's).
+func cast_at(level: int) -> float:
+	return param("cast", level)
+
+
+## Plays one of the original's sounds ("ap", "ht", "fl", "ke"), if it has it.
+func play(which: String, volume := -4.0) -> void:
+	if sounds.has(which):
+		Audio.play(String(sounds[which]), volume)
 
 
 func mp_at(level: int) -> int:

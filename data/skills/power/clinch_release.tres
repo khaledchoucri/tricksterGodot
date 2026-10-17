@@ -12,6 +12,7 @@ kind = 1
 skill_id = 1110
 text = "Usable while staggered: shake off the hit, its knockback and anything holding you."
 requires = {&"desperate_rally": 3}
+jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 max_level = 1
 table = {"value": [0.0], "mp": [58.0], "cooldown": [10.0]}
 master_material = ExtResource("m_master")

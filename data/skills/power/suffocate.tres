@@ -11,5 +11,6 @@ kind = 0
 skill_id = 1503
 text = "Your hits pin an enemy down: for {v} s it can't hide (burrow or vanish)."
 requires = {&"sense_breaker": 3}
+jobs = Array[StringName]([&"gladiator"])
 table = {"value": [15.0, 17.0, 21.0, 23.0, 27.0, 29.0, 33.0, 39.0]}
 master_material = ExtResource("m_master")

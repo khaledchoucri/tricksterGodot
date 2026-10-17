@@ -14,6 +14,6 @@ per_level = 8.0
 text = "Lightning leaps between up to five enemies for {v} damage each. Scales with MA."
 mp_cost = 26
 cooldown = 5.5
-element = "lightning"
+element = "Elec"
 scaling = "MA"
 behavior = ExtResource("2_b")

@@ -1,44 +1,16 @@
 """Generate the Power line's skill cards (Buffalo and Bunny) from the
-original skill tables.
+original skill tables. The rules for reading them are in skill_trees.py.
 
 usage: python -I tools/power_skills.py   (from the project root)
 
-Sources, all in original_assets/data/tables:
-- Item_SkillCardParam: which jobs learn each skill, and its prerequisites
-  (PreSkill_n at PreSkillLv_n).
-- SkillParam2: the skill's kind (Type 1 passive, 2 attack, 3 timed buff or
-  debuff), its level cap (MaxSKLV) and its description.
-- ESAII_<x> and ESAction_<x> (SkillParam2.ESAIITable / ESATable): its
-  numbers per level (MpCon, CoolTime, Range, Ratio, Seconds, Comment...).
-
 Writes data/skills/power/<card>.tres and fills the card lists of the jobs in
-data/jobs. How the original maps onto this game:
-- Levels: a card's levels 1-8 (5 in a run, 3 more from mastery) are the
-  original's levels 1, 2, 4, 5, 7, 8, 10 and 11.
-- Damage: the attack % the original tooltip shows (Comment) of a normal
-  hit, NORMAL_HIT.
-- MP: the original cost, compressed (MP pools here are about 100, not
-  thousands): 20 * (MpCon / 32) ** 0.4, so Shockwave's 32 stays 20.
-- Cooldowns, durations, chances, target counts and blocks: as the original.
-- Prerequisite levels (out of 11) map to 1 (levels 1-6), 2 (7-9) and 3
-  (10-11) here.
-- Timed buffs and debuffs (Type 3) become talents with the original effect:
-  a buff is always on (all but Berserker last far longer than their
-  cooldown; Berserker's is averaged over its cooldown), and a debuff is
-  applied by your hits for its original duration.
-- Advanced forms ("an advanced form of X" in the description) upgrade X:
-  they're offered only while X is known, and replace it.
+data/jobs.
 """
-import json
-import math
 import os
-import re
+import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TABLES = os.path.join(ROOT, 'original_assets', 'data', 'tables')
-OUT = os.path.join(ROOT, 'data', 'skills', 'power')
-LEVELS = [1, 2, 4, 5, 7, 8, 10, 11]
-NORMAL_HIT = 29.0
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from skill_trees import NORMAL_HIT, build, pct_hit  # noqa: E402
 
 # Jobs and the original tree that fills them (skill id prefix).
 JOBS = {
@@ -48,16 +20,6 @@ JOBS = {
     # The hybrids learn the other 2nd job's skills instead of new ones.
     'duelist': ['12'], 'mercenary': ['11'],
 }
-
-# Master Louis's material for each card (the original's are monster drops
-# from SkillMasterInfo, most of which aren't in the game yet).
-MATERIALS = ['sharp_leg', 'baby_carrot', 'hard_scales', 'scorpion_sting', 'cooling_fan', 'acorn_nut',
-             'cool_ice', 'cool_spring_water', 'duck_mole_paws', 'mole_feather', 'nemeth_towel', 'pine_resin',
-             'pineapple_mask', 'sand_glass', 'slime_husk', 'turban_shell', 'twinkle_star', 'ugly_pearl']
-
-
-def pct_hit(r):
-    return r['Comment'] / 100.0 * NORMAL_HIT
 
 
 # id -> card spec. kind: 'skill' or 'talent'. value: the main number from a
@@ -95,7 +57,7 @@ SPEC = {
     '1105': dict(card='eagle_eye', value=lambda r: r['Comment'], text='+{v}% Accuracy (AC).'),
     '1106': dict(card='counter_punch', value=pct_hit, rows={'chance': lambda r: 50},
                  text='While you Uppercut, a {chance}% chance of a counter blow for {v} more damage.'),
-    '1107': dict(card='guard', value=lambda r: r['Count'], rows={'cooldown': 'CoolTime'},
+    '1107': dict(card='guard', name='Guard', value=lambda r: r['Count'], rows={'cooldown': 'CoolTime'},
                  text='Block up to {v} physical hits completely (not magic). A spent block returns after {cooldown} s.'),
     '1108': dict(card='tetra_punch', kind='skill', behavior='quad_punch', upgrades='1104', value=lambda r: pct_hit(r),
                  text='Four blows at vital points, {v} damage and stronger with every one that lands.'),
@@ -118,7 +80,7 @@ SPEC = {
     '1207': dict(card='tidal_slash', kind='skill', behavior='tidal_slash', value=pct_hit, element='water', upgrades='1202',
                  rows={'range': 'Range', 'targets': 'MonNum'},
                  text='A wide Lacerator that slices the enemies in front and behind (up to {targets}) for {v} water damage.'),
-    '1208': dict(card='inferno_blade', kind='skill', behavior='inferno_blade', value=pct_hit, element='fire', rows={'radius': 'Radius'},
+    '1208': dict(card='inferno_blade', name='Inferno Blade', kind='skill', behavior='inferno_blade', value=pct_hit, element='fire', rows={'radius': 'Radius'},
                  text='Throw your sword: it spins out and back like a ball of fire, cutting for {v} damage.'),
     '1209': dict(card='tempest_strike', kind='skill', behavior='wind_blades', value=pct_hit, element='wind', upgrades='1202',
                  rows={'radius': 'Radius', 'targets': 'KillNum'},
@@ -158,122 +120,8 @@ SPEC = {
 }
 
 
-def load(name):
-    with open(os.path.join(TABLES, name + '.json'), encoding='utf-8') as f:
-        return json.load(f)
-
-
-def by_level(table):
-    if not table or not os.path.exists(os.path.join(TABLES, table + '.json')):
-        return {}
-    return {r['Level']: r for r in load(table)}
-
-
-def need(level):
-    return 3 if level >= 10 else 2 if level >= 7 else 1
-
-
-def tidy(v):
-    """Numbers as a card shows them: whole above 10, else one decimal."""
-    v = float(v)
-    return float(round(v)) if abs(v) >= 10 else round(v, 1)
-
-
-def fmt(v):
-    v = round(float(v), 2)
-    return str(int(v)) + '.0' if v == int(v) else str(v)
-
-
-def tres_value(v):
-    if isinstance(v, str):
-        return json.dumps(v)
-    if isinstance(v, list):
-        return '[' + ', '.join(fmt(x) for x in v) + ']'
-    return fmt(v)
-
-
 def main():
-    skills = {r['ID']: r for r in load('SkillParam2')}
-    cards = {r['AffectionSkill']: r for r in load('Item_SkillCardParam')}
-    os.makedirs(OUT, exist_ok=True)
-    names = {i: s['card'] for i, s in SPEC.items()}
-    written = {}
-    for n, (sid, spec) in enumerate(SPEC.items()):
-        sk, cp = skills[sid], cards[sid]
-        rows = {**by_level(sk['ESAIITable']), }
-        act = by_level(sk['ESATable'])
-        merged = {lv: {**rows.get(lv, {}), **act.get(lv, {})} for lv in range(1, 12)}
-        merged = {lv: r for lv, r in merged.items() if r}
-        if not merged:
-            merged = {1: {}}
-
-        def row_at(i):
-            return merged.get(LEVELS[i], merged[max(k for k in merged if k <= LEVELS[i])] if any(k <= LEVELS[i] for k in merged) else merged[min(merged)])
-
-        cap = int(sk['MaxSKLV']) if int(sk['MaxSKLV']) == 1 else 0
-        count = 1 if cap == 1 else len(LEVELS)
-        table = {'value': [spec['value'](row_at(i)) for i in range(count)]}
-        if spec.get('kind') == 'skill':
-            table['mp'] = [round(20 * (max(row_at(i).get('MpCon', 32), 1) / 32.0) ** 0.4) for i in range(count)]
-            table['cooldown'] = [row_at(i).get('CoolTime', 1.0) or 1.0 for i in range(count)]
-        for rname, src in spec.get('rows', {}).items():
-            table[rname] = [src(row_at(i)) if callable(src) else row_at(i)[src] for i in range(count)]
-        requires = {}
-        for k in (1, 2, 3):
-            pre, lv = cp[f'PreSkill_{k}'], cp[f'PreSkillLv_{k}']
-            if pre != '0' and pre in names:
-                requires[names[pre]] = need(lv)
-        behavior = spec.get('behavior')
-        ext = [('Script', 'res://scripts/data/card_data.gd', '1_s'),
-               ('Resource', f'res://data/materials/{MATERIALS[n % len(MATERIALS)]}.tres', 'm_master')]
-        if behavior:
-            ext.append(('Script', f'res://scripts/skills/{behavior}.gd', '2_b'))
-        lines = [f'[gd_resource type="Resource" script_class="CardData" load_steps={len(ext) + 1} format=3]', '']
-        for t, p, i in ext:
-            lines.append(f'[ext_resource type="{t}" path="{p}" id="{i}"]')
-        lines += ['', '[resource]', 'script = ExtResource("1_s")', f'id = &"{spec["card"]}"',
-                  f'display_name = {json.dumps(sk["Name"] or {"1107": "Guard", "1208": "Inferno Blade"}[sid])}',
-                  f'kind = {1 if spec.get("kind") == "skill" else 0}', f'skill_id = {sid}',
-                  f'text = {json.dumps(spec["text"])}']
-        if requires:
-            lines.append('requires = {' + ', '.join(f'&"{k}": {v}' for k, v in requires.items()) + '}')
-        if spec.get('upgrades'):
-            lines.append(f'upgrades = &"{names[spec["upgrades"]]}"')
-        if cap:
-            lines.append(f'max_level = {cap}')
-        table = {k: [tidy(x) for x in v] for k, v in table.items()}
-        lines.append('table = {' + ', '.join(f'"{k}": {tres_value(v)}' for k, v in table.items()) + '}')
-        lines.append('master_material = ExtResource("m_master")')
-        if spec.get('element'):
-            lines.append(f'element = "{spec["element"]}"')
-        if behavior:
-            lines.append('behavior = ExtResource("2_b")')
-        path = os.path.join(OUT, spec['card'] + '.tres')
-        with open(path, 'w', encoding='utf-8', newline='\n') as f:
-            f.write('\n'.join(lines) + '\n')
-        written[sid] = spec['card']
-    # Job card lists, in the order the original unlocks them (TM level).
-    for job, prefixes in JOBS.items():
-        ids = sorted((i for i in SPEC if i[:2] in prefixes), key=lambda i: (cards[i]['TMLV'], i))
-        path = os.path.join(ROOT, 'data', 'jobs', job + '.tres')
-        with open(path, encoding='utf-8') as f:
-            src = f.read()
-        src = re.sub(r'\[ext_resource type="Resource" path="res://data/(coral_beach/cards|skills/power)/[a-z_]+\.tres" id="c_[a-z_]+"\]\n', '', src)
-        new_ext = ''.join(f'[ext_resource type="Resource" path="res://data/skills/power/{names[i]}.tres" id="c_{names[i]}"]\n' for i in ids)
-        src = src.replace('\n[resource]', new_ext + '\n[resource]', 1) if new_ext else src
-        # keep exactly one blank line before [resource]
-        src = re.sub(r'\n+\[resource\]', '\n\n[resource]', src, count=1)
-        src = re.sub(r'(\]\n)(\[ext_resource type="Resource" path="res://data/skills)', r'\1\2', src)
-        card_list = 'cards = Array[ExtResource("2_c")]([' + ', '.join(f'ExtResource("c_{names[i]}")' for i in ids) + '])'
-        src = re.sub(r'^cards = .*$', card_list, src, flags=re.M)
-        if job in ('fighter', 'schoolgirl'):
-            src = re.sub(r'^starter = .*$', 'starter = ExtResource("c_shockwave")', src, flags=re.M)
-        n_ext = len(re.findall(r'^\[ext_resource', src, flags=re.M))
-        src = re.sub(r'load_steps=\d+', f'load_steps={n_ext + 1}', src, count=1)
-        with open(path, 'w', encoding='utf-8', newline='\n') as f:
-            f.write(src)
-        print(f'{job}: {len(ids)} cards')
-    print(f'{len(written)} Power cards written to {OUT}')
+    build(SPEC, 'power', JOBS, starters={'fighter': 'shockwave', 'schoolgirl': 'shockwave'})
 
 
 if __name__ == '__main__':

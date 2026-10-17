@@ -11,5 +11,7 @@ kind = 0
 skill_id = 1109
 text = "Below {hp}% HP, +{v}% AP, rising the lower your HP gets."
 requires = {&"burning_rave": 3}
+jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [14.0, 16.0, 20.0, 22.0, 26.0, 28.0, 32.0, 38.0], "hp": [15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0]}
+sounds = {"ap": "snd_P_209_ap.wav", "ke": "snd_P_209_ke.wav"}
 master_material = ExtResource("m_master")
