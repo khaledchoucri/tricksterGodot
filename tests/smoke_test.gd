@@ -84,7 +84,9 @@ func _run() -> void:
 	for id in skill_ids:
 		# Ranges are on the ground plane; place the dummy at a ground distance.
 		var reach := 110.0 if id in [&"boxer_dash", &"flash_cut", &"mega_flash_cut", &"piercing_wave", &"earthquake_blade",
-			&"inferno_blade", &"tornado_bomb", &"sonic_slash", &"lightning_strike", &"shadow"] else 50.0
+			&"inferno_blade", &"tornado_bomb", &"sonic_slash", &"lightning_strike"] else 50.0
+		if id == &"shadow":
+			reach = 150.0  # Shadow strikes the monster nearest the cursor, 150 ahead without a mouse
 		var spot := Vector2.INF
 		var ground_dir := Vector2.ZERO
 		for _i in 300:
