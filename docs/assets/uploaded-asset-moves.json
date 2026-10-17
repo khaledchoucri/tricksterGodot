@@ -1,0 +1,2299 @@
+{
+  "source_commit": "ca8bd1c63ffa75e9e172d781f2ceb81d9a7b7669",
+  "files_moved": 382,
+  "bytes_preserved": 1874652,
+  "moves": [
+    {
+      "old_path": "buffalo/buffalo.json",
+      "new_path": "original_assets/actors/buffalo/buffalo.json",
+      "bytes": 51925,
+      "sha256": "7fe3cfd00002d121a09ea127e66a2c0fe9c8028e86e457d76b2a86a2ebc9e75d"
+    },
+    {
+      "old_path": "buffalo/buffalo.tres",
+      "new_path": "original_assets/actors/buffalo/buffalo.tres",
+      "bytes": 81852,
+      "sha256": "129e00172151cebcb527da0563d74c0990c683bec311a3a4a0f0796f3db4011a"
+    },
+    {
+      "old_path": "buffalo/buffalo_attack.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_attack.png",
+      "bytes": 10158,
+      "sha256": "f0102a52bfcf0654a1360d0f67b21695f51115c6dcc792a6ae99acd32f2b92a0"
+    },
+    {
+      "old_path": "buffalo/buffalo_attack.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_attack.png.import",
+      "bytes": 977,
+      "sha256": "00e8a457e3a0509ce955796b3e0d095e14f3ae442cc2009a37d225e7b5db1815"
+    },
+    {
+      "old_path": "buffalo/buffalo_attack2.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_attack2.png",
+      "bytes": 46813,
+      "sha256": "7dbc7bb734ab520a10c7f2f7a1446954d440535933d8e8da724fdd4842a6e978"
+    },
+    {
+      "old_path": "buffalo/buffalo_attack2.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_attack2.png.import",
+      "bytes": 980,
+      "sha256": "b2958a8542e127a044eebce6405ce60080634f70caf545878160bbdbd2462632"
+    },
+    {
+      "old_path": "buffalo/buffalo_attack_ready.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_attack_ready.png",
+      "bytes": 15495,
+      "sha256": "16d45b362aaa726eebfd9983ed848aaa23d2f897d0853285b95be7d8da4b5b53"
+    },
+    {
+      "old_path": "buffalo/buffalo_attack_ready.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_attack_ready.png.import",
+      "bytes": 995,
+      "sha256": "61fc5a6c492de4ff814b7d7cb9003b2d00de3ce28ffb5d0f01e684c0c25e84e2"
+    },
+    {
+      "old_path": "buffalo/buffalo_cast.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_cast.png",
+      "bytes": 14685,
+      "sha256": "a4a83907a0c1a5b3eb332c1a5be52d3b9ddef8b19ed888454f35075cd7a44fd6"
+    },
+    {
+      "old_path": "buffalo/buffalo_cast.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_cast.png.import",
+      "bytes": 970,
+      "sha256": "ace8af7f09a4d266175a73df291dc02a106e77292f30ebcaacc9aa52298163a9"
+    },
+    {
+      "old_path": "buffalo/buffalo_charge.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_charge.png",
+      "bytes": 18849,
+      "sha256": "a249cbc8629cee7078c83a236008a4efb0760ca046c52ea00b81c817491a3bb6"
+    },
+    {
+      "old_path": "buffalo/buffalo_charge.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_charge.png.import",
+      "bytes": 977,
+      "sha256": "7580b4538a13a4b9af29f5424d81db65b1f5f962778819c176fb6e757bf99947"
+    },
+    {
+      "old_path": "buffalo/buffalo_combat_stance.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_combat_stance.png",
+      "bytes": 18397,
+      "sha256": "9ecb234b0f92ecf16cd52013866b1e61cc853af0d02286389009903add51376f"
+    },
+    {
+      "old_path": "buffalo/buffalo_combat_stance.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_combat_stance.png.import",
+      "bytes": 998,
+      "sha256": "a1fdb23af3ce7b342ec2a7048e263e9fbb3eda0ec3052ba419ed740ab4b72d3e"
+    },
+    {
+      "old_path": "buffalo/buffalo_dodge.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_dodge.png",
+      "bytes": 12887,
+      "sha256": "b0b62140736d7040b563eec173b081dda0d24202d7a50770153932d7633ef56a"
+    },
+    {
+      "old_path": "buffalo/buffalo_dodge.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_dodge.png.import",
+      "bytes": 973,
+      "sha256": "2b8e07ea5d65834b845e288173c2e3c547ce82b31f8d5e68cdccb5fbce174d52"
+    },
+    {
+      "old_path": "buffalo/buffalo_drill0.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_drill0.png",
+      "bytes": 6848,
+      "sha256": "d44b703a5cc4e149907fefab77260ff63c14d8371bbe7de12bc7376bf7c80347"
+    },
+    {
+      "old_path": "buffalo/buffalo_drill0.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_drill0.png.import",
+      "bytes": 977,
+      "sha256": "cf7e0155742d089db538d9978e7fad20e0c8c08cf7d366b0b0e1adff5941a0fd"
+    },
+    {
+      "old_path": "buffalo/buffalo_faint.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_faint.png",
+      "bytes": 4431,
+      "sha256": "8bd2434bcfcca5886c60f9fd2ca00eaa4673cc9a8c50df8bf2ca84ef845de8d0"
+    },
+    {
+      "old_path": "buffalo/buffalo_faint.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_faint.png.import",
+      "bytes": 974,
+      "sha256": "cde62390447f78aa657492a40cb6d52e6ac8749dafbada156a28f0554b2f8635"
+    },
+    {
+      "old_path": "buffalo/buffalo_guard.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_guard.png",
+      "bytes": 5177,
+      "sha256": "57d32768da7d5185cdbd7461cec76bcf3fce21baa1078be7667cdf283536fb39"
+    },
+    {
+      "old_path": "buffalo/buffalo_guard.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_guard.png.import",
+      "bytes": 973,
+      "sha256": "92ff56a896b9ef6d133bb88b832344e935102203aa1fc6218073d632f9d59cdd"
+    },
+    {
+      "old_path": "buffalo/buffalo_hit.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_hit.png",
+      "bytes": 7211,
+      "sha256": "43fd2462d71f83f9c564cdaa18129069d21273148b8ee873275508351dc24aad"
+    },
+    {
+      "old_path": "buffalo/buffalo_hit.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_hit.png.import",
+      "bytes": 968,
+      "sha256": "a2f507422670659dd90b648210d6b2bf891e2ace5b676c8e43775b7baadee545"
+    },
+    {
+      "old_path": "buffalo/buffalo_idle.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_idle.png",
+      "bytes": 12229,
+      "sha256": "2c796f49ec313091a10ac95de801e8002ed19d500e10489e3c1e67ad735de13e"
+    },
+    {
+      "old_path": "buffalo/buffalo_idle.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_idle.png.import",
+      "bytes": 971,
+      "sha256": "b50ee71ebc354d07257e45fdb1bf0ad6a9f6ada1df57432a4e4ac28940277fe6"
+    },
+    {
+      "old_path": "buffalo/buffalo_jump.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_jump.png",
+      "bytes": 2584,
+      "sha256": "64a45825f571c5ed1dac02d91be967181b0a9eeeb7d21b27edac7c8cb3677a3e"
+    },
+    {
+      "old_path": "buffalo/buffalo_jump.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_jump.png.import",
+      "bytes": 971,
+      "sha256": "f89bfce363d625339ec430ec5dced0773e9de7594a145cccaaffe238a908884c"
+    },
+    {
+      "old_path": "buffalo/buffalo_run.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_run.png",
+      "bytes": 53473,
+      "sha256": "4819e98a60594d3e4044b60818d590dd1d05c0c838c86b4c7bbd55666835f291"
+    },
+    {
+      "old_path": "buffalo/buffalo_run.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_run.png.import",
+      "bytes": 968,
+      "sha256": "7a6cf12deea3fe8a492ddb603a77ed45f44be4112d657ad6cdd590f7bf083f08"
+    },
+    {
+      "old_path": "buffalo/buffalo_throw.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_throw.png",
+      "bytes": 18949,
+      "sha256": "c0c9b5587a6e7d2ee8d054b5350697bc954d055d2d56b3d59e1de0a388c88456"
+    },
+    {
+      "old_path": "buffalo/buffalo_throw.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_throw.png.import",
+      "bytes": 974,
+      "sha256": "2f86bd3aebee76ecedb554501a5b759d3396ab321d66e06a37dbcea6808f1631"
+    },
+    {
+      "old_path": "buffalo/buffalo_walk.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_walk.png",
+      "bytes": 39654,
+      "sha256": "52bc195d459e45a74138787c3fcc7bcc49f6166ca608640cb6f1daa547f7cc68"
+    },
+    {
+      "old_path": "buffalo/buffalo_walk.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_walk.png.import",
+      "bytes": 971,
+      "sha256": "ad2d106d21e5f6c3df4441af35c3ba515c5c6970b7038b9fbf721e6a9241e77a"
+    },
+    {
+      "old_path": "buffalo/buffalo_weapon_crit.png",
+      "new_path": "original_assets/actors/buffalo/buffalo_weapon_crit.png",
+      "bytes": 18949,
+      "sha256": "c0c9b5587a6e7d2ee8d054b5350697bc954d055d2d56b3d59e1de0a388c88456"
+    },
+    {
+      "old_path": "buffalo/buffalo_weapon_crit.png.import",
+      "new_path": "original_assets/actors/buffalo/buffalo_weapon_crit.png.import",
+      "bytes": 992,
+      "sha256": "78c0efe93af683b8009f3a3f0fad0d39e9175732df06bd3cc09a9d52eab3a35a"
+    },
+    {
+      "old_path": "clione/clione.json",
+      "new_path": "original_assets/actors/clione/clione.json",
+      "bytes": 19506,
+      "sha256": "e92a74ffb7f5d9219f696c432027e160fd08d1317521dadfe67e197140b48b64"
+    },
+    {
+      "old_path": "clione/clione.tres",
+      "new_path": "original_assets/actors/clione/clione.tres",
+      "bytes": 51395,
+      "sha256": "cd5aff8edc96fc80b7452380cda2774e444f3daa471a0542a24f9635633d383f"
+    },
+    {
+      "old_path": "clione/clione_attack.png",
+      "new_path": "original_assets/actors/clione/clione_attack.png",
+      "bytes": 47383,
+      "sha256": "1e9bda725762927fa7ba113fd5a84d9e4691665d7e71cb23f1e6423f08e2275e"
+    },
+    {
+      "old_path": "clione/clione_attack.png.import",
+      "new_path": "original_assets/actors/clione/clione_attack.png.import",
+      "bytes": 973,
+      "sha256": "f2fb61e09cc1921de4c3fb6a24d2fb4189bde107af7fb7f78d70fc8d000a0e8d"
+    },
+    {
+      "old_path": "clione/clione_dodge.png",
+      "new_path": "original_assets/actors/clione/clione_dodge.png",
+      "bytes": 12593,
+      "sha256": "a2e16110cebb518db8bef2a94801a5f9a5eada955908dc33487925c94b01efcd"
+    },
+    {
+      "old_path": "clione/clione_dodge.png.import",
+      "new_path": "original_assets/actors/clione/clione_dodge.png.import",
+      "bytes": 970,
+      "sha256": "b20e0fb571d8f13b7cdff9f4586f5674fa0ea4063a2a787610a77b64aceda74b"
+    },
+    {
+      "old_path": "clione/clione_faint.png",
+      "new_path": "original_assets/actors/clione/clione_faint.png",
+      "bytes": 29637,
+      "sha256": "33126d6b6af9e7d0aa2a54a8e58ec8a73d0e74da9074d04bb67efb6f47251e84"
+    },
+    {
+      "old_path": "clione/clione_faint.png.import",
+      "new_path": "original_assets/actors/clione/clione_faint.png.import",
+      "bytes": 970,
+      "sha256": "431b9e481fa3a35bd47d24a6db4e7694d1c10de4e36c3ceef32e54c40e886913"
+    },
+    {
+      "old_path": "clione/clione_guard.png",
+      "new_path": "original_assets/actors/clione/clione_guard.png",
+      "bytes": 8426,
+      "sha256": "d38b452fcc3ec75fc18123c8d775d2f0bc256670f5e558cb35c2a2fc72e27ffe"
+    },
+    {
+      "old_path": "clione/clione_guard.png.import",
+      "new_path": "original_assets/actors/clione/clione_guard.png.import",
+      "bytes": 970,
+      "sha256": "a46bf1e2fa453e2c403d3ba6c728476246c086992074c81c732fffe08a3bdb10"
+    },
+    {
+      "old_path": "clione/clione_hit.png",
+      "new_path": "original_assets/actors/clione/clione_hit.png",
+      "bytes": 9212,
+      "sha256": "b1ec6d72a09377733d1cf404e5c080177b642a606d0af7a7dd4984c1ede9d6c5"
+    },
+    {
+      "old_path": "clione/clione_hit.png.import",
+      "new_path": "original_assets/actors/clione/clione_hit.png.import",
+      "bytes": 963,
+      "sha256": "af045cf13d54cfce268254fae89825693ef1003fdb902040eba9ee6638c2d454"
+    },
+    {
+      "old_path": "clione/clione_idle.png",
+      "new_path": "original_assets/actors/clione/clione_idle.png",
+      "bytes": 46079,
+      "sha256": "e49e51c8e83539364b7e0c86d6e0d61343db4ff2cc710437d7e00a62d94bcc10"
+    },
+    {
+      "old_path": "clione/clione_idle.png.import",
+      "new_path": "original_assets/actors/clione/clione_idle.png.import",
+      "bytes": 966,
+      "sha256": "127a2dd959c32b2d762aa41943e3bdc8bb07f35f6423b23f370ba42aabb6fcab"
+    },
+    {
+      "old_path": "clione/clione_idle_auto.png",
+      "new_path": "original_assets/actors/clione/clione_idle_auto.png",
+      "bytes": 24829,
+      "sha256": "fdd392679b59510eec43a51abb02d612556008a9646d330044ab9b13b0571e1e"
+    },
+    {
+      "old_path": "clione/clione_idle_auto.png.import",
+      "new_path": "original_assets/actors/clione/clione_idle_auto.png.import",
+      "bytes": 982,
+      "sha256": "938e726ce4bc6eb3a6a8b76c8d9f67499b0c0ec493660342c07d093ab4ae2adc"
+    },
+    {
+      "old_path": "clione/clione_walk.png",
+      "new_path": "original_assets/actors/clione/clione_walk.png",
+      "bytes": 46079,
+      "sha256": "e49e51c8e83539364b7e0c86d6e0d61343db4ff2cc710437d7e00a62d94bcc10"
+    },
+    {
+      "old_path": "clione/clione_walk.png.import",
+      "new_path": "original_assets/actors/clione/clione_walk.png.import",
+      "bytes": 967,
+      "sha256": "100e0baf129439c9715d0e4d30936ddf1b6cee1ff199dc46be3c43e48bd35f55"
+    },
+    {
+      "old_path": "e/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/contact.png",
+      "bytes": 16975,
+      "sha256": "84ab7dc5ca60ae2e9ca11b5325cd6d3e0d7cdef27afb3f1e6d0bdc0c2cdfbcc6"
+    },
+    {
+      "old_path": "e/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/contact.png.import",
+      "bytes": 967,
+      "sha256": "7ee0bedb2d0b3200366a62cccc4edbf71c80acc8625ec4ffcc11b57e261743ac"
+    },
+    {
+      "old_path": "e/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_00.png",
+      "bytes": 3375,
+      "sha256": "d7e050a3b7c436d76827c82b17dc5e789284ad2a73e0544b4483b393cf72b96f"
+    },
+    {
+      "old_path": "e/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_00.png.import",
+      "bytes": 970,
+      "sha256": "440602367bbf9fc1a9c0b502296a353f848edf6c0d9d8e2d4e0ca57f40ee4428"
+    },
+    {
+      "old_path": "e/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_01.png",
+      "bytes": 3462,
+      "sha256": "bac8bd48dc183aba06f4f749b1c839f7aa7d1ec026c561647f6bf623c53dd3bb"
+    },
+    {
+      "old_path": "e/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_01.png.import",
+      "bytes": 970,
+      "sha256": "73d25dfa4aa1d56a1c9a861e8b49156f0624bbefd4a3bbeba58c2c2144090684"
+    },
+    {
+      "old_path": "e/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_02.png",
+      "bytes": 3422,
+      "sha256": "544b5bd11b49dfd799a07e45cd18bfc7ee932e8da5292e55887f0cce633dc50a"
+    },
+    {
+      "old_path": "e/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_02.png.import",
+      "bytes": 969,
+      "sha256": "8b3aaeeab8e2d065fabca6232beb46a05b758ba088da0be5f1b99708468abe50"
+    },
+    {
+      "old_path": "e/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_03.png",
+      "bytes": 3358,
+      "sha256": "7a81d98f6cf405123abf6458b4ff6e1cb06b945a354b546a82fa12357caaeffd"
+    },
+    {
+      "old_path": "e/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "dd15f9764fdaae2f11c8cd7fe3afe3e934c67f89f599c99e26f6566639e587f1"
+    },
+    {
+      "old_path": "e/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_04.png",
+      "bytes": 3409,
+      "sha256": "1ad23b0bd35b84d0134ebbc4a8d4694b503793830ee975fc7d307d7b2fd90c3c"
+    },
+    {
+      "old_path": "e/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_04.png.import",
+      "bytes": 970,
+      "sha256": "e4776a936d6f5eb42aec6c296104318c0f199341affa08c4dbc9585f2df3668c"
+    },
+    {
+      "old_path": "e/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_05.png",
+      "bytes": 3354,
+      "sha256": "50ed36972ce9c41d52d525fb9fe319c2c7547b73b53aeb5a484c901e8c091237"
+    },
+    {
+      "old_path": "e/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "a00202616a8fca5d5262639cf291f60cdf6c5a1836a000040784c35ea9e44cb3"
+    },
+    {
+      "old_path": "e/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_06.png",
+      "bytes": 3435,
+      "sha256": "cab3d7eed1ebb687a951e2088e68e82bd26f5a2a2a016be34b5e30659181f0bb"
+    },
+    {
+      "old_path": "e/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "e12188ae3800d986960991812f283e6e6a678d0e516f8e6702e2a37aae7e7ddf"
+    },
+    {
+      "old_path": "e/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_07.png",
+      "bytes": 3402,
+      "sha256": "cc71801db6bee155b3569583c94288afd0e87d95a0a4c35bbdf2b16206c187c0"
+    },
+    {
+      "old_path": "e/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/frame_07.png.import",
+      "bytes": 970,
+      "sha256": "85d58d21e3d264490266a3b19e83d771a62aa23d6b5f8bfd3671d992ae8e166e"
+    },
+    {
+      "old_path": "e/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/guide.json",
+      "bytes": 1052,
+      "sha256": "7f8fb1b5bc2cf0d88765a21f1cd83189c501699c9f0107ef25d38deb5c1c9274"
+    },
+    {
+      "old_path": "e/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/strip_00-03.png",
+      "bytes": 9629,
+      "sha256": "549090e1386de956189f20ebf104bbb45ea810dcf9da38f7e7f48c33a10ea099"
+    },
+    {
+      "old_path": "e/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/strip_00-03.png.import",
+      "bytes": 978,
+      "sha256": "159e4812da956c17eff764eb0e9ccae716b5abce9824f329717715c6ac0307e1"
+    },
+    {
+      "old_path": "e/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/strip_04-07.png",
+      "bytes": 9690,
+      "sha256": "8dec82e2ad97fca27f1b4285854b0ad0b68181fe22b73e99e5af5dbe7f4ad714"
+    },
+    {
+      "old_path": "e/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/e/strip_04-07.png.import",
+      "bytes": 979,
+      "sha256": "877b64c2c0704a3d7101f4699f0f8efcb369764394c9d4d415a350ae6ee12bc5"
+    },
+    {
+      "old_path": "hit/ne/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/contact.png",
+      "bytes": 6910,
+      "sha256": "0ef660d6b352df1ff38c2ce1d77669a6471b34dc6a8f24cc13992ea6a2b3c055"
+    },
+    {
+      "old_path": "hit/ne/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/contact.png.import",
+      "bytes": 968,
+      "sha256": "cfa5b72becfde880494842b2866846b9fbee85c36ed1a24c5b8f5be25374cb2b"
+    },
+    {
+      "old_path": "hit/ne/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/frame_00.png",
+      "bytes": 3364,
+      "sha256": "608ffd327ebc041f13be781bb3da4d25c56e3cda710690e57c1c381bcf91a802"
+    },
+    {
+      "old_path": "hit/ne/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "3b9bc6794d86f92869daf2b9a4b03aa87a4c72853f27b53f6e6cb354c43b3125"
+    },
+    {
+      "old_path": "hit/ne/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/frame_01.png",
+      "bytes": 3327,
+      "sha256": "82d9d257ef7bb00ad5741f7527d3bf0daddfcde32fdea8dd8f254cfbdb5ad5ba"
+    },
+    {
+      "old_path": "hit/ne/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/frame_01.png.import",
+      "bytes": 970,
+      "sha256": "ce1f47c89b483bdf22e09167bfeaae263b3281418e461b52ef1724128d56456e"
+    },
+    {
+      "old_path": "hit/ne/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/frame_02.png",
+      "bytes": 3364,
+      "sha256": "608ffd327ebc041f13be781bb3da4d25c56e3cda710690e57c1c381bcf91a802"
+    },
+    {
+      "old_path": "hit/ne/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/frame_02.png.import",
+      "bytes": 971,
+      "sha256": "508d34f46896f068b66d6e3236871d01bdedbe77bd60e2b702b990b1ee2f2120"
+    },
+    {
+      "old_path": "hit/ne/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/guide.json",
+      "bytes": 508,
+      "sha256": "64c6d5a4381bfe757b525d5c36b5f10af338d3a4e2b8ee4ba0cf7d5be23a2b61"
+    },
+    {
+      "old_path": "hit/ne/strip_00-02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/strip_00-02.png",
+      "bytes": 6910,
+      "sha256": "0ef660d6b352df1ff38c2ce1d77669a6471b34dc6a8f24cc13992ea6a2b3c055"
+    },
+    {
+      "old_path": "hit/ne/strip_00-02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/ne/strip_00-02.png.import",
+      "bytes": 980,
+      "sha256": "c25795051abd1dba2603664d769536592d6fc2a49b070013f7e89f1914250955"
+    },
+    {
+      "old_path": "hit/nw/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/contact.png",
+      "bytes": 6892,
+      "sha256": "f50354ff06edd719f0a987b011ea7a7657ebd07dc16c1bc47bb05ce462fa6949"
+    },
+    {
+      "old_path": "hit/nw/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/contact.png.import",
+      "bytes": 968,
+      "sha256": "aad076247b79e4f6b838f2ce2e943f83f2b33577bb0901f7796eb55dc0565f4d"
+    },
+    {
+      "old_path": "hit/nw/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/frame_00.png",
+      "bytes": 3353,
+      "sha256": "829b08c2589a626c1d9862b24bae7e84e77484d35cae8b1baf56afb85a08e287"
+    },
+    {
+      "old_path": "hit/nw/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "eb821657c71325572bad2e4c1ca487860f214a03999d242b1c0e03685891e6f8"
+    },
+    {
+      "old_path": "hit/nw/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/frame_01.png",
+      "bytes": 3295,
+      "sha256": "75ab0f8d9cf8f29bcd11052cce9f3318f307513cb289e931a579783b116d7ad1"
+    },
+    {
+      "old_path": "hit/nw/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/frame_01.png.import",
+      "bytes": 970,
+      "sha256": "f5f7f5629a70027619aca44404f995a8be1b451283b27aa71a511361c08f2176"
+    },
+    {
+      "old_path": "hit/nw/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/frame_02.png",
+      "bytes": 3353,
+      "sha256": "829b08c2589a626c1d9862b24bae7e84e77484d35cae8b1baf56afb85a08e287"
+    },
+    {
+      "old_path": "hit/nw/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/frame_02.png.import",
+      "bytes": 971,
+      "sha256": "2e5de53412c59e016d1bef215707d7bf270fb0e95841c16b539fcd19b0672276"
+    },
+    {
+      "old_path": "hit/nw/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/guide.json",
+      "bytes": 506,
+      "sha256": "152f34a93b986d9eb2885a1327aa8736524f66f3160192c0e399357f05f639b8"
+    },
+    {
+      "old_path": "hit/nw/strip_00-02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/strip_00-02.png",
+      "bytes": 6892,
+      "sha256": "f50354ff06edd719f0a987b011ea7a7657ebd07dc16c1bc47bb05ce462fa6949"
+    },
+    {
+      "old_path": "hit/nw/strip_00-02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/nw/strip_00-02.png.import",
+      "bytes": 979,
+      "sha256": "52333c38025e071b9c29427e7c0cc873daf1394bfdc46eabb817c2c6924af466"
+    },
+    {
+      "old_path": "hit/se/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/contact.png",
+      "bytes": 7487,
+      "sha256": "41c522e0297d44251f15b3c9400e130bd757d43dbb085970741c01f3e0a0b469"
+    },
+    {
+      "old_path": "hit/se/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/contact.png.import",
+      "bytes": 968,
+      "sha256": "688e227a533889292342f9ac959a41942d1a1fb8a5a98192b4feeed2dff87739"
+    },
+    {
+      "old_path": "hit/se/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/frame_00.png",
+      "bytes": 3571,
+      "sha256": "4c1d69059705d1b269ad69084dc635544b81cd7f3eaf2859f7a3881bb69c1b01"
+    },
+    {
+      "old_path": "hit/se/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "12f89a91854e9f8712288c6c543682bbb908c426260ca34783c3a2f19ab03b83"
+    },
+    {
+      "old_path": "hit/se/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/frame_01.png",
+      "bytes": 3694,
+      "sha256": "3b3cfbc62e24e7005bd6979e3ef5eb3de9a62970650246a232d8ec94bc411828"
+    },
+    {
+      "old_path": "hit/se/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/frame_01.png.import",
+      "bytes": 971,
+      "sha256": "842830764d4d3ccff9cf05e61794b22917888ac43f99219875f300b89b23b889"
+    },
+    {
+      "old_path": "hit/se/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/frame_02.png",
+      "bytes": 3571,
+      "sha256": "4c1d69059705d1b269ad69084dc635544b81cd7f3eaf2859f7a3881bb69c1b01"
+    },
+    {
+      "old_path": "hit/se/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/frame_02.png.import",
+      "bytes": 970,
+      "sha256": "425c383c3ac661a3adaebfbe1235ddf1addfa31ded37ca17d09c4e013a45b7c5"
+    },
+    {
+      "old_path": "hit/se/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/guide.json",
+      "bytes": 507,
+      "sha256": "bc7c9c2b4d8c935125331a9ba0d045445fd8d6bcd14483e4e1ebb4365687fcbf"
+    },
+    {
+      "old_path": "hit/se/strip_00-02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/strip_00-02.png",
+      "bytes": 7487,
+      "sha256": "41c522e0297d44251f15b3c9400e130bd757d43dbb085970741c01f3e0a0b469"
+    },
+    {
+      "old_path": "hit/se/strip_00-02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/se/strip_00-02.png.import",
+      "bytes": 980,
+      "sha256": "65db756358c07c316b3321f568add4704d826e1e0d9681c38fe66f8180b860dd"
+    },
+    {
+      "old_path": "hit/sw/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/contact.png",
+      "bytes": 7594,
+      "sha256": "ef70dacd034b4808d7e6529bb7afe7526e891a8d72ca83daab95a325488f7b72"
+    },
+    {
+      "old_path": "hit/sw/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/contact.png.import",
+      "bytes": 968,
+      "sha256": "83463242fc16a9512a4a84c9cc1af6f7b03e2c91e4aee488d39a8ff537af4c3d"
+    },
+    {
+      "old_path": "hit/sw/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/frame_00.png",
+      "bytes": 3631,
+      "sha256": "e2c0809548f8d24dfcf7bf9fd1aaa3050cd6120a43d7be82bcae0c04982ddc11"
+    },
+    {
+      "old_path": "hit/sw/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "886c558820725c4bee0cb16898aa8704a702f81f6c7c5b1b75a513301860c21f"
+    },
+    {
+      "old_path": "hit/sw/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/frame_01.png",
+      "bytes": 3719,
+      "sha256": "83aa385a6cc7933236e386872d01d38dbfbb13182a93f8456e1042928ceb61ed"
+    },
+    {
+      "old_path": "hit/sw/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/frame_01.png.import",
+      "bytes": 971,
+      "sha256": "6be329cc97715c0e641b5b7d47c16b7d059470a49e7fc68907e8c500ac244659"
+    },
+    {
+      "old_path": "hit/sw/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/frame_02.png",
+      "bytes": 3631,
+      "sha256": "e2c0809548f8d24dfcf7bf9fd1aaa3050cd6120a43d7be82bcae0c04982ddc11"
+    },
+    {
+      "old_path": "hit/sw/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/frame_02.png.import",
+      "bytes": 970,
+      "sha256": "2289d88ad35076b97328c1f55708a8f51460dd86caf541ea88a8d492c2e646be"
+    },
+    {
+      "old_path": "hit/sw/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/guide.json",
+      "bytes": 507,
+      "sha256": "f1b978bb2385bd52045957a49f91eedb3f9303a3d230f515d604313ad8288d5b"
+    },
+    {
+      "old_path": "hit/sw/strip_00-02.png",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/strip_00-02.png",
+      "bytes": 7594,
+      "sha256": "ef70dacd034b4808d7e6529bb7afe7526e891a8d72ca83daab95a325488f7b72"
+    },
+    {
+      "old_path": "hit/sw/strip_00-02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/hit/sw/strip_00-02.png.import",
+      "bytes": 979,
+      "sha256": "f858a9dbddd0fb24e0399acc63945ce9211a0cc3becd9e3df89d8e5a2ad15a53"
+    },
+    {
+      "old_path": "n/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/contact.png",
+      "bytes": 16222,
+      "sha256": "f0cd76f7fbf019c01d1d498895e5fb544a80a3096d777f8af9650eb629a8eeaa"
+    },
+    {
+      "old_path": "n/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/contact.png.import",
+      "bytes": 967,
+      "sha256": "368ba152cc8395242dc684b9663561b585bd005919afdf9786c518dc15c3336a"
+    },
+    {
+      "old_path": "n/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_00.png",
+      "bytes": 3263,
+      "sha256": "5402921d0cf3da47a50bb013f9911a152191a3c9f85bb6bc9426ac5aa9475e73"
+    },
+    {
+      "old_path": "n/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_00.png.import",
+      "bytes": 970,
+      "sha256": "601f0743ec081cdf96e2601faabe3005bee5ac0c04f9b9cae4a20fefcaa38ff4"
+    },
+    {
+      "old_path": "n/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_01.png",
+      "bytes": 3211,
+      "sha256": "8e08d5265e85c08a37471a5ca2639c2cb619b553078c924cdba6c99f0faf7fb2"
+    },
+    {
+      "old_path": "n/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_01.png.import",
+      "bytes": 969,
+      "sha256": "b8892267ba58efa7d7e3c7c812789fce5d8da5b6e9ca5e39267b9b96c227ac80"
+    },
+    {
+      "old_path": "n/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_02.png",
+      "bytes": 3216,
+      "sha256": "e67518733877228b54461bc7062d3d8e8e22e3ec8ba2598d69544743b3505010"
+    },
+    {
+      "old_path": "n/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_02.png.import",
+      "bytes": 970,
+      "sha256": "601504f9208754f558479aa32cea861a2f5c544293a7e1fb9e70c73647dfb983"
+    },
+    {
+      "old_path": "n/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_03.png",
+      "bytes": 3288,
+      "sha256": "b1a9a386a9df53bddd2bc98eb7306b59b780dd7ed5596f24151ab41dbe307439"
+    },
+    {
+      "old_path": "n/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "382e15d2ee177f9ccab511bf3c52c9d37dab288fc0a9d2ebefba7e08834130dd"
+    },
+    {
+      "old_path": "n/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_04.png",
+      "bytes": 3208,
+      "sha256": "53411953e59625933e6fe65cffaed1aff11034f43d28f2d7896ec1cd3a21a05c"
+    },
+    {
+      "old_path": "n/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_04.png.import",
+      "bytes": 970,
+      "sha256": "78eaf0ad0100c173405d33c3009d1be332666e9393243a9dc9b32a8432fc7365"
+    },
+    {
+      "old_path": "n/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_05.png",
+      "bytes": 3279,
+      "sha256": "4d738e65b4601871ac777e59834db17691e685e6efd976f5f37d7770634cb879"
+    },
+    {
+      "old_path": "n/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "3b12fe742f6ae159d76e9d0cefcc8aa03af869bd7eb9ec83639eb3c46833c9bf"
+    },
+    {
+      "old_path": "n/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_06.png",
+      "bytes": 3197,
+      "sha256": "11d015b0cbf59c10aa3db7e6d1a09115e73b5c58b38590e3b3f692c84aa624dd"
+    },
+    {
+      "old_path": "n/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "e1f6dd42ba1c930975dfca7b022694315986574ced4085ca18c1ce3fcfbc8b95"
+    },
+    {
+      "old_path": "n/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_07.png",
+      "bytes": 3296,
+      "sha256": "bb4ecb3133fa2a8443267510a9616cac794c618cb9fe186d6ecb1885c90c3298"
+    },
+    {
+      "old_path": "n/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/frame_07.png.import",
+      "bytes": 969,
+      "sha256": "a597cb59f7efc58c696d20c868582f623a41f7742f37d3bb0bc26874ab9da802"
+    },
+    {
+      "old_path": "n/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/guide.json",
+      "bytes": 1050,
+      "sha256": "c9b0ae1599d847b5d54791bf3d76284074564b1d73f057f8fc14026a567f0fd4"
+    },
+    {
+      "old_path": "n/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/strip_00-03.png",
+      "bytes": 9332,
+      "sha256": "d70197957f921e37be818054c9f491352a1478b669dd4c24d21142ede1239515"
+    },
+    {
+      "old_path": "n/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/strip_00-03.png.import",
+      "bytes": 979,
+      "sha256": "427ae2018a802a69af2860a4dea7e75765fd066e352ba0ce8a92e4804800e53d"
+    },
+    {
+      "old_path": "n/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/strip_04-07.png",
+      "bytes": 9199,
+      "sha256": "e6556e5b41b3783d17e4c3142288925f418b4629049203fc933969dc2f5cfe0f"
+    },
+    {
+      "old_path": "n/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/n/strip_04-07.png.import",
+      "bytes": 978,
+      "sha256": "ddecaea5bd89f9e0487da2cd76e91d3c5535c075442e23c7fd36e21c20bbfaf5"
+    },
+    {
+      "old_path": "ne/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/contact.png",
+      "bytes": 17458,
+      "sha256": "2bf1f736fc360151ddf88a5cf973562f88745af6ec4a8ec9abb97b750339d0ad"
+    },
+    {
+      "old_path": "ne/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/contact.png.import",
+      "bytes": 968,
+      "sha256": "2f5c0b1672035de4f13295a7fc030960982c2fc762a107c60fd44ad6ae127c67"
+    },
+    {
+      "old_path": "ne/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_00.png",
+      "bytes": 3456,
+      "sha256": "616a9ec37da1d37300d63d35a5faddc60b06856c7312b76cb014ca27ec741847"
+    },
+    {
+      "old_path": "ne/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "f697ba0f4c8250baafdf0c897a9be57b3215043d09e2d70f6d4efb1b4448be19"
+    },
+    {
+      "old_path": "ne/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_01.png",
+      "bytes": 3527,
+      "sha256": "f76792e67fd921f048958877d699510038b3f17fd264fc0334051be1731affbf"
+    },
+    {
+      "old_path": "ne/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_01.png.import",
+      "bytes": 971,
+      "sha256": "358f64dd2703ff162d6ee0de51f263cf13831d5a7143d77dfcfb60ab76c0525e"
+    },
+    {
+      "old_path": "ne/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_02.png",
+      "bytes": 3350,
+      "sha256": "0204b239af7794edc73a93874bfb3eca2377d4cff99708d99a2fec3ef321df98"
+    },
+    {
+      "old_path": "ne/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_02.png.import",
+      "bytes": 971,
+      "sha256": "b7f2dd57d14560525cb1c43c15e9d62330052303b1a4f7e81bd7bc08a6c38d75"
+    },
+    {
+      "old_path": "ne/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_03.png",
+      "bytes": 3389,
+      "sha256": "e3d0b947e89c564d45eaf52b64a1f43a1adff4fdf8037a081c0b3e5341991e2a"
+    },
+    {
+      "old_path": "ne/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "c5e57eae8716d161aa9c50a6133545d94058883538fcd91d573413d8b8a37272"
+    },
+    {
+      "old_path": "ne/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_04.png",
+      "bytes": 3398,
+      "sha256": "25da8eff49995d677a931885283c90aac863cebc509a44a9f40b5faa6c57daf5"
+    },
+    {
+      "old_path": "ne/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_04.png.import",
+      "bytes": 971,
+      "sha256": "171bf77898a58fa85cc348c793781859b0fb2040d9053989188aeb941780a015"
+    },
+    {
+      "old_path": "ne/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_05.png",
+      "bytes": 3474,
+      "sha256": "4dfebcef72e8351863379a6ffe0361422597aed95db52eb35d11b0ccbd823742"
+    },
+    {
+      "old_path": "ne/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_05.png.import",
+      "bytes": 971,
+      "sha256": "1d829b8c21579866e476947ae781af6cef6fbb8882e6402e9e95f593ee371c7a"
+    },
+    {
+      "old_path": "ne/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_06.png",
+      "bytes": 3359,
+      "sha256": "78f5866ad2929e3ac3bdc25b54234e7cf655092c4b012bcd4b9c577efc7cdc61"
+    },
+    {
+      "old_path": "ne/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "4fcddf64ffa554dfda5c0b7bca8c3ecb6371cb6a0c41cf534e4a67ab3255756c"
+    },
+    {
+      "old_path": "ne/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_07.png",
+      "bytes": 3357,
+      "sha256": "54fed4400afedfb2a84d8496cef6e84b732938bbae28428797e64f8ae164ef90"
+    },
+    {
+      "old_path": "ne/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/frame_07.png.import",
+      "bytes": 971,
+      "sha256": "fcc3d2f29f58ba2b6ed856e34438d7e6e25db9a7be27fb3d15127dba910aba1f"
+    },
+    {
+      "old_path": "ne/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/guide.json",
+      "bytes": 1052,
+      "sha256": "333243085d77f3b42e86d1d66ba2591c34c9d320627d5c295b741008d1b87df6"
+    },
+    {
+      "old_path": "ne/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/strip_00-03.png",
+      "bytes": 9918,
+      "sha256": "60b05ede5181b60b3a2141ab48ab8c80a2e8579638195b515204839cb1fb581f"
+    },
+    {
+      "old_path": "ne/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/strip_00-03.png.import",
+      "bytes": 980,
+      "sha256": "e16681fc94f7d15b0371459da871fe7c18f8fa858411eaf8e672eb2030dbaa36"
+    },
+    {
+      "old_path": "ne/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/strip_04-07.png",
+      "bytes": 9736,
+      "sha256": "f9f622b0554ceb0b58eda19fcba00fdb4f1b49208bd1bb8d1d609ba47c4de5c6"
+    },
+    {
+      "old_path": "ne/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/ne/strip_04-07.png.import",
+      "bytes": 979,
+      "sha256": "dd9f5cfc412858d2ac161cf81c03d2f38707456d27f8bb2924e91773f92db9d1"
+    },
+    {
+      "old_path": "nw/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/contact.png",
+      "bytes": 17473,
+      "sha256": "01e9395bd2103a65769b9245952b5c8dbe56d7e0ec96482f8c873f26439b1137"
+    },
+    {
+      "old_path": "nw/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/contact.png.import",
+      "bytes": 968,
+      "sha256": "a289fbbe64253826403d470a516b2cdf1ad0395c900d8b6e380729ae030580c8"
+    },
+    {
+      "old_path": "nw/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_00.png",
+      "bytes": 3453,
+      "sha256": "08833550dd9487013c49f8b1ab89033d125add110ca7f3bb4aa98fa167b4811b"
+    },
+    {
+      "old_path": "nw/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "979f2e8a7758255d17161a18880f145184c429562f4f40bb7f421d2ca8432985"
+    },
+    {
+      "old_path": "nw/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_01.png",
+      "bytes": 3481,
+      "sha256": "d739570ef8e325ddbe0b691ca77cb99d4bd6d515d5f3e999d17f92266ddc8b42"
+    },
+    {
+      "old_path": "nw/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_01.png.import",
+      "bytes": 971,
+      "sha256": "b856f93f205934409e33dbb543c75760a00a92b0f414549ccb2dd7e6d11235d3"
+    },
+    {
+      "old_path": "nw/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_02.png",
+      "bytes": 3306,
+      "sha256": "32568cc596f9eb832f2db4ca114788be154d0352cbc65b5db3c92a56b3c2bd7e"
+    },
+    {
+      "old_path": "nw/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_02.png.import",
+      "bytes": 970,
+      "sha256": "f381d3f5e3f66b17499e7ee33d2ae736837bf975b78cad7c147274f79514e8d0"
+    },
+    {
+      "old_path": "nw/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_03.png",
+      "bytes": 3381,
+      "sha256": "1ae70383a2647c2b1a49ea18fd871723871da61871f57dd6f0ddb14a53b8bc93"
+    },
+    {
+      "old_path": "nw/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "f753ef04bf906ddb2bd270e2757184e45e851f3a2aaacd3963cd1d61a7849f8e"
+    },
+    {
+      "old_path": "nw/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_04.png",
+      "bytes": 3401,
+      "sha256": "dcffafef36233d911b8f08896dd1bea866058c0eac10ce76c73c07c99afea724"
+    },
+    {
+      "old_path": "nw/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_04.png.import",
+      "bytes": 971,
+      "sha256": "87099f088524cf076e94c18c96b27f94be04ea54c30505d7c355a60f11dfbb27"
+    },
+    {
+      "old_path": "nw/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_05.png",
+      "bytes": 3501,
+      "sha256": "d9f13aafc421bdab71b1d68380535d283bee8dd46b8aee5e7f0b45c398b56198"
+    },
+    {
+      "old_path": "nw/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "daf4ae386f7321d2bb8f82fc14957677105af8c28180c731c703a08dcd02212a"
+    },
+    {
+      "old_path": "nw/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_06.png",
+      "bytes": 3375,
+      "sha256": "1542d31e4cf6d4c009defd686d4a77cc4193d68e5568ca2664cb689f2f2e06ab"
+    },
+    {
+      "old_path": "nw/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "877b45d7d2bbe7a58ab394c54744bb0e285981bda80a54483db48a17b40912d0"
+    },
+    {
+      "old_path": "nw/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_07.png",
+      "bytes": 3365,
+      "sha256": "94e293d13c7ae2d4c978df72881fb638181d2425036d408600d22fbb555b7e8a"
+    },
+    {
+      "old_path": "nw/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/frame_07.png.import",
+      "bytes": 971,
+      "sha256": "6888ff53ca0832f38b0c14f666765bcb7e8ed22f2cd6abb49e43a99b65944f05"
+    },
+    {
+      "old_path": "nw/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/guide.json",
+      "bytes": 1054,
+      "sha256": "e64c8cbbddd72ea42adf648d47592979cd7864ee7429d9a0db0d0d5fa7efa10a"
+    },
+    {
+      "old_path": "nw/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/strip_00-03.png",
+      "bytes": 9884,
+      "sha256": "36d4fdfd77c144049011b229834cbc3ef0234205dad793cd3554b2877beae084"
+    },
+    {
+      "old_path": "nw/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/strip_00-03.png.import",
+      "bytes": 980,
+      "sha256": "fb1ec9f65ea72b8e68a73d522a4ea8afa0cf2f43bbedd023aa0784c9409a3e78"
+    },
+    {
+      "old_path": "nw/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/strip_04-07.png",
+      "bytes": 9793,
+      "sha256": "5b8ae3fce741c2dcbf0a94a0faad534ab273fd8fdfc0948183a3f53e80d5c0b1"
+    },
+    {
+      "old_path": "nw/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/nw/strip_04-07.png.import",
+      "bytes": 980,
+      "sha256": "8f8de8990d7ae0190f58e9b77133b292c32121db4b7b0bd9c5c1c2a4f720acfb"
+    },
+    {
+      "old_path": "s/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/contact.png",
+      "bytes": 17202,
+      "sha256": "08dd7f9adcac7b5f3e0a7d82042f319c50065a6ddb36c0b16e3da7a369e67398"
+    },
+    {
+      "old_path": "s/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/contact.png.import",
+      "bytes": 966,
+      "sha256": "d742fe2632132942eba1daf56a6d8fa3a5d83970d9dc4f108b4a8887088e18cf"
+    },
+    {
+      "old_path": "s/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_00.png",
+      "bytes": 3290,
+      "sha256": "0c44422efe36002509cb10bc5081bedfb857e6645820aba2c89b7487fa5fd49f"
+    },
+    {
+      "old_path": "s/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_00.png.import",
+      "bytes": 970,
+      "sha256": "c1fc522a18c65e51fd846c2f209ac84ce2717981c015065638ce9825332141ac"
+    },
+    {
+      "old_path": "s/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_01.png",
+      "bytes": 3569,
+      "sha256": "70c6d137bbb7e833996f60bae37560f63ffbb72dd91d2e2509a11b688f0b0ff7"
+    },
+    {
+      "old_path": "s/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_01.png.import",
+      "bytes": 970,
+      "sha256": "fe9dbc45644432997931b1d5bcf5c7ffab70b7f23ea7ad58c7f56b3c5bacc576"
+    },
+    {
+      "old_path": "s/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_02.png",
+      "bytes": 3511,
+      "sha256": "216e9dfc3ccbe847dbcb7112394aa272d17a63aa9cd9ff84bfa4d0170fcd657c"
+    },
+    {
+      "old_path": "s/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_02.png.import",
+      "bytes": 970,
+      "sha256": "0f3018fd4ac5f808d0577fbcae3d75d7c9c6f96b6dbc544a2d64297518672314"
+    },
+    {
+      "old_path": "s/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_03.png",
+      "bytes": 3394,
+      "sha256": "f1c9a5b007e1b0187098b9be79c72773d7b3f871ec95825330243c7137ce13d6"
+    },
+    {
+      "old_path": "s/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "1bb98094e1b51f8cdebdb18cad03705e7434855ecf52b9ef07b5db370d8b29b4"
+    },
+    {
+      "old_path": "s/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_04.png",
+      "bytes": 3257,
+      "sha256": "46b47d80e6f3cb3307995a52ead50ddf9bfed35be7d62dd05a4e3b6111ef9c38"
+    },
+    {
+      "old_path": "s/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_04.png.import",
+      "bytes": 970,
+      "sha256": "5148b2bd70d9fd2b401d768eb71e05f0b153ffc8e8fc4dfd379d34ef395a4e81"
+    },
+    {
+      "old_path": "s/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_05.png",
+      "bytes": 3568,
+      "sha256": "c1d49d271845c6ab9021ab7a4abfbb06eb3296a3dd932aee2486ecef77375b35"
+    },
+    {
+      "old_path": "s/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "3540ec109a7e3d4cf8b6f40e137a490aec8da4511c7ad2e67871cad9e4cff29c"
+    },
+    {
+      "old_path": "s/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_06.png",
+      "bytes": 3386,
+      "sha256": "0be7183482515d2b3b8cf3c6043b73750fd1ba5a86c5da651130e6b81d51547e"
+    },
+    {
+      "old_path": "s/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "cf7d339f9a60999743d8a1d3f4f9abe1007d3ce18c9b9452d6a2cc0b33e8c059"
+    },
+    {
+      "old_path": "s/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_07.png",
+      "bytes": 3399,
+      "sha256": "2428340c8e8639b356c3886980c040b43677733cfedd33b21425beab419f4a7b"
+    },
+    {
+      "old_path": "s/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/frame_07.png.import",
+      "bytes": 970,
+      "sha256": "e944eb190159318791f37d00ed0f011cc25ea6aac06c9012a73fba2c5f16d08b"
+    },
+    {
+      "old_path": "s/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/guide.json",
+      "bytes": 1053,
+      "sha256": "40b4badee61a649b78ad160723b1bd6432fddb73b1728e7888188fca224868fe"
+    },
+    {
+      "old_path": "s/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/strip_00-03.png",
+      "bytes": 10037,
+      "sha256": "78a88b11a215bf39c0c496f183e55659d9bcf122054773431e7a1bfb78b491c9"
+    },
+    {
+      "old_path": "s/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/strip_00-03.png.import",
+      "bytes": 979,
+      "sha256": "630b41f6b20234aec7d69c9309e3d2529693482334c25a03f0295a950d117899"
+    },
+    {
+      "old_path": "s/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/strip_04-07.png",
+      "bytes": 9772,
+      "sha256": "a455e66ad39805d69daa23d919977f08e1202bcf1622a06fbaecbeaa92109e6c"
+    },
+    {
+      "old_path": "s/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/s/strip_04-07.png.import",
+      "bytes": 979,
+      "sha256": "f7eba0c719e2e53ee0fa244900e871c02ec38db4bac05fde546c2013eb257050"
+    },
+    {
+      "old_path": "se/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/contact.png",
+      "bytes": 16867,
+      "sha256": "372b6627765790b4faffc97f9a32a5657de5469c9a052c7273aa213165cd7075"
+    },
+    {
+      "old_path": "se/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/contact.png.import",
+      "bytes": 968,
+      "sha256": "75f43a447201796c199be6c22b4aaf7a38b3d50560db9cf182a8019717589b7b"
+    },
+    {
+      "old_path": "se/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_00.png",
+      "bytes": 3401,
+      "sha256": "e9df4a8d659b9fe2e1a4760a27eeb3656ab6aef2f689b726d7a7a3ede32aab0c"
+    },
+    {
+      "old_path": "se/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_00.png.import",
+      "bytes": 971,
+      "sha256": "fd438d34cf946e2f820b492bf3cfca25fd8a7a6c2fd1c4ec2a0441d18344dab0"
+    },
+    {
+      "old_path": "se/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_01.png",
+      "bytes": 3403,
+      "sha256": "1396be0ed9871784a1684d5dcd278a203743a371fdbfe9b5428a993b381e5d31"
+    },
+    {
+      "old_path": "se/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_01.png.import",
+      "bytes": 971,
+      "sha256": "192dd181dd64f8c15ad183efc0a0827e44d05ae7b1c8d674f4ddcb7844d9fca5"
+    },
+    {
+      "old_path": "se/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_02.png",
+      "bytes": 3427,
+      "sha256": "801290092585b609241fbc495b88b20468172640b4a8d4de6d234dab76c23e97"
+    },
+    {
+      "old_path": "se/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_02.png.import",
+      "bytes": 969,
+      "sha256": "f76ea947423d41e9fcc74265701b5d997b51be2f4e3d9b6fb490309ff6848088"
+    },
+    {
+      "old_path": "se/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_03.png",
+      "bytes": 3296,
+      "sha256": "f6c43e5f7e36c3fd2fe5f387446ceef9006dbb01906432535d3800b738e6893f"
+    },
+    {
+      "old_path": "se/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "27b2f8be7a381d12c962da577844666559511d957104a771305ec40260798dd9"
+    },
+    {
+      "old_path": "se/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_04.png",
+      "bytes": 3439,
+      "sha256": "f65852bb27c4e8003ea67e12aaa16531a53e9f230e0f6278ea6cc8f42b56b779"
+    },
+    {
+      "old_path": "se/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_04.png.import",
+      "bytes": 971,
+      "sha256": "059d52a5e76f69fa19dafd8795ffe14c1c539e5d55c6290854fe7941afeb48ec"
+    },
+    {
+      "old_path": "se/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_05.png",
+      "bytes": 3408,
+      "sha256": "4bbaab246c0cd9fa0408e559c3f3f89534395dfa9c5ebb26c8b69d5fd6273c3d"
+    },
+    {
+      "old_path": "se/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "b73e39683a652f03da62469643f7b809af5b1a92aafb160f27ef7c0f930c1d77"
+    },
+    {
+      "old_path": "se/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_06.png",
+      "bytes": 3277,
+      "sha256": "311a2e4547e328cfe49b8dd1cabb77dde5040ec84c6a8e31d878cc44c03a20e5"
+    },
+    {
+      "old_path": "se/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "d952940222dd97a97e971c4464e3a9cab276a58f3ae81c5ebb206441ab6cec25"
+    },
+    {
+      "old_path": "se/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_07.png",
+      "bytes": 3243,
+      "sha256": "9ff86131c81ddc4b58a59bcb8b8947d7a004bb1ad0a2daf42721a7d7e14fb929"
+    },
+    {
+      "old_path": "se/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/frame_07.png.import",
+      "bytes": 971,
+      "sha256": "dd7ff493c117eb08aea3bbcf01ad065baeda9625b8e6d0b7bdbee4d093f27797"
+    },
+    {
+      "old_path": "se/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/guide.json",
+      "bytes": 1054,
+      "sha256": "f9eb0bd54a70146563cfc914ef2fc54a635028c375e6471a1a86c298ae0325a2"
+    },
+    {
+      "old_path": "se/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/strip_00-03.png",
+      "bytes": 9757,
+      "sha256": "b67686c203e84eedc7a5a4d01494c998821cdfc9faca2bca1f87718ab86d8e85"
+    },
+    {
+      "old_path": "se/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/strip_00-03.png.import",
+      "bytes": 980,
+      "sha256": "b58db8a93b285a8fd5b7958112374311676c35124b0521bdb6a42b62ce7e270e"
+    },
+    {
+      "old_path": "se/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/strip_04-07.png",
+      "bytes": 9502,
+      "sha256": "9fb06a0c5eb7ae7cca8148ac20a1734db9cf6d423cdb71ebbf6d4272a49ee5d1"
+    },
+    {
+      "old_path": "se/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/se/strip_04-07.png.import",
+      "bytes": 979,
+      "sha256": "769ce087b641d75b8ea1164217332aea5d54eaf83a4b09da3b95a12af68dbf5b"
+    },
+    {
+      "old_path": "sw/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/contact.png",
+      "bytes": 16948,
+      "sha256": "894c0581ba620d940e7b9a2181c9e43252b32d4733feb94c4e7346ba38a0bdcc"
+    },
+    {
+      "old_path": "sw/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/contact.png.import",
+      "bytes": 967,
+      "sha256": "dbb366a10616d7f71a7de6cb8c15065ec2680625754d5b0cacc1921cef5e4d88"
+    },
+    {
+      "old_path": "sw/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_00.png",
+      "bytes": 3385,
+      "sha256": "0ea2fd39d888a8a3e827ebc7ee562b964a6dea664b414947708ac5e328cc4a96"
+    },
+    {
+      "old_path": "sw/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_00.png.import",
+      "bytes": 970,
+      "sha256": "4e978e1c36c9c1c01f9148202d3fbfd48ee4de989c5dc9e05f0622ed4f085c10"
+    },
+    {
+      "old_path": "sw/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_01.png",
+      "bytes": 3419,
+      "sha256": "af2113bbb11e586afa64a505fd3b7365a075b0e2dd3dbcb42e743fb9e33d6303"
+    },
+    {
+      "old_path": "sw/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_01.png.import",
+      "bytes": 971,
+      "sha256": "55b602eaa3ab2f226b438337b3b70d1c6395cc45494e798ddf2920fb12e0cbc1"
+    },
+    {
+      "old_path": "sw/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_02.png",
+      "bytes": 3442,
+      "sha256": "e9791b11f9a43b370f2f230078ff984f98738363ba10e76678d1650453e4b99a"
+    },
+    {
+      "old_path": "sw/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_02.png.import",
+      "bytes": 971,
+      "sha256": "75f1390a90ed9b94be3c2569e9d8d214348a1c88f1a1e11ba4a599f9566808d9"
+    },
+    {
+      "old_path": "sw/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_03.png",
+      "bytes": 3296,
+      "sha256": "e49ea906f7faa8b13dcc669eafbf8598334279ae8feba76294d10b0f8ff9848b"
+    },
+    {
+      "old_path": "sw/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "2e626d970480c013666acdf56a9f0de218634adf768a5537db878fca14c6fbb3"
+    },
+    {
+      "old_path": "sw/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_04.png",
+      "bytes": 3414,
+      "sha256": "6365f8e8f98561250c3214adc731ae4c2ddef91576c61ede35438ce416cb9ad3"
+    },
+    {
+      "old_path": "sw/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_04.png.import",
+      "bytes": 971,
+      "sha256": "c048e8e270bffcc84d52b6f95e9608fde68ad21a7a650c68a658631b966cbdda"
+    },
+    {
+      "old_path": "sw/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_05.png",
+      "bytes": 3417,
+      "sha256": "9c49305e7fe31bbf1f3593c3aaac00164f330e330807e18cb593e4bee5a359d4"
+    },
+    {
+      "old_path": "sw/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "1905837a922d486ba180544a297fe268ecadb3e52e133812ecb855a18eefc6e1"
+    },
+    {
+      "old_path": "sw/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_06.png",
+      "bytes": 3294,
+      "sha256": "dffa3e35c8c60470ec7d4c73fe41f8af98d12da462071470e104d4e1e40884f3"
+    },
+    {
+      "old_path": "sw/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_06.png.import",
+      "bytes": 971,
+      "sha256": "a048f16d81b9381de7f0bbcb3351198f8fd702059d7c8f86789b055154330974"
+    },
+    {
+      "old_path": "sw/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_07.png",
+      "bytes": 3237,
+      "sha256": "5b2b6ec06bd33f31f1cdb47690730bf0c75e7ce09ff19b814ba891ff4edb6a28"
+    },
+    {
+      "old_path": "sw/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/frame_07.png.import",
+      "bytes": 971,
+      "sha256": "4f6faa226c3aba274a259df9268ba59e18c0239a5c4da272c5253cb32d741e3c"
+    },
+    {
+      "old_path": "sw/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/guide.json",
+      "bytes": 1054,
+      "sha256": "60fe1f02ac221acea98bee28efef69a62d1030f422af18c678379999811096c1"
+    },
+    {
+      "old_path": "sw/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/strip_00-03.png",
+      "bytes": 9771,
+      "sha256": "0d49668fff73dd4a550d487a0132bca9f4a910078b5f19ab2005a5b5fe7fa8ae"
+    },
+    {
+      "old_path": "sw/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/strip_00-03.png.import",
+      "bytes": 980,
+      "sha256": "8a121c7b6c7ad8fc41e91d8b6f514093103015378d9af4a5c5489a44f02acc86"
+    },
+    {
+      "old_path": "sw/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/strip_04-07.png",
+      "bytes": 9682,
+      "sha256": "6b02e538059f87de54880235e12c1fe1881b9b543a30d3e3e5053e6220e22b5f"
+    },
+    {
+      "old_path": "sw/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/sw/strip_04-07.png.import",
+      "bytes": 980,
+      "sha256": "4d5379b4a9b757d78cc0223c896095f102b8ffffa53afe49c08184bebb9cde17"
+    },
+    {
+      "old_path": "torobbie/torobbie.json",
+      "new_path": "original_assets/actors/torobbie/torobbie.json",
+      "bytes": 16831,
+      "sha256": "2f775f496d6bace7fc0df640e764be703dfe0420c6cf7b9f741ab18d9e28b4eb"
+    },
+    {
+      "old_path": "torobbie/torobbie.tres",
+      "new_path": "original_assets/actors/torobbie/torobbie.tres",
+      "bytes": 43597,
+      "sha256": "4e887112331609329dfb1e32768ff41d787b512c40e8cca10d79d2e6664d3c8c"
+    },
+    {
+      "old_path": "torobbie/torobbie_attack.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_attack.png",
+      "bytes": 11547,
+      "sha256": "657a9e8c34e9e873e72a1d812ba88aed116241efc472d0454c6b916ff6e705ea"
+    },
+    {
+      "old_path": "torobbie/torobbie_attack.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_attack.png.import",
+      "bytes": 981,
+      "sha256": "07fce573322a5787292e141d00d2fdd90709be985cd81dc58a3d7310ab005a20"
+    },
+    {
+      "old_path": "torobbie/torobbie_dodge.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_dodge.png",
+      "bytes": 3671,
+      "sha256": "e6acc7effce5a53d6aa68c2b93a8f1a8bd1b5b006b7f9c8dcce9fcb49349efcc"
+    },
+    {
+      "old_path": "torobbie/torobbie_dodge.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_dodge.png.import",
+      "bytes": 978,
+      "sha256": "daaf5e291e24496dd40d884eb31010ed791b7e4b3ca12f6dfce7d03b115010f0"
+    },
+    {
+      "old_path": "torobbie/torobbie_faint.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_faint.png",
+      "bytes": 11121,
+      "sha256": "d3ed0641b930a211cbcacf5ae9eb82c10dc669915aa3242168001e2bd95ecb01"
+    },
+    {
+      "old_path": "torobbie/torobbie_faint.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_faint.png.import",
+      "bytes": 978,
+      "sha256": "990c951cfd73c8822651c8d0cb951632fcb2009e913bf7c3bfe78e684cc925c3"
+    },
+    {
+      "old_path": "torobbie/torobbie_guard.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_guard.png",
+      "bytes": 2963,
+      "sha256": "25196c1de9ad2ec1186a14e3addd0b13adc20f66db68d8089c6779207268e2c6"
+    },
+    {
+      "old_path": "torobbie/torobbie_guard.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_guard.png.import",
+      "bytes": 977,
+      "sha256": "5c116814beef38dbc34cc8b04ac0068fb0c653ae72c97b9e3c2e5b1410b85f10"
+    },
+    {
+      "old_path": "torobbie/torobbie_hit.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_hit.png",
+      "bytes": 7014,
+      "sha256": "a767b1c0581ecc7aab2a96cc62770c5dcca301064e8fd7bdbd35c79bf30c5317"
+    },
+    {
+      "old_path": "torobbie/torobbie_hit.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_hit.png.import",
+      "bytes": 972,
+      "sha256": "1af5b6ec2d21858ef647f3cdc3a3b43bb333c50bf44faec3cf85c035d48cb092"
+    },
+    {
+      "old_path": "torobbie/torobbie_idle.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_idle.png",
+      "bytes": 8892,
+      "sha256": "7bd8157eecbdd9d28188ce7eb6d998ec5d481c0517baf4d85597ecfe13d52a69"
+    },
+    {
+      "old_path": "torobbie/torobbie_idle.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_idle.png.import",
+      "bytes": 975,
+      "sha256": "e7682df69baff7547c5b076e4ba6c9608c8b075e692dfd66a0e78f94125c7f2e"
+    },
+    {
+      "old_path": "torobbie/torobbie_idle_auto.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_idle_auto.png",
+      "bytes": 6597,
+      "sha256": "259d352256d10f5168333c2f67cce2d04271421f55a8764003ddc8797bc75a92"
+    },
+    {
+      "old_path": "torobbie/torobbie_idle_auto.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_idle_auto.png.import",
+      "bytes": 990,
+      "sha256": "f785d50fd3a43315fad0a19de93c3802174a240b7ac20184ef91c1bedd1af0f4"
+    },
+    {
+      "old_path": "torobbie/torobbie_walk.png",
+      "new_path": "original_assets/actors/torobbie/torobbie_walk.png",
+      "bytes": 18363,
+      "sha256": "727d6e9f23ed1c8eab5ff1e0d837998a4f8bbefd2894a94e46d41e138db2eaf4"
+    },
+    {
+      "old_path": "torobbie/torobbie_walk.png.import",
+      "new_path": "original_assets/actors/torobbie/torobbie_walk.png.import",
+      "bytes": 975,
+      "sha256": "f394c7d5413eefde47d38b7659a8d59a9b266a3e0f330ca0ed0a931b2cd34c36"
+    },
+    {
+      "old_path": "w/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/contact.png",
+      "bytes": 17390,
+      "sha256": "4fb9fbbb0722a6fb0ca48030c8a7d3f39836b3427bacf54bf0de857dd9678c6f"
+    },
+    {
+      "old_path": "w/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/contact.png.import",
+      "bytes": 966,
+      "sha256": "5092ee58e042f6c022dfd5e02d68c29623cac8d2a64ca04b2feb42999dc01ee8"
+    },
+    {
+      "old_path": "w/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_00.png",
+      "bytes": 3424,
+      "sha256": "a6fce045a0fba7540a87a3dea29a5f7058d1eb71b18e7ee76b6761d173578395"
+    },
+    {
+      "old_path": "w/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_00.png.import",
+      "bytes": 970,
+      "sha256": "b1ad12759ad0e23ddac904090435d53f13b957a71235a92574b6eff9af26e636"
+    },
+    {
+      "old_path": "w/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_01.png",
+      "bytes": 3463,
+      "sha256": "658d3e5e7cea22c537e35be6d40d72720899abfa66d43b2becfa1b6d00b60fd4"
+    },
+    {
+      "old_path": "w/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_01.png.import",
+      "bytes": 970,
+      "sha256": "8a3504ea86ec12877b4701e283397cc620ce0d63dba7caba0e143d2881d371d4"
+    },
+    {
+      "old_path": "w/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_02.png",
+      "bytes": 3424,
+      "sha256": "6ca85a379c088165ee096d445ced9808f1253fb50da0c548f8ed86df505bbd95"
+    },
+    {
+      "old_path": "w/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_02.png.import",
+      "bytes": 970,
+      "sha256": "53af88d9430be73a4fc17cb9b4800b074a1921a8db8c268bdaaad9b4fb00c05f"
+    },
+    {
+      "old_path": "w/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_03.png",
+      "bytes": 3419,
+      "sha256": "4376b218fcf34758d3db4795b7d35182b7f44215818cb445e7228c0a69546f8e"
+    },
+    {
+      "old_path": "w/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_03.png.import",
+      "bytes": 970,
+      "sha256": "5f6e5846c0029e89570fff06600824b8863984267c06150b46be0b7621698ca2"
+    },
+    {
+      "old_path": "w/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_04.png",
+      "bytes": 3438,
+      "sha256": "8db91dfd0a66100a6c53975cff7e7bae08cf16e38fdea5574345dd2fd9ac7853"
+    },
+    {
+      "old_path": "w/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_04.png.import",
+      "bytes": 969,
+      "sha256": "90eb0c1da53fb06ad6694cb9aa0a147d41b13810f846f6287f5a790cad28c8c7"
+    },
+    {
+      "old_path": "w/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_05.png",
+      "bytes": 3424,
+      "sha256": "7b8469a4be5e3a44ff1bf7312e19dc26d50f221f0e7bc33bc265462d4c431a75"
+    },
+    {
+      "old_path": "w/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_05.png.import",
+      "bytes": 970,
+      "sha256": "aad263f27037f9b75097e089d7f1a44aca091a1e321f3cb3f7cb809d99940463"
+    },
+    {
+      "old_path": "w/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_06.png",
+      "bytes": 3400,
+      "sha256": "e2a7f7990806c04ccc9ed6f71a1156e73c4a654ab175f977449018757a55ea18"
+    },
+    {
+      "old_path": "w/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_06.png.import",
+      "bytes": 970,
+      "sha256": "6e2139b9744e2baa7ba9204e266f43194ae7003e6911ff300008c5d91e32b7cc"
+    },
+    {
+      "old_path": "w/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_07.png",
+      "bytes": 3418,
+      "sha256": "e4ebd601f3361e70831df43cc57a65129dad1be10e68e85d9e2cce7b68df47bb"
+    },
+    {
+      "old_path": "w/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/frame_07.png.import",
+      "bytes": 970,
+      "sha256": "13ec9348802e197b1cce31d59879c97883a4db92281a4883591da2fa490fc31b"
+    },
+    {
+      "old_path": "w/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/guide.json",
+      "bytes": 1052,
+      "sha256": "6a85fdac466a664ac25d4c908bb00eb586790e2203177eda39c5da66b9a13571"
+    },
+    {
+      "old_path": "w/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/strip_00-03.png",
+      "bytes": 9841,
+      "sha256": "fe1388f7b6bc10c191c88cd616597cbf51a0519fa0cb2fac725abdeedf0f4b59"
+    },
+    {
+      "old_path": "w/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/strip_00-03.png.import",
+      "bytes": 979,
+      "sha256": "6f438fe1104b63b96ffae67511649d82a442bcc359fad0b1e5c357f6a5392c93"
+    },
+    {
+      "old_path": "w/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/strip_04-07.png",
+      "bytes": 9819,
+      "sha256": "cd234ec80c2dd09ff7e21553a550f01139bade8a52a4bb94d24e14b273b8c3dc"
+    },
+    {
+      "old_path": "w/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/run/w/strip_04-07.png.import",
+      "bytes": 978,
+      "sha256": "ae7c1f373feacaeadc5f366e1bd4b3d8a19e6339cfff6357f9162d579aad8bd4"
+    },
+    {
+      "old_path": "weapon_crit/ne/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/contact.png",
+      "bytes": 15796,
+      "sha256": "1b6fa3774886485f1d1786b80995e7b9b7a4b1d2f8295abd9734fd8d21e21394"
+    },
+    {
+      "old_path": "weapon_crit/ne/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/contact.png.import",
+      "bytes": 976,
+      "sha256": "5d1e9f999c06d26bfd9a18ad63c8d2a213909271ab9bd343bc60fda9d3b15011"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_00.png",
+      "bytes": 3371,
+      "sha256": "5ca066bacd6c84623df98c863d854f13916c973fa25fbb150581093238454e42"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_00.png.import",
+      "bytes": 979,
+      "sha256": "e4ecab6e78df05190cc2b35260ba0c208e9b8a13ae41ec5a24feebf85973068a"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_01.png",
+      "bytes": 3317,
+      "sha256": "a8d7af9946aac63de6f72ed2b523d461d5884f6e8e17ab0ec510cab97fcdb060"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_01.png.import",
+      "bytes": 978,
+      "sha256": "0e7947deac61499ccc99e231dddeef959b98b601ab1f6815d77197931637ef6d"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_02.png",
+      "bytes": 3235,
+      "sha256": "7b663159359b78e1554a1f67b96c48e8c703fe0b39caea7a3d604a2029a24b13"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_02.png.import",
+      "bytes": 978,
+      "sha256": "1a6d952880738afd45d2281d0ea4b7e516686d967e49dcae60b3fe0bf9ce25f4"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_03.png",
+      "bytes": 3421,
+      "sha256": "f242c708d49c952e9b034e29a8a41bf50cd8fe5808b93a0d1d19707bab11304e"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_03.png.import",
+      "bytes": 979,
+      "sha256": "ebf5b3bb5c88a794626364b4e7933f6e0e90c38d4cc940bb925f74e572f046cb"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_04.png",
+      "bytes": 3314,
+      "sha256": "6ba882f6759a71d9bb0600c22a41eddace7179627a137ca666e3d41561cb6f31"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_04.png.import",
+      "bytes": 979,
+      "sha256": "0416b333ac165a7e355e11bf7da64655eec1adb5388b06ce7b7132b9dd1a5c7b"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_05.png",
+      "bytes": 3284,
+      "sha256": "41b6ca9349348254582813ec6fc2a4ee1eb8efc84b0242a92081e2ae7fd32310"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_05.png.import",
+      "bytes": 979,
+      "sha256": "d1766d31beeb2410a279b516d42719578bafa3164850bfa06b1d81a3d2316f6f"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_06.png",
+      "bytes": 3302,
+      "sha256": "6ea793b5f6af3d2aba71c52a7daacefc0d4e8b951d1d9d7c9b96bfcf764094b3"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_06.png.import",
+      "bytes": 979,
+      "sha256": "ecfdba884ddb40f45f2bcad51fc9c8a377fb4824e11f58250337f79f474d114c"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_07.png",
+      "bytes": 3247,
+      "sha256": "d12eea0f90981b0c41fec9cf82003a8a5e6cb55622b40e83cd4a20d0060b5da7"
+    },
+    {
+      "old_path": "weapon_crit/ne/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/frame_07.png.import",
+      "bytes": 979,
+      "sha256": "10694ba0e8de5409408f18d02e3ecc611fcaeb21bc9b9a842a497bfe17fad42f"
+    },
+    {
+      "old_path": "weapon_crit/ne/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/guide.json",
+      "bytes": 1062,
+      "sha256": "bef7e9753c9fe150b2789130d866dfcc1d08f8339e9ff5944b2bf6e7af0221b6"
+    },
+    {
+      "old_path": "weapon_crit/ne/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/strip_00-03.png",
+      "bytes": 9428,
+      "sha256": "9f1a35de421619c8dbaad7bb9c2a34de4118d33a4120b12f45b8ac5298d4fcb0"
+    },
+    {
+      "old_path": "weapon_crit/ne/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/strip_00-03.png.import",
+      "bytes": 988,
+      "sha256": "0d4d3b47e1279c7fb2086c7bdb403e7b6ff2a527bd6af9dd0b5433aaf89476e3"
+    },
+    {
+      "old_path": "weapon_crit/ne/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/strip_04-07.png",
+      "bytes": 8224,
+      "sha256": "24c26771d8e8371d7f11119d88f006cacaa2044e3de71220fd2d98dedcc9c51b"
+    },
+    {
+      "old_path": "weapon_crit/ne/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/ne/strip_04-07.png.import",
+      "bytes": 988,
+      "sha256": "e110d8fe6c0811a4cee10430d5ad1531bb9e0f6be5420510119a5049e45ba626"
+    },
+    {
+      "old_path": "weapon_crit/nw/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/contact.png",
+      "bytes": 15792,
+      "sha256": "0e46338ad5cd4da6a2e3a2951223f1e5644a0a4f01c7668ca553de8630704846"
+    },
+    {
+      "old_path": "weapon_crit/nw/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/contact.png.import",
+      "bytes": 975,
+      "sha256": "46e43b55a3dce5e66ce04052a71ce19ce4ce99171ffcc47d179d2cdd8feae400"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_00.png",
+      "bytes": 3386,
+      "sha256": "cf2cc9b384f6cdf707d13471823331f9b83cb9a59316cfe6f571c4cfa348a452"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_00.png.import",
+      "bytes": 979,
+      "sha256": "b93b4ce1bc1b5b06abbb7899d9705e84b42a232e1b1bf7ebe0f9240e1b9802c5"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_01.png",
+      "bytes": 3355,
+      "sha256": "19e03a02914dc0ea675bf4ea2c43c12d50d6196dabf5899d260a1b1820de97e8"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_01.png.import",
+      "bytes": 979,
+      "sha256": "ec83fe845e37b9cce5b8f81fd36fdf9510830f089baf68cde74d0b92ecd6247d"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_02.png",
+      "bytes": 3219,
+      "sha256": "845bf1f3ef8ca33ea472bf9a682ce0dc389b7102c3d5040fb3089a5316348690"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_02.png.import",
+      "bytes": 979,
+      "sha256": "9a648f57fe77b8e61de3d8b7ec43a46870a38204575177ec59f37117cfd28c7f"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_03.png",
+      "bytes": 3399,
+      "sha256": "6f38a962215c1dfb790cecae9f567eb3079754f2b7863d7c66332295ed08b8db"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_03.png.import",
+      "bytes": 979,
+      "sha256": "7fc32edb343a3ebb9c4bb81c4808efd971434629c428028ef6f930e1f8d7f5f3"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_04.png",
+      "bytes": 3292,
+      "sha256": "425d2b71d9cc8329a72954c11ab3b70d3181b797e8f30613c0473ff1e839d0b8"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_04.png.import",
+      "bytes": 979,
+      "sha256": "c75a70d687c4ca0934c2546503bcaeb36bc37c8ef06d8244240c3534afab4ee0"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_05.png",
+      "bytes": 3239,
+      "sha256": "5d255dda489c67015e0c1fb62f04ccfdaac34f157efff03607ab18cb6b509799"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_05.png.import",
+      "bytes": 979,
+      "sha256": "b963d75f140522e495178fccfc9ef88535e96d9d3f7bad1760844987be442078"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_06.png",
+      "bytes": 3272,
+      "sha256": "a34d3ed20a1eb5b16fb4789179f3e09fee6d8b861bd3bd724480d28700599af5"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_06.png.import",
+      "bytes": 978,
+      "sha256": "68ce0f4ebac9e3bc68d357588d6206f243c69b0b53973cbfedd21d3c25932bc2"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_07.png",
+      "bytes": 3240,
+      "sha256": "bd80e3973ade170eebef97b57da16a6031492485de4748f8d62959b46ba68a41"
+    },
+    {
+      "old_path": "weapon_crit/nw/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/frame_07.png.import",
+      "bytes": 979,
+      "sha256": "0c608f96cfbe34421e9e022623b3beda57851e59d8c31ce64f364b7f17c5c0d5"
+    },
+    {
+      "old_path": "weapon_crit/nw/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/guide.json",
+      "bytes": 1059,
+      "sha256": "07a1421985b6e57dfebc6cdf4cf4aa19a15e0999217fea4e7a6d29491b61b22c"
+    },
+    {
+      "old_path": "weapon_crit/nw/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/strip_00-03.png",
+      "bytes": 9499,
+      "sha256": "1d03823b792196e6a29776c424cbf394f596dd249ba065db46b9da3c6137b346"
+    },
+    {
+      "old_path": "weapon_crit/nw/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/strip_00-03.png.import",
+      "bytes": 988,
+      "sha256": "7839a4846046c3fc59f35f335f40ba188eb1e818a4a64e8d31af523e600a32e9"
+    },
+    {
+      "old_path": "weapon_crit/nw/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/strip_04-07.png",
+      "bytes": 8224,
+      "sha256": "993599aa3ea5b3cd826a195016e7ed20d6fd42c46af407b2fca877c23341b190"
+    },
+    {
+      "old_path": "weapon_crit/nw/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/nw/strip_04-07.png.import",
+      "bytes": 988,
+      "sha256": "aed24a82229a508cfb2e42b46d47f9da3f8189b11c24cb3254a5beef0c6d36c5"
+    },
+    {
+      "old_path": "weapon_crit/se/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/contact.png",
+      "bytes": 16223,
+      "sha256": "53bc0d792a90c428393e59c3ef23296dec33b1418c923df03a1b7124bd84438c"
+    },
+    {
+      "old_path": "weapon_crit/se/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/contact.png.import",
+      "bytes": 976,
+      "sha256": "70981117b999919230e40b0d5494da706e613533b2e154753122ee56b03bd35d"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_00.png",
+      "bytes": 3485,
+      "sha256": "899579a5c630e3174320afedbea02ded07dac737d34584393ab9d925cd39c439"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_00.png.import",
+      "bytes": 978,
+      "sha256": "f10c407887bfae791373c963dda44d0d1b1145da33ccde8d38d67a1b395a3206"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_01.png",
+      "bytes": 3441,
+      "sha256": "644e471a4cc0d14e91680b44064d123cb8978df3f031902eb08717305a49c68b"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_01.png.import",
+      "bytes": 979,
+      "sha256": "afec32c08d213d4b935739d38a67b3e083f127eb86126f4175ec2402013aed9a"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_02.png",
+      "bytes": 3543,
+      "sha256": "5415bf95a309f03de7f7f8ab4d6c566d8bdb9a7eb233a400ed7d06f4e99d93d5"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_02.png.import",
+      "bytes": 979,
+      "sha256": "b6ad29325e8b0953f711f179dc13462b32822315c459a6b45c0fa29b9d5dfbd3"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_03.png",
+      "bytes": 3358,
+      "sha256": "18a79eb2a3fb9269f4a27918d3b1a322d7e2bc69c18ffc56e2dbd78ed74b11f3"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_03.png.import",
+      "bytes": 979,
+      "sha256": "0c06e4155bcb1dbe3e934ae279d7749044ec78b0a2d55976b16cd8f324924acb"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_04.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_04.png",
+      "bytes": 3328,
+      "sha256": "5cee3840dd901d20cdeac00afcc656eb6e88dd0f8d35b9c958360e6d6a00f869"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_04.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_04.png.import",
+      "bytes": 979,
+      "sha256": "338226d6390f45e166b1fa62ae097715fc7706ef440f78ac82ec44744b322e8f"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_05.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_05.png",
+      "bytes": 3263,
+      "sha256": "fe359694300bda81465147d9f5dd59b1ef7f1bba65b0d53a3db5281f356d44e3"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_05.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_05.png.import",
+      "bytes": 979,
+      "sha256": "e9c07dd2172e3021082b27600c108fbcc3c381ae1ceb9eeecc37ab45d9084121"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_06.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_06.png",
+      "bytes": 3252,
+      "sha256": "8ca5aac6849cdc5c922701b632805cf005bab50e22bb40dc492559e4cf44c35d"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_06.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_06.png.import",
+      "bytes": 979,
+      "sha256": "b4b01720da8b597767297dfe22a8c176f4dbbc0d76df5ee212068fd0662be49f"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_07.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_07.png",
+      "bytes": 3231,
+      "sha256": "ceff19d83a277760520aa0325094c5d81fd3f8fa1bdfed980bde54892999efab"
+    },
+    {
+      "old_path": "weapon_crit/se/frame_07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/frame_07.png.import",
+      "bytes": 979,
+      "sha256": "fdc47a107a4e8dd337391c5ecbcd52d3c021ca90b00bbf5536f0609dd40cfd70"
+    },
+    {
+      "old_path": "weapon_crit/se/guide.json",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/guide.json",
+      "bytes": 1060,
+      "sha256": "394e7d929dbc3212a21b127ee0db14cca5e0b63266ff60d0ae1788d63a9e1ccf"
+    },
+    {
+      "old_path": "weapon_crit/se/strip_00-03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/strip_00-03.png",
+      "bytes": 10004,
+      "sha256": "62900c26a320c3bc4b687d46e0252722f0172b2ac1fc431d01bff296191d0af7"
+    },
+    {
+      "old_path": "weapon_crit/se/strip_00-03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/strip_00-03.png.import",
+      "bytes": 987,
+      "sha256": "aae6e1cc5de1367c36357c18b5b4625713922f95eb891ea4e61eda521add9993"
+    },
+    {
+      "old_path": "weapon_crit/se/strip_04-07.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/strip_04-07.png",
+      "bytes": 8070,
+      "sha256": "e98eb260f41d33ffef4908b42b28bb086ee30b0ce5e40b152dc23146cbd28f31"
+    },
+    {
+      "old_path": "weapon_crit/se/strip_04-07.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/se/strip_04-07.png.import",
+      "bytes": 988,
+      "sha256": "2239f2585777f2887cfdbc80e4bf3707b0ce6dd4636842a47475628036e7ee20"
+    },
+    {
+      "old_path": "weapon_crit/sw/contact.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/contact.png",
+      "bytes": 16150,
+      "sha256": "55502b9dd68453a6ed9ec5b70f6daf915e852f7729685818e373f8ac0f566714"
+    },
+    {
+      "old_path": "weapon_crit/sw/contact.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/contact.png.import",
+      "bytes": 976,
+      "sha256": "0c2cc074871d328982c237821c65dce47f97b09f35c3e6775cecaffc66a118ec"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_00.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_00.png",
+      "bytes": 3477,
+      "sha256": "f15d5e32441f28c368311a8f1dd6e2565597e09a85fd24ed2e3de8b13ee0fcb0"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_00.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_00.png.import",
+      "bytes": 979,
+      "sha256": "db69f3381d299203a45d61e9727a69fd5a64452e6c78cd81a05043fd7ab44d99"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_01.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_01.png",
+      "bytes": 3501,
+      "sha256": "da270986907a0f359efa9221f8bc2642b69d2b834fe2f2da1d0cd8c04c42e562"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_01.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_01.png.import",
+      "bytes": 978,
+      "sha256": "9f96f78867d328f6e1e0b7c66ce158eae6a29998568efa0956e6dd053f422e9a"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_02.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_02.png",
+      "bytes": 3559,
+      "sha256": "1a980cb5b8cc3658fed9e62f0eaf53e51b42acd5de501cfc7b8c195f723d0646"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_02.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_02.png.import",
+      "bytes": 978,
+      "sha256": "208424dfb06fc966bd6b8ea55699bd8a671b8a182a50bcd085675cb50f0fbd22"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_03.png",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_03.png",
+      "bytes": 3362,
+      "sha256": "4438959bff281de7cf079ef3457fb048f846f9ee0494a167086884372242b538"
+    },
+    {
+      "old_path": "weapon_crit/sw/frame_03.png.import",
+      "new_path": "original_assets/pose_guides/buffalo/weapon_crit/sw/frame_03.png.import",
+      "bytes": 978,
+      "sha256": "f2aa9643d9f46a00195ff6abbf90fdcfef374ac4e921e0d9b3cb309af2a136bb"
+    },
+    {
+      "old_path": "weapons/long_sword.json",
+      "new_path": "original_assets/weapons/long_sword.json",
+      "bytes": 74,
+      "sha256": "33d469e3e51154f92c0aabb86c506b7e3150583b310f6869352a8fd1e826e6ab"
+    },
+    {
+      "old_path": "weapons/long_sword.png",
+      "new_path": "original_assets/weapons/long_sword.png",
+      "bytes": 353,
+      "sha256": "14e0d7cc4a70c839928fed2b96522e635400d8580cfdd4e1538a179bbe35a2dd"
+    },
+    {
+      "old_path": "weapons/long_sword.png.import",
+      "new_path": "original_assets/weapons/long_sword.png.import",
+      "bytes": 958,
+      "sha256": "021102908ef0fbdc87e1d099a03bd7af01dca633a9e80cafd8d56e720ee1e158"
+    }
+  ]
+}
