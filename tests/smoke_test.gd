@@ -21,6 +21,7 @@ func run_state() -> Node:
 
 
 func _ready() -> void:
+	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	_run.call_deferred()
 
 
@@ -282,6 +283,38 @@ func _run() -> void:
 			break
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
+
+	# UI audit: the worst-case pick lists fit on screen and can be left.
+	var saved_mats: Dictionary = Run.materials.duplicate()
+	for path in DirAccess.get_files_at("res://data/materials"):
+		var m: MaterialData = load("res://data/materials/" + path.trim_suffix(".remap"))
+		Run.material_info[m.id] = m
+		Run.materials[m.id] = m.need + 2
+	game._open_compounder()
+	await wait(0.3)
+	var all_ok := true
+	for i in game._pick_options.size():
+		all_ok = all_ok and game.hud.pick_reachable(i)
+	check(all_ok and game.hud.pick_panel.get_global_rect().size.y <= 720.0,
+		"a Compounder with %d materials fits on screen and every option is reachable" % (game._pick_options.size() - 1))
+	var esc := InputEventAction.new()
+	esc.action = "ui_cancel"
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await wait(0.2)
+	check(not game.hud.pick_panel.visible or game._pick_kind != "compound_mat", "Esc leaves the Compounder")
+	game.get_tree().paused = false
+	game.hud.pick_panel.visible = false
+	Run.materials = saved_mats
+	var many: Array = []
+	for i in 20:
+		many.append({"title": "Option %d" % i, "text": "A long description that has to wrap onto a second line inside the pick panel without running under the icon or off the edge."})
+	many.append({"title": "Leave", "text": "", "cancel": true})
+	game.hud.show_pick("Twenty options", many)
+	await wait(0.3)
+	check(game.hud.pick_reachable(20) and game.hud.pick_panel.get_global_rect().end.y <= 720.0,
+		"a 20-option list scrolls and its Leave option stays pinned on screen")
+	game.hud.pick_panel.visible = false
 
 	# Jump to Coral Beach's boss room.
 	await clear_room()

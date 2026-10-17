@@ -36,6 +36,7 @@ var _detour_t := 0.0
 
 
 func _ready() -> void:
+	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	for a in OS.get_cmdline_user_args():
 		var kv := a.split("=")
 		if kv.size() == 2 and kv[0] == "runs":
@@ -257,6 +258,8 @@ func _release() -> void:
 
 ## Strikes when the marker is in the sweet spot (a decent player's timing).
 var digs := 0
+## Picks whose chosen option a player could not have clicked.
+var ui_bugs: PackedStringArray = []
 
 
 func _dig(p: DrillPanel) -> void:
@@ -333,6 +336,11 @@ func _choose() -> void:
 				if Run.can_afford_refine(g) and Run.refine_chance(g) >= 0.45:
 					pick = i
 					break
+	if not game.hud.pick_reachable(pick):
+		var bug := "%s option %d of %d is off screen" % [game._pick_kind, pick + 1, opts.size()]
+		if not bug in ui_bugs:
+			ui_bugs.append(bug)
+			print("UI BUG: " + bug)
 	game.hud._on_pick(pick)
 
 
@@ -454,3 +462,4 @@ func _report() -> void:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])
 		print("   rooms (time/hp lost): %s" % "  ".join(rooms))
 	print("clears %d / %d, average room reached %.1f, dig sites %d" % [clears, results.size(), depth / maxf(results.size(), 1), digs])
+	print("ui bugs: %s" % (", ".join(ui_bugs) if ui_bugs.size() else "none"))

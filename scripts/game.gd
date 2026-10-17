@@ -337,7 +337,7 @@ func _start_pick(kind: String, options: Array) -> void:
 		"replace":
 			for slot: int in options:
 				if slot < 0:
-					shown.append({"title": "Keep my skills", "tag": "", "text": "Skip %s." % _pending_skill.display_name})
+					shown.append({"title": "Keep my skills", "tag": "", "text": "Skip %s." % _pending_skill.display_name, "cancel": true})
 				else:
 					var old := Run.card(Run.loadout[slot])
 					shown.append({"title": "Replace %s" % old.display_name, "tag": "[%s]" % Hud.SLOT_KEYS[slot],
@@ -362,13 +362,13 @@ func _start_pick(kind: String, options: Array) -> void:
 		"gear":
 			for g: GearItem in options:
 				shown.append(_gear_option(g))
-			shown.append({"title": "Leave it", "tag": "", "text": "Scrap it for %d Galder." % SCRAP_GALDER})
+			shown.append({"title": "Leave it", "tag": "", "text": "Scrap it for %d Galder." % SCRAP_GALDER, "cancel": true})
 			_pick_options = options + [null]
 			title = "Equipment found"
 		"gear_slot":
 			for k: String in options:
 				if k == "":
-					shown.append({"title": "Keep my accessories", "tag": "",
+					shown.append({"title": "Keep my accessories", "tag": "", "cancel": true,
 						"text": "Scrap %s for %d Galder." % [_pending_gear.title(), SCRAP_GALDER]})
 				else:
 					var old := Run.equipped(k)
@@ -378,7 +378,7 @@ func _start_pick(kind: String, options: Array) -> void:
 		"anvil":
 			for k: String in options:
 				if k == "":
-					shown.append({"title": "Leave the anvil", "tag": "",
+					shown.append({"title": "Leave the anvil", "tag": "", "cancel": true,
 						"text": "%d %ss and %d Galder left." % [Run.ore, Run.ORE_NAME, Run.galder]})
 					continue
 				var g := Run.equipped(k)
@@ -393,17 +393,17 @@ func _start_pick(kind: String, options: Array) -> void:
 		"compound_mat":
 			for m: MaterialData in options:
 				if m == null:
-					shown.append({"title": "Leave the Compounder", "tag": "", "text": _materials_text()})
+					shown.append({"title": "Leave the Compounder", "tag": "", "text": _materials_text(), "cancel": true})
 					continue
 				var have := Run.material_count(m)
 				shown.append({"title": m.display_name, "tag": "%d / %d" % [have, m.need], "icon": m.icon(),
 					"text": "Compounds %s into a free slot." % m.describe(),
 					"disabled": have < m.need or Run.compound_targets().is_empty()})
-			title = "Compounder  ·  choose a material"
+			title = "Compounder  ·  choose a material" if Run.compound_targets().size() else "Compounder  ·  no free compound slots"
 		"compound_target":
 			for k: String in options:
 				if k == "":
-					shown.append({"title": "Back", "tag": "", "text": "Choose another material."})
+					shown.append({"title": "Back", "tag": "", "text": "Choose another material.", "cancel": true})
 					continue
 				var g := Run.equipped(k)
 				shown.append({"title": g.title(), "tag": "%d free slot%s" % [g.free_slots(), "s" if g.free_slots() > 1 else ""],
@@ -412,7 +412,7 @@ func _start_pick(kind: String, options: Array) -> void:
 		"shop":
 			for o: Dictionary in options:
 				if o.is_empty():
-					shown.append({"title": "Leave the shop", "tag": "", "text": "%d Galder left." % Run.galder})
+					shown.append({"title": "Leave the shop", "tag": "", "text": "%d Galder left." % Run.galder, "cancel": true})
 					continue
 				var entry := _shop_entry(o)
 				entry.tag = "%d G" % o.price
@@ -423,7 +423,7 @@ func _start_pick(kind: String, options: Array) -> void:
 			var full := Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE
 			for g: GearItem in options:
 				if g == null:
-					shown.append({"title": "Save and go on" if phase != Phase.WON else "Save and log out", "tag": "",
+					shown.append({"title": "Save and go on" if phase != Phase.WON else "Save and log out", "tag": "", "cancel": true,
 						"text": "Saves your heirloom's progress. Dying rolls back to the last save."})
 					continue
 				shown.append({"title": "Send %s home" % g.title(), "tag": g.data.slot_name(), "icon": g.data.icon(),
@@ -435,7 +435,7 @@ Kept in the Megalopolis warehouse, refines and compounds included."),
 		"rune":
 			for c: CardData in options:
 				if c == null:
-					shown.append({"title": "Keep %s" % (Run.rune.display_name if Run.rune else "nothing"), "tag": "",
+					shown.append({"title": "Keep %s" % (Run.rune.display_name if Run.rune else "nothing"), "tag": "", "cancel": true,
 						"text": "Leave the rune where it fell."})
 					continue
 				shown.append({"title": c.display_name, "tag": "Rune · Lv %d · [F]" % (1 + 2 * Run.region_index()),
@@ -626,8 +626,10 @@ func _scrap(g: GearItem) -> void:
 func _open_compounder() -> void:
 	var mats: Array = []
 	for id: StringName in Run.materials:
-		if Run.materials[id] > 0:
-			mats.append(Run.material_info[id])
+		var m: MaterialData = Run.material_info[id]
+		if Run.materials[id] >= m.need:
+			mats.append(m)
+	mats.sort_custom(func(a: MaterialData, b: MaterialData) -> bool: return a.display_name < b.display_name)
 	mats.append(null)
 	_start_pick("compound_mat", mats)
 
@@ -635,9 +637,12 @@ func _open_compounder() -> void:
 func _materials_text() -> String:
 	var parts: PackedStringArray = []
 	for id: StringName in Run.materials:
-		if Run.materials[id] > 0:
-			parts.append("%s %d" % [Run.material_info[id].display_name, Run.materials[id]])
-	return ("Carrying: " + ", ".join(parts)) if parts.size() else "You carry no monster materials yet."
+		var m: MaterialData = Run.material_info[id]
+		if Run.materials[id] > 0 and Run.materials[id] < m.need:
+			parts.append("%s %d/%d" % [m.display_name, Run.materials[id], m.need])
+	if parts.is_empty():
+		return "Nothing else in your pack." if Run.materials.size() else "You carry no monster materials yet."
+	return "Not enough yet: " + ", ".join(parts)
 
 
 func _open_shop() -> void:

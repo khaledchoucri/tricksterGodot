@@ -9,6 +9,7 @@ var game
 
 
 func _ready() -> void:
+	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("out="):
 			out = a.substr(4)
@@ -88,6 +89,15 @@ func _shoot() -> void:
 	game._open_anvil()
 	await _wait(0.3)
 	await _snap("06_anvil")
+	game.hud.pick_panel.visible = false
+	get_tree().paused = false
+	for path in DirAccess.get_files_at("res://data/materials"):
+		var m: MaterialData = load("res://data/materials/" + path.trim_suffix(".remap"))
+		Run.material_info[m.id] = m
+		Run.materials[m.id] = m.need + 1
+	game._open_compounder()
+	await _wait(0.3)
+	await _snap("06b_compounder_full")
 	game.hud.pick_panel.visible = false
 	get_tree().paused = false
 	game._start_pick("job", Run.job.next_jobs.duplicate())

@@ -20,6 +20,11 @@ const LOG_LINES := 6
 @onready var _slots: Array[SkillSlot] = [$Root/SlotBar/Slot1, $Root/SlotBar/Slot2, $Root/SlotBar/Slot3, $Root/SlotBar/Slot4]
 
 var _pick_count := 0
+## Option buttons in option order (list and footer), the cancel option's
+## index (-1 if none), and which option each number key picks.
+var _pick_buttons: Array[PickOption] = []
+var _pick_cancel := -1
+var _pick_keys: Array[int] = []
 var _hub_mode := false
 
 
@@ -164,33 +169,84 @@ func fade(to_alpha: float, time := 0.25) -> void:
 
 # ---------------------------------------------------------------- pickers
 
-## options: Array of {"title", "tag", "text"} with optional "icon" (Texture2D)
-## and "disabled".
+## options: Array of {"title", "tag", "text"} with optional "icon" (Texture2D),
+## "disabled" and "cancel". Cancel options (leave, back, keep) are pinned
+## under the scrolling list and also picked with Esc; the others get number
+## keys 1-9 and 0.
 func show_pick(title: String, options: Array) -> void:
 	var list: VBoxContainer = %PickList
-	for c in list.get_children():
-		c.queue_free()
+	var footer: VBoxContainer = %PickFooter
+	for box: Control in [list, footer]:
+		for c in box.get_children():
+			box.remove_child(c)
+			c.queue_free()
 	%PickTitle.text = title
 	_pick_count = options.size()
+	_pick_buttons.clear()
+	_pick_keys.clear()
+	_pick_cancel = -1
 	for i in options.size():
 		var o: Dictionary = options[i]
+		var cancel: bool = o.get("cancel", false) and _pick_cancel < 0
 		var option: PickOption = PICK_OPTION.instantiate()
-		list.add_child(option)
-		option.setup(i, o.title, o.get("tag", ""), o.text, o.get("icon"))
+		(footer if cancel else list).add_child(option)
+		var key := "Esc" if cancel else ("" if _pick_keys.size() >= 10 else str((_pick_keys.size() + 1) % 10))
+		if cancel:
+			_pick_cancel = i
+		elif _pick_keys.size() < 10:
+			_pick_keys.append(i)
+		option.setup(key, o.title, o.get("tag", ""), o.text, o.get("icon"))
 		option.disabled = o.get("disabled", false)
 		option.pressed.connect(_on_pick.bind(i))
+		_pick_buttons.append(option)
+	footer.visible = footer.get_child_count() > 0
 	pick_panel.visible = true
 	await get_tree().process_frame
-	if _pick_count > 0 and list.get_child_count() > 0:
-		(list.get_child(list.get_child_count() - _pick_count) as Button).grab_focus()
+	for b in _pick_buttons:
+		b.fit()
+	_fit_pick_panel()
+	(%PickScroll as ScrollContainer).scroll_vertical = 0
+	for b in _pick_buttons:
+		if not b.disabled and b.get_parent() == list:
+			b.grab_focus()
+			return
+	if _pick_cancel >= 0:
+		_pick_buttons[_pick_cancel].grab_focus()
+
+
+## Caps the list's height so the title and the pinned footer stay on screen.
+func _fit_pick_panel() -> void:
+	var view := get_viewport().get_visible_rect().size.y
+	var used: float = (%PickTitle as Control).get_combined_minimum_size().y + 40.0
+	if (%PickFooter as Control).visible:
+		used += (%PickFooter as Control).get_combined_minimum_size().y + 10.0
+	var room := maxf(140.0, view - 120.0 - used)
+	var scroll: ScrollContainer = %PickScroll
+	scroll.custom_minimum_size.y = minf((%PickList as Control).get_combined_minimum_size().y, room)
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	pick_panel.reset_size()
+	pick_panel.position = (get_viewport().get_visible_rect().size - pick_panel.size) / 2.0
+
+
+## True when option `i` can be seen and clicked: its button lies inside the
+## screen and, for list options, inside the scroll area (the playtest bot
+## only presses buttons a player could press).
+func pick_reachable(i: int) -> bool:
+	if i < 0 or i >= _pick_buttons.size():
+		return false
+	var b := _pick_buttons[i]
+	var screen := get_viewport().get_visible_rect()
+	if not screen.encloses(b.get_global_rect()) and b.get_parent() == %PickFooter:
+		return false
+	if not screen.encloses((%PickScroll as Control).get_global_rect()):
+		return false
+	return screen.encloses(pick_panel.get_global_rect())
 
 
 func _on_pick(i: int) -> void:
 	if not pick_panel.visible:
 		return
-	var list: VBoxContainer = %PickList
-	var at := list.get_child_count() - _pick_count + i
-	if at < list.get_child_count() and (list.get_child(at) as Button).disabled:
+	if i >= 0 and i < _pick_buttons.size() and _pick_buttons[i].disabled:
 		return
 	pick_panel.visible = false
 	picked.emit(i)
@@ -199,10 +255,13 @@ func _on_pick(i: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _hub_mode and event.is_action_pressed("character"):
 		sheet.toggle()
-	if pick_panel.visible and event is InputEventKey and event.pressed:
-		var n: int = event.keycode - KEY_1
-		if n >= 0 and n < _pick_count:
-			_on_pick(n)
+	if pick_panel.visible and event.is_action_pressed("ui_cancel") and _pick_cancel >= 0:
+		get_viewport().set_input_as_handled()
+		_on_pick(_pick_cancel)
+	elif pick_panel.visible and event is InputEventKey and event.pressed and not event.echo:
+		var n: int = 9 if event.keycode == KEY_0 else event.keycode - KEY_1
+		if n >= 0 and n < _pick_keys.size():
+			_on_pick(_pick_keys[n])
 	if results_panel.visible and event.is_action_pressed("restart"):
 		restart_requested.emit()
 

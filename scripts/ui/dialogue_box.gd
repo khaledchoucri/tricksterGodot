@@ -50,6 +50,7 @@ func choose(line: Dictionary, options: Array) -> int:
 		var b: PickOption = PICK_OPTION.instantiate()
 		_choices.add_child(b)
 		b.setup(i, o.title, o.get("tag", ""), o.get("text", ""), o.get("icon"))
+		b.fit.call_deferred()
 		b.disabled = o.get("disabled", false)
 		b.custom_minimum_size.x = 440.0
 		b.pressed.connect(func() -> void: _chosen.emit(i))
