@@ -28,6 +28,8 @@ ACTORS = {
     'buffalo': ('data/character/chr002.nri',
                 'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,'
                 'guard,jump,attack_ready,drill0,combat_stance', BUFFALO_SOCKETS),
+    'bunny': ('data/character/chr001.nri',
+              'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,guard,jump', None),
     'torobbie': ('data/monster/mon249.nri', '', None),
     'bad_fury': ('data/monster/mon250.nri', '', None),
     'tottochi': ('data/monster/mon251.nri', '', None),

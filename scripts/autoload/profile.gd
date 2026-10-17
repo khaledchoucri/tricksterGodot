@@ -34,6 +34,8 @@ var wardrobe: Array = []
 var worn: Dictionary = {}
 ## Master levels per skill card (card id -> 0..3): each raises its cap by one.
 var mastery: Dictionary = {}
+## The class played (ClassData id).
+var class_id := "buffalo"
 
 
 func _ready() -> void:
@@ -65,6 +67,7 @@ func load_profile() -> void:
 	wardrobe = []
 	worn = {}
 	mastery = {}
+	class_id = "buffalo"
 	if not FileAccess.file_exists(path):
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -93,6 +96,7 @@ func load_profile() -> void:
 	worn = data.get("worn", {})
 	for k: String in data.get("mastery", {}):
 		mastery[k] = int(data.mastery[k])
+	class_id = data.get("class_id", "buffalo")
 
 
 func save() -> void:
@@ -104,7 +108,7 @@ func save() -> void:
 		"materials": materials, "stats": stats,
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
-		"worn": worn, "mastery": mastery}, "  "))
+		"worn": worn, "mastery": mastery, "class_id": class_id}, "  "))
 
 
 func is_new() -> bool:

@@ -44,7 +44,13 @@ func _ready() -> void:
 			heat = int(kv[1])
 		elif kv.size() == 2 and kv[0] == "city":
 			city = kv[1]
+		elif kv.size() == 2 and kv[0] == "class":
+			Profile.class_id = kv[1]
+	var chosen := Profile.class_id
 	Profile.use_path("user://playtest_profile.json", true)
+	Profile.class_id = chosen
+	if chosen != "buffalo":
+		Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))  # the slot is open
 	if city == "full":
 		for r: RestorationData in Run.hub.restorations:
 			Profile.restorations[String(r.id)] = r.max_level

@@ -32,7 +32,7 @@ func _ready() -> void:
 		hud.center("Original assets not found.\nRun tools/setup_assets.py (see docs/poc/README.md), then reopen the project.")
 		return
 	story = Story.new(hub.story)
-	Run.new_run()  # fresh state for the HUD and the player's stats
+	Run.new_run()  # fresh state for the HUD and the player's stats (and the chosen class's look)
 	room = Room.new()
 	add_child(room)
 	room.build(hub.room)
@@ -118,7 +118,10 @@ func _physics_process(_delta: float) -> void:
 			talk(nearest)
 			return
 	if gate.ready_to_enter() and Combat.ground(player.global_position - gate.global_position).length() < GATE_RANGE:
-		_depart()
+		if Run.classes.filter(func(c: ClassData) -> bool: return c.unlocked()).size() > 1:
+			_choose_character()
+		else:
+			_depart()
 
 
 func _process(_delta: float) -> void:
@@ -474,6 +477,25 @@ func _server_menu(npc: Npc) -> void:
 
 
 # ---------------------------------------------------------------- expedition
+
+## With more than one character slot, the gate asks who logs in.
+func _choose_character() -> void:
+	_set_talking(true)
+	var options: Array = []
+	for c in Run.classes:
+		options.append({"title": c.display_name, "tag": "Playing" if String(c.id) == Profile.class_id else "",
+			"text": c.text if c.unlocked() else "Locked. " + c.unlock_text, "disabled": not c.unlocked()})
+	options.append({"title": "Not yet", "tag": "", "text": "Stay in the city."})
+	var pick := await dialogue.choose({"name": "Character select", "portrait": null,
+		"text": "Who logs in to Coral Beach?"}, options)
+	_set_talking(false)
+	if pick < 0 or pick >= Run.classes.size():
+		player.global_position += Vector2(0, 60)
+		return
+	Profile.class_id = String(Run.classes[pick].id)
+	Profile.save()
+	_depart()
+
 
 func _depart() -> void:
 	leaving = true

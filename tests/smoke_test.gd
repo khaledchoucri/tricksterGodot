@@ -553,6 +553,22 @@ func _systems(Run: Node) -> void:
 	check(echo_seen, "after a clear, Echoes haunt elite rooms")
 	Run.new_run()
 
+	# Bunny: a second class from data alone.
+	var bunny: ClassData = Run.classes[1]
+	check(not bunny.unlocked() or int(Profile.stats.get("clears", 0)) >= 1, "Bunny's slot opens after a clear")
+	Profile.stats["clears"] = 1
+	Profile.class_id = "bunny"
+	Run.new_run()
+	check(Run.cls.id == &"bunny" and Run.job.id == &"schoolgirl" and Run.job.next_jobs[0].id == &"boxer"
+		and Run.card_level(&"shockwave") == 1, "Bunny starts as a Schoolgirl with Shockwave, headed for Boxer")
+	var boxer: JobData = Run.job.next_jobs[0]
+	Run.start_job(boxer)
+	var champ_or_duel: Array = boxer.next_jobs.map(func(j: JobData) -> String: return String(j.id))
+	check(champ_or_duel == ["champion", "duelist"] and not boxer.next_jobs[1].unlocked(),
+		"a Boxer goes on to Champion, or Duelist after a Champion clear")
+	Profile.class_id = "buffalo"
+	Run.new_run()
+
 	# Master Louis raises card caps.
 	var wave: CardData = Run.card(&"shockwave")
 	Profile.materials[String(wave.master_material.id)] = 6

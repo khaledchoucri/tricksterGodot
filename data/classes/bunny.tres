@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="ClassData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/class_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/jobs/schoolgirl.tres" id="2_j"]
+[ext_resource type="Resource" path="res://data/items/rookie_sword.tres" id="3_w"]
+[ext_resource type="Resource" path="res://data/combos/punch.tres" id="4_c"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"bunny"
+display_name = "Bunny"
+actor = "bunny"
+base = {
+"AC": 24,
+"AP": 18,
+"DA": 5,
+"DP": 4,
+"DX": 16,
+"HP": 130,
+"HV": 8,
+"LK": 6,
+"MA": 8,
+"MD": 4,
+"MP": 90,
+"WT": 280
+}
+graph = {
+"charm": 0.25,
+"magic": 0.05,
+"power": 0.55,
+"sense": 0.15
+}
+start_job = ExtResource("2_j")
+start_weapon = ExtResource("3_w")
+combo = ExtResource("4_c")
+armed = false
+unlock_stat = "clears"
+unlock_count = 1
+unlock_text = "Clear a run to open a second character slot."
+text = "Close-range physical attacks. Easy to control, great one on one, weak against crowds. Becomes a Boxer."

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/adrenaline.tres" id="c_adrenaline"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/flaming_fist.tres" id="c_flaming_fist"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/hyper_beat.tres" id="c_hyper_beat"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/suffocate.tres" id="c_suffocate"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/chakra_balance.tres" id="c_chakra_balance"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"champion"
+display_name = "Champion"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_adrenaline"), ExtResource("c_flaming_fist"), ExtResource("c_hyper_beat"), ExtResource("c_suffocate"), ExtResource("c_chakra_balance")])
+passive = &"champions_fury"
+passive_name = "Champion's Fury"
+passive_text = "Combo finishers deal 25% more damage."
+text = "An advanced Boxer: short-range combat and every physical attack there is."

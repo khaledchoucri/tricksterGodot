@@ -87,6 +87,8 @@ func _mult(s: ComboStep) -> float:
 	var m := Run.attack_mult()
 	if s.finisher:
 		m *= 1.0 + Run.card_value(&"pumping_heart") / 100.0
+		if Run.has_passive(&"champions_fury"):
+			m *= 1.25
 	return m
 
 

@@ -31,3 +31,4 @@ graph = {
 }
 start_job = ExtResource("2_j")
 start_weapon = ExtResource("3_w")
+text = "Close-range physical attacks. A well-rounded melee fighter with a sword. Becomes a Knight."

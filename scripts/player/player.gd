@@ -77,9 +77,11 @@ func now() -> float:
 ## the Extra Swing trait's swing.
 func refresh_gear() -> void:
 	var w := Run.equipped("weapon")
-	if w:
+	if w and Run.cls.armed:
 		weapon.use(w.data.weapon_sprite())
-	combo = FAMILY_COMBOS.get(Run.weapon_family(), combo)
+	weapon.visible = Run.cls.armed
+	weapon.set_process(Run.cls.armed)
+	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(Run.weapon_family(), combo)
 	_steps = combo.steps.duplicate()
 	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
 		var extra: ComboStep = _steps[_steps.size() - 2].duplicate()

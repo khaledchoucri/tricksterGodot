@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/uppercut.tres" id="c_uppercut"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/quad_punch.tres" id="c_quad_punch"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/counter_punch.tres" id="c_counter_punch"]
+[ext_resource type="Resource" path="res://data/coral_beach/cards/guard.tres" id="c_guard"]
+[ext_resource type="Resource" path="res://data/jobs/champion.tres" id="j_champion"]
+[ext_resource type="Resource" path="res://data/jobs/duelist.tres" id="j_duelist"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"boxer"
+display_name = "Boxer"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_guard")])
+passive = &"boxers_footwork"
+passive_name = "Boxer's Footwork"
+passive_text = "Your punches deal 15% more damage."
+text = "Trained for man-to-man battle: big damage to one enemy at a time."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_champion"), ExtResource("j_duelist")])

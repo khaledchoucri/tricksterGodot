@@ -32,6 +32,20 @@ func _shoot() -> void:
 		await _shoot_hub()
 		get_tree().quit()
 		return
+	if "bunny" in OS.get_cmdline_user_args():
+		Profile.stats["clears"] = 1
+		Profile.class_id = "bunny"
+		game = load("res://scenes/game.tscn").instantiate()
+		add_child(game)
+		await _wait(3.0)
+		for e in game.room.enemies:
+			e.global_position = game.player.global_position + Vector2(50, 15)
+		game.player.aim = Vector2(1, 0.3).normalized()
+		game.player.attack.start(2)
+		await _wait(0.12)
+		await _snap("30_bunny_punch")
+		get_tree().quit()
+		return
 	if "desert" in OS.get_cmdline_user_args():
 		await _shoot_desert()
 		get_tree().quit()

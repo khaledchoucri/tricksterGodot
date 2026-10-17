@@ -98,6 +98,14 @@ Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie
   - **Skills** go in the three skill slots and cost MP. Taking a new skill with full slots replaces one.
   - **Talents** are passive.
 
+### Characters
+
+- **Buffalo** fights with a sword or hammer. Fighter → Knight → Gladiator or Mercenary.
+- **Bunny** opens as a second character slot after your first clear, and you choose who logs in at the gate.
+  - She punches with the original punch combo and doesn't draw her weapon.
+  - Schoolgirl → Boxer (Boxer's Footwork: +15% punch damage) → **Champion** (Champion's Fury: +25% finishers) or **Duelist**. The Duelist is the hybrid: she learns the Knight tree, and gets +10% skill damage and −10% MP cost. It unlocks after a Champion clear.
+  - Bunny is data only (`data/classes/bunny.tres` and four jobs), which proves new classes need no new systems.
+
 ### Echoes and runes
 
 - **Echoes.** After your first clear, elite rooms can be haunted by an **Echo**: the ghost of a former player of another class, in that class's original sprite. They are:

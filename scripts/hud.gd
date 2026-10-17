@@ -55,6 +55,7 @@ func refresh(player: Player) -> void:
 	xp.max_value = Run.exp_to_next()
 	xp.value = Run.xp
 	%LevelLabel.text = "Lv %d  %s" % [Run.level, Run.job.display_name]
+	$Root/Status/Title.text = "%s  ·  %s" % [Run.cls.display_name, Stats.TYPES[_main_type()].name]
 	var mp: ProgressBar = %MpBar
 	mp.max_value = Run.max_mp
 	mp.value = Run.mp
@@ -69,6 +70,15 @@ func refresh(player: Player) -> void:
 		sheet.refresh()
 	if is_instance_valid(player):
 		%DashLabel.text = "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
+
+
+## The type the class grows in most (Power for Buffalo and Bunny).
+func _main_type() -> String:
+	var best := "power"
+	for t: String in Stats.TYPE_ORDER:
+		if float(Run.cls.graph.get(t, 0.0)) > float(Run.cls.graph.get(best, 0.0)):
+			best = t
+	return best
 
 
 func _refresh_slots(player: Player) -> void:

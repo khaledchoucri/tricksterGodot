@@ -38,6 +38,31 @@
     ]
    },
    {
+    "id": "cav_second_slot",
+    "if": [
+     "clears>=1",
+     "!cav_second_slot"
+    ],
+    "set": [
+     "cav_second_slot"
+    ],
+    "then": "restore",
+    "lines": [
+     [
+      "cavalier",
+      "Something curious happened when you came back. The character select screen flickered."
+     ],
+     [
+      "cavalier",
+      "A second slot. A Bunny, waiting by the gate, fists up. Somebody's old character, or a new one of yours?"
+     ],
+     [
+      "cavalier",
+      "Choose at the gate. The city remembers you either way."
+     ]
+    ]
+   },
+   {
     "id": "cav_rollback",
     "if": [
      "deaths>=1",

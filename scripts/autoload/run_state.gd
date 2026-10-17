@@ -9,7 +9,7 @@ signal leveled_up(new_level: int)
 ## Regions a run passes through, in order; the last one's boss ends it.
 const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
 const HUB_PATH := "res://data/megalopolis/hub.tres"
-const CLASS_PATH := "res://data/classes/buffalo.tres"
+const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres"]
 const ITEMS_DIR := "res://data/items/"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
 const MAX_CARD_LEVEL := 5
@@ -36,6 +36,7 @@ var region: RegionData:
 		return plan[depth].region if depth < plan.size() else regions[0]
 var hub: HubData
 var cls: ClassData
+var classes: Array[ClassData] = []
 var items: Array[ItemData] = []
 var monster_data: Dictionary = {}  # original stats by monster id (generated, may be empty)
 
@@ -110,7 +111,9 @@ func _ready() -> void:
 	for p in REGION_PATHS:
 		regions.append(load(p))
 	hub = load(HUB_PATH)
-	cls = load(CLASS_PATH)
+	for p in CLASS_PATHS:
+		classes.append(load(p))
+	cls = classes[0]
 	_index_cards()
 	_load_items()
 	for p in ECHO_PATHS:
@@ -129,7 +132,9 @@ func _index_cards() -> void:
 	for r in regions:
 		for c in r.cards:
 			_cards[c.id] = c
-	var jobs_left: Array[JobData] = [cls.start_job]
+	var jobs_left: Array[JobData] = []
+	for c in classes:
+		jobs_left.append(c.start_job)
 	while not jobs_left.is_empty():
 		var j: JobData = jobs_left.pop_back()
 		for c in j.cards:
@@ -163,7 +168,16 @@ func _load_items() -> void:
 			items.append(load(ITEMS_DIR + f))
 
 
+## The class chosen in the Profile (falls back to the first).
+func chosen_class() -> ClassData:
+	for c in classes:
+		if String(c.id) == Profile.class_id and c.unlocked():
+			return c
+	return classes[0]
+
+
 func new_run() -> void:
+	cls = chosen_class()
 	depth = 0
 	level = 1
 	xp = 0
@@ -821,7 +835,9 @@ func _ratio(key: String, soft: float) -> float:
 ## Damage multiplier for the basic combo.
 func attack_mult() -> float:
 	var m := _ratio("AP", AP_SOFT) * _berserk_mult()
-	if has_passive(&"sword_mastery") and weapon_family() == "sword":
+	if has_passive(&"sword_mastery") and weapon_family() == "sword" and cls.armed:
+		m *= 1.15
+	if has_passive(&"boxers_footwork") and not cls.armed:
 		m *= 1.15
 	return m
 
@@ -833,6 +849,8 @@ func skill_mult(c: CardData = null) -> float:
 	var m := _ratio(scaling, soft)
 	if has_passive(&"arena_champion"):
 		m *= 1.15
+	if has_passive(&"duelists_edge"):
+		m *= 1.1
 	return m * _berserk_mult()
 
 
