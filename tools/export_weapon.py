@@ -43,9 +43,12 @@ def export(nri_path, out_png):
             continue
         # Blade direction: from the grip toward the farthest opaque pixel.
         tip = max(pixels, key=lambda q: math.hypot(q[0] - grip[0], q[1] - grip[1]))
-        if _inside(grip, bm.w, bm.h):
-            # Some sprites (hammers, sticks) are centred on the art, not the
-            # hand: hold them by the end of the long axis with less mass.
+        if len(item.anims[0].frames) > 2 and _inside(grip, bm.w, bm.h):
+            # Hammers, rods and sticks (4-6 frames, one per angle) are centred
+            # on the art, not the hand: hold them by the end of the long axis
+            # with less mass. Blades have two frames (left, right) whose origin
+            # is the hilt, even when it sits well inside a padded image (the
+            # Golden Sword's).
             a = tip
             b = max(pixels, key=lambda q: math.hypot(q[0] - a[0], q[1] - a[1]))
             grip, tip = (a, b) if _mass(pixels, a) < _mass(pixels, b) else (b, a)
