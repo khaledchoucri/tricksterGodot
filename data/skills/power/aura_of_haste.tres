@@ -13,4 +13,5 @@ text = "Agility (DX) up: attack {v}% faster."
 requires = {&"hyper_beat": 3}
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [8.0, 8.0, 16.0, 16.0, 24.0, 26.0, 29.0, 31.0]}
+effects = {"ap": ["p_306_mulit_agiligy_up_apply"]}
 master_material = ExtResource("m_master")

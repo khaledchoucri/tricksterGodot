@@ -13,4 +13,5 @@ text = "Your hits pin an enemy down: for {v} s it can't hide (burrow or vanish).
 requires = {&"sense_breaker": 3}
 jobs = Array[StringName]([&"gladiator"])
 table = {"value": [15.0, 19.0, 25.0, 29.0, 39.0, 43.0, 47.0, 51.0]}
+effects = {"fl": ["P_603_flurescence_fly"]}
 master_material = ExtResource("m_master")

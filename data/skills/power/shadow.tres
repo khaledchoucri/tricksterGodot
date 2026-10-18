@@ -14,5 +14,6 @@ text = "Shadows of you ({count}) strike the enemy you aim at from every side, {v
 requires = {&"blazing_strike": 3}
 jobs = Array[StringName]([&"gladiator"])
 table = {"value": [52.0, 57.0, 63.0, 67.0, 78.0, 86.0, 94.0, 102.0], "mp": [34.0, 42.0, 50.0, 55.0, 65.0, 65.0, 65.0, 65.0], "cooldown": [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0], "count": [1.0, 2.0, 3.0, 3.0, 5.0, 5.0, 5.0, 5.0]}
+effects = {"ap": ["c_305_charging_apply"]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

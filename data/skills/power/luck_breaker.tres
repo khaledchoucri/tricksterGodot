@@ -11,4 +11,6 @@ kind = 0
 skill_id = 1010
 text = "Your hits curse an enemy's luck by {v}% for {seconds} s: your critical hits land on it that much more often."
 table = {"value": [15.0, 21.0, 30.0, 36.0, 51.0, 56.0, 61.0, 66.0], "seconds": [14.0, 18.0, 24.0, 28.0, 38.0, 38.0, 38.0, 38.0]}
+sounds = {"ht": "snd_skl_p_110_ebg.wav"}
+effects = {"ht": ["eft_skl_p_110_ebg", "eft_skl_p_110_eps"]}
 master_material = ExtResource("m_master")

@@ -16,5 +16,6 @@ upgrades = &"quad_punch"
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [29.0, 31.0, 33.0, 35.0, 39.0, 43.0, 47.0, 51.0], "mp": [36.0, 40.0, 45.0, 48.0, 54.0, 54.0, 54.0, 54.0], "cooldown": [7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0]}
 sounds = {"ht": "snd_p_208_ht.wav"}
+effects = {"ht": ["skill_power attack"]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

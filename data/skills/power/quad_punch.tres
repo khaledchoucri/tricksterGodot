@@ -14,5 +14,7 @@ text = "Four blazing blows in a row, {v} damage each."
 requires = {&"burning_rave": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [24.0, 28.0, 35.0, 39.0, 50.0, 55.0, 60.0, 65.0], "mp": [38.0, 40.0, 42.0, 44.0, 48.0, 48.0, 48.0, 48.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]}
+sounds = {"ht": "snd_skl_p_015_ebg1.wav"}
+effects = {"ht": ["skill_power attack"]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

@@ -15,6 +15,7 @@ requires = {&"desperate_rally": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 max_level = 1
 table = {"value": [0.0], "mp": [58.0], "cooldown": [10.0]}
+sounds = {"ap": "snd_p_210_ap.wav"}
 effects = {"ht": ["eft_skl_p_110_ebg", "eft_skl_p_110_eps"]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

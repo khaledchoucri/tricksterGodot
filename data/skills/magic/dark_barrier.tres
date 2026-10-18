@@ -13,6 +13,7 @@ text = "Dark resistance +{v}%, and {reflect}% of the physical damage you take is
 requires = {&"dark_pact": 1, &"mana_shield": 3}
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 table = {"value": [8.0, 10.0, 13.0, 15.0, 20.0, 20.0, 20.0, 20.0], "reflect": [12.0, 16.0, 22.0, 26.0, 36.0, 36.0, 36.0, 36.0]}
+sounds = {"ap": "snd_m_312_ap.wav", "ke": "snd_m_312_ke.wav"}
 effects = {"ap": ["M_312_dark_barrier_apply"], "ke": ["M_312_dark_barrier_keep"]}
 master_material = ExtResource("m_master")
 element = "Dark"

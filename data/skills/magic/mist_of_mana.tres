@@ -12,5 +12,5 @@ skill_id = 2006
 text = "+{v}% MA."
 requires = {&"bottle_of_mana": 1}
 table = {"value": [10.0, 16.0, 25.0, 31.0, 45.0, 50.0, 54.0, 58.0]}
-effects = {"ed": ["eft_skl_m_006_eed"]}
+effects = {"ap": ["skill_ni ke ma up"]}
 master_material = ExtResource("m_master")

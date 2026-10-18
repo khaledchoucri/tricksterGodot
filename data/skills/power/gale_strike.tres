@@ -16,6 +16,7 @@ upgrades = &"tempest_strike"
 jobs = Array[StringName]([&"gladiator"])
 table = {"value": [41.0, 46.0, 55.0, 61.0, 75.0, 83.0, 90.0, 98.0], "mp": [43.0, 49.0, 56.0, 60.0, 69.0, 69.0, 69.0, 69.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "radius": [140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0], "targets": [1.0, 1.0, 2.0, 3.0, 5.0, 5.0, 5.0, 5.0]}
 sounds = {"ap": "snd_p_604_ap.wav"}
+effects = {"ap": ["P_309_Wind_brandish_ap"]}
 master_material = ExtResource("m_master")
 element = "Wind"
 behavior = ExtResource("2_b")

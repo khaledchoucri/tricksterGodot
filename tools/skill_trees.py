@@ -136,6 +136,12 @@ def is_active(sk):
 
 
 _SOUNDS = None
+# The effects and sounds each skill's client class plays, read from
+# Trickster.bin (see the README's "Reverse engineering"): {card: {"effects":
+# {phase: [cake]}, "sounds": {phase: file}}}. They replace the name matching
+# below for the phases they cover.
+CLIENT_FX = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client_effects.json'),
+                           encoding='utf-8'))
 _CAKES = None
 EFFECTS = os.path.join(ROOT, 'original_assets', 'effects')
 # Phase of a cake name's suffix: "ap" plays on the caster when the skill goes
@@ -242,7 +248,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
         listed = job_ids(cp['Job'])
         learners = [] if not listed or all(j in FIRST_JOBS for j in listed) else listed
         element = ELEMENT_NAMES.get(sp.get('element', ''), sp.get('element')) or ELEMENTS.get(sk['Element'], 'none')
-        sounds = sp.get('sounds') or sounds_for(sk) or (ELEMENT_SOUNDS.get(element, {}) if skill else {})
+        client = CLIENT_FX.get(sp['card'], {})
+        sounds = sp.get('sounds') or {**(sounds_for(sk) or ({} if client.get('sounds') else ELEMENT_SOUNDS.get(element, {}) if skill else {})),
+                                      **client.get('sounds', {})}
         behavior = sp.get('behavior')
         ext = [('Script', 'res://scripts/data/card_data.gd', '1_s'),
                ('Resource', f'res://data/materials/{MATERIALS[n % len(MATERIALS)]}.tres', 'm_master')]
@@ -270,6 +278,12 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
         if sounds:
             lines.append('sounds = {' + ', '.join(f'"{k}": {json.dumps(v)}' for k, v in sorted(sounds.items())) + '}')
         effects = effects_for(sid, sk)
+        if client.get('effects'):
+            # The client's own list wins; the skill-number guesses (eft_skl_*)
+            # it doesn't confirm are dropped (the numbering isn't the skill id's).
+            effects = {ph: [n for n in names if not n.lower().startswith('eft_skl')] for ph, names in effects.items()}
+            effects.update({ph: list(names) for ph, names in client['effects'].items()})
+            effects = {ph: names for ph, names in effects.items() if names}
         # Informally named effects the spec points at (no skill number in the name).
         for phase, extra in sp.get('effects', {}).items():
             effects[phase] = list(extra) + [n for n in effects.get(phase, []) if n not in extra]

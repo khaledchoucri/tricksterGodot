@@ -14,4 +14,6 @@ requires = {&"shockwave": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 max_level = 1
 table = {"value": [60.0], "seconds": [20.0]}
+sounds = {"ap": "snd_skl_p_006_sbg.wav"}
+effects = {"ht": ["eft_skl_p_201_eed", "eft_skl_p_201_eps"]}
 master_material = ExtResource("m_master")

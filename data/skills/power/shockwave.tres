@@ -12,5 +12,6 @@ kind = 1
 skill_id = 1001
 text = "Gather all your strength into one blow that knocks enemies around you down for {v} damage."
 table = {"value": [38.0, 46.0, 59.0, 68.0, 87.0, 96.0, 104.0, 113.0], "mp": [20.0, 21.0, 23.0, 24.0, 29.0, 29.0, 29.0, 29.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]}
+effects = {"ht": ["skill_power attack"]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

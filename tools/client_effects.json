@@ -1,0 +1,887 @@
+{
+ "adrenaline": {
+  "effects": {
+   "ap": [
+    "skill_adre"
+   ],
+   "ke": [
+    "skill_adre u ji"
+   ]
+  },
+  "sounds": {}
+ },
+ "aqua_bomb": {
+  "effects": {
+   "ht": [
+    "M_401_water shower_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "arrow_of_light": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_305_ebg"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "aura_of_haste": {
+  "effects": {
+   "ap": [
+    "p_306_mulit_agiligy_up_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "basic_healing": {
+  "effects": {
+   "ap": [
+    "m_311_primary_cure_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "berserker": {
+  "effects": {
+   "ap": [
+    "eft_skl_p_016_sbg",
+    "eft_skl_p_016_sps"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_016_sbg.wav"
+  }
+ },
+ "blood_testament": {
+  "effects": {
+   "ap": [
+    "M_319_bloody_oath_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "bottle_of_mana": {
+  "effects": {
+   "ap": [
+    "eft_skl_m_013_sbg"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_pub2_sbg.wav"
+  }
+ },
+ "botulism_cloud": {
+  "effects": {
+   "ap": [
+    "M_225_harden_apply"
+   ],
+   "ke": [
+    "M_225_harden_keep"
+   ]
+  },
+  "sounds": {}
+ },
+ "celestial_strike": {
+  "effects": {
+   "ap": [
+    "M_603_light_weight_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "cleaving_terra": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_209_ebg"
+   ]
+  },
+  "sounds": {}
+ },
+ "clinch_release": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_p_210_ap.wav"
+  }
+ },
+ "dark_barrier": {
+  "effects": {
+   "ap": [
+    "M_312_dark_barrier_apply"
+   ],
+   "ke": [
+    "M_312_dark_barrier_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_312_ap.wav",
+   "ke": "snd_m_312_ke.wav"
+  }
+ },
+ "dark_commando": {
+  "effects": {
+   "ap": [
+    "M_804_dark_ghost_ap"
+   ],
+   "ht": [
+    "M_804_dark_ghost_ht"
+   ]
+  },
+  "sounds": {}
+ },
+ "dark_distractor": {
+  "effects": {
+   "ap": [
+    "M_315_dark_slow_apply"
+   ],
+   "ke": [
+    "M_315_dark_slow_keep"
+   ]
+  },
+  "sounds": {}
+ },
+ "dark_lance": {
+  "effects": {
+   "fl": [
+    "M_308_dark_spear_fly"
+   ]
+  },
+  "sounds": {}
+ },
+ "desperate_rally": {
+  "effects": {
+   "ap": [
+    "P_209_dead_alive_ap",
+    "P_209_dead_alive_ap2"
+   ],
+   "ke": [
+    "P_209_dead_alive_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "dimensional_rift": {
+  "effects": {},
+  "sounds": {
+   "ht": "snd_m_416_ht.wav"
+  }
+ },
+ "dragon_storm": {
+  "effects": {
+   "ht": [
+    "M_403_fire dragon_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "drip_bomb": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_202_ebg"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "eagle_eye": {
+  "effects": {
+   "ap": [
+    "p_205_hwk_eye_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "earth_shield": {
+  "effects": {
+   "ap": [
+    "M_217_water_shield_apply"
+   ],
+   "ke": [
+    "M_220_earth_shield_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_217_ap.wav",
+   "ke": "snd_m_220_ke.wav"
+  }
+ },
+ "earthquake": {
+  "effects": {
+   "ap": [
+    "M_404_earthquake_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "electro_attack": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_205_ebg"
+   ]
+  },
+  "sounds": {}
+ },
+ "fan_of_knives": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
+ "fire_shield": {
+  "effects": {
+   "ap": [
+    "M_217_water_shield_apply"
+   ],
+   "ke": [
+    "M_219_fire_shield_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_217_ap.wav",
+   "ke": "snd_m_219_ke.wav"
+  }
+ },
+ "flaming_fist": {
+  "effects": {
+   "ht": [
+    "P_403_fighting_fire_ht",
+    "skill_power attack"
+   ]
+  },
+  "sounds": {}
+ },
+ "galder_barrage": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
+ "gale_strike": {
+  "effects": {
+   "ap": [
+    "P_309_Wind_brandish_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "ghostly_whisper": {
+  "effects": {
+   "ap": [
+    "M_805_Dark_Whisper_ap",
+    "M_805_Dark_Whisper_ap2"
+   ],
+   "ht": [
+    "M_805_Dark_Whisper_ht"
+   ]
+  },
+  "sounds": {}
+ },
+ "gnomes_blessing": {
+  "effects": {
+   "ap": [
+    "M_409_earth_counter_ap"
+   ],
+   "ke": [
+    "M_409_earth_counter_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "gnomes_domain": {
+  "effects": {
+   "ed": [
+    "M_414_Earth_Area_ed"
+   ]
+  },
+  "sounds": {}
+ },
+ "gravity_crush": {
+  "effects": {
+   "ap": [
+    "m_310_gravity_apply"
+   ],
+   "ke": [
+    "m_310_gravity_keep"
+   ]
+  },
+  "sounds": {}
+ },
+ "guard": {
+  "effects": {
+   "ap": [
+    "P_207_guard_apply"
+   ],
+   "ke": [
+    "P_207_guard_keep2"
+   ]
+  },
+  "sounds": {}
+ },
+ "guard_break": {
+  "effects": {
+   "ht": [
+    "eft_skl_p_201_eed",
+    "eft_skl_p_201_eps"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_006_sbg.wav"
+  }
+ },
+ "hellfire": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_303_ebg"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "hinder_snare": {
+  "effects": {
+   "ap": [
+    "eft_skl_m_301_sps"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_109_sbg.wav"
+  }
+ },
+ "hyper_beat": {
+  "effects": {
+   "ap": [
+    "eft_skl_p_109_sbg",
+    "eft_skl_p_109_sps"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_109_sbg.wav"
+  }
+ },
+ "icey_shackles": {
+  "effects": {
+   "ed": [
+    "M_228_chilling_prison_ed"
+   ],
+   "ht": [
+    "magic impect"
+   ],
+   "ke": [
+    "M_228_chilling_prison_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "incinerate": {
+  "effects": {
+   "ht": [
+    "M_214_fire_explosion_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "light_shield": {
+  "effects": {
+   "ap": [
+    "M_217_water_shield_apply"
+   ],
+   "ke": [
+    "M_313_light_shield_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_217_ap.wav",
+   "ke": "snd_m_313_ke.wav"
+  }
+ },
+ "lightning_strike": {
+  "effects": {
+   "ap": [
+    "electric sword"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_p_311_ht.wav"
+  }
+ },
+ "luck_breaker": {
+  "effects": {
+   "ht": [
+    "eft_skl_p_110_ebg",
+    "eft_skl_p_110_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_p_110_ebg.wav"
+  }
+ },
+ "mana_ring": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_skl_m_108_sbg.wav"
+  }
+ },
+ "mana_shield": {
+  "effects": {
+   "ap": [
+    "eft_skl_m_113_1"
+   ],
+   "ke": [
+    "eft_skl_m_113_2"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_008_sbg.wav"
+  }
+ },
+ "mana_storm": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_109_ebg"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "mana_web": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_110_ebg",
+    "eft_skl_m_110_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_110_ebg.wav"
+  }
+ },
+ "mist_of_mana": {
+  "effects": {
+   "ap": [
+    "skill_ni ke ma up"
+   ]
+  },
+  "sounds": {}
+ },
+ "oath_of_light": {
+  "effects": {
+   "ap": [
+    "M_320_saint_promise_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "phoenix_rising": {
+  "effects": {
+   "ap": [
+    "M_224_fire_burn_apply1",
+    "M_224_fire_burn_apply2",
+    "M_224_fire_burn_apply3"
+   ]
+  },
+  "sounds": {}
+ },
+ "piercing_wave": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_skl_p_109_sbg.wav"
+  }
+ },
+ "quad_punch": {
+  "effects": {
+   "ht": [
+    "skill_power attack"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_p_015_ebg1.wav"
+  }
+ },
+ "radiant_strike": {
+  "effects": {
+   "ap": [
+    "M_314_shining_ray_apply"
+   ],
+   "ht": [
+    "M_309_light_wave_hit"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_314_ap.wav",
+   "ht": "snd_m_314_ht.wav"
+  }
+ },
+ "raging_storm": {
+  "effects": {
+   "ap": [
+    "M_405_mustang wind_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "raions_blessing": {
+  "effects": {
+   "ap": [
+    "M_407_thunder_counter_ap"
+   ],
+   "ke": [
+    "M_407_thunder_counter_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "raions_space": {
+  "effects": {
+   "ed": [
+    "M_412_Thunder_Area_ed"
+   ]
+  },
+  "sounds": {}
+ },
+ "refreshing_dew": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_m_605_ap.wav"
+  }
+ },
+ "rust": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_111_ebg",
+    "eft_skl_m_111_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_111_ebg.wav"
+  }
+ },
+ "salamanders_blessing": {
+  "effects": {
+   "ap": [
+    "M_408_fire_counter_ap"
+   ],
+   "ke": [
+    "M_408_fire_counter_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "salamanders_territory": {
+  "effects": {
+   "ed": [
+    "M_413_Fire_Area_ed"
+   ]
+  },
+  "sounds": {}
+ },
+ "scorching_earth": {
+  "effects": {
+   "ed": [
+    "M_227_fire_field_ed03"
+   ]
+  },
+  "sounds": {}
+ },
+ "scythe": {
+  "effects": {
+   "ht": [
+    "M_801_death scythe_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "searing_light": {
+  "effects": {
+   "ht": [
+    "M_602_sky ray_hit",
+    "magic impect"
+   ]
+  },
+  "sounds": {}
+ },
+ "sense_breaker": {
+  "effects": {
+   "ht": [
+    "eft_skl_p_107_eps"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_006_sbg.wav"
+  }
+ },
+ "shadow": {
+  "effects": {
+   "ap": [
+    "c_305_charging_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "shard_of_the_glacier": {
+  "effects": {
+   "ht": [
+    "M_222_ice_crystal_hit",
+    "magic impect"
+   ],
+   "ke": [
+    "M_222_ice_crystal_keep1"
+   ]
+  },
+  "sounds": {}
+ },
+ "shield_of_heaven": {
+  "effects": {
+   "ap": [
+    "M_309_Shield_ap"
+   ],
+   "ke": [
+    "M_309_Shield_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "shockvibe": {
+  "effects": {
+   "ht": [
+    "eft_skl_p_106_ebg",
+    "eft_skl_p_106_eps"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_006_sbg.wav"
+  }
+ },
+ "shockwave": {
+  "effects": {
+   "ht": [
+    "skill_power attack"
+   ]
+  },
+  "sounds": {}
+ },
+ "sonic_slash": {
+  "effects": {
+   "ht": [
+    "P_602_power sea brandish_hit"
+   ]
+  },
+  "sounds": {
+   "fl": "snd_p_307_fl.wav"
+  }
+ },
+ "staff_of_agony": {
+  "effects": {
+   "ht": [
+    "M_803_despair spear_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "staff_of_thunder": {
+  "effects": {
+   "ht": [
+    "M_402_electric spear_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "stone_strike": {
+  "effects": {
+   "ht": [
+    "eft_skl_s_102_eed"
+   ]
+  },
+  "sounds": {}
+ },
+ "suffocate": {
+  "effects": {
+   "fl": [
+    "P_603_flurescence_fly"
+   ]
+  },
+  "sounds": {}
+ },
+ "summon_boulder": {
+  "effects": {
+   "ht": [
+    "M_215_rock_summons_hit"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_006_ebg.wav"
+  }
+ },
+ "sylphs_blessing": {
+  "effects": {
+   "ap": [
+    "M_410_wind_counter_ap"
+   ],
+   "ke": [
+    "M_410_wind_counter_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "sylphs_playground": {
+  "effects": {
+   "ed": [
+    "M_415_Wind_Area_ed"
+   ]
+  },
+  "sounds": {}
+ },
+ "tempest_strike": {
+  "effects": {
+   "ap": [
+    "P_309_Wind_brandish_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "tetra_punch": {
+  "effects": {
+   "ht": [
+    "skill_power attack"
+   ]
+  },
+  "sounds": {}
+ },
+ "thunder_shield": {
+  "effects": {
+   "ap": [
+    "M_217_water_shield_apply"
+   ],
+   "ke": [
+    "M_218_electric_shield_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_217_ap.wav",
+   "ke": "snd_m_218_ke.wav"
+  }
+ },
+ "tidal_slash": {
+  "effects": {
+   "ht": [
+    "element_ice"
+   ]
+  },
+  "sounds": {
+   "fl": "snd_p_307_fl.wav",
+   "ht": "snd_p_307_ht.wav"
+  }
+ },
+ "tornado_blast": {
+  "effects": {
+   "ht": [
+    "M_230_gale_break_ht"
+   ]
+  },
+  "sounds": {}
+ },
+ "undines_blessing": {
+  "effects": {
+   "ap": [
+    "M_406_water_counter_ap"
+   ],
+   "ke": [
+    "M_406_water_counter_ke"
+   ]
+  },
+  "sounds": {}
+ },
+ "undines_garden": {
+  "effects": {
+   "ed": [
+    "M_411_Water_Area_ed"
+   ]
+  },
+  "sounds": {}
+ },
+ "upper_smash": {
+  "effects": {
+   "ht": [
+    "skill_power attack"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_p_015_ebg1.wav"
+  }
+ },
+ "uppercut": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_201_eed"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_p_206_ht.wav"
+  }
+ },
+ "water_shield": {
+  "effects": {
+   "ap": [
+    "M_217_water_shield_apply"
+   ],
+   "ke": [
+    "M_217_water_shield_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_217_ap.wav",
+   "ke": "snd_m_217_ke.wav"
+  }
+ },
+ "whirlwind": {
+  "effects": {
+   "ht": [
+    "M_216_whirlwind_hit"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "whirlwind_blaze": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_207_ebg"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "wind_blade": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_211_ebg"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_skl_p_109_sbg.wav"
+  }
+ },
+ "wind_shield": {
+  "effects": {
+   "ap": [
+    "M_217_water_shield_apply"
+   ],
+   "ke": [
+    "M_221_wind_shield_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_m_217_ap.wav",
+   "ke": "snd_m_221_ke.wav"
+  }
+ }
+}

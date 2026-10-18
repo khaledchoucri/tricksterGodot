@@ -12,4 +12,6 @@ skill_id = 1009
 text = "Agility (DX) up: attack {v}% faster."
 requires = {&"bulls_eye": 3, &"burning_rave": 3}
 table = {"value": [8.0, 8.0, 8.0, 16.0, 24.0, 26.0, 29.0, 31.0]}
+sounds = {"ap": "snd_skl_p_109_sbg.wav"}
+effects = {"ap": ["eft_skl_p_109_sbg", "eft_skl_p_109_sps"]}
 master_material = ExtResource("m_master")

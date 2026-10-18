@@ -13,4 +13,6 @@ text = "Rage: +{v}% AP, but you keep losing HP and MP while enemies are near."
 requires = {&"pumping_heart": 2}
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [5.3, 11.0, 24.0, 34.0, 69.0, 76.0, 83.0, 90.0]}
+sounds = {"ap": "snd_skl_p_016_sbg.wav"}
+effects = {"ap": ["eft_skl_p_016_sbg", "eft_skl_p_016_sps"]}
 master_material = ExtResource("m_master")
