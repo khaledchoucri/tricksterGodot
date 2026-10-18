@@ -2,14 +2,15 @@
 and sounds its client class plays, sorted into our phases by the client's
 name suffixes. Only names found in the class's own functions or their direct
 callees, and not shared with another skill's class (shared helpers carry
-other skills' names), are kept. usage: python client_fx.py"""
+other skills' names), are kept. usage: python client_fx.py <REA work folder holding re_plan_full.json and re_out/>"""
 import collections
 import json
 import os
 import re
+import sys
 
-S = os.path.dirname(os.path.abspath(__file__))
-ROOT = 'C:/Users/Khaled/source/repos/tricksterGodot'
+S = sys.argv[1]  # the REA work folder
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 plan = json.load(open(os.path.join(S, 're_plan_full.json')))
 cakes = set(json.load(open(ROOT + '/original_assets/effects/cake_names.json', encoding='utf-8')))
 STR = re.compile(r'"((?:[^"\\]|\\.)*)"')
