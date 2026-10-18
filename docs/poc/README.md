@@ -10,10 +10,10 @@ The original Trickster sprites, maps, sounds and data are placeholders for proto
 2. Generate the assets from a Trickster client (about a minute):
 
    ```
-   python -I tools/setup_assets.py "<path to the client's Trickster folder>"
+   python -I tools/setup_assets.py "<path to the client's Trickster folder>" ["<client with the full effects>"]
    ```
 
-   This exports the actors, five Coral Beach maps, the monster stats, and the sounds and music used by the game.
+   This exports the actors, five Coral Beach maps, the monster stats, the sounds and music, and the original skill effects. A later client (the 2019 one) has the complete effects data (`data/effect/cake.xml`, `cream.nri`); give it as the second path.
 3. Open the project in Godot and press F5.
 
 ## Controls
@@ -149,11 +149,29 @@ The Buffalo and Bunny lines have all 43 of Trickster's Power skills, generated b
 ### Characters
 
 - **Buffalo** fights with a sword or hammer. Fighter → Knight → Gladiator or Mercenary.
-- **Bunny** opens as a second character slot after your first clear, and you choose who logs in at the gate.
+- All four characters are playable from the start; you choose who logs in at the gate.
+- **Bunny**:
   - She punches with the original punch combo and doesn't draw her weapon.
   - Schoolgirl → Boxer (Boxer's Footwork: +15% punch damage) → **Champion** (Champion's Fury: +25% finishers) or **Duelist**. The Duelist is the hybrid: she learns the Knight tree, and gets +10% skill damage and −10% MP cost. It unlocks after a Champion clear.
   - Bunny is data only (`data/classes/bunny.tres` and four jobs), which proves new classes need no new systems.
 
+- **Sheep** and **Dragon**, the Magic line, cast from range:
+  - Sheep: Librarian → Bard (`chr011`) → **Soul Master** or **Witch** (hybrid: learns Magician skills). Her basic attack (left click) is **Mana Ring**: three rings burst around the target.
+  - Dragon: Shaman → Magician (`chr012`) → **Wizard** (hybrid: learns Bard skills), **Dark Lord** (dark) or **Priest** (light). His basic attack is **Mana Arrow**.
+  - The 3rd-job bodies are `chr019` (magic_f) and `chr020` (magic_m), the server's type_2 + 8.
+  - Basic spells cost no MP. Each character is offered only their own basic spell and its supplement (Arrow Rush, Mana Ring Booster). Where a prerequisite asks for the other one, your own stands in.
+  - **Casting.** Spells take half the original activation time, with movement locked. Mages are never interrupted by hits (Invincible Casting is innate, so its card isn't offered). Only a dash gets you out of a cast, and it refunds the MP. A cast bar shows under the mage.
+  - Mages regenerate 2% of max MP a second; Aura of Mana raises the rate.
+  - **Seals and Pacts.** Each Seal (Water, Thunder, Fire, Earth, Wind) opens one element and shuts two, so you can hold at most two Seals. Light Pact and Dark Pact exclude each other. Each skill's Job list decides who may learn it: a Priest can't learn dark magic.
+  - **Elements.** Elemental spells are resisted like the original's monster resistances. A monster's attacks carry the element it resists most (my reading), which elemental Shields resist.
+  - Held back until they have something to act on: Basic Healing and Med. Cure (no player ailments yet) and Withering Disease (monsters don't regenerate). Revival works as an automatic revive on its 300 s cooldown.
+  - Mage base stats (HP 115, MP 160, MA 22, Magic/Sense graph) are my design. The original's stats come only from the build graph.
+- **Original skill effects.** Trickster draws skill effects with its own particle system. `cake.xml` defines each effect as a set of emitters with rate, lifetime, sizes, colours, alphas, gravity and velocity, drawing textures from `cream.nri`.
+  - `tools/export_effects.py` exports them, and `scripts/fx/cake.gd` plays them.
+  - Cards name their effects by phase (cast, flight, hit, lasting, end), matched by action name like the sounds or by the older skill numbering. 86 cards have them.
+  - Spells with no original effect in either client (Mana Arrow, Mana Ring, Drip Bomb, Electro Attack, Hellfire...) keep drawn effects.
+  - Readings: sizes are percentages of the texture; "ZAlign" lays a particle flat on the ground; the blend modes are approximated with shaders.
+  - `tests/cake_gallery.tscn` renders them.
 - **A job change is what Trickster gives**: the job's character and its skill tree. (Earlier builds added techniques, bonus type points and a growth shift; they had no source and were removed.)
 - **Looks follow the original.** As in Trickster, a job change turns you into another character (CharacterInfo): Fighter → Knight (`chr010`) → the Power 3rd-job body (`chr018`, Gladiator and Mercenary), and Schoolgirl → Boxer (`chr009`) → `chr017` (Champion and Duelist). Hats, shields, masks, head pieces and ears/tails are drawn wherever that character's own pivot file places them; a piece it has no pivots for doesn't show (in Trickster, fashion stops working after a job change), though its stats still count. `tests/look_gallery.tscn` renders every job with gear.
 
