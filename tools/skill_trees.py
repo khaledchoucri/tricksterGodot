@@ -242,7 +242,7 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
         listed = job_ids(cp['Job'])
         learners = [] if not listed or all(j in FIRST_JOBS for j in listed) else listed
         element = ELEMENT_NAMES.get(sp.get('element', ''), sp.get('element')) or ELEMENTS.get(sk['Element'], 'none')
-        sounds = sounds_for(sk) or (ELEMENT_SOUNDS.get(element, {}) if skill else {})
+        sounds = sp.get('sounds') or sounds_for(sk) or (ELEMENT_SOUNDS.get(element, {}) if skill else {})
         behavior = sp.get('behavior')
         ext = [('Script', 'res://scripts/data/card_data.gd', '1_s'),
                ('Resource', f'res://data/materials/{MATERIALS[n % len(MATERIALS)]}.tres', 'm_master')]

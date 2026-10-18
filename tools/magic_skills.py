@@ -81,7 +81,9 @@ SPEC = {
     # draws itself (magic_bolt.gd, mana_ring.gd); their hits are the informally
     # named "magic impect" cake.
     '2001': dict(card='mana_arrow', behavior='magic_bolt', value=pct_hit, scaling='MA', rows={'range': 'Range'},
-                 effects={'ht': ['magic impect']},
+                 # The client's own Mana Arrow impact and sounds (eft/snd_skl_m_101).
+                 effects={'ht': ['eft_skl_m_101_eed']},
+                 sounds={'launch': 'snd_skl_m_101_sps.wav', 'ht': 'snd_skl_m_101_sed.wav'},
                  text='A mana arrow at the enemy you aim at for {v} damage. Dragon\'s basic attack.'),
     '2002': dict(card='invincible_casting', value=lambda r: 0, held=True,
                  text='Hits can\'t interrupt your casting (innate for mages).'),

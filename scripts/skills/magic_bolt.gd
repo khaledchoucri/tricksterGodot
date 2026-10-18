@@ -14,6 +14,9 @@ func _init() -> void:
 
 
 func start() -> void:
+	if card.id == &"mana_arrow":
+		_mana_arrows()
+		return
 	var reach := param("range", 200.0)
 	var foe := nearest_in_wedge(aim, reach, AIM_ARC)
 	var arrows := 1
@@ -46,3 +49,41 @@ func start() -> void:
 			orb.quiet = true
 			effect("fl", orb.global_position, {"follow": orb})
 	Audio.play("snd_skl_common_ki.wav", -10.0)
+
+
+## Mana Arrow as the original flies it (ManaArrowFlight): the arrows appear
+## one by one beside you over 0.3 s (Arrow Rush's count), spin, then each
+## rushes at the target after a random wait of its own, so they land in quick
+## succession. Extra arrows spread over the enemies around the first target.
+func _mana_arrows() -> void:
+	var reach := param("range", 200.0)
+	var foe := nearest_in_wedge(aim, reach, AIM_ARC)
+	var arrows := 1
+	var extra_share := 1.0
+	if Run.card_level(&"arrow_rush") > 0:
+		arrows = int(Run.card_value(&"arrow_rush"))
+		extra_share = Run.card(&"arrow_rush").param("ratio", Run.card_level(&"arrow_rush")) / 100.0
+	var others: Array[Enemy] = closest_in_circle(foe.global_position, 120.0, arrows) if foe else ([] as Array[Enemy])
+	var miss_at := player.global_position + Combat.screen(aim) * reach
+	var left := [arrows]
+	linger()  # the arrows land after the cast is over
+	for i in arrows:
+		var f := ManaArrowFlight.new()
+		f.room = room
+		f.caster = player
+		f.target = others[i % others.size()] if others.size() > 0 else null
+		f.target_point = f.target.global_position if f.target else miss_at
+		f.appear = 0.3 / arrows * i
+		var share := 1.0 if i == 0 else extra_share
+		f.on_appear = func() -> void:
+			card.play("launch", -10.0)
+		f.on_hit = func(e: Enemy) -> void:
+			if e and is_instance_valid(room):
+				# Each arrow plays the original impact (hit() shows it once a cast).
+				effect("ht", e.global_position, {"follow": e})
+				_effect_hit.append(e)
+				hit(e, damage(share), 70.0, false)
+			left[0] -= 1
+			if left[0] <= 0:
+				release()
+		room.add_child(f)

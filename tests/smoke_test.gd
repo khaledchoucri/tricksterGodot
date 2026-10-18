@@ -1047,7 +1047,8 @@ func magic_line() -> void:
 		p.invulnerable_until = p.now() + 9.0
 		var cast := p.skills.try_cast(0)
 		var pin := dummy.global_position
-		var until := p.now() + (4.5 if c.id == &"dimensional_rift" else 2.2)
+		# Dimensional Rift lingers; Mana Arrow waits by you up to 1.2 s before it rushes.
+		var until := p.now() + (4.5 if c.id == &"dimensional_rift" else 3.0 if c.id == &"mana_arrow" else 2.2)
 		while p.now() < until:
 			if is_instance_valid(dummy):
 				dummy.global_position = pin  # it would walk out of fields and bursts
