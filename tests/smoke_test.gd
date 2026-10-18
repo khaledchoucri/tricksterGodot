@@ -99,6 +99,11 @@ func _run() -> void:
 		var at := spot + Combat.screen(ground_dir) * reach
 		player.global_position = spot
 		player.enter(Player.State.MOVE)
+		for other in room.enemies:
+			# Park the room's monsters out of the way: nothing else may take the hit
+			# (removing them would break the room's clear later on).
+			other.global_position = room.random_spot(spot, 400.0)
+			other.apply_debuff("hold", 1.0, 2.0)
 		var dummy: Enemy = room.spawn(&"torobbie", at)
 		await wait(0.6)
 		dummy.max_hp = 99999
@@ -844,6 +849,8 @@ func _dummy(p: Player, ahead: float) -> Enemy:
 	p.global_position = spot
 	p.enter(Player.State.MOVE)
 	p.aim = dir
+	for other in room.enemies.duplicate():
+		_remove(other)  # nothing else may take the hit
 	var e: Enemy = room.spawn(&"torobbie", spot + Combat.screen(dir) * ahead)
 	for _w in 30:
 		await wait(0.1)
