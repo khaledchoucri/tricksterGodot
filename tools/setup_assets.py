@@ -215,6 +215,13 @@ def run(*args):
     subprocess.run([sys.executable, '-I', *args], check=True)
 
 
+# Original sprites the client draws without a cake (export_effects.py "tex:"):
+# Mana Arrow's arrow and its afterimage, Mana Ring's ring.
+SPELL_TEXTURES = ['magic arrow', 'magic arrow jan sang', 'magic ring']
+# Informally named cakes the early spells use (no skill number in the name).
+EXTRA_CAKES = ['magic impect', 'magic ting', 'hell fire']
+
+
 def card_effects():
     """Original effects (cake names) the generated skill cards name."""
     out = set()
@@ -284,7 +291,8 @@ def main():
             print(f'audio: {f} not found in the client')
     effects = os.path.join(effect_client, 'data', 'effect')
     run(os.path.join(HERE, 'export_effects.py'), effects, os.path.join(OUT, 'effects'))
-    run(os.path.join(HERE, 'export_effects.py'), effects, os.path.join(OUT, 'effects'), *card_effects())
+    run(os.path.join(HERE, 'export_effects.py'), effects, os.path.join(OUT, 'effects'),
+        *sorted(set(card_effects()) | set(EXTRA_CAKES)), *['tex:' + t for t in SPELL_TEXTURES])
     for f in MUSIC:
         shutil.copy2(os.path.join(client, 'data', 'music', f), audio)
     run(os.path.join(HERE, 'convert_audio.py'), *[os.path.join(audio, f) for f in SOUNDS + SKILL_SOUNDS + extra])

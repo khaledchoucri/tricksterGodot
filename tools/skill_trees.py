@@ -260,6 +260,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
         if sounds:
             lines.append('sounds = {' + ', '.join(f'"{k}": {json.dumps(v)}' for k, v in sorted(sounds.items())) + '}')
         effects = effects_for(sid, sk)
+        # Informally named effects the spec points at (no skill number in the name).
+        for phase, extra in sp.get('effects', {}).items():
+            effects[phase] = list(extra) + [n for n in effects.get(phase, []) if n not in extra]
         if effects:
             lines.append('effects = {' + ', '.join(f'"{k}": {json.dumps(v)}' for k, v in sorted(effects.items())) + '}')
         lines.append('master_material = ExtResource("m_master")')

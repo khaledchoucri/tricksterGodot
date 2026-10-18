@@ -78,7 +78,12 @@ func _shoot() -> void:
 			await _wait(cast_time * 0.4)
 		else:
 			await _wait(cast_time)
-		await _wait(0.2)
+		if Run.is_basic(id):
+			await _wait(0.06)
+			await _snap("%02d_%s_flight" % [i, id])  # the projectile on its way
+			await _wait(0.14)
+		else:
+			await _wait(0.2)
 		await _snap("%02d_%s" % [i, id])
 		await _wait(1.0)
 	# A pick offering an upgrade.

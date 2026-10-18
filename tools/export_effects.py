@@ -6,7 +6,10 @@ SUBCREAMs, each pointing at a CREAM (one emitter: emission rate, lifetime,
 sizes, colours, alphas, gravity, velocity...), whose particles are textures
 from data/effect/cream.nri (one animation per texture, e.g. "jijick").
 
-usage: python -I export_effects.py <client data/effect dir> <out dir> [cake name...]
+usage: python -I export_effects.py <client data/effect dir> <out dir> [cake name | tex:texture name...]
+
+"tex:" names export a texture on its own (sprites the client draws without a
+cake, like Mana Arrow's "magic arrow").
 
 With no cake names it only writes <out>/cake_names.json (every cake), which
 the skill generators read to find each skill's effects.
@@ -89,17 +92,18 @@ def safe(name):
 
 def main():
     src, out = sys.argv[1], sys.argv[2]
-    wanted = sys.argv[3:]
+    wanted = [a for a in sys.argv[3:] if not a.startswith('tex:')]
+    loose = [a[4:] for a in sys.argv[3:] if a.startswith('tex:')]
     with open(os.path.join(src, 'cake.xml'), 'rb') as f:
         cakes, creams = parse(f.read().decode('utf-8', 'replace'))
     os.makedirs(os.path.join(out, 'tex'), exist_ok=True)
-    if not wanted:
+    if not wanted and not loose:
         with open(os.path.join(out, 'cake_names.json'), 'w', encoding='utf-8') as f:
             json.dump(sorted(cakes), f)
         print(f'effects: {len(cakes)} cake names')
         return
     picked = {}
-    textures = set()
+    textures = set(loose)
     for name in wanted:
         cake = cakes.get(name)
         if not cake:
@@ -124,8 +128,9 @@ def main():
             made += 1
         else:
             print(f'effects: no texture {t}')
-    with open(os.path.join(out, 'cakes.json'), 'w', encoding='utf-8') as f:
-        json.dump(picked, f)
+    if wanted:
+        with open(os.path.join(out, 'cakes.json'), 'w', encoding='utf-8') as f:
+            json.dump(picked, f)
     print(f'effects: {len(picked)} cakes, {made} textures')
 
 

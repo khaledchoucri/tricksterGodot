@@ -169,7 +169,7 @@ The Buffalo and Bunny lines have all 43 of Trickster's Power skills, generated b
 - **Original skill effects.** Trickster draws skill effects with its own particle system. `cake.xml` defines each effect as a set of emitters with rate, lifetime, sizes, colours, alphas, gravity and velocity, drawing textures from `cream.nri`.
   - `tools/export_effects.py` exports them, and `scripts/fx/cake.gd` plays them.
   - Cards name their effects by phase (cast, flight, hit, lasting, end), matched by action name like the sounds or by the older skill numbering. 86 cards have them.
-  - Spells with no original effect in either client (Mana Arrow, Mana Ring, Drip Bomb, Electro Attack, Hellfire...) keep drawn effects.
+  - Some early spells have no numbered effect, and the client draws them from informally named data. Mana Arrow flies as the original `magic arrow` sprite with its afterimage (`magic arrow jan sang`), and Mana Ring's rings are the original `magic ring`. Both hit with the `magic impect` effect, and Hellfire uses the `hell fire` effect. A few (Drip Bomb, Electro Attack, Mana Storm) still have drawn effects until their originals are identified.
   - Readings: sizes are percentages of the texture; "ZAlign" lays a particle flat on the ground; the blend modes are approximated with shaders.
   - `tests/cake_gallery.tscn` renders them.
 - **A job change is what Trickster gives**: the job's character and its skill tree. (Earlier builds added techniques, bonus type points and a growth shift; they had no source and were removed.)

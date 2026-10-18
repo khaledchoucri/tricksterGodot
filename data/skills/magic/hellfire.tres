@@ -15,6 +15,7 @@ requires = {&"dark_pact": 1}
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 table = {"value": [67.0, 72.0, 84.0, 90.0, 102.0, 107.0, 119.0, 136.0], "mp": [33.0, 34.0, 36.0, 37.0, 39.0, 40.0, 42.0, 44.0], "cooldown": [2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [200.0, 205.0, 215.0, 220.0, 230.0, 235.0, 245.0, 250.0], "radius": [55.0, 55.0, 55.0, 55.0, 55.0, 55.0, 55.0, 55.0]}
 sounds = {"ht": "eff_light_explosion.wav"}
+effects = {"ht": ["hell fire"]}
 master_material = ExtResource("m_master")
 element = "Dark"
 scaling = "MA"

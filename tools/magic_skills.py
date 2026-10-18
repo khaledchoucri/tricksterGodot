@@ -65,7 +65,11 @@ def domain(card, debuffed):
 
 SPEC = {
     # ---- 1st job: Librarian (Sheep) and Shaman (Dragon)
+    # Mana Arrow's arrow and Mana Ring's ring are original sprites the client
+    # draws itself (magic_bolt.gd, mana_ring.gd); their hits are the informally
+    # named "magic impect" cake.
     '2001': dict(card='mana_arrow', behavior='magic_bolt', value=pct_hit, scaling='MA', rows={'range': 'Range'},
+                 effects={'ht': ['magic impect']},
                  text='A mana arrow at the enemy you aim at for {v} damage. Dragon\'s basic attack.'),
     '2002': dict(card='invincible_casting', value=lambda r: 0, held=True,
                  text='Hits can\'t interrupt your casting (innate for mages).'),
@@ -77,6 +81,7 @@ SPEC = {
     '2007': dict(card='arrow_rush', value=lambda r: r['Count'], rows={'ratio': lambda r: r['Ratio'] * 100},
                  text='Mana Arrow looses {v} arrows at once; each extra one hits for {ratio}%.'),
     '2008': dict(card='mana_ring', behavior='mana_ring', value=flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
+                 effects={'ht': ['magic impect']},
                  text='Three mana rings fly to the enemy you aim at and burst around it: {v} damage to everything caught. Sheep\'s basic attack.'),
     '2009': dict(card='mana_storm', behavior='spell_burst', value=flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
                  text='A mana storm gathers on the enemies around the cursor for {v} damage.'),
@@ -160,6 +165,7 @@ SPEC = {
                  text='Enemies around you are held in place for {seconds} s, until you move or are hit.'),
     '2202': seal('dark_pact', 'Dark Pact', 'darkness'),
     '2203': dict(card='hellfire', behavior='spell_burst', value=pct_hit, scaling='MA', rows={'range': 'Range', 'radius': lambda r: 55},
+                 effects={'ht': ['hell fire']},
                  text='A blazing inferno of dark flames at the cursor for {v} damage.'),
     '2204': seal('light_pact', 'Light Pact', 'light'),
     '2205': dict(card='arrow_of_light', behavior='spell_sky', value=pct_hit, scaling='MA', rows={'range': 'Range', 'count': lambda r: 1},

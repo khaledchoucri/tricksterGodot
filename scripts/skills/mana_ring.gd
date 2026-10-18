@@ -27,6 +27,10 @@ func start() -> void:
 		orb.room = room
 		orb.color = Color(0.65, 0.85, 1.0)
 		orb.radius = 7.0
+		# The original ring sprite, spinning on its way.
+		orb.sprite = "magic_ring"
+		orb.turn = "spin"
+		orb.sprite_scale = 0.45
 		orb.speed = 460.0
 		orb.range_left = player.global_position.distance_to(spot)
 		orb.direction = (spot - player.global_position).normalized()
@@ -38,6 +42,11 @@ func start() -> void:
 
 
 func _burst(at: Vector2, radius: float, amount: float) -> void:
-	Ring.spawn(room.ground_fx, at, radius, 0.3, Color(0.65, 0.85, 1.0, 0.9))
-	for e in enemies_in_circle(at, radius):
+	var caught := enemies_in_circle(at, radius)
+	if has_effect("ht"):
+		effect("ht", at)
+		_effect_hit.append_array(caught)  # one burst effect, not one per monster
+	else:
+		Ring.spawn(room.ground_fx, at, radius, 0.3, Color(0.65, 0.85, 1.0, 0.9))
+	for e in caught:
 		hit(e, amount, 60.0, false, {}, at)

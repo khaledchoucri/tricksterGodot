@@ -38,7 +38,11 @@ func start() -> void:
 				hit(e, damage(share), 70.0, false)
 		room.add_child(orb)
 		orb.global_position = player.global_position + Combat.screen(aim) * 14.0
-		if has_effect("fl"):
+		if card.id == &"mana_arrow":
+			# The original Mana Arrow: its arrow sprite with its afterimage.
+			orb.sprite = "magic_arrow"
+			orb.trail_sprite = "magic_arrow_jan_sang"
+		elif has_effect("fl"):
 			orb.quiet = true
 			effect("fl", orb.global_position, {"follow": orb})
 	Audio.play("snd_skl_common_ki.wav", -10.0)
