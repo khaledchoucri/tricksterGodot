@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/hard_scales.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dark_barrier"
+display_name = "Dark Barrier"
+kind = 0
+skill_id = 2212
+text = "Dark resistance +{v}%, and {reflect}% of the physical damage you take is turned back on the attacker."
+requires = {&"dark_pact": 1, &"mana_shield": 3}
+jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
+table = {"value": [8.0, 9.0, 11.0, 12.0, 14.0, 15.0, 17.0, 20.0], "reflect": [12.0, 14.0, 18.0, 20.0, 24.0, 26.0, 30.0, 36.0]}
+effects = {"ap": ["M_312_dark_barrier_apply"], "ke": ["M_312_dark_barrier_keep"]}
+master_material = ExtResource("m_master")
+element = "Dark"

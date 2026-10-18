@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/baby_carrot.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_debuff.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"botulism_cloud"
+display_name = "Botulism Cloud"
+kind = 1
+skill_id = 2125
+text = "Deadly spores at the cursor: the enemies there take twice as long to attack for {seconds} s."
+requires = {&"seal_of_earth": 1, &"mana_web": 3}
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+table = {"value": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0], "mp": [34.0, 35.0, 37.0, 38.0, 40.0, 41.0, 42.0, 45.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [120.0, 122.0, 126.0, 128.0, 132.0, 134.0, 138.0, 144.0], "seconds": [10.0, 11.0, 13.0, 14.0, 16.0, 17.0, 19.0, 22.0], "radius": [60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0]}
+sounds = {"ap": "snd_m_225_ht.wav", "ke": "snd_m_225_ke.wav"}
+effects = {"ap": ["M_225_harden_apply"], "ke": ["M_225_harden_keep"]}
+master_material = ExtResource("m_master")
+scaling = "MA"
+behavior = ExtResource("2_b")

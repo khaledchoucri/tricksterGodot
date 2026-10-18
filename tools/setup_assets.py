@@ -1,7 +1,10 @@
 """Generate the git-ignored original_assets/ folder from a Trickster client.
 
 usage:
-  python -I tools/setup_assets.py <path to the client's Trickster folder>
+  python -I tools/setup_assets.py <path to the client's Trickster folder> [<client with the full effects>]
+
+The original skill effects (data/effect/cake.xml and cream.nri) come from the
+second client when given: later clients have more of them.
 
 Example:
   python -I tools/setup_assets.py "C:/Users/me/source/repos/trickster-client/Tricksterclient/Trickster"
@@ -39,6 +42,14 @@ ACTORS = {
     'power_m': ('data/character/chr018.nri', ARMED_ACTIONS, ('data/character/chr018.pvt', 'weapon001.nri')),
     'boxer': ('data/character/chr009.nri', FIST_ACTIONS, None),
     'power_f': ('data/character/chr017.nri', FIST_ACTIONS, None),
+    # The Magic line (CharacterInfo 3, 4, 11, 12, 19, 20): Sheep becomes a
+    # Bard, Dragon a Magician, then magic_f and magic_m at the 3rd job.
+    'sheep': ('data/character/chr003.nri', ARMED_ACTIONS, ('data/character/chr003.pvt', 'weapon001.nri')),
+    'dragon': ('data/character/chr004.nri', ARMED_ACTIONS, ('data/character/chr004.pvt', 'weapon001.nri')),
+    'bard': ('data/character/chr011.nri', ARMED_ACTIONS, ('data/character/chr011.pvt', 'weapon001.nri')),
+    'magician': ('data/character/chr012.nri', ARMED_ACTIONS, ('data/character/chr012.pvt', 'weapon001.nri')),
+    'magic_f': ('data/character/chr019.nri', ARMED_ACTIONS, ('data/character/chr019.pvt', 'weapon001.nri')),
+    'magic_m': ('data/character/chr020.nri', ARMED_ACTIONS, ('data/character/chr020.pvt', 'weapon001.nri')),
     'torobbie': ('data/monster/mon249.nri', '', None),
     'bad_fury': ('data/monster/mon250.nri', '', None),
     'tottochi': ('data/monster/mon251.nri', '', None),
@@ -160,7 +171,10 @@ def skill_ids():
 # the pivot file that places worn items (hats, shields, masks) on them.
 PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr001.pvo',
            'knight': 'data/character/chr010.pvo', 'power_m': 'data/character/chr018.pvo',
-           'boxer': 'data/character/chr009.pvo', 'power_f': 'data/character/chr017.pvo'}
+           'boxer': 'data/character/chr009.pvo', 'power_f': 'data/character/chr017.pvo',
+           'sheep': 'data/character/chr003.pvo', 'dragon': 'data/character/chr004.pvo',
+           'bard': 'data/character/chr011.pvo', 'magician': 'data/character/chr012.pvo',
+           'magic_f': 'data/character/chr019.pvo', 'magic_m': 'data/character/chr020.pvo'}
 
 
 def worn_sprites(client):
@@ -201,10 +215,24 @@ def run(*args):
     subprocess.run([sys.executable, '-I', *args], check=True)
 
 
+def card_effects():
+    """Original effects (cake names) the generated skill cards name."""
+    out = set()
+    for dirpath, _dirs, files in os.walk(os.path.join(ROOT, 'data', 'skills')):
+        for f in files:
+            if f.endswith('.tres'):
+                m = re.search(r'^effects = (\{.*\})$', open(os.path.join(dirpath, f), encoding='utf-8').read(), re.M)
+                if m:
+                    for names in json.loads(m.group(1)).values():
+                        out.update(names)
+    return sorted(out)
+
+
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 3):
         sys.exit(__doc__)
     client = sys.argv[1]
+    effect_client = sys.argv[2] if len(sys.argv) == 3 else client
     for name, (rel, actions, sockets) in ACTORS.items():
         args = [os.path.join(HERE, 'export_actor.py'), os.path.join(client, rel),
                 os.path.join(OUT, 'actors', name), name,
@@ -254,6 +282,9 @@ def main():
                 break
         else:
             print(f'audio: {f} not found in the client')
+    effects = os.path.join(effect_client, 'data', 'effect')
+    run(os.path.join(HERE, 'export_effects.py'), effects, os.path.join(OUT, 'effects'))
+    run(os.path.join(HERE, 'export_effects.py'), effects, os.path.join(OUT, 'effects'), *card_effects())
     for f in MUSIC:
         shutil.copy2(os.path.join(client, 'data', 'music', f), audio)
     run(os.path.join(HERE, 'convert_audio.py'), *[os.path.join(audio, f) for f in SOUNDS + SKILL_SOUNDS + extra])

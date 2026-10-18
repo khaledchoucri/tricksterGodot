@@ -14,4 +14,5 @@ requires = {&"burning_rave": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [14.0, 16.0, 20.0, 22.0, 26.0, 28.0, 32.0, 38.0], "hp": [15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0]}
 sounds = {"ap": "snd_P_209_ap.wav", "ke": "snd_P_209_ke.wav"}
+effects = {"ap": ["P_209_dead_alive_ap", "P_209_dead_alive_ap2", "eft_skl_p_109_sbg", "eft_skl_p_109_sps"], "ke": ["P_209_dead_alive_ke"]}
 master_material = ExtResource("m_master")

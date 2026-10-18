@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/twinkle_star.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"fear"
+display_name = "Fear"
+kind = 0
+skill_id = 2702
+text = "Scythe has a {chance}% chance to terrify: the enemy can't attack for {v} s."
+requires = {&"scythe": 3, &"rust": 3}
+jobs = Array[StringName]([&"dark_lord"])
+table = {"value": [4.0, 5.0, 7.0, 8.0, 10.0, 11.0, 13.0, 16.0], "chance": [50.0, 52.0, 56.0, 58.0, 62.0, 64.0, 68.0, 74.0]}
+sounds = {"ke": "snd_skl_c_110_eps.wav"}
+effects = {"ke": ["M_802_fear_keep"]}
+master_material = ExtResource("m_master")
+element = "Dark"

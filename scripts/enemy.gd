@@ -69,10 +69,14 @@ var break_bonus := 0.0
 var burn_until := 0.0
 var burn_dps := 0.0
 var _burn_tick := 0.0
-## Debuffs from the Power line's breaker talents: key -> [value, until].
+## Debuffs from skills and talents: key -> [value, until].
 ## "dp", "ac", "perception" and "luck" lower that stat by value %; "guard"
 ## (Guard Break) leaves it unable to evade and without DP; "pinned"
-## (Suffocate) keeps it from hiding.
+## (Suffocate) keeps it from hiding. From the Magic line: "dx" and "slow"
+## slow it by value % (DX also slows its wind-ups); "ap" cuts its damage;
+## "delay" doubles its wind-ups; "fear" stops it attacking; "hold" stops it
+## moving and acting; "frozen" holds it and keeps it from being hurt;
+## "resist_<Element>" lowers that resistance.
 var debuffs: Dictionary = {}
 
 @onready var sprite: ActorSprite = $Sprite
@@ -143,9 +147,20 @@ func now() -> float:
 	return Events.time
 
 
+## The element its attacks carry: the one it resists most, if any (the
+## original tables give monsters resistances, not an attack element).
+func attack_element() -> String:
+	var best := ""
+	for k: String in elements:
+		if float(elements[k]) > 0.0 and (best == "" or float(elements[k]) > float(elements[best])):
+			best = k
+	return best
+
+
 ## Resistance to an element, in % (the original FireR, WaterR...).
+## The Soul Master's Gardens and Domains lower it while the monster stands in them.
 func resist(element: String) -> float:
-	return float(elements.get(element, 0))
+	return float(elements.get(element, 0)) - debuff("resist_" + element)
 
 
 ## Damage multiplier from this monster's DP (or MD against magic).
@@ -176,12 +191,28 @@ func debuff(key: String) -> float:
 
 ## Applies or refreshes a debuff (the stronger value wins while both last).
 func apply_debuff(key: String, value: float, seconds: float) -> void:
+	if key in ["hold", "frozen", "fear"]:
+		if is_boss:
+			return  # bosses shrug off holds, as they do stuns
+		if state == State.WINDUP or state == State.ATTACK:
+			_cancel_attack()
+			_enter(State.CHASE)
 	debuffs[key] = [maxf(value, debuff(key)), now() + seconds]
 
 
 ## Burrowing and vanishing monsters check this first (Suffocate pins them).
 func can_hide() -> bool:
 	return debuff("pinned") <= 0.0
+
+
+## Held in place (Hinder Snare, ice, a rift): no moving, no attacking.
+func is_held() -> bool:
+	return debuff("hold") > 0.0 or debuff("frozen") > 0.0
+
+
+## Movement speed factor from slows.
+func speed_factor() -> float:
+	return clampf(1.0 - (debuff("slow") + debuff("dx")) / 100.0, 0.2, 1.0)
 
 
 func is_hittable() -> bool:
@@ -269,12 +300,16 @@ func _state_chase() -> void:
 			velocity = away * walk_speed + _knock
 			sprite.play_action("walk", away)
 			return
-	if dist <= cfg.range + body_radius and room.line_clear(global_position, player.global_position) \
+	if is_held():
+		velocity = _knock
+		sprite.play_action("idle")
+		return
+	if dist <= cfg.range + body_radius and debuff("fear") <= 0.0 and room.line_clear(global_position, player.global_position) \
 			and room.request_attack_token(self):
 		_start_windup()
 		return
 	var step := _steer_toward(player.global_position)
-	velocity = step * run_speed + _knock
+	velocity = step * run_speed * speed_factor() + _knock
 	sprite.play_action("walk", step if step != Vector2.ZERO else to)
 	sprite.speed_scale = 1.3
 
@@ -302,7 +337,7 @@ func _wander() -> void:
 func _start_windup() -> void:
 	_attack_dir = Combat.ground(player.global_position - global_position).normalized()
 	# Sense Breaker dulls its perception: it takes longer to see an attack through.
-	var windup: float = cfg.windup * (1.0 + debuff("perception") / 100.0)
+	var windup: float = cfg.windup * (1.0 + (debuff("perception") + debuff("dx")) / 100.0) * (2.0 if debuff("delay") > 0.0 else 1.0)
 	_enter(State.WINDUP, windup)
 	_hits_taken = 0
 	var opts := {"dir": _attack_dir}
@@ -341,6 +376,7 @@ func _fire() -> void:
 	p.speed = cfg.shot_speed
 	p.damage = damage
 	p.accuracy = accuracy()
+	p.shooter = self
 	p.room = room
 	p.player = player
 	p.position = global_position + Vector2(0, -18)
@@ -363,7 +399,7 @@ func _state_attack() -> void:
 				hit = Combat.in_circle(global_position, player.global_position, body_radius + 14.0)
 		if hit and not player.is_invulnerable():
 			_attack_landed = true
-			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0, false, accuracy())
+			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0, false, accuracy(), self)
 	if _t >= _state_len:
 		room.release_attack_token(self)
 		_enter(State.RECOVER, cfg.recover)
@@ -379,6 +415,8 @@ func nudge(v: Vector2) -> void:
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
 	if not is_hittable():
 		return
+	if debuff("frozen") > 0.0:
+		return  # Icey Shackles: frozen solid, it can't be hurt
 	if first_hit_at < 0.0:
 		first_hit_at = now()
 	hits_taken += 1
@@ -395,7 +433,7 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 		break_bonus = fx.break
 		break_until = now() + 4.0
 	if fx.has("burn"):
-		burn_until = now() + 3.0
+		burn_until = now() + float(fx.get("burn_for", 3.0))
 		burn_dps = maxf(burn_dps, fx.burn)
 	var applied: Dictionary = fx.get("debuffs", {})
 	for k: String in applied:

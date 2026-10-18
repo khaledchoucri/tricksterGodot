@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=37 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/soul_master.tres" id="j_soul_master"]
+[ext_resource type="Resource" path="res://data/jobs/witch.tres" id="j_witch"]
+[ext_resource type="Resource" path="res://data/skills/magic/bolster_ballad.tres" id="c_bolster_ballad"]
+[ext_resource type="Resource" path="res://data/skills/magic/seal_of_water.tres" id="c_seal_of_water"]
+[ext_resource type="Resource" path="res://data/skills/magic/drip_bomb.tres" id="c_drip_bomb"]
+[ext_resource type="Resource" path="res://data/skills/magic/seal_of_thunder.tres" id="c_seal_of_thunder"]
+[ext_resource type="Resource" path="res://data/skills/magic/electro_attack.tres" id="c_electro_attack"]
+[ext_resource type="Resource" path="res://data/skills/magic/seal_of_fire.tres" id="c_seal_of_fire"]
+[ext_resource type="Resource" path="res://data/skills/magic/whirlwind_blaze.tres" id="c_whirlwind_blaze"]
+[ext_resource type="Resource" path="res://data/skills/magic/seal_of_earth.tres" id="c_seal_of_earth"]
+[ext_resource type="Resource" path="res://data/skills/magic/cleaving_terra.tres" id="c_cleaving_terra"]
+[ext_resource type="Resource" path="res://data/skills/magic/seal_of_wind.tres" id="c_seal_of_wind"]
+[ext_resource type="Resource" path="res://data/skills/magic/wind_blade.tres" id="c_wind_blade"]
+[ext_resource type="Resource" path="res://data/skills/magic/icey_shackles.tres" id="c_icey_shackles"]
+[ext_resource type="Resource" path="res://data/skills/magic/thunderbolt.tres" id="c_thunderbolt"]
+[ext_resource type="Resource" path="res://data/skills/magic/scorching_earth.tres" id="c_scorching_earth"]
+[ext_resource type="Resource" path="res://data/skills/magic/deadly_fen.tres" id="c_deadly_fen"]
+[ext_resource type="Resource" path="res://data/skills/magic/tornado_blast.tres" id="c_tornado_blast"]
+[ext_resource type="Resource" path="res://data/skills/magic/water_web.tres" id="c_water_web"]
+[ext_resource type="Resource" path="res://data/skills/magic/electroshock.tres" id="c_electroshock"]
+[ext_resource type="Resource" path="res://data/skills/magic/water_shield.tres" id="c_water_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/thunder_shield.tres" id="c_thunder_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/fire_shield.tres" id="c_fire_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/earth_shield.tres" id="c_earth_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/wind_shield.tres" id="c_wind_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/whirlwind.tres" id="c_whirlwind"]
+[ext_resource type="Resource" path="res://data/skills/magic/incinerate.tres" id="c_incinerate"]
+[ext_resource type="Resource" path="res://data/skills/magic/summon_boulder.tres" id="c_summon_boulder"]
+[ext_resource type="Resource" path="res://data/skills/magic/shard_of_the_glacier.tres" id="c_shard_of_the_glacier"]
+[ext_resource type="Resource" path="res://data/skills/magic/botulism_cloud.tres" id="c_botulism_cloud"]
+[ext_resource type="Resource" path="res://data/skills/magic/razor_gale.tres" id="c_razor_gale"]
+[ext_resource type="Resource" path="res://data/skills/magic/phoenix_rising.tres" id="c_phoenix_rising"]
+[ext_resource type="Resource" path="res://data/skills/magic/tesla_field.tres" id="c_tesla_field"]
+[ext_resource type="Resource" path="res://data/skills/magic/elemental_boost.tres" id="c_elemental_boost"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"bard"
+display_name = "Bard"
+actor = "bard"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_bolster_ballad"), ExtResource("c_seal_of_water"), ExtResource("c_drip_bomb"), ExtResource("c_seal_of_thunder"), ExtResource("c_electro_attack"), ExtResource("c_seal_of_fire"), ExtResource("c_whirlwind_blaze"), ExtResource("c_seal_of_earth"), ExtResource("c_cleaving_terra"), ExtResource("c_seal_of_wind"), ExtResource("c_wind_blade"), ExtResource("c_icey_shackles"), ExtResource("c_thunderbolt"), ExtResource("c_scorching_earth"), ExtResource("c_deadly_fen"), ExtResource("c_tornado_blast"), ExtResource("c_water_web"), ExtResource("c_electroshock"), ExtResource("c_water_shield"), ExtResource("c_thunder_shield"), ExtResource("c_fire_shield"), ExtResource("c_earth_shield"), ExtResource("c_wind_shield"), ExtResource("c_whirlwind"), ExtResource("c_incinerate"), ExtResource("c_summon_boulder"), ExtResource("c_shard_of_the_glacier"), ExtResource("c_botulism_cloud"), ExtResource("c_razor_gale"), ExtResource("c_phoenix_rising"), ExtResource("c_tesla_field"), ExtResource("c_elemental_boost")])
+text = "Bards use magic of all five elements. Fire, water and thunder strike one target; earth and wind strike many. A Bard advances to Soul Master or Witch."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_soul_master"), ExtResource("j_witch")])

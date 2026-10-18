@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/twinkle_star.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/magic_bolt.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dark_lance"
+display_name = "Dark Lance"
+kind = 1
+skill_id = 2208
+text = "A dark lance strikes the enemy you aim at for {v} damage."
+requires = {&"dark_pact": 1, &"mana_arrow": 3}
+jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
+table = {"value": [72.0, 81.0, 99.0, 107.0, 125.0, 133.0, 151.0, 177.0], "mp": [37.0, 38.0, 40.0, 41.0, 43.0, 44.0, 46.0, 49.0], "cooldown": [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0]}
+sounds = {"ht": "eff_light_explosion.wav"}
+effects = {"fl": ["M_308_dark_spear_fly"]}
+master_material = ExtResource("m_master")
+element = "Dark"
+scaling = "MA"
+behavior = ExtResource("2_b")

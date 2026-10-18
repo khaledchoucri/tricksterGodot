@@ -85,7 +85,7 @@ func _emerge() -> void:
 	Audio.play("dmg_normal_c.wav")
 	if is_instance_valid(player) and not player.is_invulnerable() \
 			and Combat.in_circle(spot, player.global_position, EMERGE_RADIUS, 10.0):
-		player.take_hit(damage + 6, Combat.ground(player.global_position - spot).normalized(), 320.0, false, accuracy())
+		player.take_hit(damage + 6, Combat.ground(player.global_position - spot).normalized(), 320.0, false, accuracy(), self)
 	room.release_attack_token(self)
 	_enter(State.RECOVER, 0.9)
 	sprite.play_action("attack", Vector2(0, 1), 0.9, true)

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/hard_scales.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gnomes_blessing"
+display_name = "Gnome's Blessing"
+kind = 0
+skill_id = 2309
+text = "Gnome guards your Earth Shield: a monster that hits you takes {v} earth damage back. Keeps the Shield's resistance."
+requires = {&"earth_shield": 1}
+upgrades = &"earth_shield"
+jobs = Array[StringName]([&"soul_master"])
+table = {"value": [26.0, 28.0, 31.0, 33.0, 37.0, 38.0, 42.0, 47.0]}
+sounds = {"ap": "snd_m_409_ap.wav", "ke": "snd_m_409_ke.wav"}
+effects = {"ap": ["M_409_earth_counter_ap"], "ke": ["M_409_earth_counter_ke"]}
+master_material = ExtResource("m_master")
+element = "Earth"

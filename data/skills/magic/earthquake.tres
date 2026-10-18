@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/turban_shell.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_burst.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"earthquake"
+display_name = "Earthquake"
+kind = 1
+skill_id = 2304
+text = "The ground at the cursor shakes violently: {v} damage to everything on it."
+requires = {&"cleaving_terra": 3, &"mana_ring": 3}
+jobs = Array[StringName]([&"soul_master"])
+table = {"value": [65.0, 72.0, 85.0, 91.0, 104.0, 111.0, 124.0, 144.0], "mp": [46.0, 48.0, 50.0, 51.0, 54.0, 55.0, 57.0, 60.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [140.0, 145.0, 155.0, 160.0, 170.0, 175.0, 185.0, 200.0], "radius": [100.0, 105.0, 115.0, 120.0, 130.0, 135.0, 145.0, 160.0]}
+sounds = {"ap": "snd_skl_m_006_ebg.wav", "hi": "snd_m_404_ht.wav"}
+effects = {"ap": ["M_404_earthquake_apply"], "ht": ["M_404_earthquake_hit"]}
+master_material = ExtResource("m_master")
+element = "Earth"
+scaling = "MA"
+behavior = ExtResource("2_b")

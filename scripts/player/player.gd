@@ -56,6 +56,8 @@ var _perfect_this_dash := false
 var _drain := 0.0  # Berserker's HP and MP loss, accumulated
 ## Chakra Balance's recovery: share of max HP per tick, tick length, end time.
 var _regen := {}
+var _mp_regen := 0.0  # mages' MP regeneration, accumulated
+var _oath := 0.0  # seconds toward the next Oath of Light recovery
 var _steps: Array[ComboStep] = []
 
 @onready var sprite: ActorSprite = $Sprite
@@ -68,6 +70,9 @@ var _steps: Array[ComboStep] = []
 
 func _ready() -> void:
 	add_to_group("player")
+	var bar := CastBar.new()
+	bar.caster = skills
+	add_child(bar)
 	sprite.setup(Run.actor())
 	refresh_gear()
 	sprite.play_action("idle", Vector2(1, 1))
@@ -163,6 +168,12 @@ func buffer_action(action: String) -> void:
 
 
 ## Consumes a buffered action if it's `action` and still fresh.
+## Forgets a buffered press (a cast in progress ignores everything but a dash).
+func drop_buffer() -> void:
+	if _buffered != "dash":
+		_buffered = ""
+
+
 func take_buffer(action: String) -> bool:
 	if _buffered == action and now() - _buffered_at <= input_buffer:
 		_buffered = ""
@@ -182,7 +193,10 @@ func try_actions() -> bool:
 	for i in SkillCaster.SLOT_ACTIONS.size():
 		if take_buffer(SkillCaster.SLOT_ACTIONS[i]):
 			return skills.try_cast(i)
-	if take_buffer("attack"):
+	if take_buffer("attack") or (Run.cls.basic_skill and Input.is_action_pressed("attack")):
+		if Run.cls.basic_skill:
+			# Mages cast their basic spell; holding the button keeps casting.
+			return skills.try_cast(SkillCaster.BASIC)
 		attack.start(0)
 		return true
 	return false
@@ -229,6 +243,24 @@ func start_regen(share: float, interval: float, seconds: float) -> void:
 ## Talents that run on their own: Berserker's drain, Guard's blocks, and
 ## Chakra Balance's recovery.
 func _tick_talents(delta: float) -> void:
+	if Run.cls.mp_regen > 0.0 and state != State.DEAD:
+		# Mages regenerate MP; Aura of Mana raises the rate.
+		_mp_regen += Run.max_mp * Run.cls.mp_regen * (1.0 + Run.card_value(&"aura_of_mana") / 100.0) * delta
+		if _mp_regen >= 1.0:
+			Run.gain_mp(int(_mp_regen))
+			_mp_regen -= int(_mp_regen)
+	var heaven := Run.card_level(&"shield_of_heaven")
+	if heaven > 0 and Run.barrier <= 0 and now() >= Run.barrier_back_at:
+		Run.barrier = roundi(Run.stat("MA") * Run.card_value(&"shield_of_heaven") / 100.0)
+	if Run.card_level(&"oath_of_light") > 0:
+		_oath += delta
+		if _oath >= 10.0:
+			_oath -= 10.0
+			var share := (Run.card_value(&"oath_of_light") + Run.card_value(&"sacred_oath")) / 100.0
+			var gain := maxi(1, roundi(Run.max_hp * share))
+			if Run.hp < Run.max_hp:
+				Run.heal(gain)
+				Events.damage_shown.emit(global_position + Vector2(0, -70), gain, Color(0.5, 1.0, 0.6), false)
 	if not _regen.is_empty():
 		if now() >= float(_regen.until):
 			_regen = {}
@@ -253,6 +285,23 @@ func _tick_talents(delta: float) -> void:
 			Run.mp = maxi(Run.mp - n, 0)
 			if Run.hp > n:
 				Run.take_damage(n)
+
+
+## Dark Barrier turns part of a physical hit back; a Blessing's spirit
+## strikes whoever hit you.
+func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
+	if not is_instance_valid(attacker) or not attacker.is_hittable():
+		return
+	var lvl := Run.card_level(&"dark_barrier")
+	if lvl > 0 and not magic:
+		var back := amount * Run.card(&"dark_barrier").param("reflect", lvl) / 100.0
+		if back >= 1.0:
+			attacker.take_hit(roundi(back), Combat.ground(attacker.global_position - global_position).normalized(), 0.0, false)
+	for id: StringName in Run.BLESSINGS:
+		if Run.card_level(id) > 0:
+			var c := Run.card(id)
+			deal_hit(attacker, Run.card_value(id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element})
+			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 
 ## Clinch Release can be cast while staggered: it cancels the hit.
@@ -406,8 +455,9 @@ func _overlapping_enemy() -> bool:
 # ---------------------------------------------------------------- damage taken
 
 ## `magic` hits are reduced by MD instead of DP; `accuracy` is the
-## attacker's AC, against the player's evasion.
-func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, accuracy := 50) -> void:
+## attacker's AC, against the player's evasion. `attacker` (when known)
+## brings its element and is who reflected damage goes back to.
+func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, accuracy := 50, attacker: Enemy = null) -> void:
 	if is_invulnerable():
 		if state == State.DASH and Run.has_trait(&"perfect_dodge") and not _perfect_this_dash:
 			_perfect_this_dash = true
@@ -428,7 +478,23 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 		Events.text_shown.emit(global_position + Vector2(0, -70), "Evade", Color(0.75, 0.95, 1.0))
 		Audio.play("etc_miss.wav", -8.0)
 		return
-	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic) * (0.75 if magic and Run.quirk(&"umbrella") else 1.0)))
+	var element := attacker.attack_element() if is_instance_valid(attacker) else ""
+	if is_instance_valid(attacker):
+		amount = roundi(amount * (1.0 - attacker.debuff("ap") / 100.0))  # Rust
+	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic, element) * (0.75 if magic and Run.quirk(&"umbrella") else 1.0)))
+	_retaliate(attacker, amount, magic)
+	if Run.barrier > 0:
+		# Shield of Heaven takes the blow first.
+		var absorbed := mini(Run.barrier, amount)
+		Run.barrier -= absorbed
+		amount -= absorbed
+		Ring.spawn(room.ground_fx, global_position, 30.0, 0.25, Color(1.0, 0.95, 0.6, 0.9))
+		if Run.barrier <= 0:
+			Run.barrier_back_at = now() + Run.card(&"shield_of_heaven").param("cooldown", Run.card_level(&"shield_of_heaven"))
+			Events.text_shown.emit(global_position + Vector2(0, -70), "Barrier broken", Color(1.0, 0.95, 0.6))
+		if amount <= 0:
+			invulnerable_until = now() + 0.25
+			return
 	Run.take_damage(amount)
 	_regen = {}  # Chakra Balance stops when you take damage
 	Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(1.0, 0.45, 0.4), false)
@@ -436,7 +502,10 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 	Events.hitstop_requested.emit(0.06)
 	Events.shake_requested.emit(5.0)
 	invulnerable_until = now() + hurt_invuln
-	knock = Combat.screen(from_dir) * knockback
+	# Invincible Casting: a mage's spell isn't broken off by the hit.
+	var steady := state == State.SKILL and Run.cls.steady_casting
+	if not steady:
+		knock = Combat.screen(from_dir) * knockback
 	if Run.hp <= 0 and Run.try_revive():
 		# Rollback Cache or Second Wind: survive the blow, with a moment to recover.
 		invulnerable_until = now() + 1.5
@@ -445,6 +514,8 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 		Events.revived.emit()
 	if Run.hp <= 0:
 		_die()
+		return
+	if steady:
 		return
 	enter(State.HURT)
 	sprite.play_action("hit", -Combat.screen(from_dir), 0.18, true)

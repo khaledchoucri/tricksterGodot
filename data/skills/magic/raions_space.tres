@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/acorn_nut.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_field.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"raions_space"
+display_name = "Raion's Space"
+kind = 1
+skill_id = 2312
+text = "Mark the ground for {seconds} s: monsters in it lose {resist}% fire resistance."
+requires = {&"seal_of_thunder": 1}
+jobs = Array[StringName]([&"soul_master"])
+table = {"value": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "mp": [52.0, 54.0, 56.0, 58.0, 60.0, 61.0, 64.0, 67.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0], "radius": [80.0, 90.0, 110.0, 120.0, 140.0, 150.0, 170.0, 180.0], "seconds": [16.0, 17.0, 19.0, 20.0, 22.0, 23.0, 25.0, 26.0], "resist": [8.0, 9.0, 11.0, 12.0, 14.0, 15.0, 17.0, 18.0]}
+sounds = {"ke": "snd_M_412_ke.wav"}
+effects = {"ed": ["M_412_Thunder_Area_ed"], "ht": ["M_412_Thunder_Area_ht2"], "ke": ["M_412_Thunder_Area_ke"]}
+master_material = ExtResource("m_master")
+element = "Elec"
+behavior = ExtResource("2_b")

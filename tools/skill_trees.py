@@ -95,9 +95,10 @@ def pct_hit(r):
 
 
 def tidy(v):
-    """Numbers as a card shows them: whole above 10, else one decimal."""
+    """Numbers as a card shows them: whole above 10, one decimal above 1,
+    else two (cast times like 0.75 s)."""
     v = float(v)
-    return float(round(v)) if abs(v) >= 10 else round(v, 1)
+    return float(round(v)) if abs(v) >= 10 else round(v, 1) if abs(v) >= 1 else round(v, 2)
 
 
 def fmt(v):
@@ -130,6 +131,43 @@ def is_active(sk):
 
 
 _SOUNDS = None
+_CAKES = None
+EFFECTS = os.path.join(ROOT, 'original_assets', 'effects')
+# Phase of a cake name's suffix: "ap" plays on the caster when the skill goes
+# off, "fl" on the projectile, "ht" on the target, "ke" while it lasts, "ed"
+# when it ends. The older numbered effects use s.. (self), g.. (ground) and
+# e.. (enemy) with bg (begin), ps (process) and ed (end).
+PHASES = {'apply': 'ap', 'ap': 'ap', 'hit': 'ht', 'ht': 'ht', 'fly': 'fl', 'fl': 'fl', 'keep': 'ke', 'ke': 'ke',
+          'ed': 'ed', 'end': 'ed'}
+
+
+def _cake_names():
+    global _CAKES
+    if _CAKES is None:
+        path = os.path.join(EFFECTS, 'cake_names.json')
+        _CAKES = json.load(open(path, encoding='utf-8')) if os.path.exists(path) else []
+    return _CAKES
+
+
+def effects_for(sid, sk):
+    """The skill's original particle effects (cake.xml), by phase: matched by
+    action name like the sounds (M_223_electric_field_keep is Tesla Field's
+    ElectricField), or by the older numbering (eft_skl_m_005_eed is skill
+    2005, eft_skl_p_302_sed_0 is 1302)."""
+    out = {}
+    keys = [re.sub(r'[^a-z]', '', t.split('_', 1)[1].lower()) for t in (sk['ESAIITable'], sk['ESATable']) if t and '_' in t]
+    line = 'm' if sid[0] == '2' else 'p' if sid[0] == '1' else ''
+    for name in _cake_names():
+        m = re.match(r'^[A-Za-z]+_\d+_(.+?)_(apply|hit|fly|keep|ap|ht|fl|ke|ed)\d*$', name, re.I)
+        if m and re.sub(r'[^a-z]', '', m.group(1).lower()) in keys:
+            out.setdefault(PHASES[m.group(2).lower()], []).append(name)
+            continue
+        m = re.match(r'^eft_skl_([mp])_?(\d{3})(?:_([a-z]+))?', name, re.I)
+        if m and line and m.group(1).lower() == line and m.group(2) == sid[1:]:
+            suffix = (m.group(3) or 'sbg').lower()
+            phase = 'ed' if suffix.endswith('ed') else 'ht' if suffix[0] == 'e' or suffix == 'mon' else 'ap'
+            out.setdefault(phase, []).append(name)
+    return out
 
 
 def sounds_for(sk):
@@ -221,6 +259,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
         lines.append('table = {' + ', '.join(f'"{k}": {tres_value(v)}' for k, v in table.items()) + '}')
         if sounds:
             lines.append('sounds = {' + ', '.join(f'"{k}": {json.dumps(v)}' for k, v in sorted(sounds.items())) + '}')
+        effects = effects_for(sid, sk)
+        if effects:
+            lines.append('effects = {' + ', '.join(f'"{k}": {json.dumps(v)}' for k, v in sorted(effects.items())) + '}')
         lines.append('master_material = ExtResource("m_master")')
         if element != 'none':
             lines.append(f'element = "{element}"')

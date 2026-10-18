@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_ice.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_field.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"deadly_fen"
+display_name = "Deadly Fen"
+kind = 1
+skill_id = 2130
+text = "A swamp at the cursor for {seconds} s: up to {targets} enemies in it take {v} damage at a time and move {slow}% slower."
+requires = {&"seal_of_earth": 1}
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+table = {"value": [58.0, 62.0, 70.0, 74.0, 82.0, 86.0, 95.0, 107.0], "mp": [46.0, 46.0, 47.0, 48.0, 49.0, 49.0, 50.0, 52.0], "cooldown": [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [180.0, 183.0, 189.0, 192.0, 198.0, 201.0, 207.0, 210.0], "radius": [120.0, 125.0, 135.0, 140.0, 150.0, 155.0, 165.0, 180.0], "seconds": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "targets": [2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 5.0], "slow": [10.0, 12.0, 16.0, 18.0, 22.0, 24.0, 28.0, 34.0]}
+sounds = {"ke": "snd_M_231_ke.wav"}
+effects = {"ed": ["M_231_swamp_field_ed01", "M_231_swamp_field_ed02", "M_231_swamp_field_ed03"], "ke": ["M_231_swamp_field_ke01", "M_231_swamp_field_ke02", "M_231_swamp_field_ke03"]}
+master_material = ExtResource("m_master")
+element = "Earth"
+scaling = "MA"
+behavior = ExtResource("2_b")

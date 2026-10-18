@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/scorpion_sting.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"light_shield"
+display_name = "Light Shield"
+kind = 0
+skill_id = 2213
+text = "Light resistance +{v}%, DP and MD +{guard}%."
+requires = {&"light_pact": 1, &"mana_shield": 3}
+jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
+table = {"value": [8.0, 9.0, 11.0, 12.0, 14.0, 15.0, 17.0, 20.0], "guard": [3.0, 4.0, 6.0, 7.0, 9.0, 10.0, 12.0, 15.0]}
+effects = {"ke": ["M_313_light_shield_keep"]}
+master_material = ExtResource("m_master")
+element = "Light"

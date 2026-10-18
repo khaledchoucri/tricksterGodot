@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dark_pact"
+display_name = "Dark Pact"
+kind = 0
+skill_id = 2202
+text = "A pact with darkness: its magic can be learned. Two other elements are closed to you for good."
+jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
+excludes = Array[StringName]([&"light_pact"])
+max_level = 1
+table = {"value": [0.0]}
+effects = {"ht": ["eft_skl_m_202_ebg", "eft_skl_m_202_ebg(3)"]}
+master_material = ExtResource("m_master")
+element = "Dark"

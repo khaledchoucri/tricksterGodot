@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/slime_husk.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"refreshing_dew"
+display_name = "Refreshing Dew"
+kind = 0
+skill_id = 2505
+text = "Skill cooldowns {v}% shorter."
+requires = {&"sacred_oath": 3}
+jobs = Array[StringName]([&"priest"])
+table = {"value": [5.0, 9.0, 17.0, 21.0, 29.0, 33.0, 41.0, 50.0]}
+master_material = ExtResource("m_master")
+element = "Light"

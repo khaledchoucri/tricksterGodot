@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/magic/searing_light.tres" id="c_searing_light"]
+[ext_resource type="Resource" path="res://data/skills/magic/sacred_oath.tres" id="c_sacred_oath"]
+[ext_resource type="Resource" path="res://data/skills/magic/celestial_strike.tres" id="c_celestial_strike"]
+[ext_resource type="Resource" path="res://data/skills/magic/refreshing_dew.tres" id="c_refreshing_dew"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"priest"
+display_name = "Priest"
+actor = "magic_m"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_searing_light"), ExtResource("c_sacred_oath"), ExtResource("c_celestial_strike"), ExtResource("c_refreshing_dew")])
+text = "The advanced Magician of light magic, healing wounds and status."

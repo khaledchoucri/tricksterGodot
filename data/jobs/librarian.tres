@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/bard.tres" id="j_bard"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_arrow.tres" id="c_mana_arrow"]
+[ext_resource type="Resource" path="res://data/skills/magic/cure.tres" id="c_cure"]
+[ext_resource type="Resource" path="res://data/skills/magic/aura_of_mana.tres" id="c_aura_of_mana"]
+[ext_resource type="Resource" path="res://data/skills/magic/bottle_of_mana.tres" id="c_bottle_of_mana"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_ring.tres" id="c_mana_ring"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_web.tres" id="c_mana_web"]
+[ext_resource type="Resource" path="res://data/skills/magic/rust.tres" id="c_rust"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_shield.tres" id="c_mana_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_storm.tres" id="c_mana_storm"]
+[ext_resource type="Resource" path="res://data/skills/magic/mist_of_mana.tres" id="c_mist_of_mana"]
+[ext_resource type="Resource" path="res://data/skills/magic/arrow_rush.tres" id="c_arrow_rush"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_ring_booster.tres" id="c_mana_ring_booster"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"librarian"
+display_name = "Librarian"
+tier = 1
+starter = ExtResource("c_mana_ring")
+cards = Array[ExtResource("2_c")]([ExtResource("c_mana_arrow"), ExtResource("c_cure"), ExtResource("c_aura_of_mana"), ExtResource("c_bottle_of_mana"), ExtResource("c_mana_ring"), ExtResource("c_mana_web"), ExtResource("c_rust"), ExtResource("c_mana_shield"), ExtResource("c_mana_storm"), ExtResource("c_mist_of_mana"), ExtResource("c_arrow_rush"), ExtResource("c_mana_ring_booster")])
+text = "Long-range magic, strong against many enemies but weak at defense. A Librarian advances to Bard."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_bard")])

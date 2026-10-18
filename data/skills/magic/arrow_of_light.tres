@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sand_glass.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_sky.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"arrow_of_light"
+display_name = "Arrow of Light"
+kind = 1
+skill_id = 2205
+text = "A pillar of light rains down on the enemy you aim at for {v} damage."
+requires = {&"light_pact": 1}
+jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
+table = {"value": [78.0, 80.0, 83.0, 84.0, 87.0, 88.0, 91.0, 96.0], "mp": [30.0, 31.0, 33.0, 34.0, 35.0, 36.0, 37.0, 39.0], "cooldown": [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5], "cast": [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], "range": [150.0, 160.0, 180.0, 190.0, 210.0, 220.0, 240.0, 270.0], "count": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}
+sounds = {"ht": "eff_light.wav"}
+effects = {"ap": ["eft_skl_m_205_sut"], "ht": ["eft_skl_m_205_ebg"]}
+master_material = ExtResource("m_master")
+element = "Light"
+scaling = "MA"
+behavior = ExtResource("2_b")

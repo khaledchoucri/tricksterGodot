@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/scorpion_sting.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_debuff.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"icey_shackles"
+display_name = "Icey Shackles"
+kind = 1
+skill_id = 2127
+text = "Shackles of ice hold the enemy at the cursor for {seconds} s after {v} damage; while held it can't move, act or be hurt."
+requires = {&"seal_of_water": 1}
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+table = {"value": [52.0, 57.0, 65.0, 70.0, 78.0, 83.0, 91.0, 104.0], "mp": [34.0, 35.0, 38.0, 39.0, 41.0, 42.0, 44.0, 47.0], "cooldown": [7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [120.0, 122.0, 126.0, 128.0, 132.0, 134.0, 138.0, 140.0], "seconds": [1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0], "radius": [40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0]}
+sounds = {"ke": "snd_M_228_ke.wav"}
+effects = {"ed": ["M_228_chilling_prison_ed"], "ke": ["M_228_chilling_prison_ke"]}
+master_material = ExtResource("m_master")
+element = "Water"
+scaling = "MA"
+behavior = ExtResource("2_b")

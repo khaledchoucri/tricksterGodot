@@ -9,7 +9,8 @@ signal leveled_up(new_level: int)
 ## Regions a run passes through, in order; the last one's boss ends it.
 const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
 const HUB_PATH := "res://data/megalopolis/hub.tres"
-const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres"]
+const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
+	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres"]
 const ITEMS_DIR := "res://data/items/"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
 const MAX_CARD_LEVEL := 5
@@ -19,6 +20,11 @@ const SLOTS := 3
 ## Guard (1107): blocks left, and when the next spent one returns.
 var guard_blocks := 0
 var guard_back_at := 0.0
+## Shield of Heaven (2218): the barrier's HP, and when a broken one returns.
+var barrier := 0
+var barrier_back_at := 0.0
+## Revival (2221): when it can bring you back again.
+var revival_ready_at := 0.0
 ## Equipment slots: the six core run-gear slots.
 const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc1", "acc2"]
 ## Echoes of other classes that can haunt elite rooms after the first clear.
@@ -276,6 +282,9 @@ func new_run() -> void:
 	second_wind_used = false
 	guard_blocks = 0
 	guard_back_at = 0.0
+	barrier = 0
+	barrier_back_at = 0.0
+	revival_ready_at = 0.0
 	_bonus_hp = 0
 	_stats.clear()
 	_ref = {}
@@ -371,7 +380,7 @@ func _apply_restorations() -> void:
 			"second_skill":
 				var pool: Array[StringName] = []
 				for c in card_pool():
-					if c.is_skill() and card_level(c.id) == 0 and requirements_met(c):
+					if c.is_skill() and can_learn(c):
 						pool.append(c.id)
 				if pool.size() > 0:
 					add_card(pool[randi() % pool.size()])
@@ -403,6 +412,12 @@ func room_mp_bonus() -> int:
 func try_revive() -> bool:
 	if ServerSettings.hardcore():
 		return false
+	# Revival (Priest line): light brings you back, on its own cooldown.
+	if card_level(&"revival") > 0 and Events.time >= revival_ready_at:
+		revival_ready_at = Events.time + card(&"revival").param("cooldown", 1)
+		hp = maxi(1, roundi(max_hp * card_value(&"revival") / 100.0))
+		Events.player_hp_changed.emit()
+		return true
 	if revives > 0:
 		revives -= 1
 	elif has_trait(&"second_wind") and not second_wind_used:
@@ -577,9 +592,14 @@ func _compute_stats() -> void:
 	for w in ([] if _baseline else worn_pieces()):
 		for k: String in w.stats:
 			s[k] = s.get(k, 0.0) + w.stats[k]
-	# Power-line buffs, always on (Trickster's are timed casts).
+	# Buffs, always on (Trickster's are timed casts).
 	s.AP *= 1.0 + (card_value(&"pumping_heart") + card_value(&"adrenaline")) / 100.0
 	s.AC *= 1.0 + (card_value(&"bulls_eye") + card_value(&"eagle_eye")) / 100.0
+	s.MA *= 1.0 + (card_value(&"mist_of_mana") + card_value(&"blood_testament")) / 100.0
+	var guard := card(&"light_shield").param("guard", card_level(&"light_shield")) if card(&"light_shield") else 0.0
+	s.MD *= 1.0 + (card_value(&"mana_shield") + guard) / 100.0
+	s.DP *= 1.0 + guard / 100.0
+	s.MP += card_value(&"bottle_of_mana")
 	for k: String in s:
 		_stats[k] = maxi(0, floori(s[k]))
 
@@ -762,7 +782,7 @@ func add_card(id: StringName, slot := -1) -> void:
 		return
 	cards[id] = mini(card_level(id) + 1, card_cap(id))
 	stats_changed()
-	if not is_new or not c.is_skill():
+	if not is_new or not c.is_skill() or is_basic(id):
 		return
 	if slot < 0:
 		slot = loadout.find(&"")
@@ -771,6 +791,12 @@ func add_card(id: StringName, slot := -1) -> void:
 		if old != &"":
 			cards.erase(old)
 		loadout[slot] = id
+
+
+## Whether a card is the class's basic spell (cast from the attack button,
+## never put in a slot).
+func is_basic(id: StringName) -> bool:
+	return cls != null and cls.basic_skill != null and cls.basic_skill.id == id
 
 
 func free_slot() -> int:
@@ -1113,7 +1139,41 @@ func skill_mult(c: CardData = null) -> float:
 
 
 func skill_cooldown_mult() -> float:
-	return 1.0 / _ratio("MA", MA_SOFT)
+	return 1.0 / _ratio("MA", MA_SOFT) * (1.0 - card_value(&"refreshing_dew") / 100.0)
+
+
+## The elemental Shields and the Blessings that upgrade them (2117-2121, 2306-2310).
+const SHIELDS := {&"water_shield": "Water", &"thunder_shield": "Elec", &"fire_shield": "Fire",
+	&"earth_shield": "Earth", &"wind_shield": "Wind"}
+const BLESSINGS := {&"undines_blessing": &"water_shield", &"raions_blessing": &"thunder_shield",
+	&"salamanders_blessing": &"fire_shield", &"gnomes_blessing": &"earth_shield", &"sylphs_blessing": &"wind_shield"}
+
+
+## Your resistance to an element, in %.
+func resist(element: String) -> float:
+	var r := 0.0
+	for id: StringName in SHIELDS:
+		if SHIELDS[id] == element:
+			r += card_value(id)
+	for id: StringName in BLESSINGS:
+		# A Blessing keeps the resistance of the Shield it replaced, at its level.
+		if card_level(id) > 0 and SHIELDS[BLESSINGS[id]] == element:
+			r += card(BLESSINGS[id]).value_at(card_level(id))
+	if element == "Light":
+		r += card_value(&"light_shield")
+	if element == "Dark":
+		r += card_value(&"dark_barrier")
+	return minf(r, 80.0)
+
+
+## Extra damage % for spells of an element (Elemental Boost, Dark Assimilation).
+func element_boost(element: String) -> float:
+	match element:
+		"Fire", "Water", "Wind", "Earth", "Elec":
+			return card_value(&"elemental_boost")
+		"Dark":
+			return card_value(&"dark_assimilation")
+	return 0.0
 
 
 func attack_speed_mult() -> float:
@@ -1157,11 +1217,14 @@ func crit_chance(e: Enemy = null) -> float:
 
 
 ## Damage taken: DP against physical hits, MD against magic.
-func damage_taken_mult(magic := false) -> float:
+## `element`: the attacker's (an elemental Shield resists it).
+func damage_taken_mult(magic := false, element := "") -> float:
 	var key := "MD" if magic else "DP"
 	var m := (float(_ref.get(key, 0)) + DEF_SOFT) / (stat(key) + DEF_SOFT)
 	if has_passive(&"hired_blade"):
 		m *= 0.9
+	if element != "":
+		m *= 1.0 - resist(element) / 100.0
 	return m
 
 

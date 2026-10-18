@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/magic/aqua_bomb.tres" id="c_aqua_bomb"]
+[ext_resource type="Resource" path="res://data/skills/magic/staff_of_thunder.tres" id="c_staff_of_thunder"]
+[ext_resource type="Resource" path="res://data/skills/magic/earthquake.tres" id="c_earthquake"]
+[ext_resource type="Resource" path="res://data/skills/magic/dragon_storm.tres" id="c_dragon_storm"]
+[ext_resource type="Resource" path="res://data/skills/magic/raging_storm.tres" id="c_raging_storm"]
+[ext_resource type="Resource" path="res://data/skills/magic/undines_blessing.tres" id="c_undines_blessing"]
+[ext_resource type="Resource" path="res://data/skills/magic/raions_blessing.tres" id="c_raions_blessing"]
+[ext_resource type="Resource" path="res://data/skills/magic/salamanders_blessing.tres" id="c_salamanders_blessing"]
+[ext_resource type="Resource" path="res://data/skills/magic/gnomes_blessing.tres" id="c_gnomes_blessing"]
+[ext_resource type="Resource" path="res://data/skills/magic/sylphs_blessing.tres" id="c_sylphs_blessing"]
+[ext_resource type="Resource" path="res://data/skills/magic/undines_garden.tres" id="c_undines_garden"]
+[ext_resource type="Resource" path="res://data/skills/magic/raions_space.tres" id="c_raions_space"]
+[ext_resource type="Resource" path="res://data/skills/magic/salamanders_territory.tres" id="c_salamanders_territory"]
+[ext_resource type="Resource" path="res://data/skills/magic/gnomes_domain.tres" id="c_gnomes_domain"]
+[ext_resource type="Resource" path="res://data/skills/magic/sylphs_playground.tres" id="c_sylphs_playground"]
+[ext_resource type="Resource" path="res://data/skills/magic/dimensional_rift.tres" id="c_dimensional_rift"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"soul_master"
+display_name = "Soul Master"
+actor = "magic_f"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_aqua_bomb"), ExtResource("c_staff_of_thunder"), ExtResource("c_earthquake"), ExtResource("c_dragon_storm"), ExtResource("c_raging_storm"), ExtResource("c_undines_blessing"), ExtResource("c_raions_blessing"), ExtResource("c_salamanders_blessing"), ExtResource("c_gnomes_blessing"), ExtResource("c_sylphs_blessing"), ExtResource("c_undines_garden"), ExtResource("c_raions_space"), ExtResource("c_salamanders_territory"), ExtResource("c_gnomes_domain"), ExtResource("c_sylphs_playground"), ExtResource("c_dimensional_rift")])
+text = "The advanced Bard, with the widest range of elemental magic."

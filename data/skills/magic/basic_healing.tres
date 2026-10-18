@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/baby_carrot.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_heal.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"basic_healing"
+display_name = "Basic Healing"
+kind = 1
+skill_id = 2211
+text = "Cures ailments from 1st-job magic."
+requires = {&"light_pact": 1, &"catastrophe_heal": 1}
+jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
+max_level = 1
+table = {"value": [0.0], "mp": [65.0], "cooldown": [10.0], "cast": [0.5]}
+sounds = {"ap": "snd_m_311_ap.wav"}
+effects = {"ap": ["m_311_primary_cure_apply"], "ht": ["eft_skl_m_211_ebg"]}
+master_material = ExtResource("m_master")
+element = "Light"
+behavior = ExtResource("2_b")

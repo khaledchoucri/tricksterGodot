@@ -29,5 +29,11 @@ extends Resource
 @export var unlock_text := ""
 
 
+## `unlock_stat` may list several stats separated by "|" (any of them counts).
 func unlocked() -> bool:
-	return unlock_stat == "" or int(Profile.stats.get(unlock_stat, 0)) >= unlock_count
+	if unlock_stat == "":
+		return true
+	var total := 0
+	for stat in unlock_stat.split("|"):
+		total += int(Profile.stats.get(stat, 0))
+	return total >= unlock_count

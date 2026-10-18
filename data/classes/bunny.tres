@@ -34,7 +34,4 @@ start_job = ExtResource("2_j")
 start_weapon = ExtResource("3_w")
 combo = ExtResource("4_c")
 armed = false
-unlock_stat = "clears"
-unlock_count = 1
-unlock_text = "Clear a run to open a second character slot."
 text = "Close-range physical attacks. Easy to control, great one on one, weak against crowds. Becomes a Boxer."

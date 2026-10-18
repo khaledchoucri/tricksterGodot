@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_ice.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"water_web"
+display_name = "Water Web"
+kind = 0
+skill_id = 2112
+text = "Drip Bomb leaves its targets {v}% slower for {seconds} s."
+requires = {&"drip_bomb": 3, &"mana_web": 1}
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+max_level = 1
+table = {"value": [30.0], "seconds": [30.0]}
+master_material = ExtResource("m_master")
+element = "Water"

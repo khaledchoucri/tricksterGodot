@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/wizard.tres" id="j_wizard"]
+[ext_resource type="Resource" path="res://data/jobs/dark_lord.tres" id="j_dark_lord"]
+[ext_resource type="Resource" path="res://data/jobs/priest.tres" id="j_priest"]
+[ext_resource type="Resource" path="res://data/skills/magic/hinder_snare.tres" id="c_hinder_snare"]
+[ext_resource type="Resource" path="res://data/skills/magic/dark_pact.tres" id="c_dark_pact"]
+[ext_resource type="Resource" path="res://data/skills/magic/hellfire.tres" id="c_hellfire"]
+[ext_resource type="Resource" path="res://data/skills/magic/light_pact.tres" id="c_light_pact"]
+[ext_resource type="Resource" path="res://data/skills/magic/arrow_of_light.tres" id="c_arrow_of_light"]
+[ext_resource type="Resource" path="res://data/skills/magic/wicked_flame.tres" id="c_wicked_flame"]
+[ext_resource type="Resource" path="res://data/skills/magic/catastrophe_heal.tres" id="c_catastrophe_heal"]
+[ext_resource type="Resource" path="res://data/skills/magic/blood_testament.tres" id="c_blood_testament"]
+[ext_resource type="Resource" path="res://data/skills/magic/oath_of_light.tres" id="c_oath_of_light"]
+[ext_resource type="Resource" path="res://data/skills/magic/dark_distractor.tres" id="c_dark_distractor"]
+[ext_resource type="Resource" path="res://data/skills/magic/dark_lance.tres" id="c_dark_lance"]
+[ext_resource type="Resource" path="res://data/skills/magic/light_shield.tres" id="c_light_shield"]
+[ext_resource type="Resource" path="res://data/skills/magic/light_wave.tres" id="c_light_wave"]
+[ext_resource type="Resource" path="res://data/skills/magic/dark_barrier.tres" id="c_dark_barrier"]
+[ext_resource type="Resource" path="res://data/skills/magic/radiant_strike.tres" id="c_radiant_strike"]
+[ext_resource type="Resource" path="res://data/skills/magic/hearts_grace.tres" id="c_hearts_grace"]
+[ext_resource type="Resource" path="res://data/skills/magic/shield_of_heaven.tres" id="c_shield_of_heaven"]
+[ext_resource type="Resource" path="res://data/skills/magic/gravity_crush.tres" id="c_gravity_crush"]
+[ext_resource type="Resource" path="res://data/skills/magic/revival.tres" id="c_revival"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"magician"
+display_name = "Magician"
+actor = "magician"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_hinder_snare"), ExtResource("c_dark_pact"), ExtResource("c_hellfire"), ExtResource("c_light_pact"), ExtResource("c_arrow_of_light"), ExtResource("c_wicked_flame"), ExtResource("c_catastrophe_heal"), ExtResource("c_blood_testament"), ExtResource("c_oath_of_light"), ExtResource("c_dark_distractor"), ExtResource("c_dark_lance"), ExtResource("c_light_shield"), ExtResource("c_light_wave"), ExtResource("c_dark_barrier"), ExtResource("c_radiant_strike"), ExtResource("c_hearts_grace"), ExtResource("c_shield_of_heaven"), ExtResource("c_gravity_crush"), ExtResource("c_revival")])
+text = "Magicians use light and dark magic: dark to attack, light to heal. A Magician advances to Wizard, Dark Lord or Priest."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_wizard"), ExtResource("j_dark_lord"), ExtResource("j_priest")])

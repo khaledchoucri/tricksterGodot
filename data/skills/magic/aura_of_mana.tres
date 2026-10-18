@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/hard_scales.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"aura_of_mana"
+display_name = "Aura of Mana"
+kind = 0
+skill_id = 2003
+text = "MP regeneration +{v}%."
+requires = {&"cure": 3}
+table = {"value": [200.0, 215.0, 245.0, 260.0, 290.0, 305.0, 335.0, 360.0]}
+master_material = ExtResource("m_master")

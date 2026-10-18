@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_ice.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_heal.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"hearts_grace"
+display_name = "Heart's Grace"
+kind = 1
+skill_id = 2216
+text = "A strong light heals you for {v}% of your max HP."
+requires = {&"catastrophe_heal": 3, &"aura_of_mana": 3}
+jobs = Array[StringName]([&"magician", &"wizard", &"witch"])
+table = {"value": [4.0, 6.0, 10.0, 12.0, 16.0, 18.0, 22.0, 28.0], "mp": [24.0, 27.0, 33.0, 35.0, 39.0, 41.0, 44.0, 48.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "cast": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]}
+sounds = {"ap": "snd_m_316_ap.wav", "fl": "snd_m_316_fl.wav"}
+master_material = ExtResource("m_master")
+element = "Light"
+scaling = "MA"
+behavior = ExtResource("2_b")

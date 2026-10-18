@@ -14,6 +14,8 @@ const FLY_HEIGHT := 18.0
 var direction := Vector2.RIGHT
 var damage := 8
 var accuracy := 50
+## The monster that fired it (its element, and who a reflect hits back).
+var shooter: Enemy
 ## Set by the shooter before the projectile enters the tree.
 var room: Room
 var player: Player
@@ -30,7 +32,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if is_instance_valid(player) and Combat.in_circle(ground_pos, player.global_position, radius, 10.0):
 		if not player.is_invulnerable():
-			player.take_hit(damage, Combat.ground(direction).normalized(), 160.0, true, accuracy)
+			player.take_hit(damage, Combat.ground(direction).normalized(), 160.0, true, accuracy, shooter)
 			queue_free()
 	queue_redraw()
 

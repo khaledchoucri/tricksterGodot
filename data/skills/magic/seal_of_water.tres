@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/slime_husk.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"seal_of_water"
+display_name = "Seal of Water"
+kind = 0
+skill_id = 2102
+text = "A pact with water: its magic can be learned. Two other elements are closed to you for good."
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+excludes = Array[StringName]([&"seal_of_fire", &"seal_of_earth"])
+max_level = 1
+table = {"value": [0.0]}
+master_material = ExtResource("m_master")
+element = "Water"

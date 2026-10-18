@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="ClassData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/class_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/jobs/shaman.tres" id="2_j"]
+[ext_resource type="Resource" path="res://data/items/rookie_sword.tres" id="3_w"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_arrow.tres" id="4_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dragon"
+display_name = "Dragon"
+actor = "dragon"
+base = {
+"AC": 15,
+"AP": 8,
+"DA": 8,
+"DP": 3,
+"DX": 10,
+"HP": 115,
+"HV": 5,
+"LK": 6,
+"MA": 22,
+"MD": 12,
+"MP": 160,
+"WT": 280
+}
+graph = {
+"charm": 0.1,
+"magic": 0.5,
+"power": 0.1,
+"sense": 0.3
+}
+start_job = ExtResource("2_j")
+start_weapon = ExtResource("3_w")
+basic_skill = ExtResource("4_b")
+mp_regen = 0.02
+steady_casting = true
+excluded_cards = Array[StringName]([&"mana_ring", &"mana_ring_booster"])
+swap_requires = {&"mana_ring": &"mana_arrow"}
+text = "Long-range magic for damage, support, or a little of both. His Mana Arrow picks off one enemy at a time. Becomes a Magician."

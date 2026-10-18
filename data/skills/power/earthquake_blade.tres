@@ -16,6 +16,7 @@ upgrades = &"piercing_wave"
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [75.0, 80.0, 88.0, 93.0, 102.0, 106.0, 115.0, 128.0], "mp": [45.0, 47.0, 51.0, 53.0, 56.0, 58.0, 61.0, 65.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [120.0, 125.0, 135.0, 140.0, 150.0, 155.0, 165.0, 180.0], "radius": [120.0, 124.0, 132.0, 136.0, 144.0, 148.0, 156.0, 168.0], "targets": [2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0, 6.0]}
 sounds = {"ap": "snd_P_310_ap.wav", "ht": "snd_P_310_ht.wav"}
+effects = {"ap": ["P_310_Earthquake_Sword_ap"], "ht": ["P_310_Earthquake_Sword_ht"]}
 master_material = ExtResource("m_master")
 element = "Earth"
 behavior = ExtResource("2_b")

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sand_glass.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sacred_oath"
+display_name = "Sacred Oath"
+kind = 0
+skill_id = 2504
+text = "Your faith adds {v}% of your max HP to every Oath of Light recovery."
+requires = {&"oath_of_light": 3}
+jobs = Array[StringName]([&"priest"])
+table = {"value": [4.0, 5.0, 7.0, 8.0, 10.0, 11.0, 13.0, 15.0]}
+master_material = ExtResource("m_master")
+element = "Light"

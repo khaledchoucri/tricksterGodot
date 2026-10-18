@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_debuff.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"rust"
+display_name = "Rust"
+kind = 1
+skill_id = 2011
+text = "A rusting fog on the enemies at the cursor: they deal {v}% less damage for {seconds} s."
+table = {"value": [15.0, 18.0, 24.0, 27.0, 33.0, 36.0, 42.0, 51.0], "mp": [19.0, 20.0, 21.0, 21.0, 22.0, 23.0, 24.0, 25.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], "seconds": [12.0, 14.0, 18.0, 20.0, 24.0, 26.0, 30.0, 36.0], "radius": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]}
+master_material = ExtResource("m_master")
+scaling = "MA"
+behavior = ExtResource("2_b")

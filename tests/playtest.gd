@@ -230,11 +230,14 @@ func _fight(player: Player, delta: float) -> void:
 		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
 		if id == &"clinch_release" or (id == &"chakra_balance" and Run.hp > Run.max_hp * 0.6):
 			continue  # Clinch Release is for staggers; Chakra Balance for when hurt
-		if id != &"" and best < 140.0 and player.now() >= player.skills.slot_ready_at[i] \
+		if id != &"" and best < (200.0 if Run.cls.basic_skill else 140.0) and player.now() >= player.skills.slot_ready_at[i] \
 				and Run.mp >= Run.card(id).mp_at(Run.card_level(id)):
 			player.buffer_action(SkillCaster.SLOT_ACTIONS[i])
 			_release()
 			return
+	if Run.cls.basic_skill:
+		_kite(player, target, best, delta)
+		return
 	if best > 48.0:
 		_path_t -= delta
 		if _path_t <= 0.0 or _path.size() < 2:
@@ -540,3 +543,34 @@ func _report() -> void:
 	print("clears %d / %d, average room reached %.1f, dig sites %d" % [clears, results.size(), depth / maxf(results.size(), 1), digs])
 	_feel_report()
 	print("ui bugs: %s" % (", ".join(ui_bugs) if ui_bugs.size() else "none"))
+
+
+## Mages keep their distance: back off when a monster comes close, close in
+## when it's out of reach, and cast the basic spell in between.
+func _kite(player: Player, target: Enemy, best: float, delta: float) -> void:
+	var room: Room = game.room
+	var reach := Run.cls.basic_skill.param("range", maxi(Run.card_level(Run.cls.basic_skill.id), 1)) * 0.85
+	if best < 95.0:
+		var away := (player.global_position - target.global_position).normalized()
+		for turn: float in [0.0, 0.7, -0.7, 1.4, -1.4]:
+			var dir := away.rotated(turn)
+			if room.is_walkable(player.global_position + dir * 30.0):
+				_press(dir)
+				return
+		player.buffer_action("dash")
+		return
+	if best > reach or not room.line_clear(player.global_position, target.global_position):
+		_path_t -= delta
+		if _path_t <= 0.0 or _path.size() < 2:
+			_path = room.find_path(player.global_position, target.global_position)
+			_path_t = 0.4
+		while _path.size() > 1 and _path[0].distance_to(player.global_position) < 12.0:
+			_path.remove_at(0)
+		var next := _path[0] if _path.size() > 0 else target.global_position
+		_press((next - player.global_position).normalized())
+		return
+	_release()
+	_attack_t -= delta
+	if _attack_t <= 0.0:
+		player.buffer_action("attack")
+		_attack_t = 0.08

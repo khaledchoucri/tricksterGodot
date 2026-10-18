@@ -32,6 +32,9 @@ enum Kind { TALENT, SKILL }
 @export var excludes: Array[StringName] = []
 ## The original's sounds: "ap" (cast), "ht" (hit), "fl" (flight), "ke" (lasting).
 @export var sounds: Dictionary = {}
+## The original's particle effects (cake.xml names) by the same phases, plus
+## "ed" (when it ends). Played through Cake.
+@export var effects: Dictionary = {}
 ## Highest level without mastery; 0 for the usual cap. Skills the original
 ## caps at level 1 (Dash, Faint...) have 1 and can't be mastered.
 @export var max_level := 0

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/ugly_pearl.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_field.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"tesla_field"
+display_name = "Tesla Field"
+kind = 1
+skill_id = 2123
+text = "The ground at the cursor turns into an electric field for {seconds} s: up to {targets} enemies in it take {v} damage at a time."
+requires = {&"electro_attack": 3, &"mana_arrow": 3}
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+table = {"value": [72.0, 77.0, 86.0, 90.0, 99.0, 103.0, 112.0, 125.0], "mp": [32.0, 34.0, 39.0, 42.0, 46.0, 47.0, 51.0, 55.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [160.0, 165.0, 175.0, 180.0, 190.0, 195.0, 205.0, 220.0], "radius": [100.0, 110.0, 130.0, 140.0, 160.0, 170.0, 190.0, 220.0], "seconds": [4.0, 5.0, 7.0, 8.0, 10.0, 11.0, 13.0, 16.0], "targets": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]}
+sounds = {"ap": "snd_m_223_ap.wav", "fl": "snd_m_223_fl.wav", "ke": "snd_m_223_ke.wav"}
+effects = {"ap": ["M_223_electric_field_apply"], "fl": ["M_223_electric_field_fly"], "ke": ["M_223_electric_field_keep"]}
+master_material = ExtResource("m_master")
+element = "Elec"
+scaling = "MA"
+behavior = ExtResource("2_b")

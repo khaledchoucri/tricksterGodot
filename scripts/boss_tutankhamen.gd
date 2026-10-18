@@ -71,6 +71,7 @@ func _curse() -> void:
 		p.speed = CURSE_SPEED
 		p.damage = damage
 		p.accuracy = accuracy()
+		p.shooter = self
 		p.room = room
 		p.player = player
 		p.position = global_position + Vector2(0, -30)
@@ -107,7 +108,7 @@ func _coffin(at: Vector2, delay: float) -> void:
 	Audio.play("dmg_normal_c.wav", -4.0)
 	if is_instance_valid(player) and not player.is_invulnerable() \
 			and Combat.in_circle(at, player.global_position, COFFIN_RADIUS, 10.0):
-		player.take_hit(damage + 4, Combat.ground(player.global_position - at).normalized(), 260.0, true, accuracy())
+		player.take_hit(damage + 4, Combat.ground(player.global_position - at).normalized(), 260.0, true, accuracy(), self)
 
 
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:

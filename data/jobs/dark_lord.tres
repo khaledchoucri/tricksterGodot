@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/magic/staff_of_agony.tres" id="c_staff_of_agony"]
+[ext_resource type="Resource" path="res://data/skills/magic/scythe.tres" id="c_scythe"]
+[ext_resource type="Resource" path="res://data/skills/magic/fear.tres" id="c_fear"]
+[ext_resource type="Resource" path="res://data/skills/magic/dark_commando.tres" id="c_dark_commando"]
+[ext_resource type="Resource" path="res://data/skills/magic/ghostly_whisper.tres" id="c_ghostly_whisper"]
+[ext_resource type="Resource" path="res://data/skills/magic/dark_assimilation.tres" id="c_dark_assimilation"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dark_lord"
+display_name = "Dark Lord"
+actor = "magic_m"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_staff_of_agony"), ExtResource("c_scythe"), ExtResource("c_fear"), ExtResource("c_dark_commando"), ExtResource("c_ghostly_whisper"), ExtResource("c_dark_assimilation")])
+text = "The advanced Magician of dark magic, with the most powerful magic attacks."

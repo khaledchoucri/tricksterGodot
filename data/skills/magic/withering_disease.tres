@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_spring_water.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"withering_disease"
+display_name = "Withering Disease"
+kind = 0
+skill_id = 2217
+text = "Gravity Crush stops its targets regenerating for {v} s."
+requires = {&"gravity_crush": 3}
+jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
+table = {"value": [1.0, 2.0, 4.0, 5.0, 7.0, 8.0, 10.0, 11.0]}
+sounds = {"ke": "snd_m_209_ke.wav"}
+effects = {"ke": ["M_209_Unable_recovery_ke"]}
+master_material = ExtResource("m_master")

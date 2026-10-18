@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/turban_shell.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"wind_shield"
+display_name = "Wind Shield"
+kind = 0
+skill_id = 2121
+text = "Wind resistance +{v}%: wind monsters hurt you less."
+requires = {&"seal_of_wind": 1, &"mana_shield": 3}
+jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
+table = {"value": [10.0, 12.0, 16.0, 18.0, 22.0, 24.0, 28.0, 34.0]}
+effects = {"ke": ["M_221_wind_shield_keep"]}
+master_material = ExtResource("m_master")
+element = "Wind"

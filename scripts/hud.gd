@@ -30,7 +30,9 @@ var _hub_mode := false
 
 func _ready() -> void:
 	(%AgainButton as Button).pressed.connect(func() -> void: restart_requested.emit())
-	Events.skill_cast.connect(func(slot: int) -> void: _slots[slot].pulse())
+	Events.skill_cast.connect(func(slot: int) -> void:
+		if slot < _slots.size():  # the basic spell (slot 4) has no box
+			_slots[slot].pulse())
 	Events.mp_short.connect(func() -> void:
 		_flash(%MpBar, Color(1.8, 0.6, 0.6))
 		Audio.play("etc_miss.wav", -10.0))
@@ -45,10 +47,19 @@ func set_hub_mode(on: bool) -> void:
 	%SlotBar.visible = not on
 	%CardsLabel.visible = not on
 	sheet.visible = false
-	$Root/Hint.text = "WASD move  ·  F talk  ·  Space dash" if on 		else "WASD move  ·  LMB combo  ·  RMB / Q / E skills  ·  Space dash  ·  C character"
+	_update_hint()
+
+
+## The controls line; a mage's left click casts their basic spell.
+func _update_hint() -> void:
+	var basic := "LMB %s" % Run.cls.basic_skill.display_name if Run.cls and Run.cls.basic_skill else "LMB combo"
+	var text := "WASD move  ·  F talk  ·  Space dash" if _hub_mode 		else "WASD move  ·  %s  ·  RMB / Q / E skills  ·  Space dash  ·  C character" % basic
+	if $Root/Hint.text != text:
+		$Root/Hint.text = text
 
 
 func refresh(player: Player) -> void:
+	_update_hint()
 	if _hub_mode:
 		%GalderLabel.text = "%d TM  ·  %d Harkon Shard%s  ·  %d Galder  ·  %d Bronze" % [Profile.tm, Profile.shards,
 			"" if Profile.shards == 1 else "s", Profile.galder, Profile.ore]

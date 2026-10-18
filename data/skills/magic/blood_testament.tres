@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/mole_feather.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"blood_testament"
+display_name = "Blood Testament"
+kind = 0
+skill_id = 2219
+text = "+{v}% MA, but every spell costs {hp}% of your max HP."
+requires = {&"dark_pact": 1}
+jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
+table = {"value": [3.0, 4.0, 6.0, 7.0, 9.0, 10.0, 12.0, 15.0], "hp": [1.0, 0.96, 0.88, 0.84, 0.76, 0.72, 0.64, 0.52]}
+sounds = {"ap": "snd_M_319_ap.wav"}
+effects = {"ap": ["M_319_bloody_oath_ap"]}
+master_material = ExtResource("m_master")
+element = "Dark"

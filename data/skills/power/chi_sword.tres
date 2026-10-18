@@ -14,4 +14,5 @@ requires = {&"piercing_wave": 3}
 jobs = Array[StringName]([&"gladiator"])
 table = {"value": [2.0, 8.0, 20.0, 27.0, 39.0, 45.0, 58.0, 77.0], "reach": [0.0, 6.2, 19.0, 25.0, 38.0, 44.0, 56.0, 75.0]}
 sounds = {"ht": "snd_P_605_ht.wav"}
+effects = {"ht": ["P_605_Energy_Sword_ht"]}
 master_material = ExtResource("m_master")

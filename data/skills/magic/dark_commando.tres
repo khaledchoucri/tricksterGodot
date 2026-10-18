@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dark_commando"
+display_name = "Dark Commando"
+kind = 0
+skill_id = 2704
+text = "A dark being follows you: after each dark spell hits, it strikes the same enemy for {v} damage."
+requires = {&"dark_barrier": 3, &"fear": 1}
+jobs = Array[StringName]([&"dark_lord"])
+table = {"value": [29.0, 31.0, 35.0, 37.0, 41.0, 43.0, 47.0, 53.0]}
+sounds = {"ap": "snd_m_804_ap.wav", "ht": "snd_m_804_ht.wav"}
+effects = {"ap": ["M_804_dark_ghost_ap"], "ht": ["M_804_dark_ghost_ht"]}
+master_material = ExtResource("m_master")
+element = "Dark"

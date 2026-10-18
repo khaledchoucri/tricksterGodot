@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/slime_husk.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/spell_burst.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dragon_storm"
+display_name = "Dragon Storm"
+kind = 1
+skill_id = 2303
+text = "A dragon of flame rises at the cursor for {v} damage."
+requires = {&"whirlwind_blaze": 3, &"mana_ring": 3}
+jobs = Array[StringName]([&"soul_master"])
+table = {"value": [35.0, 46.0, 70.0, 81.0, 104.0, 116.0, 139.0, 174.0], "mp": [49.0, 50.0, 52.0, 53.0, 54.0, 55.0, 57.0, 59.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "cast": [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], "range": [150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0], "radius": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}
+sounds = {"hi": "snd_m_403_ht.wav"}
+effects = {"ht": ["M_403_fire dragon_hit", "eft_skl_m_303_ebg"]}
+master_material = ExtResource("m_master")
+element = "Fire"
+scaling = "MA"
+behavior = ExtResource("2_b")

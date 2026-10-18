@@ -13,4 +13,5 @@ text = "While you Uppercut, a {chance}% chance of a counter blow for {v} more da
 requires = {&"uppercut": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [35.0, 41.0, 52.0, 58.0, 70.0, 75.0, 87.0, 104.0], "chance": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]}
+effects = {"ht": ["eft_skl_p_106_ebg", "eft_skl_p_106_eps"]}
 master_material = ExtResource("m_master")

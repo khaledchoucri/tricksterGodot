@@ -13,4 +13,5 @@ text = "+{v}% AP."
 requires = {&"pumping_heart": 3}
 jobs = Array[StringName]([&"champion"])
 table = {"value": [2.0, 4.0, 8.0, 10.0, 14.0, 16.0, 20.0, 26.0]}
+effects = {"ed": ["eft_skl_p_301_eed"], "ht": ["eft_skl_p_301_eps"]}
 master_material = ExtResource("m_master")
