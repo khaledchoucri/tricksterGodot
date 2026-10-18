@@ -28,6 +28,18 @@ def flat(r):
     return r['Comment'] / FLAT_POWER / 100.0 * NORMAL_HIT
 
 
+# Mana Ring is Sheep's basic attack and hits everything around its target,
+# so its power is anchored lower: per target it does about half of Mana
+# Arrow's single-target damage at every stage (Ring + Booster against Arrow +
+# Arrow Rush grow alike in the source, x5.3 and x4.8), so Mana Arrow wins on
+# one or two targets and Mana Ring from three. Lv 1 Mana Ring hits for 155%.
+RING_POWER = 400.0 / 155.0
+
+
+def ring_flat(r):
+    return r['Comment'] / RING_POWER / 100.0 * NORMAL_HIT
+
+
 def mp_like(x):
     return 20 * (max(x, 1) / 32.0) ** 0.4
 
@@ -80,7 +92,7 @@ SPEC = {
     '2006': dict(card='mist_of_mana', value=lambda r: r['Comment'], text='+{v}% MA.'),
     '2007': dict(card='arrow_rush', value=lambda r: r['Count'], rows={'ratio': lambda r: r['Ratio'] * 100},
                  text='Mana Arrow looses {v} arrows at once; each extra one hits for {ratio}%.'),
-    '2008': dict(card='mana_ring', behavior='mana_ring', value=flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
+    '2008': dict(card='mana_ring', behavior='mana_ring', value=ring_flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
                  effects={'ht': ['magic impect']},
                  text='Three mana rings fly to the enemy you aim at and burst around it: {v} damage to everything caught. Sheep\'s basic attack.'),
     '2009': dict(card='mana_storm', behavior='spell_burst', value=flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
@@ -91,7 +103,7 @@ SPEC = {
     '2011': dict(card='rust', behavior='spell_debuff', value=lambda r: r['Comment'], scaling='MA',
                  rows={'range': 'Range', 'seconds': 'Seconds', 'radius': lambda r: 50}, kind='skill',
                  text='A rusting fog on the enemies at the cursor: they deal {v}% less damage for {seconds} s.'),
-    '2012': dict(card='mana_ring_booster', value=flat, text='Mana Ring hits {v} harder.'),
+    '2012': dict(card='mana_ring_booster', value=ring_flat, text='Mana Ring hits {v} harder.'),
     '2013': dict(card='mana_shield', value=lambda r: r['Comment'], text='+{v}% MD.'),
     # ---- Bard (Sheep)
     '2101': dict(card='bolster_ballad', value=lambda r: r['Comment'], text='Spells cost {v}% less MP.'),

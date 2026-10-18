@@ -20,7 +20,12 @@ var quiet := false
 ## An original sprite to draw instead of the glow (Cake texture name, e.g.
 ## Mana Arrow's "magic arrow"), its afterimage, and how it turns: "aim"
 ## points it along the flight (the sprite points up), "spin" spins it.
-var sprite := ""
+## Original sprites are light, drawn additively (their black is transparent),
+## whenever the sprite is set, before or after the orb enters the room.
+var sprite := "":
+	set(value):
+		sprite = value
+		material = Cake._material("ADD") if value != "" else null
 var trail_sprite := ""
 var sprite_scale := 1.0
 var turn := "aim"
@@ -33,8 +38,6 @@ var _done := false
 
 func _ready() -> void:
 	z_index = 15
-	if sprite != "":
-		material = Cake._material("ADD")
 
 
 func _physics_process(delta: float) -> void:

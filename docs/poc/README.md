@@ -159,6 +159,7 @@ The Buffalo and Bunny lines have all 43 of Trickster's Power skills, generated b
   - Sheep: Librarian → Bard (`chr011`) → **Soul Master** or **Witch** (hybrid: learns Magician skills). Her basic attack (left click) is **Mana Ring**: three rings burst around the target.
   - Dragon: Shaman → Magician (`chr012`) → **Wizard** (hybrid: learns Bard skills), **Dark Lord** (dark) or **Priest** (light). His basic attack is **Mana Arrow**.
   - The 3rd-job bodies are `chr019` (magic_f) and `chr020` (magic_m), the server's type_2 + 8.
+  - Mana Arrow is the single-target basic and Mana Ring the crowd one: at every stage (each with its supplement at the same level) Mana Arrow out-damages Mana Ring on one or two monsters, and Mana Ring wins from three. The source's growth is kept; only Mana Ring's flat power is anchored lower (Lv 1 hits for 155% where Mana Arrow hits for 230%), a reading of mine.
   - Basic spells cost no MP. Each character is offered only their own basic spell and its supplement (Arrow Rush, Mana Ring Booster). Where a prerequisite asks for the other one, your own stands in.
   - **Casting.** Spells take half the original activation time, with movement locked. Mages are never interrupted by hits (Invincible Casting is innate, so its card isn't offered). Only a dash gets you out of a cast, and it refunds the MP. A cast bar shows under the mage.
   - Mages regenerate 2% of max MP a second; Aura of Mana raises the rate.

@@ -363,6 +363,20 @@ func _run() -> void:
 	for i in 20:
 		always = always and Run.card(&"arrow_rush") in Run.card_offers(3, true)
 	check(always, "Dragon is always offered Mana Arrow's level-ups, and Arrow Rush (new cards and training) once Mana Arrow is Lv 3")
+	# The two basics: Mana Arrow wins on one or two targets, Mana Ring from three,
+	# at every stage (the basic and its supplement at the same level).
+	var ring: CardData = Run.card(&"mana_ring")
+	var rush: CardData = Run.card(&"arrow_rush")
+	var boost: CardData = Run.card(&"mana_ring_booster")
+	var basics_ok := true
+	var basics := PackedStringArray()
+	for lv in range(1, 6):
+		var arrows := 1.0 + (rush.value_at(lv) - 1.0) * rush.param("ratio", lv) / 100.0 if lv > 1 else 1.0
+		var arrow_dps := arrow.value_at(lv) * arrows / arrow.cooldown_at(1)
+		var ring_dps := (ring.value_at(lv) + (boost.value_at(lv) if lv > 1 else 0.0)) / ring.cooldown_at(1)
+		basics_ok = basics_ok and 2.0 * ring_dps <= arrow_dps * 1.1 and 3.0 * ring_dps > arrow_dps
+		basics.append("Lv%d %d vs %d/target" % [lv, arrow_dps, ring_dps])
+	check(basics_ok, "Mana Arrow out-damages Mana Ring on 2 targets, Mana Ring wins on 3 (%s)" % ", ".join(basics))
 	Profile.class_id = "buffalo"
 	Run.new_run()
 
