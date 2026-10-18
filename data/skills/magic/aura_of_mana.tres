@@ -11,5 +11,5 @@ kind = 0
 skill_id = 2003
 text = "MP regeneration +{v}%."
 requires = {&"cure": 3}
-table = {"value": [200.0, 215.0, 245.0, 260.0, 290.0, 305.0, 335.0, 360.0]}
+table = {"value": [200.0, 230.0, 275.0, 305.0, 360.0, 396.0, 432.0, 468.0]}
 master_material = ExtResource("m_master")

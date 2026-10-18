@@ -12,6 +12,6 @@ skill_id = 2504
 text = "Your faith adds {v}% of your max HP to every Oath of Light recovery."
 requires = {&"oath_of_light": 3}
 jobs = Array[StringName]([&"priest"])
-table = {"value": [4.0, 5.0, 7.0, 8.0, 10.0, 11.0, 13.0, 15.0]}
+table = {"value": [4.0, 6.0, 9.0, 11.0, 15.0, 15.0, 15.0, 15.0]}
 master_material = ExtResource("m_master")
 element = "Light"

@@ -11,5 +11,5 @@ kind = 0
 skill_id = 1009
 text = "Agility (DX) up: attack {v}% faster."
 requires = {&"bulls_eye": 3, &"burning_rave": 3}
-table = {"value": [8.0, 8.0, 8.0, 8.0, 16.0, 16.0, 16.0, 24.0]}
+table = {"value": [8.0, 8.0, 8.0, 16.0, 24.0, 26.0, 29.0, 31.0]}
 master_material = ExtResource("m_master")

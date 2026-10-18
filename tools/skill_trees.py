@@ -40,7 +40,12 @@ import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TABLES = os.path.join(ROOT, 'original_assets', 'data', 'tables')
-LEVELS = [1, 2, 4, 5, 7, 8, 10, 11]
+# Card levels 1-5 (a run's) are the original's 1, 3, 6, 8 and 11, so a
+# skill maxed in a run is the original's mastered skill. Mastery levels 6-8
+# go past the source: each adds 10% of the level-5 value (MASTERY_STEP).
+LEVELS = [1, 3, 6, 8, 11, 11, 11, 11]
+RUN_LEVELS = 5
+MASTERY_STEP = 0.1
 NORMAL_HIT = 29.0
 
 # SkillParam2.Element -> the game's element names (the monster tables').
@@ -217,6 +222,11 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
         cap = 1 if int(sk['MaxSKLV']) <= 1 else 0
         count = 1 if cap == 1 else len(LEVELS)
         table = {'value': [sp['value'](row_at(i)) for i in range(count)]} if 'value' in sp else {}
+        # Counts (Arrow Rush's arrows) stay the original's.
+        if 'value' in sp and count > RUN_LEVELS and not all(float(v).is_integer() and v <= 20 for v in table['value']):
+            top = table['value'][RUN_LEVELS - 1]
+            for i in range(RUN_LEVELS, count):
+                table['value'][i] = round(top * (1 + MASTERY_STEP * (i - RUN_LEVELS + 1)), 2)
         if skill:
             table['mp'] = [round(20 * (max(row_at(i).get('MpCon', 32), 1) / 32.0) ** 0.4) for i in range(count)]
             table['cooldown'] = [row_at(i).get('CoolTime', 1.0) or 1.0 for i in range(count)]

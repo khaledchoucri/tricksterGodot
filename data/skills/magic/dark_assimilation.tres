@@ -12,6 +12,6 @@ skill_id = 2706
 text = "Dark damage +{v}%."
 requires = {&"ghostly_whisper": 3}
 jobs = Array[StringName]([&"dark_lord"])
-table = {"value": [2.0, 3.0, 6.0, 8.0, 11.0, 12.0, 15.0, 20.0]}
+table = {"value": [2.0, 5.0, 9.0, 12.0, 20.0, 20.0, 20.0, 20.0]}
 master_material = ExtResource("m_master")
 element = "Dark"

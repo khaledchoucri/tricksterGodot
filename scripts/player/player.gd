@@ -287,6 +287,13 @@ func _tick_talents(delta: float) -> void:
 				Run.take_damage(n)
 
 
+## A monster's defence against this hit: MD against magic (spells scaling
+## with MA), DP otherwise, each weighed against your own MA or AP.
+func _defense(e: Enemy, fx: Dictionary) -> float:
+	var magic: bool = fx.get("magic", false)
+	return e.defense_mult(magic, float(Run.stat("MA" if magic else "AP")))
+
+
 ## Dark Barrier turns part of a physical hit back; a Blessing's spirit
 ## strikes whoever hit you.
 func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
@@ -300,7 +307,7 @@ func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 	for id: StringName in Run.BLESSINGS:
 		if Run.card_level(id) > 0:
 			var c := Run.card(id)
-			deal_hit(attacker, Run.card_value(id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element})
+			deal_hit(attacker, Run.card_value(id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
 			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 
@@ -359,7 +366,7 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	if Run.quirk(&"elite_bane") and (e.is_elite or e.is_boss):
 		mult *= 1.1
 	var crit_mult := 2.0 if Run.quirk(&"sharp_eye") else 1.75
-	var amount := maxi(1, roundi(base * mult * element * (crit_mult if crit else 1.0) * (0.5 if graze else 1.0) * e.defense_mult()))
+	var amount := maxi(1, roundi(base * mult * element * (crit_mult if crit else 1.0) * (0.5 if graze else 1.0) * _defense(e, fx)))
 	var effects := fx.duplicate()
 	effects.crit = crit
 	effects.graze = graze

@@ -98,10 +98,15 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 		max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * (1.0 + DEPTH_HP * Run.depth))
 		damage = roundi(Run.raw_hit(stats) * DAMAGE_MULT * (1.0 + 0.04 * Run.depth))
 	else:
-		# The original stats only say how this monster compares to the rest of
-		# its region; the depth curve sets how tough a room is (Run.mob_ehp).
-		max_hp = roundi(Run.mob_ehp(stats, Run.region, Run.depth) * data.hp_mult * defense_mult())
-		damage = Run.mob_hit(stats, Run.region, Run.depth)
+		# As tough as its original level makes it (Run.mob_hp), whatever the room.
+		max_hp = roundi(Run.mob_hp(stats, Run.region) * data.hp_mult)
+		damage = Run.mob_hit(stats, Run.region)
+		if is_boss:
+			# A boss's original level is far above its region's (Tutankhamen is
+			# 71 among 18-33): it keeps its own HP, but wears the region's armour.
+			var norm: Dictionary = Run.region_norm(Run.region)
+			stats["DP"] = roundi(norm.DP)
+			stats["MD"] = roundi(norm.MD)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
 	run_speed = float(stats_row.get("run_speed", 119.0)) * 0.9 * data.speed_mult
 	var stay: Array = stats_row.get("idle_stay", [3, 5])
@@ -163,12 +168,15 @@ func resist(element: String) -> float:
 	return float(elements.get(element, 0)) - debuff("resist_" + element)
 
 
-## Damage multiplier from this monster's DP (or MD against magic).
-func defense_mult(magic := false) -> float:
+## Damage multiplier from this monster's DP (or MD against magic), against
+## an attacker with `attack` AP (or MA). Defence weighs against the
+## attacker's own stat, so outgrowing a monster also outgrows its armour
+## (my reading: the original's formula is server-side).
+func defense_mult(magic := false, attack := 100.0) -> float:
 	var def := float(stats.get("MD" if magic else "DP", 0))
 	if not magic:
 		def *= 0.0 if debuff("guard") > 0.0 else 1.0 - debuff("dp") / 100.0
-	return 100.0 / (100.0 + def)
+	return attack / (attack + maxf(def, 0.0)) if attack > 0.0 else 1.0
 
 
 ## Chance an attack with accuracy `ac` only grazes this monster.

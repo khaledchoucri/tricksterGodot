@@ -14,6 +14,6 @@ text = "A faster Flash Cut over {range}: {v} damage, and the enemy is thrown int
 requires = {&"flash_cut": 3}
 upgrades = &"flash_cut"
 jobs = Array[StringName]([&"champion"])
-table = {"value": [52.0, 60.0, 77.0, 85.0, 101.0, 109.0, 125.0, 143.0], "mp": [38.0, 39.0, 41.0, 42.0, 43.0, 44.0, 46.0, 48.0], "cooldown": [10.0, 10.0, 9.0, 8.0, 6.0, 5.0, 3.0, 2.0], "range": [200.0, 215.0, 245.0, 260.0, 290.0, 305.0, 335.0, 380.0]}
+table = {"value": [52.0, 68.0, 93.0, 109.0, 143.0, 157.0, 171.0, 185.0], "mp": [38.0, 40.0, 42.0, 44.0, 48.0, 48.0, 48.0, 48.0], "cooldown": [10.0, 9.0, 7.0, 5.0, 2.0, 2.0, 2.0, 2.0], "range": [200.0, 230.0, 275.0, 305.0, 380.0, 380.0, 380.0, 380.0]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

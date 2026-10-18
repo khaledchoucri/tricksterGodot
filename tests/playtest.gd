@@ -322,6 +322,9 @@ func _choose() -> void:
 			for i in opts.size():
 				if opts[i].is_skill() and Run.free_slot() >= 0:
 					pick = i
+			for i in opts.size():
+				if Run._grows_basic(opts[i]):
+					pick = i  # a mage grows its main weapon first
 		"replace":
 			# Make room for the new job's skills by dropping the lowest-level one.
 			pick = opts.size() - 1

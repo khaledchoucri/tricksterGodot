@@ -125,7 +125,7 @@ The Buffalo and Bunny lines have all 43 of Trickster's Power skills, generated b
   - Flash Cut → Mega Flash Cut.
 
   Prerequisites count an upgrade as its base skill. Earthquake Blade still opens Lightning Strike.
-- **Numbers.** Every number comes from the skill's `ESAII_`/`ESAction_` tables: damage % (the tooltip's), cooldowns, ranges, target counts, durations, chances and blocks. A card's levels 1–8 (5 in a run, 3 more from mastery) are the original's levels 1, 2, 4, 5, 7, 8, 10 and 11. Skills the original caps at Lv 1 (Dash, Faint, Guard Break, Clinch Release) stay at 1.
+- **Numbers.** Every number comes from the skill's `ESAII_`/`ESAction_` tables: damage % (the tooltip's), cooldowns, ranges, target counts, durations, chances and blocks. A card's run levels 1–5 are the original's levels 1, 3, 6, 8 and 11, so a skill maxed in a run is the original's mastered skill. Mastery's 3 extra levels go past the source: each adds 10% of the Lv 5 value (counts such as Arrow Rush's arrows stay at the original's). A mage's left-click spell keeps its Lv 1 cooldown (the original's grows with level, which would make a free basic attack weaker per second). Skills the original caps at Lv 1 (Dash, Faint, Guard Break, Clinch Release) stay at 1.
 - **Scaling, where the two games differ:**
   - In Trickster you keep the base skill and learn the advanced one from Lv 1. Here the advanced one replaces the base, so it keeps the base's level; at Lv 1 it would often be weaker than what it replaced.
   - Damage is the original % of a normal hit (29).
@@ -201,7 +201,7 @@ The Buffalo and Bunny lines have all 43 of Trickster's Power skills, generated b
   - Magic: MP, MA, MD
   - Sense: WT, DA, LK
   - Charm: HP, DP, HV
-- Each level-up, after the fight, you put a point into a type. Buffalo also grows on his own along his type graph (Power first, Charm second).
+- Each level-up, after the fight, you put a point into a type, then train one skill you have (Trickster levels skills with the TM points play earns). A mage's basic spell, and once learnable Arrow Rush or Mana Ring Booster, is always among the choices. Buffalo also grows on his own along his type graph (Power first, Charm second).
 - 3, 6 and 10 points in a type unlock its traits:
 
 | Type | 3 | 6 | 10 |
@@ -270,7 +270,7 @@ godot --headless --fixed-fps 60 res://tests/playtest.tscn -- runs=10 build=mixed
 
 The `build` option is `power`, `magic`, `sense`, `charm` or `mixed`. Add `city=full` to start with every restoration bought, `heat=N` to play at a Heat, `class=bunny`, `god=1` to measure the whole curve without dying, and `tag=x` to run several bots at once.
 
-The report includes combat feel: hits and seconds to kill normal and elite monsters by depth, and how hard monsters hit as a share of max HP. Monster HP and damage follow a depth curve (`Run.MOB_EHP`, `MOB_HIT`, `DEPTH_EHP`, `DEPTH_HIT`); the original stats only set each monster's toughness relative to its region. With every restoration bought, a Buffalo bot clears about 2 runs in 3 and a Bunny bot about 1 in 9. The bot is a weak stand-in for a player (it chases badly with short reach), so treat its numbers as a floor.
+The report includes combat feel: hits and seconds to kill normal and elite monsters by depth, and how hard monsters hit as a share of max HP. Damage scales linearly with its stat, as in Trickster (damage = stat x skill %): twice the starting MA is twice the damage. Monsters are as tough and hit as hard as their original level makes them (`Run.mob_hp`, `mob_hit`), the same in every room: deeper rooms bring a region's higher-level monsters, and a growing character outgrows them. Defence (DP against weapons, MD against spells) weighs against the attacker's own AP or MA. Bosses keep their own HP but wear their region's median armour. Region knobs (`hp_scale`, `damage_scale`) set each region's step up. With every restoration bought, a Buffalo bot clears about 2 runs in 3 and a Bunny bot about 1 in 9. The bot is a weak stand-in for a player (it chases badly with short reach), so treat its numbers as a floor.
 
 Also:
 
@@ -312,7 +312,7 @@ To add a room, create a `RoomData` resource with a map name and a rectangle (`to
 godot --headless --path . res://tests/smoke_test.tscn
 ```
 
-The test plays through room loading, combat, every skill, the dash vault, scenery fading, pathfinding, card and level-up picks, doors, Clione's projectiles, the boss and its summons, death and banking, then Megalopolis: its people, conversations, flags and restorations. It uses a throwaway profile, never your save. It also checks the skill rules (upgrades replace their base, buffs and debuffs work), and guards the balance: every monster stays near the depth curve.
+The test plays through room loading, combat, every skill, the dash vault, scenery fading, pathfinding, card and level-up picks, doors, Clione's projectiles, the boss and its summons, death and banking, then Megalopolis: its people, conversations, flags and restorations. It uses a throwaway profile, never your save. It also checks the skill rules (upgrades replace their base, buffs and debuffs work), and guards progression: damage doubles with doubled MA, monster HP comes from the original level, and a mage is always offered its basic spell's level-ups and Arrow Rush or Mana Ring Booster.
 
 `tests/ui_audit.tscn` (run windowed) fills a profile to its limits and opens every screen: every NPC menu and submenu, every pick list, the character sheet, the HUD and results. It flags anything off screen, options a player can't reach and cut text, and saves a screenshot of each. Use `size=WxH` for other windows and `noscale` for the editor's embedded game view.
 

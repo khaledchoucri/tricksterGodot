@@ -12,6 +12,6 @@ skill_id = 2505
 text = "Skill cooldowns {v}% shorter."
 requires = {&"sacred_oath": 3}
 jobs = Array[StringName]([&"priest"])
-table = {"value": [5.0, 9.0, 17.0, 21.0, 29.0, 33.0, 41.0, 50.0]}
+table = {"value": [5.0, 13.0, 25.0, 33.0, 50.0, 55.0, 60.0, 65.0]}
 master_material = ExtResource("m_master")
 element = "Light"

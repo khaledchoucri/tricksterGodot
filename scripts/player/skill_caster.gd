@@ -65,7 +65,11 @@ func try_cast(slot: int) -> bool:
 	skill.room = player.room
 	skill.aim = player.aim
 	skill.target = player.cursor_point()
-	slot_ready_at[slot] = player.now() + card.cooldown_at(level) * Run.skill_cooldown_mult()
+	# The left-click spell keeps its level-1 rhythm: the original's cooldown
+	# grows with level (Mana Arrow 1 -> 2 s), which on a free basic attack
+	# would make every level-up a loss in damage over time.
+	var cd_level := 1 if slot == BASIC else level
+	slot_ready_at[slot] = player.now() + card.cooldown_at(cd_level) * Run.skill_cooldown_mult()
 	player.enter(Player.State.SKILL)
 	player.set_meta("casts", int(player.get_meta("casts", 0)) + 1)  # Ghostly Whisper ends on a new cast
 	_skill = skill

@@ -53,7 +53,7 @@ def shield(card, element):
 
 
 def blessing(card, spirit, element, shield_id):
-    return dict(card=card, upgrades=shield_id, value=pct_hit,
+    return dict(card=card, upgrades=shield_id, value=pct_hit, scaling='MA',
                 text=f'{spirit} guards your {element} Shield: a monster that hits you takes {{v}} {element.lower()} damage back. Keeps the Shield\'s resistance.')
 
 
@@ -243,7 +243,7 @@ SPEC = {
                  text='Scythe has a {chance}% chance to terrify: the enemy can\'t attack for {v} s.'),
     '2703': dict(card='staff_of_agony', behavior='spell_sky', value=pct_hit, scaling='MA', rows={'range': 'Range', 'count': lambda r: 1},
                  text='A staff of agony drops from the sky on the enemy you aim at for {v} damage.'),
-    '2704': dict(card='dark_commando', value=lambda r: r['M_AP'] / 1000.0 * NORMAL_HIT,
+    '2704': dict(card='dark_commando', value=lambda r: r['M_AP'] / 1000.0 * NORMAL_HIT, scaling='MA',
                  text='A dark being follows you: after each dark spell hits, it strikes the same enemy for {v} damage.'),
     '2705': dict(card='ghostly_whisper', behavior='spell_whisper', value=pct_hit, scaling='MA',
                  rows={'radius': 'Radius', 'seconds': 'Seconds', 'targets': 'KillNum'},

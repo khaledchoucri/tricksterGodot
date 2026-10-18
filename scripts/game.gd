@@ -14,6 +14,8 @@ const REWARD_POOL: Array[String] = ["card", "card", "card", "card", "upgrade", "
 const CAMERA_MARGIN := 60
 ## MP restored on entering a room.
 const ROOM_MP := 40
+## The next card pick is a level-up's skill training (for its title).
+var _skill_training := false
 ## Rewards that need a city system: reward -> Run.system_on() id.
 const REWARD_SYSTEMS := {"gear": &"smithing", "anvil": &"smithing", "shop": &"smithing", "compound": &"compounding",
 	"dig": &"drilling"}
@@ -203,6 +205,14 @@ func _grant(reward: String) -> void:
 		"job":
 			_start_pick("job", Run.job.next_jobs.duplicate())
 			return
+		"skill_level":
+			# Trickster levels skills with the TM points play earns; here each
+			# character level also trains one skill you have.
+			var opts := Run.card_offers(3, true)
+			if not opts.is_empty():
+				_skill_training = true
+				_start_pick("card", opts)
+				return
 		"job_skill":
 			var opts := Run.card_offers(3, false, Run.job)
 			if not opts.is_empty():
@@ -338,7 +348,8 @@ func _start_pick(kind: String, options: Array) -> void:
 					text += "
 Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 				shown.append({"title": card.display_name, "tag": tag, "text": text})
-			title = "Choose a %s skill card" % Run.job.display_name
+			title = "Level %d  ·  Train a skill" % (Run.level - Run.pending_levels) if _skill_training else "Choose a %s skill card" % Run.job.display_name
+			_skill_training = false
 			Audio.play("ui_card.wav")
 		"replace":
 			for slot: int in options:
@@ -514,6 +525,7 @@ func _on_picked(i: int) -> void:
 		"type":
 			var t: String = _pick_options[i]
 			var unlocked := Run.apply_type(t)
+			_steps.push_front("skill_level")
 			if not unlocked.is_empty():
 				hud.notice("%s unlocked" % unlocked.name)
 				hud.log_line("[System] %s %d: %s. %s" % [Stats.TYPES[t].name, Run.type_points[t], unlocked.name,

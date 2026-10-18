@@ -104,6 +104,7 @@ func _run() -> void:
 			# (removing them would break the room's clear later on).
 			other.global_position = room.random_spot(spot, 400.0)
 			other.apply_debuff("hold", 1.0, 2.0)
+			other.hp = maxi(other.hp, 99999)  # nor die to a stray hit and end the wave
 		var dummy: Enemy = room.spawn(&"torobbie", at)
 		await wait(0.6)
 		dummy.max_hp = 99999
@@ -121,7 +122,8 @@ func _run() -> void:
 			if is_instance_valid(dummy):
 				dummy.global_position = at
 			await get_tree().physics_frame
-		check(cast and dummy.hp < before, "%s casts and damages a monster (%d -> %d)" % [id, before, dummy.hp])
+		check(cast and dummy.hp < before, "%s casts and damages a monster (%d -> %d)%s" % [id, before, dummy.hp,
+			"" if dummy.hp < before else _why(cast, dummy, player)])
 		if dummy.is_hittable():
 			dummy.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.3)
@@ -130,10 +132,12 @@ func _run() -> void:
 	for c: CardData in Run.echoes.reduce(func(acc: Array, e: EnemyData) -> Array: return acc + e.runes, []):
 		var spot2 := Vector2.INF
 		var dir2 := Vector2.ZERO
+		# Galder Barrage lands on the cursor (150 ahead without a mouse).
+		var reach2 := 150.0 if c.id == &"galder_barrage" else 70.0
 		for _i in 300:
 			var p := room.random_spot(Vector2.ZERO, 0.0)
 			var d := Vector2.from_angle(TAU * (randi() % 8) / 8.0)
-			if room.line_clear(p, p + Combat.screen(d) * 130.0) and room.is_open_spot(p + Combat.screen(d) * 90.0):
+			if room.line_clear(p, p + Combat.screen(d) * (reach2 + 60.0)) and room.is_open_spot(p + Combat.screen(d) * reach2):
 				spot2 = p
 				dir2 = d
 				break
@@ -142,7 +146,12 @@ func _run() -> void:
 			dir2 = Vector2.RIGHT
 		player.global_position = spot2
 		player.enter(Player.State.MOVE)
-		var at2 := spot2 + Combat.screen(dir2) * 70.0
+		var at2 := spot2 + Combat.screen(dir2) * reach2
+		for other in room.enemies:
+			# As above: nothing else may take the hit (spells land on the monster nearest the aim).
+			other.global_position = room.random_spot(spot2, 400.0)
+			other.apply_debuff("hold", 1.0, 3.0)
+			other.hp = maxi(other.hp, 99999)
 		var target2: Enemy = room.spawn(&"torobbie", at2)
 		for _w in 30:
 			await wait(0.1)
@@ -160,7 +169,8 @@ func _run() -> void:
 			if is_instance_valid(target2):
 				target2.global_position = at2
 			await get_tree().physics_frame
-		check(cast2 and target2.hp < hp0, "rune skill %s casts from slot 4 (%d -> %d)" % [c.id, hp0, target2.hp])
+		check(cast2 and target2.hp < hp0, "rune skill %s casts from slot 4 (%d -> %d)%s" % [c.id, hp0, target2.hp,
+			"" if target2.hp < hp0 else _why(cast2, target2, player)])
 		if target2.is_hittable():
 			target2.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.3)
@@ -267,6 +277,13 @@ func _run() -> void:
 	check(game.hud.pick_panel.visible and game._pick_kind == "type", "the queued level-up offers the four types next")
 	game.hud._on_pick(0)
 	await wait(0.4)
+	var trained: CardData = game._pick_options[0] if game._pick_kind == "card" else null
+	var trained_lv: int = Run.card_level(trained.id) if trained else 0
+	check(game.hud.pick_panel.visible and trained and trained_lv > 0, "a level-up also trains a skill you have")
+	if trained:
+		game.hud._on_pick(0)
+		await wait(0.4)
+		check(Run.card_level(trained.id) == trained_lv + 1, "training raises %s to Lv %d" % [trained.display_name, Run.card_level(trained.id)])
 	check(room.doors.size() == 2, "two exit doors open (%d)" % room.doors.size())
 
 	# Walk through a door into the next room.
@@ -312,30 +329,42 @@ func _run() -> void:
 	# The Magic line: Sheep and Dragon, casting, Seals and Pacts, every spell.
 	await magic_line()
 
-	# Balance guards: monsters follow the depth curve, whatever their
-	# original stats say (Desert Beach's DP once made it ~5x tankier).
+	# Progression guards: damage grows with its stat as in Trickster, and
+	# monsters are as tough as their original level, not as deep as the room.
 	var outliers: PackedStringArray = []
-	var base_depth := 0
-	for r in Run.regions:
-		var last_depth: int = base_depth + r.run_length - 1
+	for ri in Run.regions.size():
+		var r: RegionData = Run.regions[ri]
 		for e in r.enemies:
 			if e.echo or e.min_depth >= 99:
 				continue
 			var st := Stats.from_monster(Run.monster_stats(e).get("stats", {}))
-			for d in [base_depth, last_depth]:
-				var par_ehp: float = Run.MOB_EHP * (1.0 + Run.DEPTH_EHP * d)
-				var par_hit: float = Run.MOB_HIT * (1.0 + Run.DEPTH_HIT * d)
-				var rel: float = Run.mob_ehp(st, r, d) * e.hp_mult / par_ehp
-				var hit: float = float(Run.mob_hit(st, r, d)) / par_hit
-				if e.is_boss:
-					# Sword hits at the expected attack for that room (x1 + 0.2 per room).
-					var hits: float = Run.mob_ehp(st, r, d) * e.hp_mult / (40.0 * (1.0 + 0.2 * d))
-					if d == last_depth and (hits < 25.0 or hits > 120.0):
-						outliers.append("%s boss takes %.0f hits" % [e.id, hits])
-				elif rel < 0.3 or rel > 2.5 or hit > 2.0:
-					outliers.append("%s at room %d: %.1fx HP, %.1fx hit" % [e.id, d + 1, rel, hit])
-		base_depth += r.run_length
-	check(outliers.is_empty(), "every monster follows the depth curve%s" % ("" if outliers.is_empty() else ": " + ", ".join(outliers)))
+			var hp: float = Run.mob_hp(st, r) * e.hp_mult
+			if e.is_boss:
+				# Basic hits from a par build at the region's end (about 210 a hit
+				# after Coral Beach, twice that after Desert Beach).
+				var hits: float = hp / (210.0 * (ri + 1))
+				if hits < 15.0 or hits > 120.0:
+					outliers.append("%s boss takes %.0f hits" % [e.id, hits])
+			elif float(Run.mob_hit(st, r)) > Run.region_norm(r).hit * Run.MAX_HIT_SPREAD * Run.MOB_HIT_SCALE * r.damage_scale + 1.0:
+				outliers.append("%s hits too hard" % e.id)
+	check(outliers.is_empty(), "every monster's HP comes from its original level%s" % ("" if outliers.is_empty() else ": " + ", ".join(outliers)))
+	Profile.class_id = "dragon"
+	Run.new_run()
+	var arrow: CardData = Run.card(&"mana_arrow")
+	var before: float = Run.skill_mult(arrow)
+	Run._stats["MA"] = Run.stat("MA") * 2
+	check(is_equal_approx(Run.skill_mult(arrow), before * 2.0), "twice the MA is twice Mana Arrow's damage (x%.2f -> x%.2f)" % [before, Run.skill_mult(arrow)])
+	var always := true
+	for i in 20:
+		always = always and Run.card(&"mana_arrow") in Run.card_offers(3, true)
+	Run.cards[&"mana_arrow"] = 3
+	for i in 20:
+		always = always and Run.card(&"arrow_rush") in Run.card_offers(3, false)
+	for i in 20:
+		always = always and Run.card(&"arrow_rush") in Run.card_offers(3, true)
+	check(always, "Dragon is always offered Mana Arrow's level-ups, and Arrow Rush (new cards and training) once Mana Arrow is Lv 3")
+	Profile.class_id = "buffalo"
+	Run.new_run()
 
 	# UI audit: the worst-case pick lists fit on screen and can be left.
 	var saved_mats: Dictionary = Run.materials.duplicate()
@@ -835,6 +864,18 @@ func _remove(e: Enemy) -> void:
 
 
 ## A dummy in front of the player that won't die from the checks.
+## Why a spell check missed: did the cast start, where was the target, and
+## what else was in the room.
+func _why(cast: bool, e: Enemy, p: Player) -> String:
+	var others := 0
+	for o in game.room.enemies:
+		if o != e and o.is_hittable():
+			others += 1
+	return " [cast %s, target %s at %.0f px, state %d, player state %d, %d other monsters]" % [cast,
+		"valid" if is_instance_valid(e) else "gone", e.global_position.distance_to(p.global_position) if is_instance_valid(e) else -1.0,
+		e.state if is_instance_valid(e) else -1, p.state, others]
+
+
 func _dummy(p: Player, ahead: float) -> Enemy:
 	var room: Room = game.room
 	var spot := Vector2.INF
@@ -1011,7 +1052,7 @@ func magic_line() -> void:
 		else:
 			did = dummy.hp < before
 			how = "%d -> %d" % [before, dummy.hp]
-		check(cast and did, "%s casts and works (%s)" % [c.id, how])
+		check(cast and did, "%s casts and works (%s)%s" % [c.id, how, "" if did else _why(cast, dummy, p)])
 		Run.cards.erase(c.id)
 		_remove(dummy)
 		await wait(0.3)

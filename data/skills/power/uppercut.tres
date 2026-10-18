@@ -13,6 +13,6 @@ skill_id = 1103
 text = "Uppercut an enemy into the air for {v} damage."
 requires = {&"upper_smash": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
-table = {"value": [70.0, 78.0, 96.0, 104.0, 122.0, 130.0, 148.0, 174.0], "mp": [36.0, 37.0, 39.0, 40.0, 42.0, 42.0, 44.0, 46.0], "cooldown": [23.0, 22.0, 20.0, 19.0, 17.0, 16.0, 14.0, 11.0]}
+table = {"value": [70.0, 87.0, 113.0, 130.0, 174.0, 191.0, 209.0, 226.0], "mp": [36.0, 38.0, 41.0, 42.0, 46.0, 46.0, 46.0, 46.0], "cooldown": [23.0, 21.0, 18.0, 16.0, 11.0, 11.0, 11.0, 11.0]}
 master_material = ExtResource("m_master")
 behavior = ExtResource("2_b")

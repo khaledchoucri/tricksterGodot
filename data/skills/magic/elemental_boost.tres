@@ -12,5 +12,5 @@ skill_id = 2132
 text = "Fire, water, wind, thunder and earth damage +{v}%."
 requires = {&"bolster_ballad": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
-table = {"value": [2.0, 3.0, 5.0, 6.0, 8.0, 9.0, 11.0, 15.0]}
+table = {"value": [2.0, 4.0, 7.0, 9.0, 15.0, 15.0, 15.0, 15.0]}
 master_material = ExtResource("m_master")

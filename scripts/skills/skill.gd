@@ -105,6 +105,7 @@ func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}, fro
 	fx = fx.duplicate()
 	if card.element != "none" and not fx.has("element"):
 		fx.element = card.element
+	fx.magic = card.scaling == "MA"  # spells meet MD, weapon skills DP
 	amount *= 1.0 + Run.element_boost(card.element) / 100.0
 	_supplements(fx, amount)
 	player.deal_hit(e, amount, 1.0, knockback, heavy, fx, player.global_position if from == Vector2.INF else from)
@@ -145,7 +146,7 @@ func _commando(e: Enemy) -> void:
 	await player.get_tree().create_timer(0.25).timeout
 	if is_instance_valid(e) and e.is_hittable() and is_instance_valid(player):
 		var c := Run.card(&"dark_commando")
-		player.deal_hit(e, Run.card_value(&"dark_commando") * Run.skill_mult(c), 1.0, 40.0, false, {"element": "Dark"}, e.global_position)
+		player.deal_hit(e, Run.card_value(&"dark_commando") * Run.skill_mult(c), 1.0, 40.0, false, {"element": "Dark", "magic": true}, e.global_position)
 		Sparks.burst(room, e.global_position + Vector2(0, -24), Color(0.5, 0.3, 0.7), 10, 120.0)
 	release()
 

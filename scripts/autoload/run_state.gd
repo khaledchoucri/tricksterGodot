@@ -509,27 +509,52 @@ func region_norm(r: RegionData) -> Dictionary:
 		return _norms[r]
 	var ehp: Array[float] = []
 	var hit: Array[float] = []
+	var dp: Array[float] = []
+	var md: Array[float] = []
 	for e in r.enemies:
 		if e.is_boss or e.echo or e.min_depth >= 99:
 			continue
 		var s := Stats.from_monster(monster_stats(e).get("stats", {}))
 		ehp.append(raw_ehp(s))
 		hit.append(raw_hit(s))
-	ehp.sort()
-	hit.sort()
-	_norms[r] = {"ehp": ehp[ehp.size() / 2] if ehp.size() else 250.0, "hit": hit[hit.size() / 2] if hit.size() else 11.0}
+		dp.append(float(s.get("DP", 0)))
+		md.append(float(s.get("MD", 0)))
+	for a: Array[float] in [ehp, hit, dp, md]:
+		a.sort()
+	_norms[r] = {"ehp": ehp[ehp.size() / 2] if ehp.size() else 250.0, "hit": hit[hit.size() / 2] if hit.size() else 11.0,
+		"DP": dp[dp.size() / 2] if dp.size() else 0.0, "MD": md[md.size() / 2] if md.size() else 0.0}
 	return _norms[r]
 
 
-## Effective HP of a monster with original stats `s` in region `r` at `depth`.
+## Effective HP of a monster with original stats `s` in region `r` at `depth`
+## under the old depth curve (kept for Echoes and balance probes).
 func mob_ehp(s: Dictionary, r: RegionData, at_depth: int) -> float:
 	var rel := raw_ehp(s) / float(region_norm(r).ehp)
 	return MOB_EHP * r.hp_scale * pow(rel, SPREAD_EHP) * (1.0 + DEPTH_EHP * at_depth)
 
 
-func mob_hit(s: Dictionary, r: RegionData, at_depth: int) -> int:
-	var rel := minf(pow(raw_hit(s) / float(region_norm(r).hit), SPREAD_HIT), MAX_HIT_SPREAD)
-	return maxi(1, roundi(MOB_HIT * r.damage_scale * rel * (1.0 + DEPTH_HIT * at_depth)))
+## Original HP times this is a monster's HP here. Monsters are as tough as
+## their original level makes them, not as deep as the room is: deeper rooms
+## bring the region's higher-level monsters (as the original maps do), and a
+## growing character outgrows them.
+const MOB_HP_SCALE := 0.55
+
+
+## HP of a monster with original stats `s` in region `r`.
+func mob_hp(s: Dictionary, r: RegionData) -> float:
+	return float(s.get("HP", 100)) * MOB_HP_SCALE * r.hp_scale
+
+
+## A monster's hit, from its original AP (raw_hit) like its HP: the same in
+## every room, so HP and DP gained along the way are felt. Bosses' original
+## AP is far above their region's, so a hit is capped at MAX_HIT_SPREAD
+## times the region's median.
+const MOB_HIT_SCALE := 1.15
+
+
+func mob_hit(s: Dictionary, r: RegionData) -> int:
+	var raw := minf(raw_hit(s), float(region_norm(r).hit) * MAX_HIT_SPREAD)
+	return maxi(1, roundi(MOB_HIT_SCALE * r.damage_scale * raw))
 
 
 func monster_name(enemy: EnemyData) -> String:
@@ -862,21 +887,38 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 	var talents: Array[CardData] = []
 	for c in (from_job.cards if from_job else card_pool()):
 		var lvl := card_level(c.id)
-		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or (not upgrade and can_learn(c)):
+		# Training can also teach what grows the basic spell (Arrow Rush).
+		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or ((not upgrade or _grows_basic(c)) and can_learn(c)):
 			(skills if c.is_skill() else talents).append(c)
 	skills.shuffle()
 	talents.shuffle()
 	var out: Array[CardData] = []
+	# A mage's basic spell is its main weapon: its level-ups and the cards that
+	# grow it (Arrow Rush, Mana Ring Booster) are always among the offers.
+	for c: CardData in skills + talents:
+		if out.size() < n and _grows_basic(c):
+			out.append(c)
+			skills.erase(c)
+			talents.erase(c)
 	if upgrade:
-		out.append_array(skills + talents)
+		var rest := skills + talents
+		rest.shuffle()
+		out.append_array(rest.slice(0, n - out.size()))
 		out.shuffle()
-		return out.slice(0, n)
-	var want_skills := mini(skills.size(), maxi(n - 1, 0) if talents.size() > 0 else n)
+		return out
+	var want_skills := mini(skills.size(), maxi(n - 1 - out.size(), 0) if talents.size() > 0 else n - out.size())
 	out.append_array(skills.slice(0, want_skills))
 	out.append_array(talents.slice(0, n - out.size()))
 	out.append_array(skills.slice(want_skills, want_skills + n - out.size()))
 	out.shuffle()
 	return out
+
+
+## The class's basic spell, or a talent that improves it.
+func _grows_basic(c: CardData) -> bool:
+	if cls == null or cls.basic_skill == null:
+		return false
+	return c.id == cls.basic_skill.id or (not c.is_skill() and c.requires.has(cls.basic_skill.id))
 
 
 # ---------------------------------------------------------------- equipment
@@ -1116,9 +1158,16 @@ func _ratio(key: String, soft: float) -> float:
 	return (stat(key) + soft) / (float(_ref.get(key, 0)) + soft)
 
 
+## Damage scales with its stat as in Trickster (damage = stat x skill %):
+## the stat against the starting character's, so twice the MA is twice the
+## damage and one early point is worth several percent.
+func _linear(key: String) -> float:
+	return stat(key) / maxf(float(_ref.get(key, 0)), 1.0)
+
+
 ## Damage multiplier for the basic combo.
 func attack_mult() -> float:
-	var m := _ratio("AP", AP_SOFT) * _berserk_mult()
+	var m := _linear("AP") * _berserk_mult()
 	if has_passive(&"sword_mastery") and weapon_family() == "sword" and cls.armed:
 		m *= 1.15
 	if has_passive(&"boxers_footwork") and not cls.armed:
@@ -1129,8 +1178,9 @@ func attack_mult() -> float:
 ## Damage multiplier for a skill, from the stat it scales with.
 func skill_mult(c: CardData = null) -> float:
 	var scaling := c.scaling if c else "AP"
-	var soft: float = {"AP": AP_SOFT, "MA": MA_SOFT, "DA": 20.0, "DP": 60.0}.get(scaling, AP_SOFT)
-	var m := _ratio(scaling, soft)
+	# AP and MA work as in Trickster (linear); the runes' DA and DP skills keep
+	# a damped curve, those stats starting near zero.
+	var m := _linear(scaling) if scaling in ["AP", "MA"] 		else _ratio(scaling, {"DA": 20.0, "DP": 60.0}.get(scaling, AP_SOFT))
 	if has_passive(&"arena_champion"):
 		m *= 1.15
 	if has_passive(&"duelists_edge"):
@@ -1138,8 +1188,9 @@ func skill_mult(c: CardData = null) -> float:
 	return m * _berserk_mult()
 
 
+## Cooldowns are the original's; only Refreshing Dew shortens them.
 func skill_cooldown_mult() -> float:
-	return 1.0 / _ratio("MA", MA_SOFT) * (1.0 - card_value(&"refreshing_dew") / 100.0)
+	return 1.0 - card_value(&"refreshing_dew") / 100.0
 
 
 ## The elemental Shields and the Blessings that upgrade them (2117-2121, 2306-2310).
