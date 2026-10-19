@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/hard_scales.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/pouch_throw.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"pouch_of_pain"
+display_name = "Pouch of Pain"
+kind = 1
+skill_id = 3105
+text = "Hurl a heavy pouch at the cursor: {v} damage to everything around it."
+requires = {&"heavy_carrier": 3}
+jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
+table = {"value": [87.0, 104.0, 130.0, 148.0, 191.0, 211.0, 230.0, 249.0], "mp": [46.0, 48.0, 51.0, 52.0, 57.0, 57.0, 57.0, 57.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [100.0, 124.0, 160.0, 184.0, 244.0, 244.0, 244.0, 244.0], "radius": [100.0, 104.0, 110.0, 114.0, 124.0, 124.0, 124.0, 124.0]}
+sounds = {"fl": "snd_s_205_fl.wav", "hi": "snd_s_205_ht.wav"}
+effects = {"ap": ["s_205_heavy_baggage_apply"], "ht": ["s_205_heavy_baggage_hit"]}
+master_material = ExtResource("m_master")
+scaling = "DA"
+behavior = ExtResource("2_b")

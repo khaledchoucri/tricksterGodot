@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"lock_on"
+display_name = "Lock-on"
+kind = 0
+skill_id = 3209
+text = "Your hits mark the enemy: {v}% less HV for {seconds} s."
+jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
+table = {"value": [11.0, 13.0, 16.0, 18.0, 23.0, 25.0, 28.0, 30.0], "seconds": [10.0, 12.0, 15.0, 17.0, 22.0, 22.0, 22.0, 22.0]}
+sounds = {"ap": "snd_S_309_ap.wav"}
+effects = {"ap": ["S_309_lock_on_ap"], "ke": ["S_309_lock_on_ke"]}
+master_material = ExtResource("m_master")

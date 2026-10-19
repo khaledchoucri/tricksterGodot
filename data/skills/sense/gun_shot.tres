@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/skills/gun_shot.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gun_shot"
+display_name = "Gun Shot"
+kind = 1
+text = "Fire your gun for {v} damage to everything in its line. It reloads after every shot; wait for the power zone for a sure critical. Lion's basic attack."
+table = {"value": [87.0, 87.0, 87.0, 87.0, 87.0, 87.0, 87.0, 87.0], "mp": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "cooldown": [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15]}
+scaling = "GUN"
+behavior = ExtResource("2_b")

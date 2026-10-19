@@ -31,6 +31,7 @@ import nori  # noqa: E402
 import pivots  # noqa: E402
 
 EQUIPPED = '장비'  # title suffix of the poses that hold a weapon
+GUN = '총'  # title suffix of the poses that hold a gun (Sense characters): their own actions
 
 ACTIONS = {
     '서있기': 'idle', '정지': 'idle', '자동행동1': 'idle_auto', '걷기': 'walk', '달리기': 'run', '피격': 'hit', '기절': 'faint',
@@ -58,11 +59,13 @@ def parse_title(title):
     parts = title.split('_')
     if len(parts) == 1:
         return 'idle', 's', False  # a single still (signs, plaques)
-    if len(parts) not in (2, 3) or (len(parts) == 3 and parts[2] != EQUIPPED):
+    if len(parts) not in (2, 3) or (len(parts) == 3 and parts[2] not in (EQUIPPED, GUN)):
         return None
     act, d = parts[0], parts[1]
     if act not in ACTIONS or d not in DIRECTIONS:
         return None
+    if len(parts) == 3 and parts[2] == GUN:
+        return ACTIONS[act] + '_gun', DIRECTIONS[d], False  # 'attack_gun', 'combat_stance_gun'
     return ACTIONS[act], DIRECTIONS[d], len(parts) == 3
 
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/pineapple_mask.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sharp_sense"
+display_name = "Sharp Sense"
+kind = 0
+skill_id = 3504
+text = "Gun critical hits deal {v}% more damage on top of a mastered Keen Sense."
+requires = {&"keen_sense": 1}
+upgrades = &"keen_sense"
+jobs = Array[StringName]([&"scientist"])
+table = {"value": [2.0, 6.0, 12.0, 16.0, 26.0, 29.0, 31.0, 34.0]}
+sounds = {"ap": "snd_S_604_ap.wav"}
+effects = {"ap": ["S_604_SharpSense_EX_ap"]}
+master_material = ExtResource("m_master")

@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ClassData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/class_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/jobs/engineer.tres" id="2_j"]
+[ext_resource type="Resource" path="res://data/items/old_ebony_gun.tres" id="3_w"]
+[ext_resource type="Resource" path="res://data/skills/sense/gun_shot.tres" id="4_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"lion"
+display_name = "Lion"
+actor = "lion"
+base = {
+"AC": 16,
+"AP": 10,
+"DA": 14,
+"DP": 4,
+"DX": 12,
+"HP": 125,
+"HV": 6,
+"LK": 10,
+"MA": 10,
+"MD": 8,
+"MP": 120,
+"WT": 320
+}
+graph = {
+"charm": 0.3,
+"magic": 0.1,
+"power": 0.2,
+"sense": 0.4
+}
+start_job = ExtResource("2_j")
+start_weapon = ExtResource("3_w")
+basic_skill = ExtResource("4_b")
+text = "Long-range gun attacks, weak at defense up close. Every shot reloads his gun; wait for the power zone for a stronger shot. Becomes an Inventor."

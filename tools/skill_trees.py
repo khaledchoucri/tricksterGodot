@@ -61,6 +61,9 @@ JOB_IDS = {
     'champion': 'champion', 'duelist': 'duelist', 'mercenary': 'mercenary', 'mercenery': 'mercenary',
     'mercernery': 'mercenary', 'gladiator': 'gladiator', 'soul master': 'soul_master', 'witch': 'witch',
     'wizard': 'wizard', 'dark lord': 'dark_lord', 'priest': 'priest',
+    'archeologist': 'archeologist', 'engineer': 'engineer', 'explorer': 'explorer', 'treasure hunter': 'explorer',
+    'inventor': 'inventor', 'thief master': 'thief_master', 'theif master': 'thief_master', 'scientist': 'scientist',
+    'hunter lord': 'hunter_lord', 'cyber hunter': 'cyber_hunter',
 }
 FIRST_JOBS = {'schoolgirl', 'fighter', 'librarian', 'shaman', 'archeologist', 'engineer', 'model', 'teacher'}
 

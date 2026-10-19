@@ -30,6 +30,11 @@ const SLOT_NAMES: Array[String] = ["Weapon", "Hat", "Shield", "Innerwear", "Acce
 @export_multiline var legend_text := ""
 ## The stat refining raises (AP, DP, MA or MD); empty if it can't be refined.
 @export var refine_stat := ""
+## A gun's cycle, from Item_GunParam2 (the client's GunProcessHandler reads
+## it): "speed" (GaugeSpeed: a reload takes 120000/speed ms), "power"
+## (PowRange: the power gauge fills by power/1200 a ms once loaded), "zone"
+## (PowStartPoint: above it a shot is a power shot) and "range" (MaxAttackRange).
+@export var gun: Dictionary = {}
 
 
 func slot_name() -> String:

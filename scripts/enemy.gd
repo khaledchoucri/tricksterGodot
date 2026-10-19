@@ -190,7 +190,7 @@ func defense_mult(magic := false, attack := 100.0) -> float:
 
 ## Chance an attack with accuracy `ac` only grazes this monster.
 func evade_chance(ac: int) -> float:
-	var hv: int = stats.get("HV", 0)
+	var hv := roundi(float(stats.get("HV", 0)) * (1.0 - debuff("hv") / 100.0))  # Lock-on
 	if hv <= 0 or debuff("guard") > 0.0:
 		return 0.0
 	return hv / float(hv + ac + 150)
@@ -219,7 +219,11 @@ func apply_debuff(key: String, value: float, seconds: float) -> void:
 
 ## Burrowing and vanishing monsters check this first (Suffocate pins them).
 func can_hide() -> bool:
-	return debuff("pinned") <= 0.0
+	if debuff("pinned") > 0.0:
+		return false
+	# Revealing Eye: nothing hides within its radius of you.
+	var eye := Run.card_value(&"revealing_eye")
+	return not (eye > 0.0 and is_instance_valid(player) and Combat.in_circle(global_position, player.global_position, eye))
 
 
 ## Held in place (Hinder Snare, ice, a rift): no moving, no attacking.
@@ -305,8 +309,8 @@ func _state_idle() -> void:
 
 
 func _state_chase() -> void:
-	if not is_instance_valid(player) or player.state == Player.State.DEAD:
-		_wander()
+	if not is_instance_valid(player) or player.state == Player.State.DEAD or Run.hidden:
+		_wander()  # Hide: they lose you
 		return
 	var to := player.global_position - global_position
 	var dist := Combat.ground(to).length()

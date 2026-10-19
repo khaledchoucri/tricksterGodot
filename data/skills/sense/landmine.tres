@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/baby_carrot.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/mine.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"landmine"
+display_name = "Landmine"
+kind = 1
+skill_id = 3104
+text = "Bury a mine at the cursor: it bursts on the first enemy near it for {v} damage."
+jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
+table = {"value": [72.0, 90.0, 116.0, 133.0, 177.0, 195.0, 212.0, 230.0], "mp": [37.0, 39.0, 42.0, 43.0, 47.0, 47.0, 47.0, 47.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "range": [140.0, 148.0, 160.0, 168.0, 188.0, 188.0, 188.0, 188.0], "radius": [140.0, 144.0, 150.0, 154.0, 164.0, 164.0, 164.0, 164.0], "count": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "seconds": [20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0]}
+master_material = ExtResource("m_master")
+scaling = "DA"
+behavior = ExtResource("2_b")

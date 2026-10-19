@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_spring_water.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/thrown_weapon.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"poison_assault"
+display_name = "Poison Assult"
+kind = 1
+skill_id = 3306
+text = "From hiding, a poisoned throw for {v} damage that keeps hurting for {seconds} s. Only while hidden."
+requires = {&"shuriken_master": 1, &"hide": 1}
+jobs = Array[StringName]([&"thief_master"])
+table = {"value": [44.0, 55.0, 72.0, 84.0, 113.0, 124.0, 136.0, 147.0], "mp": [52.0, 54.0, 56.0, 58.0, 62.0, 62.0, 62.0, 62.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "range": [160.0, 180.0, 210.0, 230.0, 260.0, 260.0, 260.0, 260.0], "seconds": [7.0, 9.0, 12.0, 14.0, 17.0, 17.0, 17.0, 17.0]}
+master_material = ExtResource("m_master")
+scaling = "DA"
+behavior = ExtResource("2_b")

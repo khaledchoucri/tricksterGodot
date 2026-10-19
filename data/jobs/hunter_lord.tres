@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/sense/butt_plate.tres" id="c_butt_plate"]
+[ext_resource type="Resource" path="res://data/skills/sense/power_shot.tres" id="c_power_shot"]
+[ext_resource type="Resource" path="res://data/skills/sense/shooting_spree.tres" id="c_shooting_spree"]
+[ext_resource type="Resource" path="res://data/skills/sense/lucky_fist.tres" id="c_lucky_fist"]
+[ext_resource type="Resource" path="res://data/skills/sense/keen_sense.tres" id="c_keen_sense"]
+[ext_resource type="Resource" path="res://data/skills/sense/lock_on.tres" id="c_lock_on"]
+[ext_resource type="Resource" path="res://data/skills/sense/double_shot.tres" id="c_double_shot"]
+[ext_resource type="Resource" path="res://data/skills/sense/shield_breaker.tres" id="c_shield_breaker"]
+[ext_resource type="Resource" path="res://data/skills/sense/speedloader.tres" id="c_speedloader"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"hunter_lord"
+display_name = "Hunter Lord"
+actor = "sense_f"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_butt_plate"), ExtResource("c_power_shot"), ExtResource("c_shooting_spree"), ExtResource("c_lucky_fist"), ExtResource("c_keen_sense"), ExtResource("c_lock_on"), ExtResource("c_double_shot"), ExtResource("c_shield_breaker"), ExtResource("c_speedloader")])
+text = "A Hunter Lord learns Inventor skills: guns on top of throwing."
+unlock_stat = "clears_thief_master"
+unlock_count = 1
+unlock_text = "Clear a run as a Thief Master to unlock the Hunter Lord."

@@ -68,11 +68,21 @@ var _steps: Array[ComboStep] = []
 @onready var skills: SkillCaster = $SkillCaster
 
 
+## The gun's reload and power cycle (a carried gun only).
+var gun: GunCycle
+
+
 func _ready() -> void:
 	add_to_group("player")
 	var bar := CastBar.new()
 	bar.caster = skills
 	add_child(bar)
+	gun = GunCycle.new()
+	gun.player = self
+	add_child(gun)
+	var gun_bar := GunBar.new()
+	gun_bar.gun = gun
+	add_child(gun_bar)
 	sprite.setup(Run.actor())
 	refresh_gear()
 	sprite.play_action("idle", Vector2(1, 1))
@@ -86,9 +96,14 @@ func now() -> float:
 ## the Extra Swing trait's swing.
 func refresh_gear() -> void:
 	var w := Run.equipped("weapon")
-	if w and Run.cls.armed:
+	# A gun is worn, not held: it shows in the gun poses through the pivots,
+	# and its cycle (GunCycle) starts by loading it.
+	var carrying_gun := Run.carries_gun()
+	if is_instance_valid(gun) and gun.gun != (w.data.gun if carrying_gun else {}):
+		gun.equip(w.data.gun if carrying_gun else {})
+	if w and Run.cls.armed and not carrying_gun:
 		weapon.use(w.data.weapon_sprite())
-	weapon.visible = Run.cls.armed
+	weapon.visible = Run.cls.armed and not carrying_gun
 	weapon.set_process(Run.cls.armed)
 	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
@@ -112,6 +127,9 @@ func dress() -> void:
 	for slot: String in ["hat", "shield"]:
 		var g := Run.equipped(slot)
 		sprite.wear(slot, g.data.worn_sprite() if g else "")
+	# A carried gun is worn too: the pivots place it in the gun poses.
+	var held := Run.equipped("weapon")
+	sprite.wear("gun", held.data.worn_sprite() if held and Run.carries_gun() else "")
 	var fashion := {}
 	for w in Run.worn_pieces():
 		fashion[w.slot] = w.worn_sprite()
@@ -194,6 +212,9 @@ func try_actions() -> bool:
 		if take_buffer(SkillCaster.SLOT_ACTIONS[i]):
 			return skills.try_cast(i)
 	if take_buffer("attack") or (Run.cls.basic_skill and Input.is_action_pressed("attack")):
+		if Run.in_bunker(now()):
+			return false  # "You can't make regular attacks while inside"
+		Run.hidden = false
 		if Run.cls.basic_skill:
 			# Mages cast their basic spell; holding the button keeps casting.
 			return skills.try_cast(SkillCaster.BASIC)
@@ -243,6 +264,9 @@ func start_regen(share: float, interval: float, seconds: float) -> void:
 ## Talents that run on their own: Berserker's drain, Guard's blocks, and
 ## Chakra Balance's recovery.
 func _tick_talents(delta: float) -> void:
+	if Run.hidden and now() >= Run.hidden_until:
+		Run.hidden = false
+	sprite.modulate.a = 0.35 if Run.hidden else 1.0
 	if Run.cls.mp_regen > 0.0 and state != State.DEAD:
 		# Mages regenerate MP; Aura of Mana raises the rate.
 		_mp_regen += Run.max_mp * Run.cls.mp_regen * (1.0 + Run.card_value(&"aura_of_mana") / 100.0) * delta
@@ -290,6 +314,8 @@ func _tick_talents(delta: float) -> void:
 ## A monster's defence against this hit: MD against magic (spells scaling
 ## with MA), DP otherwise, each weighed against your own MA or AP.
 func _defense(e: Enemy, fx: Dictionary) -> float:
+	if fx.get("pierce", false):
+		return 1.0  # Exploit Weakness strikes through any defence
 	var magic: bool = fx.get("magic", false)
 	return e.defense_mult(magic, float(Run.stat("MA" if magic else "AP")))
 
@@ -325,7 +351,7 @@ func _clinch_release() -> bool:
 func _state_move() -> void:
 	if try_actions():
 		return
-	var input := move_input()
+	var input := move_input() if not Run.in_bunker(now()) else Vector2.ZERO  # dug in: no moving
 	velocity = input * move_speed * Run.speed_mult() + knock
 	if input != Vector2.ZERO:
 		sprite.play_action("run", input)
@@ -351,9 +377,9 @@ func enter(s: State) -> void:
 ## (combo, dash, skills) comes through here. `from` sets the knockback
 ## direction. Returns true on a critical hit.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
-	var crit := randf() < Run.crit_chance(e)
+	var crit: bool = fx.get("force_crit", false) or randf() < Run.crit_chance(e)
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
-	var graze := not crit and randf() < e.evade_chance(Run.stat("AC"))
+	var graze: bool = not crit and not fx.get("no_graze", false) and randf() < e.evade_chance(Run.stat("AC"))
 	# Elemental attack from compounds adds its % on top, less the monster's resistance.
 	var element := 1.0
 	# An elemental skill is resisted like its element.
@@ -365,7 +391,11 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
 	if Run.quirk(&"elite_bane") and (e.is_elite or e.is_boss):
 		mult *= 1.1
+	if fx.get("gun", false):
+		mult *= 1.0 + e.debuff("gunbreak") / 100.0  # Shield Breaker
 	var crit_mult := 2.0 if Run.quirk(&"sharp_eye") else 1.75
+	if fx.get("gun", false):
+		crit_mult *= 1.0 + Run.gun_crit_bonus() / 100.0  # Keen Sense, Sharp Sense
 	var amount := maxi(1, roundi(base * mult * element * (crit_mult if crit else 1.0) * (0.5 if graze else 1.0) * _defense(e, fx)))
 	var effects := fx.duplicate()
 	effects.crit = crit
@@ -394,6 +424,8 @@ func can_dash() -> bool:
 
 
 func start_dash() -> void:
+	if is_instance_valid(gun):
+		gun.interrupt(false)  # a dash throws the reload back to 0
 	var input := move_input()
 	_dash_dir = input.normalized() if input != Vector2.ZERO else Combat.screen(aim).normalized()
 	# Vault over obstacles when there's open ground to land on past them.
@@ -490,6 +522,14 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 		amount = roundi(amount * (1.0 - attacker.debuff("ap") / 100.0))  # Rust
 	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic, element) * (0.75 if magic and Run.quirk(&"umbrella") else 1.0)))
 	_retaliate(attacker, amount, magic)
+	if Run.in_bunker(now()):
+		Run.bunker_hp -= amount
+		Ring.spawn(room.ground_fx, global_position, 34.0, 0.25, Color(0.8, 0.75, 0.6, 0.9))
+		if Run.bunker_hp <= 0:
+			Run.bunker_until = 0.0
+			Events.text_shown.emit(global_position + Vector2(0, -70), "Bunker broken", Color(0.9, 0.8, 0.6))
+		invulnerable_until = now() + 0.25
+		return
 	if Run.barrier > 0:
 		# Shield of Heaven takes the blow first.
 		var absorbed := mini(Run.barrier, amount)
@@ -503,6 +543,8 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 			invulnerable_until = now() + 0.25
 			return
 	Run.take_damage(amount)
+	if is_instance_valid(gun):
+		gun.interrupt(true)  # a hit that lands resets the reload, unless Invincible Reload
 	_regen = {}  # Chakra Balance stops when you take damage
 	Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(1.0, 0.45, 0.4), false)
 	Audio.play("shchr002.wav", -6.0)

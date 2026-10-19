@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/slime_husk.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/bunker.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"bunker_release"
+display_name = "Bunker Release"
+kind = 1
+skill_id = 3506
+text = "Cut your bunker's time short by 10 s."
+requires = {&"bunker": 3}
+jobs = Array[StringName]([&"scientist"])
+max_level = 1
+table = {"value": [10.0], "mp": [32.0], "cooldown": [10.0]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

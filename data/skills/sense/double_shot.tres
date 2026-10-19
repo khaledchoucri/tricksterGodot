@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/turban_shell.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/gun_skill.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"double_shot"
+display_name = "Double Shot"
+kind = 1
+skill_id = 3206
+text = "Fire twice in a row, {v} damage in all. Needs the gun loaded."
+requires = {&"power_shot": 3}
+jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
+table = {"value": [70.0, 81.0, 99.0, 110.0, 139.0, 153.0, 167.0, 181.0], "mp": [40.0, 41.0, 42.0, 43.0, 45.0, 45.0, 45.0, 45.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [180.0, 190.0, 205.0, 215.0, 240.0, 240.0, 240.0, 240.0], "count": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]}
+sounds = {"ht": "snd_s_306_ht.wav"}
+master_material = ExtResource("m_master")
+scaling = "AP"
+behavior = ExtResource("2_b")

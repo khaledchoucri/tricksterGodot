@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/mole_feather.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/gun_spray.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"berserk"
+display_name = "Berserk"
+kind = 1
+skill_id = 3501
+text = "Shoot every enemy around you like crazy: up to {targets}, {v} damage each."
+requires = {&"shooting_spree": 3, &"double_shot": 3}
+jobs = Array[StringName]([&"scientist"])
+table = {"value": [32.0, 44.0, 61.0, 72.0, 102.0, 112.0, 122.0, 132.0], "mp": [42.0, 46.0, 52.0, 55.0, 63.0, 63.0, 63.0, 63.0], "cooldown": [12.0, 12.0, 10.0, 10.0, 9.0, 9.0, 9.0, 9.0], "radius": [160.0, 170.0, 185.0, 195.0, 220.0, 220.0, 220.0, 220.0], "targets": [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0, 5.0]}
+effects = {"ht": ["skill_power attack"]}
+master_material = ExtResource("m_master")
+scaling = "AP"
+behavior = ExtResource("2_b")

@@ -10,7 +10,8 @@ signal leveled_up(new_level: int)
 const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
-	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres"]
+	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
+	"res://data/classes/fox.tres", "res://data/classes/lion.tres"]
 const ITEMS_DIR := "res://data/items/"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
 const MAX_CARD_LEVEL := 5
@@ -94,6 +95,12 @@ var max_mp: int:
 var _bonus_hp := 0          # from restorations
 var _stats: Dictionary = {}  # cache of stat totals
 var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned against
+## Hide (Thief Master): monsters lose you until it ends.
+var hidden := false
+var hidden_until := 0.0
+## Bunker (Scientist): dug in until this time or until its HP runs out.
+var bunker_until := 0.0
+var bunker_hp := 0
 var _baseline := false
 
 
@@ -258,6 +265,10 @@ func chosen_class() -> ClassData:
 
 
 func new_run() -> void:
+	hidden = false
+	hidden_until = 0.0
+	bunker_until = 0.0
+	bunker_hp = 0
 	cls = chosen_class()
 	depth = 0
 	level = 1
@@ -621,6 +632,9 @@ func _compute_stats() -> void:
 	s.AP *= 1.0 + (card_value(&"pumping_heart") + card_value(&"adrenaline")) / 100.0
 	s.AC *= 1.0 + (card_value(&"bulls_eye") + card_value(&"eagle_eye")) / 100.0
 	s.MA *= 1.0 + (card_value(&"mist_of_mana") + card_value(&"blood_testament")) / 100.0
+	s.DA *= 1.0 + card_value(&"sixth_sense") / 100.0
+	s.LK *= 1.0 + (card_value(&"lucky_seven") + card_value(&"aura_of_luck")) / 100.0
+	s.WT += card_value(&"heavy_carrier")
 	var guard := card(&"light_shield").param("guard", card_level(&"light_shield")) if card(&"light_shield") else 0.0
 	s.MD *= 1.0 + (card_value(&"mana_shield") + guard) / 100.0
 	s.DP *= 1.0 + guard / 100.0
@@ -1178,14 +1192,66 @@ func attack_mult() -> float:
 ## Damage multiplier for a skill, from the stat it scales with.
 func skill_mult(c: CardData = null) -> float:
 	var scaling := c.scaling if c else "AP"
-	# AP and MA work as in Trickster (linear); the runes' DA and DP skills keep
-	# a damped curve, those stats starting near zero.
-	var m := _linear(scaling) if scaling in ["AP", "MA"] 		else _ratio(scaling, {"DA": 20.0, "DP": 60.0}.get(scaling, AP_SOFT))
+	# AP, MA and DA work as in Trickster (linear). GUN is a gun skill's: the
+	# gun's AP and your DA together. The runes' DP skills keep a damped curve.
+	var m := 1.0
+	if scaling == "GUN":
+		m = gun_stat_mult()
+	elif scaling in ["AP", "MA", "DA"]:
+		m = _linear(scaling)
+	else:
+		m = _ratio(scaling, {"DP": 60.0}.get(scaling, AP_SOFT))
+	if c and c.id in THROWN:
+		m *= 1.0 + card_value(&"precise_pitch") / 100.0
 	if has_passive(&"arena_champion"):
 		m *= 1.15
 	if has_passive(&"duelists_edge"):
 		m *= 1.1
 	return m * _berserk_mult()
+
+
+func in_bunker(now: float) -> bool:
+	return now < bunker_until and bunker_hp > 0
+
+
+## Whether the equipped weapon is a gun you can use: Gun Carrier (Lion
+## starts with it; Fox can learn it), as the client's "Gun_NotEquippable".
+func carries_gun() -> bool:
+	var w := equipped("weapon")
+	return w != null and w.data.family == "gun" and card_level(&"gun_carrier") > 0
+
+
+## Thrown-weapon skills Precise Pitch strengthens.
+const THROWN: Array[StringName] = [&"shuriken_master", &"fan_of_knives", &"chain_of_knives", &"rain_of_knives",
+	&"poison_assault"]
+
+
+## AP + DA against the starting character's: a gun hits harder with a better
+## gun (its AP) and with Sense points (DA).
+func gun_stat_mult() -> float:
+	return (stat("AP") + stat("DA")) / maxf(float(_ref.get("AP", 0)) + float(_ref.get("DA", 0)), 1.0)
+
+
+## Damage multiplier for the basic gun shot: Gun Booster and Gun Overdrive
+## (the original: they boost the gun, not other skills).
+func gun_shot_mult() -> float:
+	return gun_stat_mult() * (1.0 + card_value(&"gun_booster") / 100.0) * (1.0 + card_value(&"gun_overdrive") / 100.0) \
+		* _berserk_mult()
+
+
+## Extra critical damage on gun hits: Keen Sense, or Sharp Sense on top of a
+## mastered Keen Sense.
+func gun_crit_bonus() -> float:
+	if card_level(&"sharp_sense") > 0:
+		var keen := card(&"keen_sense")
+		var top: float = keen.value_at(MAX_CARD_LEVEL) if keen else 0.0
+		return (100.0 + top) * (1.0 + card_value(&"sharp_sense") / 100.0) - 100.0
+	return card_value(&"keen_sense")
+
+
+## A reload's time against the gun's own (Speedloader).
+func reload_mult() -> float:
+	return 1.0 - card_value(&"speedloader") / 100.0
 
 
 ## Cooldowns are the original's; only Refreshing Dew shortens them.
@@ -1210,6 +1276,8 @@ func resist(element: String) -> float:
 		# A Blessing keeps the resistance of the Shield it replaced, at its level.
 		if card_level(id) > 0 and SHIELDS[BLESSINGS[id]] == element:
 			r += card(BLESSINGS[id]).value_at(card_level(id))
+	if element == "Elec":
+		r += card_value(&"lightning_rod")
 	if element == "Light":
 		r += card_value(&"light_shield")
 	if element == "Dark":
@@ -1247,7 +1315,8 @@ func dash_cooldown_mult() -> float:
 
 ## Debuffs your hits carry from the breaker talents ({key: [value, seconds]},
 ## see Enemy.debuffs).
-const BREAKERS := {&"armor_breaker": "dp", &"shockvibe": "ac", &"sense_breaker": "perception", &"luck_breaker": "luck"}
+const BREAKERS := {&"armor_breaker": "dp", &"shockvibe": "ac", &"sense_breaker": "perception", &"luck_breaker": "luck",
+	&"armor_destructor": "dp", &"sticky_foot": "slow", &"lock_on": "hv"}
 
 
 func hit_debuffs() -> Dictionary:
@@ -1379,7 +1448,7 @@ func compound_targets() -> Array[String]:
 
 func compound(g: GearItem, mat: MaterialData) -> Dictionary:
 	materials[mat.id] -= mat.need
-	var c := g.compound(mat, clampf(stat("DA") / 60.0, 0.0, 1.0))
+	var c := g.compound(mat, clampf(stat("DA") / 60.0 * (1.0 + card_value(&"compound_master") / 100.0), 0.0, 1.0))
 	stats_changed()
 	return c
 

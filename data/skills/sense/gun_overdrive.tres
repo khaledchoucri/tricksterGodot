@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/pine_resin.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gun_overdrive"
+display_name = "Gun Overdrive"
+kind = 0
+skill_id = 3503
+text = "Your gun's AP is {v}% higher."
+requires = {&"gun_carrier": 1}
+jobs = Array[StringName]([&"scientist"])
+table = {"value": [60.0, 94.0, 145.0, 179.0, 264.0, 290.0, 317.0, 343.0]}
+sounds = {"ap": "snd_s_603_ap.wav"}
+effects = {"ap": ["S_603_customizing_gun_ap"]}
+master_material = ExtResource("m_master")

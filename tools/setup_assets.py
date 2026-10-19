@@ -26,6 +26,8 @@ BUFFALO_SOCKETS = ('data/character/chr002.pvt', 'weapon001.nri')
 # Actions the playable characters export (the punchers never draw a weapon).
 ARMED_ACTIONS = ('idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,'
                  'guard,jump,attack_ready,drill0,combat_stance')
+# The Sense characters also hold guns: their gun poses are actions of their own.
+GUN_ACTIONS = ARMED_ACTIONS + ',attack_gun,combat_stance_gun'
 FIST_ACTIONS = 'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,charge,throw,guard,jump'
 
 # Held weapons: name -> item sprite.
@@ -50,6 +52,14 @@ ACTORS = {
     'magician': ('data/character/chr012.nri', ARMED_ACTIONS, ('data/character/chr012.pvt', 'weapon001.nri')),
     'magic_f': ('data/character/chr019.nri', ARMED_ACTIONS, ('data/character/chr019.pvt', 'weapon001.nri')),
     'magic_m': ('data/character/chr020.nri', ARMED_ACTIONS, ('data/character/chr020.pvt', 'weapon001.nri')),
+    # The Sense line (CharacterInfo 5, 6, 13, 14, 21, 22): Fox becomes an
+    # Explorer, Lion an Inventor, then sense_f and sense_m at the 3rd job.
+    'fox': ('data/character/chr005.nri', GUN_ACTIONS, ('data/character/chr005.pvt', 'weapon001.nri')),
+    'lion': ('data/character/chr006.nri', GUN_ACTIONS, ('data/character/chr006.pvt', 'weapon001.nri')),
+    'explorer': ('data/character/chr013.nri', GUN_ACTIONS, ('data/character/chr013.pvt', 'weapon001.nri')),
+    'inventor': ('data/character/chr014.nri', GUN_ACTIONS, ('data/character/chr014.pvt', 'weapon001.nri')),
+    'sense_f': ('data/character/chr021.nri', GUN_ACTIONS, ('data/character/chr021.pvt', 'weapon001.nri')),
+    'sense_m': ('data/character/chr022.nri', GUN_ACTIONS, ('data/character/chr022.pvt', 'weapon001.nri')),
     'torobbie': ('data/monster/mon249.nri', '', None),
     'bad_fury': ('data/monster/mon250.nri', '', None),
     'tottochi': ('data/monster/mon251.nri', '', None),
@@ -140,6 +150,9 @@ def monster_ids():
     return ids
 
 
+THROWN_ITEMS = ['11404', '12015']
+
+
 def item_ids():
     """Original item IDs referenced by items, materials, wardrobe pieces and drills."""
     ids = []
@@ -150,7 +163,9 @@ def item_ids():
             m = re.search(r'^item_id = (\d+)', open(os.path.join(ROOT, 'data', f), encoding='utf-8').read(), re.M)
             if m:
                 ids.append(m.group(1))
-    return ids
+    # Thrown weapons Fox's throws show (Big Needle, Shuriken): no item to carry,
+    # only their icon in flight.
+    return ids + [i for i in THROWN_ITEMS if i not in ids]
 
 
 def skill_ids():
@@ -174,7 +189,10 @@ PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr0
            'boxer': 'data/character/chr009.pvo', 'power_f': 'data/character/chr017.pvo',
            'sheep': 'data/character/chr003.pvo', 'dragon': 'data/character/chr004.pvo',
            'bard': 'data/character/chr011.pvo', 'magician': 'data/character/chr012.pvo',
-           'magic_f': 'data/character/chr019.pvo', 'magic_m': 'data/character/chr020.pvo'}
+           'magic_f': 'data/character/chr019.pvo', 'magic_m': 'data/character/chr020.pvo',
+           'fox': 'data/character/chr005.pvo', 'lion': 'data/character/chr006.pvo',
+           'explorer': 'data/character/chr013.pvo', 'inventor': 'data/character/chr014.pvo',
+           'sense_f': 'data/character/chr021.pvo', 'sense_m': 'data/character/chr022.pvo'}
 
 
 def worn_sprites(client):
@@ -193,10 +211,12 @@ def worn_sprites(client):
             text = open(os.path.join(folder, f), encoding='utf-8').read()
             m = re.search(r'^item_id = (\d+)', text, re.M)
             slot = re.search(r'^slot = (\S+)', text, re.M)
-            # Items: slot 1 hat, 2 shield. Wardrobe: every slot but speed.
+            # Items: slot 1 hat, 2 shield, and guns (drawn as worn equipment,
+            # placed by the pivot files). Wardrobe: every slot but speed.
             if not m:
                 continue
-            if sub == 'items' and (not slot or slot.group(1) not in ('1', '2')):
+            gun = re.search(r'^family = "gun"', text, re.M)
+            if sub == 'items' and not gun and (not slot or slot.group(1) not in ('1', '2')):
                 continue
             if sub == 'wardrobe' and slot and 'speed' in slot.group(1):
                 continue

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_ice.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/fan_of_knives.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"fan_of_knives"
+display_name = "Fan of Knives"
+kind = 1
+skill_id = 3109
+text = "Throw a fan of knives: {v} damage to up to {targets} enemies in front."
+requires = {&"precise_pitch": 3}
+jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
+table = {"value": [70.0, 87.0, 113.0, 130.0, 174.0, 191.0, 209.0, 226.0], "mp": [32.0, 35.0, 39.0, 42.0, 48.0, 48.0, 48.0, 48.0], "cooldown": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], "range": [200.0, 220.0, 250.0, 270.0, 300.0, 300.0, 300.0, 300.0], "targets": [2.0, 3.0, 4.0, 5.0, 7.0, 7.0, 7.0, 7.0], "angle": [60.0, 70.0, 85.0, 95.0, 120.0, 120.0, 120.0, 120.0]}
+sounds = {"ht": "snd_s_208_ht.wav"}
+effects = {"ht": ["hit drow"]}
+master_material = ExtResource("m_master")
+scaling = "DA"
+behavior = ExtResource("2_b")

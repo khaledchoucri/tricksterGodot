@@ -18,6 +18,17 @@
   },
   "sounds": {}
  },
+ "armor_destructor": {
+  "effects": {
+   "ht": [
+    "eft_skl_s_105_ebg",
+    "eft_skl_s_105_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_s_105_ebg.wav"
+  }
+ },
  "arrow_of_light": {
   "effects": {
    "ht": [
@@ -40,6 +51,14 @@
   "effects": {
    "ap": [
     "m_311_primary_cure_apply"
+   ]
+  },
+  "sounds": {}
+ },
+ "berserk": {
+  "effects": {
+   "ht": [
+    "skill_power attack"
    ]
   },
   "sounds": {}
@@ -84,10 +103,32 @@
   },
   "sounds": {}
  },
+ "bunker": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_s_605_ap.wav"
+  }
+ },
+ "butt_plate": {
+  "effects": {
+   "ht": [
+    "eft_skl_s_301_eed"
+   ]
+  },
+  "sounds": {}
+ },
  "celestial_strike": {
   "effects": {
    "ap": [
     "M_603_light_weight_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "chain_of_knives": {
+  "effects": {
+   "ht": [
+    "hit drow"
    ]
   },
   "sounds": {}
@@ -168,6 +209,12 @@
    "ht": "snd_m_416_ht.wav"
   }
  },
+ "double_shot": {
+  "effects": {},
+  "sounds": {
+   "ht": "snd_s_306_ht.wav"
+  }
+ },
  "dragon_storm": {
   "effects": {
    "ht": [
@@ -224,6 +271,13 @@
   },
   "sounds": {}
  },
+ "exploit_weakness": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_s_407_ap.wav",
+   "ht": "snd_s_407_ht.wav"
+  }
+ },
  "fan_of_knives": {
   "effects": {
    "ht": [
@@ -267,6 +321,17 @@
   "effects": {
    "ap": [
     "P_309_Wind_brandish_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "gas_mask": {
+  "effects": {
+   "ap": [
+    "S_207_gas_mask_apply"
+   ],
+   "ke": [
+    "S_207_gas_mask_keep"
    ]
   },
   "sounds": {}
@@ -335,6 +400,23 @@
    "ap": "snd_skl_p_006_sbg.wav"
   }
  },
+ "gun_booster": {
+  "effects": {
+   "ap": [
+    "eft_skl_s_112_sbg",
+    "eft_skl_s_112_sps"
+   ]
+  },
+  "sounds": {}
+ },
+ "gun_overdrive": {
+  "effects": {
+   "ap": [
+    "S_603_customizing_gun_ap"
+   ]
+  },
+  "sounds": {}
+ },
  "hellfire": {
   "effects": {
    "ht": [
@@ -388,6 +470,23 @@
   },
   "sounds": {}
  },
+ "item_detector": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_skl_s_002_gps.wav"
+  }
+ },
+ "leg_training": {
+  "effects": {
+   "ht": [
+    "S_308_Prevent_Slow_ht"
+   ],
+   "ke": [
+    "S_308_Prevent_Slow_ke"
+   ]
+  },
+  "sounds": {}
+ },
  "light_shield": {
   "effects": {
    "ap": [
@@ -402,6 +501,17 @@
    "ke": "snd_m_313_ke.wav"
   }
  },
+ "lightning_rod": {
+  "effects": {
+   "ap": [
+    "S_208_InsulateArmor_apply"
+   ],
+   "ke": [
+    "S_208_InsulateArmor_keep"
+   ]
+  },
+  "sounds": {}
+ },
  "lightning_strike": {
   "effects": {
    "ap": [
@@ -411,6 +521,17 @@
   "sounds": {
    "ht": "snd_p_311_ht.wav"
   }
+ },
+ "lock_on": {
+  "effects": {
+   "ap": [
+    "S_309_lock_on_ap"
+   ],
+   "ke": [
+    "S_309_lock_on_ke"
+   ]
+  },
+  "sounds": {}
  },
  "luck_breaker": {
   "effects": {
@@ -422,6 +543,23 @@
   "sounds": {
    "ht": "snd_skl_p_110_ebg.wav"
   }
+ },
+ "lucky_fist": {
+  "effects": {
+   "ht": [
+    "eft_skl_m_005_eed"
+   ]
+  },
+  "sounds": {}
+ },
+ "lucky_seven": {
+  "effects": {
+   "ap": [
+    "eft_skl_s_007_sbg",
+    "eft_skl_s_007_sps"
+   ]
+  },
+  "sounds": {}
  },
  "mana_ring": {
   "effects": {},
@@ -495,6 +633,49 @@
    "ap": "snd_skl_p_109_sbg.wav"
   }
  },
+ "poison_assult": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
+ "poison_pouch": {
+  "effects": {
+   "ht": [
+    "S_405_poison_baggae_ht"
+   ]
+  },
+  "sounds": {}
+ },
+ "pouch_of_pain": {
+  "effects": {
+   "ap": [
+    "s_205_heavy_baggage_apply"
+   ],
+   "ht": [
+    "s_205_heavy_baggage_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "power_shot": {
+  "effects": {
+   "ht": [
+    "eft_skl_s_302_ebg"
+   ]
+  },
+  "sounds": {}
+ },
+ "precise_pitch": {
+  "effects": {
+   "ap": [
+    "eft_skl_s_201_sbg"
+   ]
+  },
+  "sounds": {}
+ },
  "quad_punch": {
   "effects": {
    "ht": [
@@ -507,9 +688,6 @@
  },
  "radiant_strike": {
   "effects": {
-   "ap": [
-    "M_314_shining_ray_apply"
-   ],
    "ht": [
     "M_309_light_wave_hit"
    ]
@@ -526,6 +704,12 @@
    ]
   },
   "sounds": {}
+ },
+ "rain_of_knives": {
+  "effects": {},
+  "sounds": {
+   "ht": "snd_s_212_ht.wav"
+  }
  },
  "raions_blessing": {
   "effects": {
@@ -551,6 +735,17 @@
   "sounds": {
    "ap": "snd_m_605_ap.wav"
   }
+ },
+ "revealing_eye": {
+  "effects": {
+   "ap": [
+    "S_602_optical eyes_apply"
+   ],
+   "ke": [
+    "S_602_optical eyes_keep"
+   ]
+  },
+  "sounds": {}
  },
  "rust": {
   "effects": {
@@ -637,6 +832,25 @@
   },
   "sounds": {}
  },
+ "sharp_sense": {
+  "effects": {
+   "ap": [
+    "S_604_SharpSense_EX_ap"
+   ]
+  },
+  "sounds": {}
+ },
+ "shield_breaker": {
+  "effects": {
+   "ap": [
+    "S_307_break_barrier_apply"
+   ],
+   "ke": [
+    "S_307_break_barrier_keep"
+   ]
+  },
+  "sounds": {}
+ },
  "shield_of_heaven": {
   "effects": {
    "ap": [
@@ -667,6 +881,14 @@
   },
   "sounds": {}
  },
+ "shuriken_master": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
  "sonic_slash": {
   "effects": {
    "ht": [
@@ -675,6 +897,12 @@
   },
   "sounds": {
    "fl": "snd_p_307_fl.wav"
+  }
+ },
+ "speedloader": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_s_310_ap.wav"
   }
  },
  "staff_of_agony": {
@@ -693,10 +921,60 @@
   },
   "sounds": {}
  },
+ "sticky_foot": {
+  "effects": {
+   "ht": [
+    "eft_skl_s_104_ebg"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_s_104_ebg.wav"
+  }
+ },
+ "sticky_icky": {
+  "effects": {
+   "ke": [
+    "S_206_adhesive_keep"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_s_206_ap.wav",
+   "ke": "snd_s_206_ke.wav"
+  }
+ },
+ "stone_shower": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_c_110_eps.wav"
+  }
+ },
  "stone_strike": {
   "effects": {
    "ht": [
     "eft_skl_s_102_eed"
+   ]
+  },
+  "sounds": {}
+ },
+ "strong_mind": {
+  "effects": {
+   "ap": [
+    "S_403_insulator_apply"
+   ],
+   "ke": [
+    "S_403_insulator_keep"
+   ]
+  },
+  "sounds": {}
+ },
+ "sudden_attack": {
+  "effects": {
+   "ht": [
+    "S_402_sudden attack_hit"
    ]
   },
   "sounds": {}

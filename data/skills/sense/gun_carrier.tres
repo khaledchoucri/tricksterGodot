@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_spring_water.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gun_carrier"
+display_name = "Gun Carrier"
+kind = 0
+skill_id = 3008
+text = "You can carry guns. A loaded gun can't share your hands with a shield."
+max_level = 1
+table = {"value": [0.0]}
+master_material = ExtResource("m_master")

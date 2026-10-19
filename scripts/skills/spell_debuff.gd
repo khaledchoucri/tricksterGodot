@@ -33,7 +33,12 @@ func start() -> void:
 	for e in closest_in_circle(spot, radius, int(param("targets", 99))):
 		if card.id == &"icey_shackles":
 			hit(e, damage(), 0.0, false, {}, spot)  # the damage lands before the ice sets
-		e.apply_debuff(key, param("value", 1.0) if key in ["dx", "ap", "slow"] else 1.0, seconds)
+		if card.id == &"sticky_icky":
+			# Sticky Icky (3106, Explorer): glue lowers HV, LK and DP alike.
+			for k: String in ["hv", "luck", "dp"]:
+				e.apply_debuff(k, param("value", 10.0), seconds)
+		else:
+			e.apply_debuff(key, param("value", 1.0) if key in ["dx", "ap", "slow"] else 1.0, seconds)
 		e.sprite.modulate = Color(c.r * 1.4, c.g * 1.4, c.b * 1.4, e.sprite.modulate.a)
 		_held.append(e)
 		effect("ke", e.global_position, {"follow": e, "hold": seconds})

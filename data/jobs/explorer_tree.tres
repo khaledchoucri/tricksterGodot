@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
-[ext_resource type="Resource" path="res://data/echoes/fan_of_knives.tres" id="c_fan_of_knives"]
-[ext_resource type="Resource" path="res://data/echoes/stone_strike.tres" id="c_stone_strike"]
+[ext_resource type="Resource" path="res://data/skills/sense/fan_of_knives.tres" id="c_fan_of_knives"]
+[ext_resource type="Resource" path="res://data/skills/sense/stone_strike.tres" id="c_stone_strike"]
 
 [resource]
 script = ExtResource("1_s")

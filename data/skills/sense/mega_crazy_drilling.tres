@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/duck_mole_paws.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"mega_crazy_drilling"
+display_name = "Mega Crazy Drilling"
+kind = 0
+skill_id = 3111
+text = "Crazy Drilling lasts longer."
+jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
+table = {"value": [30.0, 36.0, 45.0, 51.0, 66.0, 73.0, 79.0, 86.0]}
+master_material = ExtResource("m_master")

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/baby_carrot.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/stone_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"stone_strike"
+display_name = "Stone Strike"
+kind = 1
+skill_id = 3002
+text = "Strike the enemy in front for {v} damage, as hard as stone."
+table = {"value": [38.0, 45.0, 56.0, 63.0, 80.0, 88.0, 96.0, 104.0], "mp": [19.0, 21.0, 23.0, 24.0, 27.0, 27.0, 27.0, 27.0], "cooldown": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}
+effects = {"ht": ["eft_skl_s_102_eed"]}
+master_material = ExtResource("m_master")
+scaling = "DA"
+behavior = ExtResource("2_b")

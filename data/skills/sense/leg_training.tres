@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/ugly_pearl.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"leg_training"
+display_name = "Leg Training"
+kind = 0
+skill_id = 3208
+text = "Resist slows."
+jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
+table = {"value": [20.0, 26.0, 35.0, 41.0, 56.0, 62.0, 67.0, 73.0]}
+sounds = {"fl": "snd_s_308_fl.wav", "ht": "snd_s_308_ht.wav", "ke": "snd_s_308_ke.wav"}
+effects = {"ht": ["S_308_Prevent_Slow_ht"], "ke": ["S_308_Prevent_Slow_ke"]}
+master_material = ExtResource("m_master")

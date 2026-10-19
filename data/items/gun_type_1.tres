@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gun_type_1"
+display_name = "Gun type 1"
+item_id = 3500
+slot = 0
+family = "gun"
+level = 15
+weight = 30
+stats = {
+"AP": 30
+}
+compound_slots = 0
+refine_stat = "AP"
+gun = {
+"speed": 85,
+"power": 180,
+"zone": 150,
+"range": 250
+}

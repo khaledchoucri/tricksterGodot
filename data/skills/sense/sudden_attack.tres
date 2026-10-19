@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/scorpion_sting.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/close_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sudden_attack"
+display_name = "Sudden Attack"
+kind = 1
+skill_id = 3302
+text = "From hiding, strike the enemy in front for {v} damage. Only while hidden."
+requires = {&"hide": 3}
+jobs = Array[StringName]([&"thief_master"])
+table = {"value": [87.0, 113.0, 152.0, 178.0, 244.0, 268.0, 292.0, 317.0], "mp": [49.0, 51.0, 55.0, 57.0, 60.0, 60.0, 60.0, 60.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]}
+sounds = {"hi": "snd_s_402_ht.wav"}
+effects = {"ht": ["S_402_sudden attack_hit"]}
+master_material = ExtResource("m_master")
+scaling = "DA"
+behavior = ExtResource("2_b")

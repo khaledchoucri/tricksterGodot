@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/sense/precise_pitch.tres" id="c_precise_pitch"]
+[ext_resource type="Resource" path="res://data/skills/sense/item_detector.tres" id="c_item_detector"]
+[ext_resource type="Resource" path="res://data/skills/sense/aura_of_luck.tres" id="c_aura_of_luck"]
+[ext_resource type="Resource" path="res://data/skills/sense/chain_of_knives.tres" id="c_chain_of_knives"]
+[ext_resource type="Resource" path="res://data/skills/sense/landmine.tres" id="c_landmine"]
+[ext_resource type="Resource" path="res://data/skills/sense/sticky_icky.tres" id="c_sticky_icky"]
+[ext_resource type="Resource" path="res://data/skills/sense/lightning_rod.tres" id="c_lightning_rod"]
+[ext_resource type="Resource" path="res://data/skills/sense/pouch_of_pain.tres" id="c_pouch_of_pain"]
+[ext_resource type="Resource" path="res://data/skills/sense/fan_of_knives.tres" id="c_fan_of_knives"]
+[ext_resource type="Resource" path="res://data/skills/sense/rain_of_knives.tres" id="c_rain_of_knives"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"cyber_hunter"
+display_name = "Cyber Hunter"
+actor = "sense_m"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_precise_pitch"), ExtResource("c_item_detector"), ExtResource("c_aura_of_luck"), ExtResource("c_chain_of_knives"), ExtResource("c_landmine"), ExtResource("c_sticky_icky"), ExtResource("c_lightning_rod"), ExtResource("c_pouch_of_pain"), ExtResource("c_fan_of_knives"), ExtResource("c_rain_of_knives")])
+text = "A Cyber Hunter learns Explorer skills: throwing on top of guns."
+unlock_stat = "clears_scientist"
+unlock_count = 1
+unlock_text = "Clear a run as a Scientist to unlock the Cyber Hunter."

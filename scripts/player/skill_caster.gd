@@ -44,13 +44,30 @@ func cost_of(card: CardData, level: int) -> int:
 	return roundi(card.mp_at(level) * m)
 
 
+const GUN_LOADED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot", &"shield_breaker"]
+const GUN_NEEDED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot", &"shield_breaker", &"butt_plate",
+	&"shooting_spree", &"berserk"]
+
+
 ## Casts the skill in `slot` if one is equipped, off cooldown and affordable.
 func try_cast(slot: int) -> bool:
 	var card := card_in(slot)
 	if card == null or player.now() < slot_ready_at[slot]:
 		return false
+	# Gun skills need a gun, and the shots a loaded one (the client's checks:
+	# "Bullet_NeededReload", "Alert_NoGun").
+	if card.id in GUN_LOADED and not player.gun.loaded():
+		return false
+	if card.id in GUN_NEEDED and not player.gun.has_gun():
+		Events.text_shown.emit(player.global_position + Vector2(0, -70), "No gun", Color(1.0, 0.7, 0.5))
+		return false
+	if slot == BASIC and Run.in_bunker(player.now()):
+		return false
 	var level := maxi(Run.card_level(card.id), 1)
 	var cost := 0 if slot == BASIC else cost_of(card, level)
+	# Any other skill pulls you out of hiding (its strikes end it themselves).
+	if not card.id in [&"hide", &"sudden_attack", &"poison_assault"]:
+		Run.hidden = false
 	if not Run.spend_mp(cost):
 		Events.mp_short.emit()
 		return false
@@ -69,7 +86,10 @@ func try_cast(slot: int) -> bool:
 	# grows with level (Mana Arrow 1 -> 2 s), which on a free basic attack
 	# would make every level-up a loss in damage over time.
 	var cd_level := 1 if slot == BASIC else level
-	slot_ready_at[slot] = player.now() + card.cooldown_at(cd_level) * Run.skill_cooldown_mult()
+	var cooldown := card.cooldown_at(cd_level)
+	if slot == BASIC and Run.cls.basic_cooldown > 0.0:
+		cooldown = Run.cls.basic_cooldown
+	slot_ready_at[slot] = player.now() + cooldown * Run.skill_cooldown_mult()
 	player.enter(Player.State.SKILL)
 	player.set_meta("casts", int(player.get_meta("casts", 0)) + 1)  # Ghostly Whisper ends on a new cast
 	_skill = skill

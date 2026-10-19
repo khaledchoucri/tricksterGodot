@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/sense/revealing_eye.tres" id="c_revealing_eye"]
+[ext_resource type="Resource" path="res://data/skills/sense/berserk.tres" id="c_berserk"]
+[ext_resource type="Resource" path="res://data/skills/sense/gun_overdrive.tres" id="c_gun_overdrive"]
+[ext_resource type="Resource" path="res://data/skills/sense/sharp_sense.tres" id="c_sharp_sense"]
+[ext_resource type="Resource" path="res://data/skills/sense/bunker.tres" id="c_bunker"]
+[ext_resource type="Resource" path="res://data/skills/sense/bunker_release.tres" id="c_bunker_release"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"scientist"
+display_name = "Scientist"
+actor = "sense_m"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_revealing_eye"), ExtResource("c_berserk"), ExtResource("c_gun_overdrive"), ExtResource("c_sharp_sense"), ExtResource("c_bunker"), ExtResource("c_bunker_release")])
+text = "A Scientist masters stronger gun skills and detection."

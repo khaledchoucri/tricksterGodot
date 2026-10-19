@@ -24,6 +24,9 @@ extends Resource
 @export var basic_skill: CardData
 ## Share of max MP regenerated per second (mages only).
 @export var mp_regen := 0.0
+## Seconds between basic attacks when the basic skill's own cooldown is too
+## slow for a left-click attack (Fox: Shuriken Master's 2 s; 0 keeps it).
+@export var basic_cooldown := 0.0
 ## Spells cast by this class can't be interrupted by hits (Invincible Casting).
 @export var steady_casting := false
 ## Cards this class is never offered (the other mage's basic spell).

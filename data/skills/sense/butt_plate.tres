@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/close_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"butt_plate"
+display_name = "Butt Plate"
+kind = 1
+skill_id = 3201
+text = "Club the enemy in front with your gun's butt for {v} damage. Needs a gun."
+requires = {&"gun_carrier": 1}
+jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
+table = {"value": [33.0, 45.0, 62.0, 74.0, 103.0, 113.0, 124.0, 134.0], "mp": [24.0, 25.0, 27.0, 29.0, 31.0, 31.0, 31.0, 31.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}
+effects = {"ht": ["eft_skl_s_301_eed"]}
+master_material = ExtResource("m_master")
+scaling = "AP"
+behavior = ExtResource("2_b")

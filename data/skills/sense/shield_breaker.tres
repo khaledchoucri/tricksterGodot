@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/twinkle_star.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/gun_skill.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"shield_breaker"
+display_name = "Shield Breaker"
+kind = 1
+skill_id = 3207
+text = "A breaching round: the enemy takes {v}% more gun damage for {seconds} s."
+requires = {&"lucky_seven": 3}
+jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
+table = {"value": [20.0, 30.0, 45.0, 55.0, 80.0, 88.0, 96.0, 104.0], "mp": [42.0, 43.0, 46.0, 47.0, 50.0, 50.0, 50.0, 50.0], "cooldown": [7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0], "range": [130.0, 140.0, 155.0, 165.0, 190.0, 190.0, 190.0, 190.0], "seconds": [5.0, 7.0, 10.0, 12.0, 17.0, 17.0, 17.0, 17.0]}
+sounds = {"ap": "snd_s_307_ap.wav", "ke": "snd_s_307_ke.wav"}
+effects = {"ap": ["S_307_break_barrier_apply"], "ke": ["S_307_break_barrier_keep"]}
+master_material = ExtResource("m_master")
+scaling = "AP"
+behavior = ExtResource("2_b")

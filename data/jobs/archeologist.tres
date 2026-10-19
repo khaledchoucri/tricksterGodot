@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/explorer.tres" id="j_explorer"]
+[ext_resource type="Resource" path="res://data/skills/sense/invincible_drill.tres" id="c_invincible_drill"]
+[ext_resource type="Resource" path="res://data/skills/sense/stone_strike.tres" id="c_stone_strike"]
+[ext_resource type="Resource" path="res://data/skills/sense/sixth_sense.tres" id="c_sixth_sense"]
+[ext_resource type="Resource" path="res://data/skills/sense/gun_carrier.tres" id="c_gun_carrier"]
+[ext_resource type="Resource" path="res://data/skills/sense/heavy_carrier.tres" id="c_heavy_carrier"]
+[ext_resource type="Resource" path="res://data/skills/sense/shuriken_master.tres" id="c_shuriken_master"]
+[ext_resource type="Resource" path="res://data/skills/sense/sticky_foot.tres" id="c_sticky_foot"]
+[ext_resource type="Resource" path="res://data/skills/sense/invincible_reload.tres" id="c_invincible_reload"]
+[ext_resource type="Resource" path="res://data/skills/sense/gun_booster.tres" id="c_gun_booster"]
+[ext_resource type="Resource" path="res://data/skills/sense/basic_detection.tres" id="c_basic_detection"]
+[ext_resource type="Resource" path="res://data/skills/sense/armor_destructor.tres" id="c_armor_destructor"]
+[ext_resource type="Resource" path="res://data/skills/sense/quick_reload.tres" id="c_quick_reload"]
+[ext_resource type="Resource" path="res://data/skills/sense/lucky_seven.tres" id="c_lucky_seven"]
+[ext_resource type="Resource" path="res://data/skills/sense/compound_master.tres" id="c_compound_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"archeologist"
+display_name = "Archeologist"
+actor = "fox"
+tier = 1
+starter = ExtResource("c_shuriken_master")
+cards = Array[ExtResource("2_c")]([ExtResource("c_invincible_drill"), ExtResource("c_stone_strike"), ExtResource("c_sixth_sense"), ExtResource("c_gun_carrier"), ExtResource("c_heavy_carrier"), ExtResource("c_shuriken_master"), ExtResource("c_sticky_foot"), ExtResource("c_invincible_reload"), ExtResource("c_gun_booster"), ExtResource("c_basic_detection"), ExtResource("c_armor_destructor"), ExtResource("c_quick_reload"), ExtResource("c_lucky_seven"), ExtResource("c_compound_master")])
+text = "Archeologists find what lies under the ground and fight with thrown weapons. An Archeologist advances to Explorer."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_explorer")])
