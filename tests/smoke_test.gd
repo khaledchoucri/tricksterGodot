@@ -430,6 +430,19 @@ func _run() -> void:
 		await wait(1.3)
 		check(enemies().size() >= 3, "boss summons Torobbies below 66%% HP (%d enemies)" % enemies().size())
 
+	# A lingering spell outlives its room (a run ending, a room change) cleanly:
+	# the field's end effect used to wait on a freed player and error.
+	check(Enemy.projectile_scene().instantiate() is Projectile, "monster shots load (Tutankhamen's curse once got an empty scene)")
+	var caster: Player = game.player
+	Run.cards[&"undines_garden"] = 1
+	Run.loadout[0] = &"undines_garden"
+	Run.mp = Run.max_mp
+	caster.skills.slot_ready_at[0] = 0.0
+	caster.enter(Player.State.MOVE)
+	var lingered := caster.skills.try_cast(0)
+	await wait(1.5)
+	var held := Skill._lingering.size()  # checked once the run is over and the game freed, below
+
 	# Death shows the rollback results.
 	Run.hp = 1
 	game.player.invulnerable_until = 0.0
@@ -444,6 +457,9 @@ func _run() -> void:
 	get_tree().paused = false
 	game.queue_free()
 	await get_tree().process_frame
+	await wait(0.5)
+	check(lingered and held > 0 and Skill._lingering.is_empty(),
+		"a lingering field lets go when the run ends under it (%d lingering, then %d)" % [held, Skill._lingering.size()])
 	var hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)

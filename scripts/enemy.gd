@@ -23,7 +23,16 @@ const KINDS := {
 	"shot": {"range": 260.0, "windup": 0.7, "active": 0.05, "recover": 0.9, "shape": "lane",
 		"length": 120.0, "width": 18.0, "poise": 0, "keep_away": 150.0, "shot_speed": 210.0},
 }
-const PROJECTILE_SCENE := preload("res://scenes/projectile.tscn")
+## Loaded on first use, not preloaded: projectile.gd refers back to Enemy,
+## and that cycle could leave a preloaded scene empty (Tutankhamen's curse
+## once failed with "node count is 0").
+static var _projectile_scene: PackedScene
+
+
+static func projectile_scene() -> PackedScene:
+	if _projectile_scene == null:
+		_projectile_scene = load("res://scenes/projectile.tscn")
+	return _projectile_scene
 ## Echoes keep the original formula: damage over it, HP per room of depth.
 const DAMAGE_MULT := 1.25
 const DEPTH_HP := 0.06
@@ -379,7 +388,7 @@ func _start_active() -> void:
 
 
 func _fire() -> void:
-	var p: Projectile = PROJECTILE_SCENE.instantiate()
+	var p: Projectile = projectile_scene().instantiate()
 	p.direction = Combat.screen(_attack_dir).normalized()
 	p.speed = cfg.shot_speed
 	p.damage = damage

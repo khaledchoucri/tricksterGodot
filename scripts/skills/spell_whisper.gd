@@ -22,8 +22,7 @@ func _haunt(foes: Array[Enemy], seconds: float) -> void:
 	var from := player.global_position
 	var casts := _casts()
 	for i in int(seconds):
-		await player.get_tree().create_timer(1.0).timeout
-		if not is_instance_valid(player) or player.global_position.distance_to(from) > 12.0 or _casts() != casts:
+		if not await wait_for(1.0) or player.global_position.distance_to(from) > 12.0 or _casts() != casts:
 			break
 		for e in foes:
 			if is_instance_valid(e) and e.is_hittable():

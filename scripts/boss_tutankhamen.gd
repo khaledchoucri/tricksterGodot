@@ -64,7 +64,7 @@ func _curse() -> void:
 	Audio.play("samon021.wav", -4.0)
 	for i in CURSE_BOLTS:
 		var a := lerpf(-CURSE_SPREAD / 2.0, CURSE_SPREAD / 2.0, float(i) / (CURSE_BOLTS - 1))
-		var p := PROJECTILE_SCENE.instantiate() as Projectile
+		var p := projectile_scene().instantiate() as Projectile
 		if p == null:
 			return
 		p.direction = Combat.screen(_attack_dir.rotated(a)).normalized()

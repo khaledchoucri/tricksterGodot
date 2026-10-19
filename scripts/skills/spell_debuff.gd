@@ -46,9 +46,9 @@ func start() -> void:
 ## The rift lets go after its time and the swallowed take its damage.
 func _rift_out(seconds: float) -> void:
 	linger()
-	await player.get_tree().create_timer(seconds).timeout
+	var still := await wait_for(seconds)
 	for e in _held:
-		if is_instance_valid(e) and e.is_hittable():
+		if still and is_instance_valid(e) and e.is_hittable():
 			e.debuffs.erase("frozen")
 			hit(e, damage(), 180.0, true)
 			Ring.spawn(room.ground_fx, e.global_position, 30.0, 0.3, Color(color(), 0.9))
@@ -61,8 +61,9 @@ func _snare(seconds: float) -> void:
 	var from := player.global_position
 	var hp := Run.hp
 	var until := player.now() + seconds
-	while is_instance_valid(player) and player.now() < until:
-		await player.get_tree().physics_frame
+	while alive() and player.now() < until:
+		if not await wait_for():
+			break
 		if player.global_position.distance_to(from) > 12.0 or Run.hp < hp:
 			break
 	for e in _held:

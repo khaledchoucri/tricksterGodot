@@ -88,6 +88,26 @@ func release() -> void:
 	_lingering.erase(self)
 
 
+## True while the caster is still in a running game: a room change or the
+## end of a run frees it (and the room) under a lingering skill.
+func alive() -> bool:
+	return is_instance_valid(player) and player.is_inside_tree() and is_instance_valid(room)
+
+
+## Waits `seconds` (one physics frame when 0) on the game's clock; false when
+## the caster's game is gone by then, so a lingering skill stops instead of
+## touching freed nodes. Use as `if not await wait_for(t): ...`.
+func wait_for(seconds := 0.0) -> bool:
+	if not alive():
+		return false
+	var tree := player.get_tree()
+	if seconds > 0.0:
+		await tree.create_timer(seconds).timeout
+	else:
+		await tree.physics_frame
+	return alive()
+
+
 ## True once, the first time `t` reaches `when` (per `key`).
 func once(t: float, when: float, key := "main") -> bool:
 	if t < when or _done.has(key):
@@ -143,8 +163,7 @@ func _supplements(fx: Dictionary, amount: float) -> void:
 ## Dark Commando: the dark being follows a dark spell up on the same enemy.
 func _commando(e: Enemy) -> void:
 	linger()
-	await player.get_tree().create_timer(0.25).timeout
-	if is_instance_valid(e) and e.is_hittable() and is_instance_valid(player):
+	if await wait_for(0.25) and is_instance_valid(e) and e.is_hittable():
 		var c := Run.card(&"dark_commando")
 		player.deal_hit(e, Run.card_value(&"dark_commando") * Run.skill_mult(c), 1.0, 40.0, false, {"element": "Dark", "magic": true}, e.global_position)
 		Sparks.burst(room, e.global_position + Vector2(0, -24), Color(0.5, 0.3, 0.7), 10, 120.0)

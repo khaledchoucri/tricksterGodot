@@ -70,8 +70,9 @@ func start() -> void:
 func _end_effect(spot: Vector2, life: float, keep: Array[Cake]) -> void:
 	linger()
 	var until := player.now() + life
-	while is_instance_valid(_field) and player.now() < until:
-		await player.get_tree().physics_frame
+	while is_instance_valid(_field) and alive() and player.now() < until:
+		if not await wait_for():
+			break
 	for k in keep:
 		if is_instance_valid(k):
 			k.stop()
@@ -82,8 +83,9 @@ func _end_effect(spot: Vector2, life: float, keep: Array[Cake]) -> void:
 ## Whirlwind's tornados are hard to control: they fade once the caster moves.
 func _watch_still(tw: Node) -> void:
 	linger()
-	while is_instance_valid(_field) and is_instance_valid(player):
-		await player.get_tree().physics_frame
+	while is_instance_valid(_field) and alive():
+		if not await wait_for():
+			break
 		if player.global_position.distance_to(_from) > 12.0:
 			_field.ended = true
 			if is_instance_valid(tw):
