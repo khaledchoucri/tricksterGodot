@@ -219,7 +219,7 @@ def run(*args):
 # Mana Arrow's arrow and its afterimage, Mana Ring's ring.
 SPELL_TEXTURES = ['magic arrow', 'magic arrow jan sang', 'magic ring', 'yun gi']
 # Informally named cakes the early spells use (no skill number in the name).
-EXTRA_CAKES = ['magic impect', 'magic ting', 'hell fire']
+EXTRA_CAKES = ['magic impect', 'magic ting', 'hell fire', 'hit', 'hit star ting']
 
 
 def card_effects():

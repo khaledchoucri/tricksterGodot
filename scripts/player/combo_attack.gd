@@ -5,6 +5,13 @@ extends Node
 ## player for chaining, dash-cancels and moving off.
 
 const HIT_SOUNDS: Array[String] = ["dmg_normal_a.wav", "dmg_normal_b.wav", "dmg_normal_c.wav", "dmg_normal_d.wav"]
+## The client's melee hit (MeleeAttack, 0x43f560 in Trickster.bin): each
+## monster struck shows one of these, picked 50/50, with a dmg_normal sound.
+const HIT_EFFECTS: Array[String] = ["hit", "hit star ting"]
+## Our combo hits several times a second, far faster than the original's
+## basic attack; overlapping bursts (additive, up to 230 px) wash out to white,
+## so a monster shows at most one every this many seconds (my reading).
+const HIT_EFFECT_GAP := 0.3
 
 var step := 0
 ## Aim locked in for the current swing.
@@ -75,6 +82,9 @@ func _apply(s: ComboStep) -> void:
 		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius):
 			_hit_this_window.append(e)
 			crit_any = player.deal_hit(e, s.damage, _mult(s), s.knockback, s.finisher, _talent_fx(s)) or crit_any
+			if player.now() >= float(e.get_meta("hit_fx_at", -1.0)) + HIT_EFFECT_GAP:
+				e.set_meta("hit_fx_at", player.now())
+				Cake.play(player.room, HIT_EFFECTS[randi() % 2], e.global_position, {"follow": e})
 			Run.gain_mp(Run.mp_per_hit())
 			landed = true
 	if landed:
