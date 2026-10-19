@@ -51,7 +51,7 @@ func start() -> void:
 	Audio.play("snd_skl_common_ki.wav", -10.0)
 
 
-## Mana Arrow as the original flies it (ManaArrowFlight): the arrows appear
+## Mana Arrow as the original flies it (MagicFlight): the arrows appear
 ## one by one beside you over 0.3 s (Arrow Rush's count), spin, then each
 ## rushes at the target after a random wait of its own, so they land in quick
 ## succession. Extra arrows spread over the enemies around the first target.
@@ -68,7 +68,7 @@ func _mana_arrows() -> void:
 	var left := [arrows]
 	linger()  # the arrows land after the cast is over
 	for i in arrows:
-		var f := ManaArrowFlight.new()
+		var f := MagicFlight.new()
 		f.room = room
 		f.caster = player
 		f.target = others[i % others.size()] if others.size() > 0 else null

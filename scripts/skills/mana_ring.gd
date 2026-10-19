@@ -1,8 +1,10 @@
 extends Skill
-## Mana Ring (2008, Sheep's basic attack): three rings fly to the enemy
-## nearest the aim and burst around it; the fragments hit the enemies close
-## by as well. Its power is shared between the three bursts, so a monster
-## caught in all three takes it all. Mana Ring Booster (2012) adds power.
+## Mana Ring (2008, Sheep's basic attack): three rings appear beside you,
+## then each swoops along its own curve to the enemy nearest the aim and
+## bursts around it (the client's RingCake flight, see MagicFlight); the
+## fragments hit the enemies close by as well. Its power is shared between
+## the three bursts, so a monster caught in all three takes it all. Mana Ring
+## Booster (2012) adds power.
 
 const AIM_ARC := deg_to_rad(70.0)
 const BURST := 0.45  # each burst's radius, as a share of the original's
@@ -20,25 +22,40 @@ func start() -> void:
 	var center := foe.global_position if foe else player.global_position + Combat.screen(aim) * reach
 	var radius := param("radius", 120.0) * BURST
 	var power := damage() + Run.card_value(&"mana_ring_booster") * Run.skill_mult(card)
+	card.play("ap", -8.0)
+	var left := [3]
+	linger()  # the rings land after the cast is over
 	for i in 3:
-		var offset := Combat.screen(Vector2.from_angle(TAU * i / 3.0 + randf() * 0.5) * radius * 0.45)
-		var spot := center + offset
-		var orb := MagicOrb.new()
-		orb.room = room
-		orb.color = Color(0.65, 0.85, 1.0)
-		orb.radius = 7.0
-		# The original ring sprite, spinning on its way.
-		orb.sprite = "magic_ring"
-		orb.turn = "spin"
-		orb.sprite_scale = 0.45
-		orb.speed = 460.0
-		orb.range_left = player.global_position.distance_to(spot)
-		orb.direction = (spot - player.global_position).normalized()
-		orb.on_hit = func(_e: Enemy) -> void:
-			_burst(orb.global_position, radius, power / 3.0)
-		room.add_child(orb)
-		orb.global_position = player.global_position + Combat.screen(aim.rotated((i - 1) * 0.5)) * 16.0
-	Audio.play("snd_skl_common_ki.wav", -10.0)
+		var f := MagicFlight.new()
+		f.room = room
+		f.caster = player
+		f.target = foe
+		f.target_point = center
+		f.appear = 0.5 / 3.0 * i
+		f.fire = 0.5
+		f.curve = true
+		f.wait_steps = 1
+		# The original ring ("magic ring", 70%, spinning at 1000 deg/s) and its
+		# mist trail ("magic ring2": yun gi, 40/s, 0.5 s).
+		f.sprite = "magic_ring"
+		f.sprite_scale = 0.7
+		f.sprite_alpha = 232.0 / 255.0
+		f.spin = 1000.0
+		f.pointed = false
+		f.trail = "yun_gi"
+		f.trail_speed = 100.0
+		f.trail_alpha = 73.0 / 255.0
+		f.trail_vary = false
+		f.trail_shrink = true
+		f.on_appear = func() -> void:
+			card.play("launch", -10.0)
+		f.on_hit = func(e: Enemy) -> void:
+			if is_instance_valid(room):
+				_burst(e.global_position if e else f.target_point, radius, power / 3.0)
+			left[0] -= 1
+			if left[0] <= 0:
+				release()
+		room.add_child(f)
 
 
 func _burst(at: Vector2, radius: float, amount: float) -> void:

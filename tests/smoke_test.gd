@@ -937,7 +937,7 @@ func magic_line() -> void:
 	var mp := Run.mp
 	var hp := target.hp
 	p.buffer_action("attack")
-	await wait(0.6)
+	await wait(2.5)  # the rings appear by her, then swoop in (the client's flight)
 	check(target.hp < hp and Run.mp >= mp, "left click casts Mana Ring at no MP (%d -> %d, MP %d -> %d)" % [hp, target.hp, mp, Run.mp])
 	var never := true
 	for _i in 60:
@@ -1047,8 +1047,8 @@ func magic_line() -> void:
 		p.invulnerable_until = p.now() + 9.0
 		var cast := p.skills.try_cast(0)
 		var pin := dummy.global_position
-		# Dimensional Rift lingers; Mana Arrow waits by you up to 1.2 s before it rushes.
-		var until := p.now() + (4.5 if c.id == &"dimensional_rift" else 3.0 if c.id == &"mana_arrow" else 2.2)
+		# Dimensional Rift lingers; Mana Arrow and Mana Ring wait by you before they fly in.
+		var until := p.now() + (4.5 if c.id == &"dimensional_rift" else 3.0 if c.id in [&"mana_arrow", &"mana_ring"] else 2.2)
 		while p.now() < until:
 			if is_instance_valid(dummy):
 				dummy.global_position = pin  # it would walk out of fields and bursts

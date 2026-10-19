@@ -95,7 +95,9 @@ SPEC = {
     '2007': dict(card='arrow_rush', value=lambda r: r['Count'], rows={'ratio': lambda r: r['Ratio'] * 100},
                  text='Mana Arrow looses {v} arrows at once; each extra one hits for {ratio}%.'),
     '2008': dict(card='mana_ring', behavior='mana_ring', value=ring_flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
-                 effects={'ht': ['magic impect']},
+                 # The client's own Mana Ring impact and sounds (eft/snd_skl_m_108).
+                 effects={'ht': ['eft_skl_m_108_eed']},
+                 sounds={'ap': 'snd_skl_m_108_sbg.wav', 'launch': 'snd_skl_m_108_sps.wav', 'ht': 'snd_skl_m_108_sed.wav'},
                  text='Three mana rings fly to the enemy you aim at and burst around it: {v} damage to everything caught. Sheep\'s basic attack.'),
     '2009': dict(card='mana_storm', behavior='spell_burst', value=flat, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
                  text='A mana storm gathers on the enemies around the cursor for {v} damage.'),
