@@ -37,7 +37,7 @@ func start() -> void:
 		item.on_hit = func(e: Enemy) -> void:
 			if e and is_instance_valid(room):
 				Cake.play(room, "hit drow", e.global_position, {"follow": e})
-				Audio.play("throw_hit_drow.wav", -8.0)
+				Audio.play("skill_throw_hit_dorw.wav", -8.0)
 				hit(e, share, 30.0, false)
 			left[0] -= 1
 			if left[0] <= 0:

@@ -929,9 +929,17 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 
 
 ## The class's basic spell, or a talent that improves it.
+## The gun's own talents: they grow a gunner's basic shot, so they are offered
+## like the cards that build on a basic skill.
+const GUN_GROWERS: Array[StringName] = [&"invincible_reload", &"quick_reload", &"gun_booster", &"keen_sense",
+	&"sharp_sense", &"speedloader", &"gun_overdrive"]
+
+
 func _grows_basic(c: CardData) -> bool:
 	if cls == null or cls.basic_skill == null:
 		return false
+	if cls.basic_skill.id == &"gun_shot" and c.id in GUN_GROWERS:
+		return true
 	return c.id == cls.basic_skill.id or (not c.is_skill() and c.requires.has(cls.basic_skill.id))
 
 
@@ -1110,11 +1118,22 @@ func overweight() -> bool:
 
 
 ## Up to `n` different items that can drop at this depth, rolled with DA.
+## Whether this class can use a weapon: guns need Gun Carrier; a gunner
+## (Lion, who starts with one) fights with guns only.
+func can_use(it: ItemData) -> bool:
+	if it.slot != ItemData.Slot.WEAPON:
+		return true
+	var gunner := cls.start_weapon != null and cls.start_weapon.family == "gun"
+	if it.family == "gun":
+		return card_level(&"gun_carrier") > 0
+	return not gunner
+
+
 func gear_offers(n: int) -> Array[GearItem]:
 	var pool: Array[ItemData] = []
 	var top := 1 + 3 * depth
 	for it in items:
-		if it.level <= top and it.level >= top - 24 and not it.legend and it != cls.start_weapon:
+		if it.level <= top and it.level >= top - 24 and not it.legend and it != cls.start_weapon and can_use(it):
 			pool.append(it)
 	pool.shuffle()
 	var out: Array[GearItem] = []
@@ -1228,8 +1247,25 @@ const THROWN: Array[StringName] = [&"shuriken_master", &"fan_of_knives", &"chain
 
 ## AP + DA against the starting character's: a gun hits harder with a better
 ## gun (its AP) and with Sense points (DA).
+## The server's gun damage (GameServer.exe 0x59d440, GunAttackStrategy):
+## 20 x (AC - 49) + Gun AP + 20 - 30 x the target's HV. AC is the gun's
+## stat, worth 20 Gun AP a point; translated linearly against level 1 as the
+## other lines are, with the target's HV as its defence (Enemy.gun_defense_mult).
+const GUN_AP_PER_AC := 20.0
+
+
+func gun_attack() -> float:
+	return stat("AC") + gun_ap() / GUN_AP_PER_AC
+
+
+## The equipped gun's Gun AP (its table AP, raised by refining).
+func gun_ap() -> float:
+	var w := equipped("weapon")
+	return float(w.stats().get("AP", 0)) if w and w.data.family == "gun" else 0.0
+
+
 func gun_stat_mult() -> float:
-	return (stat("AP") + stat("DA")) / maxf(float(_ref.get("AP", 0)) + float(_ref.get("DA", 0)), 1.0)
+	return gun_attack() / maxf(float(_ref.get("AC", 0)), 1.0)
 
 
 ## Damage multiplier for the basic gun shot: Gun Booster and Gun Overdrive
@@ -1239,9 +1275,10 @@ func gun_shot_mult() -> float:
 		* _berserk_mult()
 
 
-## Extra critical damage on gun hits: Keen Sense, or Sharp Sense on top of a
-## mastered Keen Sense.
-func gun_crit_bonus() -> float:
+## Extra power-shot damage, %: Keen Sense, or Sharp Sense on top of a mastered
+## Keen Sense. The card text's "gun critical" is the power shot: the server's
+## ESASharpSense sets the factor its power-shot formula multiplies (+0x428).
+func power_shot_bonus() -> float:
 	if card_level(&"sharp_sense") > 0:
 		var keen := card(&"keen_sense")
 		var top: float = keen.value_at(MAX_CARD_LEVEL) if keen else 0.0
@@ -1249,9 +1286,10 @@ func gun_crit_bonus() -> float:
 	return card_value(&"keen_sense")
 
 
-## A reload's time against the gun's own (Speedloader).
+## A reload's time against the gun's own. Speedloader sets the client's fill
+## rate to 2 - Ratio/100 (Trickster.bin 0x4c04e0), its value being 100 - Ratio.
 func reload_mult() -> float:
-	return 1.0 - card_value(&"speedloader") / 100.0
+	return 1.0 / (1.0 + card_value(&"speedloader") / 100.0)
 
 
 ## Cooldowns are the original's; only Refreshing Dew shortens them.

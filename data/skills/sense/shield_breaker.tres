@@ -17,5 +17,5 @@ table = {"value": [20.0, 30.0, 45.0, 55.0, 80.0, 88.0, 96.0, 104.0], "mp": [42.0
 sounds = {"ap": "snd_s_307_ap.wav", "ke": "snd_s_307_ke.wav"}
 effects = {"ap": ["S_307_break_barrier_apply"], "ke": ["S_307_break_barrier_keep"]}
 master_material = ExtResource("m_master")
-scaling = "AP"
+scaling = "GUN"
 behavior = ExtResource("2_b")

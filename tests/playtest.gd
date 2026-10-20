@@ -553,7 +553,15 @@ func _report() -> void:
 func _kite(player: Player, target: Enemy, best: float, delta: float) -> void:
 	var room: Room = game.room
 	var reach := Run.cls.basic_skill.param("range", maxi(Run.card_level(Run.cls.basic_skill.id), 1)) * 0.85
-	if best < 95.0:
+	var gunner := player.gun.has_gun()
+	if gunner:
+		reach = float(player.gun.gun.get("range", 220)) * 0.85
+		# The gun reloads only standing still (the client's rule): a gunner
+		# stands its ground through the reload rather than backing off.
+		if not player.gun.loaded() and best <= reach:
+			_release()
+			return
+	if best < 95.0 and not gunner:
 		var away := (player.global_position - target.global_position).normalized()
 		for turn: float in [0.0, 0.7, -0.7, 1.4, -1.4]:
 			var dir := away.rotated(turn)

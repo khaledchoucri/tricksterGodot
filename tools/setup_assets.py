@@ -104,6 +104,8 @@ PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003
              'stella': 'data/npc/npc222_illu.nri'}
 MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00', 'mapf01g', 'mapf01f', 'mapf01d']
 SOUNDS = [
+    # EtcSound's etc_gun_shot, _critical, _hit and _reload (the client's GunAttack and GunProcessHandler).
+    'weapon_gun_shot.wav', 'weapon_gun_critical.wav', 'weapon_gun_hit.wav', 'weapon_gun_reload.wav',
     'sachr002.wav', 'sachr002_1.wav', 'shchr002.wav', 'weapon001.wav', 'etc_miss.wav',
     'dmg_normal_a.wav', 'dmg_normal_b.wav', 'dmg_normal_c.wav', 'dmg_normal_d.wav',
     'etc_critical.wav', 'eff_energy.wav', 'eff_healing1.wav', 'etc_levelup.wav', 'etc_money.wav',
@@ -118,6 +120,7 @@ SOUNDS = [
 SKILL_SOUNDS = [
     'snd_skl_common_ki.wav', 'snd_p_207_ap.wav', 'snd_p_205_ap.wav', 'snd_p_208_ht.wav', 'snd_p_206_ht.wav',
     'snd_p_305_ht.wav', 'snd_p_305_ht2.wav', 'snd_skl_p_008_sbg.wav', 'snd_p_603_ht.wav', 'snd_skl_p_015_ebg1.wav',
+    'skill_throw_hit_dorw.wav',  # EtcSound's throw_hit_drow
 ]
 MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3', 'crap.mp3']
 
@@ -239,7 +242,9 @@ def run(*args):
 # Mana Arrow's arrow and its afterimage, Mana Ring's ring.
 SPELL_TEXTURES = ['magic arrow', 'magic arrow jan sang', 'magic ring', 'yun gi']
 # Informally named cakes the early spells use (no skill number in the name).
-EXTRA_CAKES = ['magic impect', 'magic ting', 'hell fire', 'hit', 'hit star ting']
+EXTRA_CAKES = ['magic impect', 'magic ting', 'hell fire', 'hit', 'hit star ting',
+               # The Sense line's: thrown hits, Rain of Knives, gun hits.
+               'hit drow', 'throwing-knife', 'gun_taget']
 
 
 def card_effects():

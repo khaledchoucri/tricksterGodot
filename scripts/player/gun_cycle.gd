@@ -109,6 +109,7 @@ func _physics_process(delta: float) -> void:
 			progress = FULL
 			state = State.LOADED
 			power = 0.0
+			Audio.play("weapon_gun_reload.wav", -6.0)  # the client's etc_gun_reload
 		changed.emit()
 	elif state == State.LOADED and power < FULL:
 		power = minf(power + ms * float(gun.get("power", 170)) / 1200.0, FULL)

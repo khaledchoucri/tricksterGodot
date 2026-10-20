@@ -18,7 +18,7 @@ func start() -> void:
 	foes.shuffle()
 	foes = foes.slice(0, maxi(int(param("targets", 2)), 1))
 	if foes.is_empty():
-		Audio.play("etc_gun_shot.wav", -6.0)
+		Audio.play("weapon_gun_shot.wav", -6.0)
 		return
 	var amount := damage()
 	linger()
@@ -27,7 +27,7 @@ func start() -> void:
 			break
 		if is_instance_valid(e) and e.is_hittable():
 			Tracer.spawn(room, player.global_position + Vector2(0, -26), e.global_position + Vector2(0, -22))
-			Audio.play("etc_gun_shot.wav", -6.0)
+			Audio.play("weapon_gun_shot.wav", -6.0)
 			Cake.play(room, "gun_taget", e.global_position, {"follow": e})
 			hit(e, amount, 40.0, false, {"gun": true}, player.global_position)
 		if not await wait_for(GAP):

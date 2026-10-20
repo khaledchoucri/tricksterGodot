@@ -36,7 +36,8 @@ func start() -> void:
 	linger()
 	item.on_hit = func(e: Enemy) -> void:
 		if e and is_instance_valid(room):
-			Cake.play(room, "throw_hit_drow", e.global_position, {"follow": e})
+			Cake.play(room, "hit drow", e.global_position, {"follow": e})
+			Audio.play("skill_throw_hit_dorw.wav", -8.0)
 			var fx := {}
 			if from_hiding and seconds > 0.0:
 				fx = {"burn": amount * 0.1, "burn_for": seconds}  # the poison keeps hurting

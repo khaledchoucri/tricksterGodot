@@ -16,5 +16,5 @@ jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_l
 table = {"value": [70.0, 81.0, 99.0, 110.0, 139.0, 153.0, 167.0, 181.0], "mp": [40.0, 41.0, 42.0, 43.0, 45.0, 45.0, 45.0, 45.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [180.0, 190.0, 205.0, 215.0, 240.0, 240.0, 240.0, 240.0], "count": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]}
 sounds = {"ht": "snd_s_306_ht.wav"}
 master_material = ExtResource("m_master")
-scaling = "AP"
+scaling = "GUN"
 behavior = ExtResource("2_b")

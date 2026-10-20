@@ -104,7 +104,7 @@ func refresh_gear() -> void:
 	if w and Run.cls.armed and not carrying_gun:
 		weapon.use(w.data.weapon_sprite())
 	weapon.visible = Run.cls.armed and not carrying_gun
-	weapon.set_process(Run.cls.armed)
+	weapon.set_process(Run.cls.armed and not carrying_gun)  # it would show itself again each frame
 	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
 	_steps = combo.steps.duplicate()
@@ -317,7 +317,15 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 	if fx.get("pierce", false):
 		return 1.0  # Exploit Weakness strikes through any defence
 	var magic: bool = fx.get("magic", false)
-	return e.defense_mult(magic, float(Run.stat("MA" if magic else "AP")))
+	var scaling := String(fx.get("scaling", "MA" if magic else "AP"))
+	if scaling == "GUN" or (fx.get("gun", false) and scaling != "AP"):
+		return e.gun_defense_mult(Run.gun_attack())  # gun hits meet HV
+	var attack := float(Run.stat("AP"))
+	if scaling == "MA":
+		attack = float(Run.stat("MA"))
+	elif scaling == "DA":
+		attack = float(Run.stat("DA"))  # throws: perceptibility
+	return e.defense_mult(magic, attack)
 
 
 ## Dark Barrier turns part of a physical hit back; a Blessing's spirit
@@ -377,7 +385,10 @@ func enter(s: State) -> void:
 ## (combo, dash, skills) comes through here. `from` sets the knockback
 ## direction. Returns true on a critical hit.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
-	var crit: bool = fx.get("force_crit", false) or randf() < Run.crit_chance(e)
+	var power_shot: bool = fx.get("power_shot", false)
+	# The basic gun shot never rolls a critical: the server's gun formula
+	# (0x59b310) only misses, hits, or lands a power shot.
+	var crit: bool = power_shot or fx.get("force_crit", false) or (not fx.get("no_crit", false) and randf() < Run.crit_chance(e))
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
 	var graze: bool = not crit and not fx.get("no_graze", false) and randf() < e.evade_chance(Run.stat("AC"))
 	# Elemental attack from compounds adds its % on top, less the monster's resistance.
@@ -394,8 +405,8 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	if fx.get("gun", false):
 		mult *= 1.0 + e.debuff("gunbreak") / 100.0  # Shield Breaker
 	var crit_mult := 2.0 if Run.quirk(&"sharp_eye") else 1.75
-	if fx.get("gun", false):
-		crit_mult *= 1.0 + Run.gun_crit_bonus() / 100.0  # Keen Sense, Sharp Sense
+	if power_shot:
+		crit_mult = 1.0  # the shot already carries its power-shot factor
 	var amount := maxi(1, roundi(base * mult * element * (crit_mult if crit else 1.0) * (0.5 if graze else 1.0) * _defense(e, fx)))
 	var effects := fx.duplicate()
 	effects.crit = crit

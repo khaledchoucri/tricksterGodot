@@ -17,18 +17,19 @@ var target_point := Vector2.ZERO
 var icon: Texture2D
 var on_hit: Callable  # called with the enemy (or null) on arrival
 
-var _from := Vector2.ZERO
+var _from := Vector2.INF  # taken on the first frame: callers place it after add_child()
 var _t := 0.0
 var _angle := 0.0
 
 
 func _ready() -> void:
 	z_index = 15
-	_from = global_position
 	_angle = randf() * TAU
 
 
 func _physics_process(delta: float) -> void:
+	if _from == Vector2.INF:
+		_from = global_position
 	_t += delta
 	if is_instance_valid(target) and target.is_hittable():
 		target_point = target.global_position

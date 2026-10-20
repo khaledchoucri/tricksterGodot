@@ -1126,6 +1126,11 @@ func sense_line() -> void:
 	var reload := gun.reload_time()
 	check(is_equal_approx(reload, 120.0 / 90.0), "the Old Ebony Gun reloads in 120000/GaugeSpeed ms (%.2f s)" % reload)
 	target = await _dummy(p, 120.0)
+	p.invulnerable_until = p.now() + 30.0  # a monster's hit would reset the reload
+	for e in game.room.enemies:
+		if e != target:
+			e.apply_debuff("hold", 1.0, 30.0)
+	gun.equip(gun.gun)
 	await wait(reload + 0.2)
 	check(gun.loaded(), "standing still, the gun loads")
 	hp = target.hp
@@ -1162,7 +1167,18 @@ func sense_line() -> void:
 	Run.cards.erase(&"quick_reload")
 	Run.cards[&"speedloader"] = 5
 	check(gun.reload_time() < reload, "Speedloader shortens the reload (%.2f -> %.2f s)" % [reload, gun.reload_time()])
+	check(is_equal_approx(gun.reload_time(), reload / (1.0 + Run.card_value(&"speedloader") / 100.0)),
+		"Speedloader raises the fill rate as the client does (2 - Ratio/100)")
 	Run.cards.erase(&"speedloader")
+	check(Run._grows_basic(Run.card(&"quick_reload")) and Run._grows_basic(Run.card(&"invincible_reload")),
+		"a gunner is always offered Quick Reload and Invincible Reload once learnable")
+	var ac0 := Run.gun_stat_mult()
+	Run.type_points["power"] += 5  # +10 AC
+	Run.stats_changed()
+	check(is_equal_approx(Run.gun_stat_mult(), Run.gun_attack() / float(Run._ref["AC"])) and Run.gun_stat_mult() > ac0,
+		"gun damage scales with AC (the server's gun formula): x%.2f -> x%.2f" % [ac0, Run.gun_stat_mult()])
+	Run.type_points["power"] -= 5
+	Run.stats_changed()
 	# The power zone.
 	gun.state = GunCycle.State.LOADED
 	gun.power = float(gun.gun.zone) + 5.0
@@ -1184,6 +1200,8 @@ func sense_line() -> void:
 			await wait(1.0)
 			behind.max_hp = 99999
 			behind.hp = 99999
+			behind.global_position = far  # it may have walked round the wall
+			behind.apply_debuff("hold", 1.0, 5.0)
 			gun.state = GunCycle.State.LOADED
 			p.skills.slot_ready_at[SkillCaster.BASIC] = 0.0
 			p.skills.try_cast(SkillCaster.BASIC)

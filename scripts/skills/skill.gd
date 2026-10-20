@@ -126,6 +126,7 @@ func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}, fro
 	if card.element != "none" and not fx.has("element"):
 		fx.element = card.element
 	fx.magic = card.scaling == "MA"  # spells meet MD, weapon skills DP
+	fx.scaling = card.scaling  # defence weighs against the stat the skill uses
 	amount *= 1.0 + Run.element_boost(card.element) / 100.0
 	_supplements(fx, amount)
 	player.deal_hit(e, amount, 1.0, knockback, heavy, fx, player.global_position if from == Vector2.INF else from)

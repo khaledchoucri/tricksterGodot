@@ -188,6 +188,18 @@ func defense_mult(magic := false, attack := 100.0) -> float:
 	return attack / (attack + maxf(def, 0.0)) if attack > 0.0 else 1.0
 
 
+## Gun hits meet HV instead of DP, at 30 per point against the attack's 20
+## (the server's gun formula, 0x59d440); Lock-on lowers it.
+const GUN_HV_WEIGHT := 1.5
+
+
+func gun_defense_mult(attack: float) -> float:
+	var hv := float(stats.get("HV", 0)) * (1.0 - debuff("hv") / 100.0) * GUN_HV_WEIGHT
+	if debuff("guard") > 0.0:
+		hv = 0.0
+	return attack / (attack + maxf(hv, 0.0)) if attack > 0.0 else 1.0
+
+
 ## Chance an attack with accuracy `ac` only grazes this monster.
 func evade_chance(ac: int) -> float:
 	var hv := roundi(float(stats.get("HV", 0)) * (1.0 - debuff("hv") / 100.0))  # Lock-on
