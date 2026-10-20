@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sand_glass.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/galder_barrage.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"galder_barrage"
+display_name = "Galder Barrage"
+kind = 1
+skill_id = 4102
+text = "Throw {galder} Galder in three directions at the cursor: {v} damage through any defence."
+requires = {&"galder_thrower": 3}
+jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
+table = {"value": [72.0, 102.0, 145.0, 174.0, 246.0, 271.0, 296.0, 320.0], "mp": [22.0, 24.0, 26.0, 27.0, 30.0, 30.0, 30.0, 30.0], "cooldown": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], "range": [170.0, 190.0, 220.0, 240.0, 270.0, 270.0, 270.0, 270.0], "radius": [60.0, 68.0, 80.0, 88.0, 108.0, 108.0, 108.0, 108.0], "galder": [30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0]}
+effects = {"ht": ["hit drow"]}
+master_material = ExtResource("m_master")
+scaling = "HV"
+behavior = ExtResource("2_b")

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sand_glass.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/charm_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"two_hit_combo"
+display_name = "2 Hit Combo"
+kind = 1
+skill_id = 4302
+text = "A Power Blow into a Volley Kick, {v} damage in all, more with both skills' levels."
+requires = {&"power_blow": 1, &"volley_kick": 1}
+jobs = Array[StringName]([&"primadonna"])
+table = {"value": [116.0, 128.0, 145.0, 157.0, 180.0, 198.0, 216.0, 234.0], "mp": [53.0, 55.0, 58.0, 60.0, 65.0, 65.0, 65.0, 65.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}
+master_material = ExtResource("m_master")
+scaling = "AP+16HV"
+behavior = ExtResource("2_b")

@@ -21,6 +21,14 @@ const FAMILY_COMBOS := {
 	"sword": preload("res://data/combos/sword.tres"),
 	"hammer": preload("res://data/combos/hammer.tres"),
 }
+## A beast fights with its claws ("without the assistance of equipment").
+const BEAST_COMBO := preload("res://data/combos/punch.tres")
+
+## Beast form timing (Run.form holds which): it ends at form_until, when MP
+## runs out, or with Beast's Instinct's end (instinct_until).
+var form_until := 0.0
+var instinct_until := 0.0
+var _form_drain := 0.0
 
 @export var combo: ComboData
 @export var move_speed := 175.0
@@ -107,10 +115,13 @@ func refresh_gear() -> void:
 		weapon.use(w.data.weapon_sprite())
 	weapon.yield_to_worn = "gun" if carrying_gun else ""
 	weapon.carry_tilt = 0.2 if carrying_gun else 0.8
-	weapon.visible = Run.cls.armed
-	weapon.set_process(Run.cls.armed)
+	var armed := Run.cls.armed and Run.form == &""
+	weapon.visible = armed
+	weapon.set_process(armed)
 	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
+	if Run.form != &"":
+		combo = BEAST_COMBO
 	_steps = combo.steps.duplicate()
 	dress()
 	if Run.has_trait(&"extra_swing") and _steps.size() >= 2:
@@ -259,6 +270,55 @@ func _physics_process(delta: float) -> void:
 	_blink()
 
 
+## Turns you into the beast of `id` (evolution, metamorphosis) for
+## `seconds`; `instinct`: Beast's Instinct on an Evolution already running.
+func enter_form(id: StringName, seconds: float, instinct := false) -> void:
+	if instinct:
+		Run.instinct = true
+		instinct_until = now() + seconds
+	else:
+		Run.form = id
+		form_until = now() + seconds
+	Run.stats_changed()
+	refresh_gear()
+	Sparks.burst(room, global_position + Vector2(0, -30), Color(1.0, 0.75, 0.9), 18, 160.0)
+
+
+## Back to your own body. Leaving the form keeps your HP (the original halves
+## it; the user's choice).
+func end_form() -> void:
+	if Run.form == &"":
+		return
+	Run.form = &""
+	Run.instinct = false
+	Run.stats_changed()
+	refresh_gear()
+	Sparks.burst(room, global_position + Vector2(0, -30), Color(0.9, 0.9, 1.0), 12, 120.0)
+
+
+## The forms drain MP while they last (MpConUnit 20 of a pool in the
+## thousands: 2% of max MP a second here; Beast's Instinct's 40, 4%).
+const FORM_DRAIN := 0.02
+
+
+func _tick_form(delta: float) -> void:
+	if Run.form == &"":
+		return
+	if Run.instinct and now() >= instinct_until:
+		end_form()  # "Evolution will be released when Beast's Instinct is released"
+		return
+	_form_drain += Run.max_mp * FORM_DRAIN * (2.0 if Run.instinct else 1.0) * delta
+	if _form_drain >= 1.0:
+		var d := int(_form_drain)
+		_form_drain -= d
+		if not Run.spend_mp(d):
+			Run.mp = 0
+			end_form()
+			return
+	if now() >= form_until:
+		end_form()
+
+
 ## Recovers `share` of max HP every `interval` seconds for `seconds`, until
 ## a hit lands.
 func start_regen(share: float, interval: float, seconds: float) -> void:
@@ -270,6 +330,7 @@ func start_regen(share: float, interval: float, seconds: float) -> void:
 func _tick_talents(delta: float) -> void:
 	if Run.hidden and now() >= Run.hidden_until:
 		Run.hidden = false
+	_tick_form(delta)
 	sprite.modulate.a = 0.35 if Run.hidden else 1.0
 	if Run.cls.mp_regen > 0.0 and state != State.DEAD:
 		# Mages regenerate MP; Aura of Mana raises the rate.
@@ -329,7 +390,12 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 		attack = float(Run.stat("MA"))
 	elif scaling == "DA":
 		attack = float(Run.stat("DA"))  # throws: perceptibility
-	return e.defense_mult(magic, attack)
+	elif scaling == "HV":
+		attack = float(Run.stat("HV")) * 16.0  # Galder skills: HV at Volley Kick's weight
+	elif scaling.contains("+") or scaling.contains("HV") or scaling.contains("HP") or scaling.contains("LOST"):
+		attack = Run.attack_power(scaling)  # Charm skills: the server's own attack
+	# Raging Nail meets only part of the DP (the server's DisDefenceRatio).
+	return e.defense_mult(magic, attack, float(fx.get("dp_keep", 1.0)))
 
 
 ## Dark Barrier turns part of a physical hit back; a Blessing's spirit
@@ -337,6 +403,12 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 	if not is_instance_valid(attacker) or not attacker.is_hittable():
 		return
+	# Mana Reflector turns its share of a magic hit back on the caster.
+	if magic and Run.card_level(&"mana_reflector") > 0:
+		var share := Run.card_value(&"mana_reflector") / 100.0
+		var reflected := amount * share / maxf(1.0 - share, 0.01)
+		if reflected >= 1.0:
+			attacker.take_hit(roundi(reflected), Combat.ground(attacker.global_position - global_position).normalized(), 0.0, false)
 	var lvl := Run.card_level(&"dark_barrier")
 	if lvl > 0 and not magic:
 		var back := amount * Run.card(&"dark_barrier").param("reflect", lvl) / 100.0

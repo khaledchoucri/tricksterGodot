@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/charm/card_strike.tres" id="c_card_strike"]
+[ext_resource type="Resource" path="res://data/skills/charm/impelling_rage.tres" id="c_impelling_rage"]
+[ext_resource type="Resource" path="res://data/skills/charm/flux_capacitor.tres" id="c_flux_capacitor"]
+[ext_resource type="Resource" path="res://data/skills/charm/furious_galder_throw.tres" id="c_furious_galder_throw"]
+[ext_resource type="Resource" path="res://data/skills/charm/one_pair.tres" id="c_one_pair"]
+[ext_resource type="Resource" path="res://data/skills/charm/lady_luck.tres" id="c_lady_luck"]
+[ext_resource type="Resource" path="res://data/skills/charm/mass_destruction.tres" id="c_mass_destruction"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"diva"
+display_name = "Diva"
+actor = "charm_f"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_card_strike"), ExtResource("c_impelling_rage"), ExtResource("c_flux_capacitor"), ExtResource("c_furious_galder_throw"), ExtResource("c_one_pair"), ExtResource("c_lady_luck"), ExtResource("c_mass_destruction")])
+text = "A Diva learns Card Master skills: cards on top of Galder and the beast."
+unlock_stat = "clears_primadonna"
+unlock_count = 1
+unlock_text = "Clear a run as a Primadonna to unlock the Diva."

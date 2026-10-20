@@ -332,6 +332,8 @@ func _run() -> void:
 	await sense_line()
 	# Elemental attack compounds and their hit effects; shields and guns.
 	await elements_and_shields()
+	# The Charm line: Cat and Raccoon, the beast forms, every Charm skill.
+	await charm_line()
 
 	# Progression guards: damage grows with its stat as in Trickster, and
 	# monsters are as tough as their original level, not as deep as the room.
@@ -943,8 +945,8 @@ func magic_line() -> void:
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	await wait(0.5)
 	p.invulnerable_until = 0.0
-	check(Run.classes.size() == 6 and Run.classes.all(func(c: ClassData) -> bool: return c.unlocked()),
-		"all six characters are playable from the start")
+	check(Run.classes.size() == 8 and Run.classes.all(func(c: ClassData) -> bool: return c.unlocked()),
+		"all eight characters are playable from the start")
 	var saved: String = Profile.class_id
 
 	# Sheep: Librarian, Mana Ring on the attack button, no MP.
@@ -1384,3 +1386,176 @@ func elements_and_shields() -> void:
 	Run.new_run()
 	p.refresh_gear()
 	await wait(0.3)
+
+
+## The Charm line: Cat and Raccoon, the server's HV-weighted attacks, the
+## beast forms, Galder, and every Charm skill on a dummy.
+func charm_line() -> void:
+	var p: Player = game.player
+	var saved: String = Profile.class_id
+
+	Profile.class_id = "raccoon"
+	Run.new_run()
+	p.refresh_gear()
+	check(Run.cls.id == &"raccoon" and Run.job.id == &"teacher" and p.sprite.actor_name == "raccoon",
+		"Raccoon starts as a Teacher")
+	Profile.class_id = "cat"
+	Run.new_run()
+	p.refresh_gear()
+	check(Run.cls.id == &"cat" and Run.job.id == &"model" and Run.card_level(&"power_blow") == 1
+		and p.sprite.actor_name == "cat" and Run.cls.basic_skill == null,
+		"Cat starts as a Model with Power Blow, fighting with her weapon's combo")
+
+	# The server's attacks: Volley Kick is AP + 16 HV, so Charm points (HV)
+	# grow it far more than Power Blow (AP alone); Final Blow grows with the
+	# HP you've lost.
+	check(is_equal_approx(Run.attack_power("AP+16HV"), Run.stat("AP") + 16.0 * Run.stat("HV")),
+		"Run.attack_power reads the server's expression (AP + 16 HV = %d)" % Run.attack_power("AP+16HV"))
+	var kick := Run.card(&"volley_kick")
+	var blow := Run.card(&"power_blow")
+	var final := Run.card(&"final_blow")
+	var kick0 := Run.skill_mult(kick)
+	var blow0 := Run.skill_mult(blow)
+	check(is_equal_approx(kick0, 1.0) and is_equal_approx(blow0, 1.0), "at level 1 the multipliers start at 1")
+	Run.type_points["charm"] += 5  # +10 HV
+	Run.stats_changed()
+	var kick1 := Run.skill_mult(kick)
+	check(kick1 > 1.5 and is_equal_approx(Run.skill_mult(blow), 1.0),
+		"Charm points grow Volley Kick (x%.2f) but not Power Blow (x%.2f)" % [kick1, Run.skill_mult(blow)])
+	Run.type_points["charm"] -= 5
+	Run.stats_changed()
+	var fb0 := Run.skill_mult(final)
+	Run.hp = Run.max_hp / 2
+	check(Run.skill_mult(final) > fb0, "Final Blow hits harder the more HP you've lost (x%.2f -> x%.2f)" % [fb0, Run.skill_mult(final)])
+	Run.hp = Run.max_hp
+	check(Run.skill_mult(Run.card(&"wild_nail")) == Run.attack_power("16HV") / Run.attack_power("16HV", true),
+		"Wild Nail is HV alone")
+
+	# Evolution: 60% HP and MP, the beast's body and stats, MP drain, and
+	# leaving it keeps your HP.
+	Run.cards[&"evolution"] = 1
+	Run.loadout[0] = &"evolution"
+	Run.mp = Run.max_mp
+	Run.hp = Run.max_hp / 2
+	p.skills.slot_ready_at[0] = 0.0
+	check(not p.skills.try_cast(0) and Run.form == &"", "Evolution needs 60% HP")
+	Run.hp = Run.max_hp
+	var ap0 := Run.stat("AP")
+	var dp0 := Run.stat("DP")
+	p.skills.slot_ready_at[0] = 0.0
+	check(p.skills.try_cast(0), "Evolution casts at full HP and MP")
+	await wait(0.7)
+	check(Run.form == &"evolution" and p.sprite.actor_name == "beast_evolution" and Run.stat("AP") > ap0
+		and Run.stat("DP") < dp0, "Evolution turns Cat into the beast (trs001): AP %d -> %d, DP %d -> %d" % [ap0,
+		Run.stat("AP"), dp0, Run.stat("DP")])
+	check(p.combo == Player.BEAST_COMBO and not p.weapon.visible, "the beast fights with its claws, no weapon")
+	var mp1 := Run.mp
+	await wait(1.2)
+	check(Run.mp < mp1, "the form drains MP (%d -> %d)" % [mp1, Run.mp])
+	Run.cards[&"wild_nail"] = 1
+	Run.loadout[1] = &"wild_nail"
+	p.skills.slot_ready_at[1] = 0.0
+	check(not p.skills.try_cast(1), "Wild Nail needs Metamorphosis, not Evolution")
+	var hp1 := Run.hp
+	p.end_form()
+	check(Run.form == &"" and p.sprite.actor_name == "cat" and Run.hp == hp1 and Run.stat("AP") == ap0,
+		"leaving the form restores Cat and keeps her HP")
+	Run.cards.erase(&"wild_nail")
+	Run.loadout[1] = &""
+
+	# Galder: spent from the run's purse; short of it, no cast.
+	Run.cards[&"galder_thrower"] = 1
+	Run.loadout[0] = &"galder_thrower"
+	Run.galder = 5
+	p.skills.slot_ready_at[0] = 0.0
+	check(not p.skills.try_cast(0), "Galder Thrower needs its Galder")
+	Run.galder = 100
+	Run.mp = Run.max_mp
+	p.skills.slot_ready_at[0] = 0.0
+	check(p.skills.try_cast(0) and Run.galder == 80, "Galder Thrower spends 20 Galder (100 -> %d)" % Run.galder)
+	await wait(0.5)
+
+	# Every Charm skill does its job on a dummy.
+	var skills: Array[CardData] = []
+	for c in Run.all_cards():
+		if c.is_skill() and c.resource_path.begins_with("res://data/skills/charm/"):
+			skills.append(c)
+	check(skills.size() == 29, "the Charm line has 29 active skills: %d" % skills.size())
+	for c in skills:
+		var kind := c.behavior.resource_path.get_file()
+		var ahead := 60.0 if kind == "charm_strike.gd" else 120.0 if kind in ["card_throw.gd", "pouch_throw.gd", "galder_barrage.gd"] else 50.0
+		var dummy := await _dummy(p, ahead)
+		dummy.elements = {}
+		var extra: Array[Enemy] = []
+		if c.id == &"four_of_a_kind":
+			for i in 3:
+				var e2: Enemy = game.room.spawn(&"torobbie", dummy.global_position + Vector2(10 * (i + 1), 8))
+				extra.append(e2)
+			await wait(0.6)
+			for e2 in extra:
+				e2.max_hp = 99999
+				e2.hp = 99999
+		var before := dummy.hp
+		p.end_form()
+		Run.cards[c.id] = 1
+		Run.loadout[0] = c.id
+		if SkillCaster.FORM_NEEDED.has(c.id) or c.id == &"beasts_instinct":
+			var need: StringName = SkillCaster.FORM_NEEDED.get(c.id, &"evolution")
+			Run.form = need if need != &"" else &"metamorphosis"
+			Run.cards[Run.form] = 1
+			Run.stats_changed()
+			p.form_until = p.now() + 30.0
+		Run.mp = Run.max_mp
+		Run.hp = Run.max_hp
+		Run.galder = 500
+		p.skills.slot_ready_at[0] = 0.0
+		p.invulnerable_until = p.now() + 9.0
+		var hp_before := Run.hp
+		var cast := p.skills.try_cast(0)
+		var pin := dummy.global_position
+		var until := p.now() + 2.2
+		while p.now() < until:
+			if is_instance_valid(dummy):
+				dummy.global_position = pin
+			await get_tree().physics_frame
+		var did := false
+		var how := ""
+		match c.id:
+			&"evolution", &"metamorphosis":
+				did = Run.form == c.id
+				how = "form %s" % Run.form
+			&"beasts_instinct":
+				did = Run.instinct and Run.form == &"evolution"
+				how = "instinct %s" % Run.instinct
+			&"flux_capacitor":
+				did = Run.hp < hp_before
+				how = "HP %d -> %d" % [hp_before, Run.hp]
+			&"skunk_pouch", &"deadly_funk":
+				did = dummy.state == Enemy.State.HURT
+				how = "state %s" % dummy.state
+			_:
+				did = dummy.hp < before
+				how = "%d -> %d" % [before, dummy.hp]
+		check(cast and did, "%s casts and works (%s)%s" % [c.id, how, "" if did else _why(cast, dummy, p)])
+		p.end_form()
+		Run.cards.erase(c.id)
+		for e2 in extra:
+			_remove(e2)
+		_remove(dummy)
+		await wait(0.3)
+	p.invulnerable_until = 0.0
+	check(Run.card(&"galder_barrage") in (load("res://data/echoes/echo_entertainer.tres") as EnemyData).runes,
+		"the Echo of an Entertainer lends the Charm line's own Galder Barrage")
+
+	# Hybrids.
+	var diva: JobData = load("res://data/jobs/diva.tres")
+	var duke: JobData = load("res://data/jobs/duke.tres")
+	check(not diva.unlocked() and not duke.unlocked(), "Diva and Duke start locked")
+	check(Run.card(&"card_strike") in diva.cards and Run.card(&"volley_kick") in duke.cards
+		and not Run.card(&"evolution") in duke.cards and not Run.card(&"metamorphosis") in diva.cards,
+		"a Diva learns Card Master skills and a Duke Entertainer skills, but not the other's beast")
+
+	Profile.class_id = saved
+	Run.new_run()
+	p.refresh_gear()
+	await wait(0.5)

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cocos_shell.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"entrancing_wink"
+display_name = "Entrancing Wink"
+kind = 0
+skill_id = 4301
+text = "Your hits entrance a monster: it can't cast magic for {v} s."
+requires = {&"magic_meltdown": 3, &"magic_def_breaker": 3}
+jobs = Array[StringName]([&"primadonna"])
+table = {"value": [12.0, 16.0, 22.0, 26.0, 36.0, 40.0, 43.0, 47.0]}
+sounds = {"ke": "snd_m_312_ke.wav"}
+effects = {"ht": ["eft_skl_c_025_eps"]}
+master_material = ExtResource("m_master")

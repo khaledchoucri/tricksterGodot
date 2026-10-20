@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/scorpion_sting.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/card_throw.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"card_strike"
+display_name = "Card Strike"
+kind = 1
+skill_id = 4201
+text = "Flick an empty card at the enemy you aim at: {v} damage, splashing those nearby."
+jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])
+table = {"value": [89.0, 93.0, 100.0, 104.0, 115.0, 127.0, 138.0, 150.0], "mp": [32.0, 33.0, 34.0, 36.0, 38.0, 38.0, 38.0, 38.0], "cooldown": [3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2], "range": [150.0, 164.0, 185.0, 199.0, 220.0, 220.0, 220.0, 220.0], "radius": [12.0, 20.0, 32.0, 40.0, 52.0, 52.0, 52.0, 52.0]}
+master_material = ExtResource("m_master")
+scaling = "AP+8HV"
+behavior = ExtResource("2_b")

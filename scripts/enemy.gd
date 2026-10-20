@@ -183,10 +183,12 @@ func resist(element: String) -> float:
 ## an attacker with `attack` AP (or MA). Defence weighs against the
 ## attacker's own stat, so outgrowing a monster also outgrows its armour
 ## (my reading: the original's formula is server-side).
-func defense_mult(magic := false, attack := 100.0) -> float:
-	var def := float(stats.get("MD" if magic else "DP", 0))
+func defense_mult(magic := false, attack := 100.0, keep := 1.0) -> float:
+	var def := float(stats.get("MD" if magic else "DP", 0)) * keep
 	if not magic:
 		def *= 0.0 if debuff("guard") > 0.0 else 1.0 - debuff("dp") / 100.0
+	else:
+		def *= 1.0 - debuff("md") / 100.0  # Magic Def Breaker
 	return attack / (attack + maxf(def, 0.0)) if attack > 0.0 else 1.0
 
 
@@ -339,7 +341,9 @@ func _state_chase() -> void:
 		velocity = _knock
 		sprite.play_action("idle")
 		return
-	if dist <= cfg.range + body_radius and debuff("fear") <= 0.0 and room.line_clear(global_position, player.global_position) \
+	# Entrancing Wink: an entranced monster can't cast its magic (its shots).
+	var silenced := data.kind == "shot" and debuff("silence") > 0.0
+	if dist <= cfg.range + body_radius and debuff("fear") <= 0.0 and not silenced and room.line_clear(global_position, player.global_position) \
 			and room.request_attack_token(self):
 		_start_windup()
 		return
@@ -409,7 +413,7 @@ func _fire() -> void:
 	var p: Projectile = projectile_scene().instantiate()
 	p.direction = Combat.screen(_attack_dir).normalized()
 	p.speed = cfg.shot_speed
-	p.damage = damage
+	p.damage = maxi(1, roundi(damage * (1.0 - debuff("ma") / 100.0)))  # Magic Meltdown
 	p.accuracy = accuracy()
 	p.shooter = self
 	p.room = room
@@ -490,6 +494,17 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 		_cancel_attack()
 		_enter(State.HURT, 0.28 if heavy else 0.2)
 		sprite.play_action("hit", -Combat.screen(dir), 0.2, true)
+
+
+## Out cold for `seconds` without a hit (Skunk Pouch's stink). Bosses shrug
+## it off, as they do stuns.
+func faint(seconds: float) -> void:
+	if not is_hittable() or is_boss:
+		return
+	_cancel_attack()
+	_enter(State.HURT, seconds)
+	sprite.play_action("hit", sprite.facing, 0.2, true)
+	Events.text_shown.emit(global_position + Vector2(0, -60), "Faint", Color(0.75, 0.9, 0.45))
 
 
 func _cancel_attack() -> void:

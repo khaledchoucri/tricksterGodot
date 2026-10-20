@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cool_spring_water.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"mana_reflector"
+display_name = "Mana Reflector"
+kind = 0
+skill_id = 4008
+text = "A barrier turns {v}% of each magic hit back on its caster, and you take that much less."
+table = {"value": [20.0, 24.0, 30.0, 34.0, 44.0, 48.0, 53.0, 57.0]}
+sounds = {"ap": "snd_skl_c_108_sps.wav"}
+master_material = ExtResource("m_master")

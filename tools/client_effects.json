@@ -55,6 +55,16 @@
   },
   "sounds": {}
  },
+ "beasts_instinct": {
+  "effects": {
+   "ap": [
+    "zeldaboom"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_c_405_ap.wav"
+  }
+ },
  "berserk": {
   "effects": {
    "ht": [
@@ -113,6 +123,14 @@
   "effects": {
    "ht": [
     "eft_skl_s_301_eed"
+   ]
+  },
+  "sounds": {}
+ },
+ "card_soldier": {
+  "effects": {
+   "ht": [
+    "C_604_Summon_Soldier_ht1"
    ]
   },
   "sounds": {}
@@ -190,6 +208,17 @@
    ]
   },
   "sounds": {}
+ },
+ "deadly_funk": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_110_ebg",
+    "eft_skl_c_110_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_c_110_ebg.wav"
+  }
  },
  "desperate_rally": {
   "effects": {
@@ -271,6 +300,24 @@
   },
   "sounds": {}
  },
+ "entrancing_wink": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_025_eps"
+   ]
+  },
+  "sounds": {
+   "ke": "snd_m_312_ke.wav"
+  }
+ },
+ "evolution": {
+  "effects": {
+   "ap": [
+    "zeldaboom"
+   ]
+  },
+  "sounds": {}
+ },
  "exploit_weakness": {
   "effects": {},
   "sounds": {
@@ -282,6 +329,28 @@
   "effects": {
    "ht": [
     "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
+ "fatal_wound": {
+  "effects": {
+   "ht": [
+    "c_206_rush_hit"
+   ],
+   "ke": [
+    "C_207_sharp_claw_keep"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_c_207_ht.wav",
+   "ke": "snd_c_207_ke.wav"
+  }
+ },
+ "final_blow": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_112_ebg"
    ]
   },
   "sounds": {}
@@ -300,6 +369,14 @@
    "ke": "snd_m_219_ke.wav"
   }
  },
+ "fist_full_of_galders": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
  "flaming_fist": {
   "effects": {
    "ht": [
@@ -309,7 +386,25 @@
   },
   "sounds": {}
  },
+ "four_of_a_kind": {
+  "effects": {
+   "ht": [
+    "four_card"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_c_605_ap.wav"
+  }
+ },
  "galder_barrage": {
+  "effects": {
+   "ht": [
+    "hit drow"
+   ]
+  },
+  "sounds": {}
+ },
+ "galder_thrower": {
   "effects": {
    "ht": [
     "hit drow"
@@ -561,6 +656,37 @@
   },
   "sounds": {}
  },
+ "magic_def_breaker": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_106_ebg",
+    "eft_skl_c_106_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_c_106_ebg.wav"
+  }
+ },
+ "magic_meltdown": {
+  "effects": {
+   "ap": [
+    "eft_skl_c_105_sbg"
+   ],
+   "ht": [
+    "eft_skl_c_105_ebg",
+    "eft_skl_c_105_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_c_105_ebg.wav"
+  }
+ },
+ "mana_reflector": {
+  "effects": {},
+  "sounds": {
+   "ap": "snd_skl_c_108_sps.wav"
+  }
+ },
  "mana_ring": {
   "effects": {},
   "sounds": {
@@ -599,6 +725,17 @@
   },
   "sounds": {
    "ht": "snd_skl_m_110_ebg.wav"
+  }
+ },
+ "metamorphosis": {
+  "effects": {
+   "ap": [
+    "zeldaboom"
+   ]
+  },
+  "sounds": {
+   "ap": "snd_c_306_ap.wav",
+   "ht": "snd_skl_m_015_eed.wav"
   }
  },
  "mist_of_mana": {
@@ -656,6 +793,14 @@
    ],
    "ht": [
     "s_205_heavy_baggage_hit"
+   ]
+  },
+  "sounds": {}
+ },
+ "power_blow": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_101_eed"
    ]
   },
   "sounds": {}
@@ -888,6 +1033,17 @@
    ]
   },
   "sounds": {}
+ },
+ "skunk_pouch": {
+  "effects": {
+   "ht": [
+    "eft_skl_c_110_ebg",
+    "eft_skl_c_110_eps"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_skl_c_110_ebg.wav"
+  }
  },
  "sonic_slash": {
   "effects": {
@@ -1136,6 +1292,16 @@
   },
   "sounds": {
    "ht": "snd_skl_m_109_sed.wav"
+  }
+ },
+ "wild_nail": {
+  "effects": {
+   "ht": [
+    "c_206_rush_hit"
+   ]
+  },
+  "sounds": {
+   "ht": "snd_c_207_ht.wav"
   }
  },
  "wind_blade": {

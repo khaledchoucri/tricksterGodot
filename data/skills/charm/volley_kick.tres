@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cocos_shell.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/charm_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"volley_kick"
+display_name = "Volley Kick"
+kind = 1
+skill_id = 4101
+text = "A flexible upper kick that throws the enemy into the air: {v} damage."
+jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
+table = {"value": [57.0, 70.0, 89.0, 102.0, 135.0, 148.0, 162.0, 175.0], "mp": [24.0, 26.0, 28.0, 30.0, 33.0, 33.0, 33.0, 33.0], "cooldown": [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}
+master_material = ExtResource("m_master")
+scaling = "AP+16HV"
+behavior = ExtResource("2_b")

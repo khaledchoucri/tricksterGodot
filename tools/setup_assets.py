@@ -60,6 +60,18 @@ ACTORS = {
     'inventor': ('data/character/chr014.nri', GUN_ACTIONS, ('data/character/chr014.pvt', 'weapon001.nri')),
     'sense_f': ('data/character/chr021.nri', GUN_ACTIONS, ('data/character/chr021.pvt', 'weapon001.nri')),
     'sense_m': ('data/character/chr022.nri', GUN_ACTIONS, ('data/character/chr022.pvt', 'weapon001.nri')),
+    # The Charm line (CharacterInfo 7, 8, 15, 16, 23, 24): Cat becomes an
+    # Entertainer, Raccoon a Card Master, then charm_f and charm_m at the 3rd
+    # job. Evolution and Metamorphosis turn them into a beast (the client's
+    # ESAWildMutation loads trs001, ESAWildChange trs002).
+    'cat': ('data/character/chr007.nri', ARMED_ACTIONS, ('data/character/chr007.pvt', 'weapon001.nri')),
+    'raccoon': ('data/character/chr008.nri', ARMED_ACTIONS, ('data/character/chr008.pvt', 'weapon001.nri')),
+    'entertainer': ('data/character/chr015.nri', ARMED_ACTIONS, ('data/character/chr015.pvt', 'weapon001.nri')),
+    'card_master': ('data/character/chr016.nri', ARMED_ACTIONS, ('data/character/chr016.pvt', 'weapon001.nri')),
+    'charm_f': ('data/character/chr023.nri', ARMED_ACTIONS, ('data/character/chr023.pvt', 'weapon001.nri')),
+    'charm_m': ('data/character/chr024.nri', ARMED_ACTIONS, ('data/character/chr024.pvt', 'weapon001.nri')),
+    'beast_evolution': ('data/character/Trs001.nri', FIST_ACTIONS, None),
+    'beast_metamorphosis': ('data/character/Trs002.nri', FIST_ACTIONS, None),
     'torobbie': ('data/monster/mon249.nri', '', None),
     'bad_fury': ('data/monster/mon250.nri', '', None),
     'tottochi': ('data/monster/mon251.nri', '', None),
@@ -153,7 +165,8 @@ def monster_ids():
     return ids
 
 
-THROWN_ITEMS = ['11404', '12015']
+# Big Needle, Shuriken (Fox); Empty Card and Galders (the Charm line's throws).
+THROWN_ITEMS = ['11404', '12015', '20400', '200']
 
 
 def item_ids():
@@ -195,7 +208,10 @@ PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr0
            'magic_f': 'data/character/chr019.pvo', 'magic_m': 'data/character/chr020.pvo',
            'fox': 'data/character/chr005.pvo', 'lion': 'data/character/chr006.pvo',
            'explorer': 'data/character/chr013.pvo', 'inventor': 'data/character/chr014.pvo',
-           'sense_f': 'data/character/chr021.pvo', 'sense_m': 'data/character/chr022.pvo'}
+           'sense_f': 'data/character/chr021.pvo', 'sense_m': 'data/character/chr022.pvo',
+           'cat': 'data/character/chr007.pvo', 'raccoon': 'data/character/chr008.pvo',
+           'entertainer': 'data/character/chr015.pvo', 'card_master': 'data/character/chr016.pvo',
+           'charm_f': 'data/character/chr023.pvo', 'charm_m': 'data/character/chr024.pvo'}
 
 
 def worn_sprites(client, fallback=None):

@@ -51,6 +51,57 @@ const GUN_NEEDED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot
 	&"shooting_spree", &"berserk"]
 
 
+## Skills only a beast can use: the form they need (&"" for either).
+const FORM_NEEDED := {&"beast_claw": &"evolution", &"fatal_wound": &"evolution", &"raging_nail": &"evolution",
+	&"wild_nail": &"metamorphosis", &"sharp_scream": &"", &"heavy_hit": &"", &"card_soldier": &""}
+## Skills paid in the run's Galder (their table's "galder", per throw).
+const GALDER_SKILLS: Array[StringName] = [&"galder_thrower", &"galder_barrage", &"fist_full_of_galders",
+	&"furious_galder_throw"]
+
+
+## Why `card` can't be cast right now ("" when it can): the Charm line's
+## conditions, as the original states them.
+func charm_block(card: CardData, level: int, slot: int) -> String:
+	if Run.instinct and slot != BASIC:
+		return "No skills in Beast's Instinct"
+	if FORM_NEEDED.has(card.id):
+		var need: StringName = FORM_NEEDED[card.id]
+		if Run.form == &"" or (need != &"" and Run.form != need):
+			return "Beast form only"
+	match card.id:
+		&"evolution", &"metamorphosis":
+			if Run.form == card.id:
+				return ""  # casting it again turns you back
+			if Run.form != &"":
+				return "Already transformed"
+			if Run.hp < Run.max_hp * 0.6 or Run.mp < Run.max_mp * 0.6:
+				return "Needs 60% HP and MP"
+		&"beasts_instinct":
+			if Run.form != &"evolution":
+				return "Evolution only"
+		&"mass_destruction":
+			if Run.hp < Run.max_hp * 0.8:
+				return "Needs 80% HP"
+		&"four_of_a_kind":
+			var n := 0
+			for e in player.room.enemies:
+				if e.is_hittable() and Combat.in_circle(player.global_position, e.global_position, card.param("radius", level, 160.0), e.body_radius):
+					n += 1
+			if n < 4:
+				return "Needs four enemies"
+	if card.id in GALDER_SKILLS and Run.galder < galder_cost(card, level):
+		return "Not enough Galder"
+	return ""
+
+
+## Galder a cast of `card` costs (Fist Full of Galders pays per throw).
+func galder_cost(card: CardData, level: int) -> int:
+	if not card.id in GALDER_SKILLS:
+		return 0
+	var each := int(card.param("galder", level, 0.0))
+	return each * (int(card.param("count", level, 1.0)) if card.id == &"fist_full_of_galders" else 1)
+
+
 ## Casts the skill in `slot` if one is equipped, off cooldown and affordable.
 func try_cast(slot: int) -> bool:
 	var card := card_in(slot)
@@ -66,6 +117,10 @@ func try_cast(slot: int) -> bool:
 	if slot == BASIC and Run.in_bunker(player.now()):
 		return false
 	var level := maxi(Run.card_level(card.id), 1)
+	var blocked := charm_block(card, level, slot)
+	if blocked != "":
+		Events.text_shown.emit(player.global_position + Vector2(0, -70), blocked, Color(1.0, 0.7, 0.5))
+		return false
 	var cost := 0 if slot == BASIC else cost_of(card, level)
 	# Any other skill pulls you out of hiding (its strikes end it themselves).
 	if not card.id in [&"hide", &"sudden_attack", &"poison_assault"]:
@@ -73,6 +128,7 @@ func try_cast(slot: int) -> bool:
 	if not Run.spend_mp(cost):
 		Events.mp_short.emit()
 		return false
+	Run.spend_galder(galder_cost(card, level))
 	if card.cast_at(level) > 0.0 and Run.card_level(&"blood_testament") > 0 and slot != BASIC:
 		# Blood Testament: spells cost health too (never fatal).
 		var hp_cost := roundi(Run.max_hp * Run.card(&"blood_testament").param("hp", Run.card_level(&"blood_testament")) / 100.0)

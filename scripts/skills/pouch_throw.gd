@@ -1,7 +1,9 @@
 extends Skill
 ## Pouch of Pain (3105, Explorer): a heavy pouch lobbed at the cursor bursts
 ## on everything around where it lands. Poison Pouch (3305) poisons what it
-## hits: its % of the damage again over its seconds.
+## hits: its % of the damage again over its seconds. Skunk Pouch (4010) and
+## Deadly Funk (4110) carry stink instead: what they reach faints for the
+## table's seconds.
 
 const FLIGHT := 0.45
 
@@ -34,6 +36,13 @@ func _burst(spot: Vector2, radius: float, amount: float) -> void:
 	var poison := Run.card_value(&"poison_pouch")
 	var seconds := Run.card(&"poison_pouch").param("seconds", Run.card_level(&"poison_pouch")) if poison > 0.0 else 0.0
 	effect("ht", spot)
+	var stun := param("stun", 0.0)
+	if stun > 0.0:
+		Sparks.burst(room, spot + Vector2(0, -10), Color(0.7, 0.85, 0.4), 14, 120.0)
+		for e in enemies_in_circle(spot, radius):
+			_effect_hit.append(e)
+			e.faint(stun)
+		return
 	for e in enemies_in_circle(spot, radius):
 		_effect_hit.append(e)
 		var fx := {}

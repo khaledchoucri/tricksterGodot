@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/eye_drop.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/charm_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"heavy_hit"
+display_name = "Heavy Hit"
+kind = 1
+skill_id = 4503
+text = "Beast form only: a massive blow for {v} damage, more with your HP, that sends the enemy flying."
+requires = {&"metamorphosis": 1}
+jobs = Array[StringName]([&"gambler"])
+table = {"value": [38.0, 53.0, 77.0, 93.0, 132.0, 145.0, 158.0, 171.0], "mp": [49.0, 53.0, 58.0, 61.0, 67.0, 67.0, 67.0, 67.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0]}
+sounds = {"ht": "snd_c_603_ht.wav"}
+effects = {"ht": ["C_603_massive_attack_ht"]}
+master_material = ExtResource("m_master")
+scaling = "AP+0.125HPNOW"
+behavior = ExtResource("2_b")

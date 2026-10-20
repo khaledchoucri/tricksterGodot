@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sumo_suit"
+display_name = "Sumo Suit"
+kind = 0
+skill_id = 4108
+text = "All the padding you need: you take {v}% less damage."
+requires = {&"shield_all": 3, &"sturdy_shield": 3, &"physical_training": 3}
+jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
+table = {"value": [8.0, 14.0, 23.0, 29.0, 44.0, 48.0, 53.0, 57.0]}
+sounds = {"ap": "snd_c_208_ap.wav", "ke": "snd_c_208_ke.wav"}
+master_material = ExtResource("m_master")

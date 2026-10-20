@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/entertainer.tres" id="j_entertainer"]
+[ext_resource type="Resource" path="res://data/skills/charm/power_blow.tres" id="c_power_blow"]
+[ext_resource type="Resource" path="res://data/skills/charm/dodge_master.tres" id="c_dodge_master"]
+[ext_resource type="Resource" path="res://data/skills/charm/galder_thrower.tres" id="c_galder_thrower"]
+[ext_resource type="Resource" path="res://data/skills/charm/magic_meltdown.tres" id="c_magic_meltdown"]
+[ext_resource type="Resource" path="res://data/skills/charm/magic_def_breaker.tres" id="c_magic_def_breaker"]
+[ext_resource type="Resource" path="res://data/skills/charm/mana_reflector.tres" id="c_mana_reflector"]
+[ext_resource type="Resource" path="res://data/skills/charm/shield_all.tres" id="c_shield_all"]
+[ext_resource type="Resource" path="res://data/skills/charm/sturdy_shield.tres" id="c_sturdy_shield"]
+[ext_resource type="Resource" path="res://data/skills/charm/skunk_pouch.tres" id="c_skunk_pouch"]
+[ext_resource type="Resource" path="res://data/skills/charm/titanium_wrist.tres" id="c_titanium_wrist"]
+[ext_resource type="Resource" path="res://data/skills/charm/physical_training.tres" id="c_physical_training"]
+[ext_resource type="Resource" path="res://data/skills/charm/final_blow.tres" id="c_final_blow"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"model"
+display_name = "Model"
+actor = "cat"
+tier = 1
+starter = ExtResource("c_power_blow")
+cards = Array[ExtResource("2_c")]([ExtResource("c_power_blow"), ExtResource("c_dodge_master"), ExtResource("c_galder_thrower"), ExtResource("c_magic_meltdown"), ExtResource("c_magic_def_breaker"), ExtResource("c_mana_reflector"), ExtResource("c_shield_all"), ExtResource("c_sturdy_shield"), ExtResource("c_skunk_pouch"), ExtResource("c_titanium_wrist"), ExtResource("c_physical_training"), ExtResource("c_final_blow")])
+text = "Models fight up close with flexible kicks and blows, and live off defence and evasion. A Model advances to Entertainer."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_entertainer")])

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/cooling_fan.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"magic_meltdown"
+display_name = "Magic Meltdown"
+kind = 0
+skill_id = 4005
+text = "Your hits break a monster's magic bead: its magic hits {v}% weaker for {seconds} s."
+table = {"value": [15.0, 21.0, 30.0, 36.0, 51.0, 56.0, 61.0, 66.0], "seconds": [12.0, 16.0, 22.0, 26.0, 36.0, 36.0, 36.0, 36.0]}
+sounds = {"ht": "snd_skl_c_105_ebg.wav"}
+effects = {"ap": ["eft_skl_c_105_sbg"], "ht": ["eft_skl_c_105_ebg", "eft_skl_c_105_eps"]}
+master_material = ExtResource("m_master")

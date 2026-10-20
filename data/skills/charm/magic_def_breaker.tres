@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/acorn_nut.tres" id="m_master"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"magic_def_breaker"
+display_name = "Magic Def Breaker"
+kind = 0
+skill_id = 4006
+text = "Your hits strip a monster's magic veil: {v}% less MD for {seconds} s."
+table = {"value": [21.0, 27.0, 36.0, 42.0, 57.0, 63.0, 68.0, 74.0], "seconds": [12.0, 16.0, 22.0, 26.0, 36.0, 36.0, 36.0, 36.0]}
+sounds = {"ht": "snd_skl_c_106_ebg.wav"}
+effects = {"ht": ["eft_skl_c_106_ebg", "eft_skl_c_106_eps"]}
+master_material = ExtResource("m_master")

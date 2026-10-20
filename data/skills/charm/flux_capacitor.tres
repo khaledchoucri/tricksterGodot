@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/duck_mole_paws.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/transform.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"flux_capacitor"
+display_name = "Flux Capacitor"
+kind = 1
+skill_id = 4208
+text = "Burn {hp}% of your max HP into MP: {v}% of it comes back as MP."
+requires = {&"physical_training": 3}
+jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])
+table = {"value": [30.0, 40.0, 55.0, 65.0, 90.0, 99.0, 108.0, 117.0], "mp": [13.0, 19.0, 26.0, 29.0, 35.0, 35.0, 35.0, 35.0], "cooldown": [12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0], "hp": [10.0, 12.0, 15.0, 17.0, 22.0, 22.0, 22.0, 22.0]}
+sounds = {"ap": "snd_c_308_ap.wav"}
+effects = {"ap": ["C_308_mana_convert_apply"]}
+master_material = ExtResource("m_master")
+behavior = ExtResource("2_b")

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/turban_shell.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/charm_burst.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sharp_scream"
+display_name = "Sharp Scream"
+kind = 1
+skill_id = 4304
+text = "Beast form only: a piercing scream hits up to {targets} enemies near you for {v} damage."
+requires = {&"siren_song": 1}
+jobs = Array[StringName]([&"primadonna"])
+table = {"value": [44.0, 61.0, 87.0, 104.0, 148.0, 163.0, 177.0, 192.0], "mp": [49.0, 53.0, 58.0, 61.0, 67.0, 67.0, 67.0, 67.0], "cooldown": [8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0], "range": [160.0, 168.0, 180.0, 188.0, 208.0, 208.0, 208.0, 208.0], "radius": [140.0, 148.0, 160.0, 168.0, 188.0, 188.0, 188.0, 188.0], "targets": [2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0]}
+sounds = {"ap": "snd_C_404_ap.wav"}
+effects = {"ap": ["C_404_Sharp_scream_ap"]}
+master_material = ExtResource("m_master")
+scaling = "AP+16HV"
+behavior = ExtResource("2_b")

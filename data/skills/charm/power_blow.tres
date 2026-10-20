@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/sharp_leg.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/skills/charm_strike.gd" id="2_b"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"power_blow"
+display_name = "Power Blow"
+kind = 1
+skill_id = 4001
+text = "Gather your strength into a lashing blow at the enemy in front: {v} damage."
+table = {"value": [35.0, 41.0, 49.0, 55.0, 70.0, 77.0, 84.0, 90.0], "mp": [19.0, 21.0, 24.0, 25.0, 31.0, 31.0, 31.0, 31.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0], "ratio": [1.2, 1.4, 1.7, 1.9, 2.4, 2.4, 2.4, 2.4]}
+effects = {"ht": ["eft_skl_c_101_eed"]}
+master_material = ExtResource("m_master")
+scaling = "AP"
+behavior = ExtResource("2_b")

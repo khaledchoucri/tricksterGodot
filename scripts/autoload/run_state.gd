@@ -11,7 +11,8 @@ const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res:
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
 	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
-	"res://data/classes/fox.tres", "res://data/classes/lion.tres"]
+	"res://data/classes/fox.tres", "res://data/classes/lion.tres",
+	"res://data/classes/cat.tres", "res://data/classes/raccoon.tres"]
 const ITEMS_DIR := "res://data/items/"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
 const MAX_CARD_LEVEL := 5
@@ -97,6 +98,10 @@ var _stats: Dictionary = {}  # cache of stat totals
 var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned against
 ## Hide (Thief Master): monsters lose you until it ends.
 var hidden := false
+## The beast form Evolution or Metamorphosis turned you into (&"" when none),
+## and Beast's Instinct on top of Evolution; the player times them.
+var form: StringName = &""
+var instinct := false
 var hidden_until := 0.0
 ## Bunker (Scientist): dug in until this time or until its HP runs out.
 var bunker_until := 0.0
@@ -297,6 +302,8 @@ func new_run() -> void:
 	barrier_back_at = 0.0
 	revival_ready_at = 0.0
 	_bonus_hp = 0
+	form = &""
+	instinct = false
 	_stats.clear()
 	_ref = {}
 	_baseline = true  # numbers are tuned against the bare level-1 character
@@ -638,12 +645,54 @@ func _compute_stats() -> void:
 	s.DA *= 1.0 + card_value(&"sixth_sense") / 100.0
 	s.LK *= 1.0 + (card_value(&"lucky_seven") + card_value(&"aura_of_luck")) / 100.0
 	s.WT += card_value(&"heavy_carrier")
+	s.HV *= 1.0 + card_value(&"dodge_master") / 100.0
+	s.DP *= 1.0 + (card_value(&"shield_all") + card_value(&"sturdy_shield")) / 100.0
+	s.HP += card_value(&"physical_training")
+	_form_stats(s)
 	var guard := card(&"light_shield").param("guard", card_level(&"light_shield")) if card(&"light_shield") else 0.0
 	s.MD *= 1.0 + (card_value(&"mana_shield") + guard) / 100.0
 	s.DP *= 1.0 + guard / 100.0
 	s.MP += card_value(&"bottle_of_mana")
 	for k: String in s:
 		_stats[k] = maxi(0, floori(s[k]))
+
+
+## The beast forms' stat changes (ESAction_WildMutation, _Change, _Beast):
+## Evolution multiplies AP and takes DP, HV and LK away; Metamorphosis the
+## reverse; Beast's Instinct sharpens Evolution further. DX is attack speed.
+func _form_stats(s: Dictionary) -> void:
+	if form == &"":
+		return
+	var c := card(form)
+	var lvl := maxi(card_level(form), 1)
+	var gain := c.value_at(lvl) / 100.0
+	var loss := c.param("loss", lvl) / 100.0
+	if form == &"evolution":
+		var ap := 1.0 + gain
+		if instinct and card(&"beasts_instinct"):
+			var il := maxi(card_level(&"beasts_instinct"), 1)
+			ap = 1.0 + card(&"beasts_instinct").value_at(il) / 100.0
+			loss = card(&"beasts_instinct").param("loss", il) / 100.0
+		s.AP *= ap
+		s.DP *= 1.0 - loss
+		s.HV *= 1.0 - loss
+		s.LK *= 1.0 - loss
+	else:
+		s.DP *= 1.0 + gain
+		s.HV *= 1.0 + gain
+		s.AP *= 1.0 - loss
+		s.LK *= 1.0 - loss
+
+
+## Attack speed in a beast form: the table's DX change, 8% a point (the
+## Hyper Beat reading).
+func form_speed_mult() -> float:
+	if form == &"":
+		return 1.0
+	var dx := card(form).param("dx", maxi(card_level(form), 1))
+	if instinct and card(&"beasts_instinct"):
+		dx = card(&"beasts_instinct").param("dx", maxi(card_level(&"beasts_instinct"), 1))
+	return maxf(0.5, 1.0 + 0.08 * dx)
 
 
 ## Call after anything that changes stats (gear, points, levels).
@@ -730,7 +779,14 @@ func start_job(j: JobData) -> void:
 
 ## The character on screen: the latest job's (a job change replaces the
 ## character), else the class's.
+## The beast bodies (the client's ESAWildMutation loads trs001,
+## ESAWildChange trs002).
+const FORM_ACTORS := {&"evolution": "beast_evolution", &"metamorphosis": "beast_metamorphosis"}
+
+
 func actor() -> String:
+	if form != &"":
+		return FORM_ACTORS[form]
 	for i in range(jobs.size() - 1, -1, -1):
 		if jobs[i].actor != "":
 			return jobs[i].actor
@@ -1237,8 +1293,10 @@ func skill_mult(c: CardData = null) -> float:
 	var m := 1.0
 	if scaling == "GUN":
 		return gun_shot_mult() * GUN_SHOT / 100.0
-	elif scaling in ["AP", "MA", "DA"]:
+	elif scaling in ["AP", "MA", "DA", "HV"]:
 		m = _linear(scaling)
+	elif _is_expression(scaling):
+		m = attack_power(scaling) / maxf(attack_power(scaling, true), 1.0)
 	else:
 		m = _ratio(scaling, {"DP": 60.0}.get(scaling, AP_SOFT))
 	if c and c.id in THROWN:
@@ -1248,6 +1306,45 @@ func skill_mult(c: CardData = null) -> float:
 	if has_passive(&"duelists_edge"):
 		m *= 1.1
 	return m * _berserk_mult()
+
+
+## A skill's attack as the server computes it (tools/re/README.md): a sum
+## of weighted stats such as "AP+16HV" (Volley Kick), "0.1HPNOW+0.5DP"
+## (Siren Song) or "AP+0.1LOST" (Final Blow). HPNOW is your current HP,
+## LOST the HP you're missing. `ref`: the same for the level-1 character
+## at full health, that a card's numbers are tuned against.
+func attack_power(expr: String, ref := false) -> float:
+	var total := 0.0
+	for term in expr.split("+"):
+		var i := 0
+		while i < term.length() and (term[i] == "." or term[i].is_valid_int()):
+			i += 1
+		var w := float(term.substr(0, i)) if i > 0 else 1.0
+		total += w * _attack_stat(term.substr(i), ref)
+	return total
+
+
+func _is_expression(scaling: String) -> bool:
+	return scaling.contains("+") or scaling.contains("HPNOW") or scaling.contains("LOST") or \
+		(scaling.length() > 0 and (scaling[0] == "." or scaling[0].is_valid_int()))
+
+
+func _attack_stat(key: String, ref: bool) -> float:
+	match key:
+		"HPNOW":
+			return float(_ref.get("HP", 0)) if ref else float(hp)
+		"LOST":
+			return 0.0 if ref else float(maxi(max_hp - hp, 0))
+	return float(_ref.get(key, 0)) if ref else float(stat(key))
+
+
+## Galder skills spend the run's Galder (Galder Thrower's 100 is 20 here: a
+## fifth of the original's prices). False, and nothing spent, when short.
+func spend_galder(amount: int) -> bool:
+	if galder < amount:
+		return false
+	galder -= amount
+	return true
 
 
 func in_bunker(now: float) -> bool:
@@ -1362,7 +1459,7 @@ func element_boost(element: String) -> float:
 
 
 func attack_speed_mult() -> float:
-	return _ratio("DX", DX_SOFT) * (1.0 + (card_value(&"hyper_beat") + card_value(&"aura_of_haste")) / 100.0)
+	return _ratio("DX", DX_SOFT) * (1.0 + (card_value(&"hyper_beat") + card_value(&"aura_of_haste")) / 100.0) * form_speed_mult()
 
 
 func speed_mult() -> float:
@@ -1382,7 +1479,8 @@ func dash_cooldown_mult() -> float:
 ## Debuffs your hits carry from the breaker talents ({key: [value, seconds]},
 ## see Enemy.debuffs).
 const BREAKERS := {&"armor_breaker": "dp", &"shockvibe": "ac", &"sense_breaker": "perception", &"luck_breaker": "luck",
-	&"armor_destructor": "dp", &"sticky_foot": "slow", &"lock_on": "hv"}
+	&"armor_destructor": "dp", &"sticky_foot": "slow", &"lock_on": "hv",
+	&"magic_meltdown": "ma", &"magic_def_breaker": "md"}
 
 
 func hit_debuffs() -> Dictionary:
@@ -1392,6 +1490,8 @@ func hit_debuffs() -> Dictionary:
 			out[BREAKERS[id]] = [card_value(id), card(id).param("seconds", card_level(id))]
 	if card_level(&"suffocate") > 0:
 		out["pinned"] = [1.0, card_value(&"suffocate")]
+	if card_level(&"entrancing_wink") > 0:
+		out["silence"] = [1.0, card_value(&"entrancing_wink")]  # no magic while entranced
 	return out
 
 
@@ -1409,6 +1509,9 @@ func damage_taken_mult(magic := false, element := "") -> float:
 	var m := (float(_ref.get(key, 0)) + DEF_SOFT) / (stat(key) + DEF_SOFT)
 	if has_passive(&"hired_blade"):
 		m *= 0.9
+	m *= 1.0 - card_value(&"sumo_suit") / 100.0
+	if magic:
+		m *= 1.0 - card_value(&"mana_reflector") / 100.0  # the part it turns back
 	if element != "":
 		m *= 1.0 - resist(element) / 100.0
 	return m

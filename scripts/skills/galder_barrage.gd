@@ -1,39 +1,47 @@
 extends Skill
-## Galder Barrage (4102, Entertainer; borrowed through a rune): spend Galder to
-## rain coins on the cursor. Hits harder the more Galder you carry, and
-## scales with DP, like Charm skills.
+## Galder Barrage (4102, Entertainer; Echoes lend it too): Galder thrown in
+## three directions toward the cursor, each volley bursting over its Radius
+## (the server's ESAMultiGellderHit: Galder x Ratio, no DP). The Galder is
+## paid from the run's purse by the caster; it scales with HV.
 
-const RADIUS := 90.0
-const COST := 30
-const HITS := 4
-const GAP := 0.1
+const SPREAD := deg_to_rad(28.0)
 const COLOR := Color(1.0, 0.85, 0.35)
-
-var _spot := Vector2.ZERO
-var _bonus := 1.0
 
 
 func _init() -> void:
-	duration = 0.6
+	duration = 0.5
 	anim = "throw"
-	dash_cancel_at = 0.3
+	dash_cancel_at = 0.25
 
 
 func start() -> void:
-	_spot = target if room.is_walkable(target) else room.nearest_reachable(target)
-	var paid := mini(COST, Run.galder)
-	Run.galder -= paid
-	_bonus = (0.5 + 0.5 * paid / float(COST)) * (1.0 + minf(Run.galder, 3000) / 3000.0)
+	var spot := target_spot(170.0)
+	var to := spot - player.global_position
+	var radius := param("radius", 60.0)
 	Audio.play("etc_money.wav", -2.0)
+	linger()
+	for i in 3:
+		var at := player.global_position + to.rotated(SPREAD * (i - 1))
+		if not room.is_walkable(at):
+			at = room.nearest_reachable(at)
+		var coin := ThrownItem.new()
+		coin.room = room
+		coin.target_point = at
+		var path := "res://original_assets/icons/items/200.png"
+		coin.icon = load(path) if ResourceLoader.exists(path) else null
+		coin.on_hit = func(_e: Enemy) -> void:
+			if is_instance_valid(room):
+				_burst(at, radius)
+			if i == 2:
+				release()
+		room.add_child(coin)
+		coin.global_position = player.global_position + Combat.screen(aim) * 12.0
 
 
-func update(t: float, _delta: float) -> void:
-	for i in HITS:
-		if once(t, 0.12 + GAP * i, "coin%d" % i):
-			var at := _spot + Vector2(randf_range(-30, 30), randf_range(-15, 15))
-			Sparks.burst(room, at + Vector2(0, -30), COLOR, 10, 160.0)
-			Ring.spawn(room.ground_fx, at, RADIUS * 0.6, 0.25, Color(COLOR, 0.8))
-			for e in enemies_in_circle(_spot, RADIUS):
-				hit(e, damage(_bonus), 60.0, false)
-			Audio.play("etc_money.wav", -10.0)
-			feedback(0.02, 1.5)
+func _burst(at: Vector2, radius: float) -> void:
+	Sparks.burst(room, at + Vector2(0, -24), COLOR, 10, 160.0)
+	Ring.spawn(room.ground_fx, at, radius, 0.25, Color(COLOR, 0.8))
+	for e in enemies_in_circle(at, radius):
+		hit(e, damage(), 60.0, false, {"pierce": true})
+	Audio.play("etc_money.wav", -10.0)
+	feedback(0.02, 1.5)

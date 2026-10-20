@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/jobs/primadonna.tres" id="j_primadonna"]
+[ext_resource type="Resource" path="res://data/jobs/diva.tres" id="j_diva"]
+[ext_resource type="Resource" path="res://data/skills/charm/volley_kick.tres" id="c_volley_kick"]
+[ext_resource type="Resource" path="res://data/skills/charm/galder_barrage.tres" id="c_galder_barrage"]
+[ext_resource type="Resource" path="res://data/skills/charm/siren_song.tres" id="c_siren_song"]
+[ext_resource type="Resource" path="res://data/skills/charm/evolution.tres" id="c_evolution"]
+[ext_resource type="Resource" path="res://data/skills/charm/beast_claw.tres" id="c_beast_claw"]
+[ext_resource type="Resource" path="res://data/skills/charm/fatal_wound.tres" id="c_fatal_wound"]
+[ext_resource type="Resource" path="res://data/skills/charm/fist_full_of_galders.tres" id="c_fist_full_of_galders"]
+[ext_resource type="Resource" path="res://data/skills/charm/sumo_suit.tres" id="c_sumo_suit"]
+[ext_resource type="Resource" path="res://data/skills/charm/deadly_funk.tres" id="c_deadly_funk"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"entertainer"
+display_name = "Entertainer"
+actor = "entertainer"
+tier = 2
+cards = Array[ExtResource("2_c")]([ExtResource("c_volley_kick"), ExtResource("c_galder_barrage"), ExtResource("c_siren_song"), ExtResource("c_evolution"), ExtResource("c_beast_claw"), ExtResource("c_fatal_wound"), ExtResource("c_fist_full_of_galders"), ExtResource("c_sumo_suit"), ExtResource("c_deadly_funk")])
+text = "An Entertainer learns skills using high HP and Galder, and can turn into a beast. An Entertainer advances to Primadonna or Diva."
+next_jobs = Array[ExtResource("1_s")]([ExtResource("j_primadonna"), ExtResource("j_diva")])

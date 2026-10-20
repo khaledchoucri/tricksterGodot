@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/charm/power_charging.tres" id="c_power_charging"]
+[ext_resource type="Resource" path="res://data/skills/charm/heavy_hit.tres" id="c_heavy_hit"]
+[ext_resource type="Resource" path="res://data/skills/charm/full_house.tres" id="c_full_house"]
+[ext_resource type="Resource" path="res://data/skills/charm/card_soldier.tres" id="c_card_soldier"]
+[ext_resource type="Resource" path="res://data/skills/charm/four_of_a_kind.tres" id="c_four_of_a_kind"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"gambler"
+display_name = "Gambler"
+actor = "charm_m"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_power_charging"), ExtResource("c_heavy_hit"), ExtResource("c_full_house"), ExtResource("c_card_soldier"), ExtResource("c_four_of_a_kind")])
+text = "A Gambler uses cards and chance to attack."

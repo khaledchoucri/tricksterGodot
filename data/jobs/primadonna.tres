@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="JobData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
+[ext_resource type="Resource" path="res://data/skills/charm/sharp_scream.tres" id="c_sharp_scream"]
+[ext_resource type="Resource" path="res://data/skills/charm/two_hit_combo.tres" id="c_two_hit_combo"]
+[ext_resource type="Resource" path="res://data/skills/charm/raging_nail.tres" id="c_raging_nail"]
+[ext_resource type="Resource" path="res://data/skills/charm/entrancing_wink.tres" id="c_entrancing_wink"]
+[ext_resource type="Resource" path="res://data/skills/charm/beasts_instinct.tres" id="c_beasts_instinct"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"primadonna"
+display_name = "Primadonna"
+actor = "charm_f"
+tier = 3
+cards = Array[ExtResource("2_c")]([ExtResource("c_sharp_scream"), ExtResource("c_two_hit_combo"), ExtResource("c_raging_nail"), ExtResource("c_entrancing_wink"), ExtResource("c_beasts_instinct")])
+text = "A Primadonna learns beautiful skills, and her defence and evasion grow stronger."
