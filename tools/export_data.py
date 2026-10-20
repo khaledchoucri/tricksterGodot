@@ -73,7 +73,8 @@ def monster_summary(tables, ids):
             'view_range': p['aiViewRange'], 'aggressive': p.get('aiAttackDispos', 0) == 1,
             'retreat_hp': p.get('aiRetreatHp', 0), 'retreat_area': p.get('aiRetreatArea', 0),
             'attack_range': [c.get('MinAtkRange', 0), c.get('MaxAtkRange', 0)],
-            'elements': {k[:-1]: p[k] for k in ('FireR', 'WaterR', 'WindR', 'EarthR', 'ElecR', 'LightR', 'DarkR')},
+            # PhysicalR is the server's attribute 0x14, taken off every physical hit (0x59c4a0).
+            'elements': {k[:-1]: p[k] for k in ('FireR', 'WaterR', 'WindR', 'EarthR', 'ElecR', 'LightR', 'DarkR', 'PhysicalR')},
             'tactics': p.get('TacticsTable', ''),
             'boss': p.get('IsBoss', 0),
             'speech': [s for s in speech if s.strip()],

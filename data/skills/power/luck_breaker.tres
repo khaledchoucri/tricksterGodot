@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
-[ext_resource type="Resource" path="res://data/materials/mole_feather.tres" id="m_master"]
+[ext_resource type="Resource" path="res://data/materials/bronze_scarab.tres" id="m_master"]
 
 [resource]
 script = ExtResource("1_s")

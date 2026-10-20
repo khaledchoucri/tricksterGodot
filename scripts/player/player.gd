@@ -96,15 +96,19 @@ func now() -> float:
 ## the Extra Swing trait's swing.
 func refresh_gear() -> void:
 	var w := Run.equipped("weapon")
-	# A gun is worn, not held: it shows in the gun poses through the pivots,
-	# and its cycle (GunCycle) starts by loading it.
+	# A gun shows as the original draws it: through its pivots in the gun
+	# poses and idle, and held in the hand (its weapon sprite, at the frame's
+	# hand socket) while walking, running, dodging or hit. Its cycle
+	# (GunCycle) starts by loading it.
 	var carrying_gun := Run.carries_gun()
 	if is_instance_valid(gun) and gun.gun != (w.data.gun if carrying_gun else {}):
 		gun.equip(w.data.gun if carrying_gun else {})
-	if w and Run.cls.armed and not carrying_gun:
+	if w and Run.cls.armed:
 		weapon.use(w.data.weapon_sprite())
-	weapon.visible = Run.cls.armed and not carrying_gun
-	weapon.set_process(Run.cls.armed and not carrying_gun)  # it would show itself again each frame
+	weapon.yield_to_worn = "gun" if carrying_gun else ""
+	weapon.carry_tilt = 0.2 if carrying_gun else 0.8
+	weapon.visible = Run.cls.armed
+	weapon.set_process(Run.cls.armed)
 	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
 	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
 	_steps = combo.steps.duplicate()
@@ -356,6 +360,10 @@ func _clinch_release() -> bool:
 	return false
 
 
+## How long after a shot a gunner stands with the gun up (combat_stance_gun).
+const GUN_READY_TIME := 2.5
+
+
 func _state_move() -> void:
 	if try_actions():
 		return
@@ -364,6 +372,8 @@ func _state_move() -> void:
 	if input != Vector2.ZERO:
 		sprite.play_action("run", input)
 		sprite.speed_scale = 1.15 * Run.speed_mult()
+	elif gun.has_gun() and now() - gun.fired_at < GUN_READY_TIME and sprite.has_action("combat_stance_gun"):
+		sprite.play_action("combat_stance_gun", aim)  # gun up, ready for the next shot
 	else:
 		sprite.play_action("idle")
 
@@ -397,9 +407,14 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var skill_el: String = fx.get("element", "none")
 	if skill_el != "none":
 		element *= 1.0 - e.resist(skill_el) / 100.0
+	# The server's 0x59c4a0: each element adds base x attack% less the
+	# monster's resistance to it; physical resistance (its attribute 0x14)
+	# comes off a physical hit.
 	var el := Run.element_attack()
 	for k: String in el:
 		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
+	if not fx.get("magic", false):
+		element -= e.resist("Physical") / 100.0
 	if Run.quirk(&"elite_bane") and (e.is_elite or e.is_boss):
 		mult *= 1.1
 	if fx.get("gun", false):
@@ -425,7 +440,28 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 			Events.loot_found.emit("+1 " + Run.ORE_NAME)
 	var origin := global_position if from == Vector2.INF else from
 	e.take_hit(amount, Combat.ground(e.global_position - origin).normalized(), knockback, heavy, effects)
+	_element_fx(e, el)
 	return crit
+
+
+## Each element your compounds carry plays its own effect where the hit lands,
+## all at once (the client's 0x5c69d0 plays one per bit the server sets for
+## every element with attack, resisted or not). At most one round per
+## ELEMENT_FX_GAP on a monster, so a combo or a piercing shot doesn't pile up.
+const ELEMENT_FX := {"Fire": "element_fire", "Water": "element_ice", "Wind": "element_wind",
+	"Earth": "element_land", "Elec": "element_lightning", "Light": "element_light", "Dark": "element_dark"}
+const ELEMENT_FX_GAP := 0.3
+
+
+func _element_fx(e: Enemy, el: Dictionary) -> void:
+	if el.is_empty() or not is_instance_valid(e) or not is_instance_valid(room):
+		return
+	if now() < float(e.get_meta("element_fx_at", -INF)) + ELEMENT_FX_GAP:
+		return
+	e.set_meta("element_fx_at", now())
+	for k: String in el:
+		if float(el[k]) > 0.0 and ELEMENT_FX.has(k):
+			Cake.play(room, ELEMENT_FX[k], e.global_position, {"follow": e})
 
 
 # ---------------------------------------------------------------- dash

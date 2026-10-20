@@ -166,6 +166,8 @@ func now() -> float:
 func attack_element() -> String:
 	var best := ""
 	for k: String in elements:
+		if k == "Physical":
+			continue  # a resistance only, never an element
 		if float(elements[k]) > 0.0 and (best == "" or float(elements[k]) > float(elements[best])):
 			best = k
 	return best

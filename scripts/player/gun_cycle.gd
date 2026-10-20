@@ -24,6 +24,7 @@ var state := State.NONE
 var progress := 0.0   # reload, 0..200
 var power := 0.0      # power gauge once loaded, 0..200
 var gun: Dictionary = {}  # the equipped gun's ItemData.gun
+var fired_at := -INF  # player time of the last shot (basic or skill)
 var player: Player
 
 

@@ -252,6 +252,13 @@ func worn_item(slot: String) -> String:
 	return _worn.get(slot, {}).get("item", "")
 
 
+## Whether the item worn in `slot` is drawn on the frame on screen (the
+## pivots place it only in some poses).
+func worn_shown(slot: String) -> bool:
+	var w: Dictionary = _worn.get(slot, {})
+	return w.has("sprite") and (w.sprite as Sprite2D).visible
+
+
 func _place_worn() -> void:
 	for slot: String in _worn:
 		var w: Dictionary = _worn[slot]

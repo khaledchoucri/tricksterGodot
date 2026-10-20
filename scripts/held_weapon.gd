@@ -69,9 +69,17 @@ func give_back() -> void:
 	_lent = false
 
 
+## A worn slot that takes over from the hand: a gun is held in the hand while
+## walking or hit, and drawn through its pivots in the gun poses (and idle).
+var yield_to_worn := ""
+## How steeply a carried weapon points at the ground: a blade hangs, a gun is
+## held level, barrel forward.
+var carry_tilt := 0.8
+
+
 func _process(delta: float) -> void:
 	var socket := body.hand_socket()
-	if _lent or (socket.is_empty() and not _swinging):
+	if _lent or (socket.is_empty() and not _swinging) or (yield_to_worn != "" and body.worn_shown(yield_to_worn)):
 		visible = false
 		return
 	var target: Vector2 = socket.get("hand", fallback_hand)
@@ -106,7 +114,7 @@ func _swing_angle(progress: float) -> float:
 func _carry_angle(hand: Vector2) -> float:
 	var f := body.facing.normalized()
 	var side := signf(hand.x) * 0.35 if absf(f.x) < 0.5 else 0.0
-	return (f * 0.6 + Vector2(side, 0.8)).angle()
+	return (f * 0.6 + Vector2(side, carry_tilt)).angle()
 
 
 func _place(at: Vector2) -> void:

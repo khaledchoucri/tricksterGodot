@@ -198,9 +198,11 @@ PLAYERS = {'buffalo': 'data/character/chr002.pvo', 'bunny': 'data/character/chr0
            'sense_f': 'data/character/chr021.pvo', 'sense_m': 'data/character/chr022.pvo'}
 
 
-def worn_sprites(client):
+def worn_sprites(client, fallback=None):
     """Sprite files of the hats, shields and wardrobe pieces the game uses.
-    Also writes original_assets/equip/items.json: item id -> sprite name."""
+    Also writes original_assets/equip/items.json: item id -> sprite name.
+    A sprite this client lacks (gun002) is taken from `fallback`, the other
+    client, when it has it."""
     sys.path.insert(0, HERE)
     from export_items import load_items
     rows = load_items(os.path.join(OUT, 'data', 'tables'))
@@ -226,7 +228,13 @@ def worn_sprites(client):
             eq = (rows.get(m.group(1)) or {}).get('EquipFileName') or ''
             if eq:
                 parts = eq.replace(chr(92), '/').split('/')
-                files.add(os.path.join(client, *parts))
+                path = os.path.join(client, *parts)
+                if not os.path.exists(path) and fallback and os.path.exists(os.path.join(fallback, *parts)):
+                    path = os.path.join(fallback, *parts)
+                if not os.path.exists(path):
+                    print('  no equip sprite', eq)
+                    continue
+                files.add(path)
                 by_id[m.group(1)] = os.path.splitext(parts[-1])[0].lower()
     os.makedirs(os.path.join(OUT, 'equip'), exist_ok=True)
     with open(os.path.join(OUT, 'equip', 'items.json'), 'w') as f:
@@ -244,7 +252,10 @@ SPELL_TEXTURES = ['magic arrow', 'magic arrow jan sang', 'magic ring', 'yun gi']
 # Informally named cakes the early spells use (no skill number in the name).
 EXTRA_CAKES = ['magic impect', 'magic ting', 'hell fire', 'hit', 'hit star ting',
                # The Sense line's: thrown hits, Rain of Knives, gun hits.
-               'hit drow', 'throwing-knife', 'gun_taget']
+               'hit drow', 'throwing-knife', 'gun_taget',
+               # Elemental attack landing (the client's 0x5c69d0, one per element).
+               'element_fire', 'element_ice', 'element_wind', 'element_land', 'element_lightning',
+               'element_light', 'element_dark']
 
 
 def card_effects():
@@ -293,7 +304,7 @@ def main():
     run(os.path.join(HERE, 'export_icons.py'), client, os.path.join(OUT, 'data', 'tables', 'SkillParam2.json'),
         os.path.join(OUT, 'icons'), ','.join(skill_ids()))
     run(os.path.join(HERE, 'export_items.py'), client, os.path.join(OUT, 'data', 'tables'), OUT, ','.join(item_ids()))
-    worn = worn_sprites(client)
+    worn = worn_sprites(client, effect_client)
     for name, pvo in PLAYERS.items():
         run(os.path.join(HERE, 'export_equip.py'), client, os.path.join(OUT, 'actors', name), name,
             os.path.join(client, pvo), *worn)

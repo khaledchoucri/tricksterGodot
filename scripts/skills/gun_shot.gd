@@ -65,6 +65,7 @@ static func assisted_aim(s: Skill, reach: float) -> Vector2:
 ## Shared by the gun skills (gun_skill.gd).
 static func fire_line(s: Skill, dir: Vector2, reach: float, amount: float, power: bool, fx := {}) -> int:
 	var p := s.player
+	p.gun.fired_at = p.now()
 	var from := p.global_position
 	var to := from + Combat.screen(dir.normalized()) * reach
 	# Walls stop the shot where the line is first blocked.

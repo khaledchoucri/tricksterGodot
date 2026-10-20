@@ -23,6 +23,7 @@ static var _textures: Dictionary = {}
 static var _materials: Dictionary = {}
 
 ## Seconds the effect keeps emitting when it loops (0: until stop()).
+var effect := ""  # the cake's name in the effect table
 var hold := 0.0
 ## A node to stay on (a projectile, a monster); the effect follows it.
 var follow: Node2D
@@ -54,6 +55,7 @@ static func play(parent: Node, name: String, at: Vector2, opts := {}) -> Cake:
 	if data.is_empty() or parent == null:
 		return null
 	var c := Cake.new()
+	c.effect = name
 	c.hold = float(opts.get("hold", DEFAULT_HOLD))
 	c.follow = opts.get("follow")
 	c.scale = Vector2.ONE * float(opts.get("scale", 1.0))

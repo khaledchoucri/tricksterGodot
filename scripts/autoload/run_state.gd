@@ -964,7 +964,20 @@ func slot_keys_for(data: ItemData) -> Array[String]:
 
 ## Puts an item on (in the first free fitting slot unless `slot_key` is
 ## given) and returns what it replaced, or null.
+## What the last equip() put away besides the item it replaced: a shield, when
+## a gun is taken up ("a loaded gun can't share your hands with a shield").
+var displaced: Array[GearItem] = []
+
+
+## Whether `item` can go on now: no shield while a gun is carried.
+func can_equip(item: GearItem) -> bool:
+	return not (item.data.slot == ItemData.Slot.SHIELD and carries_gun())
+
+
 func equip(item: GearItem, slot_key := "") -> GearItem:
+	displaced = []
+	if not can_equip(item):
+		return null
 	if slot_key == "":
 		var keys := slot_keys_for(item.data)
 		slot_key = keys[0]
@@ -975,6 +988,9 @@ func equip(item: GearItem, slot_key := "") -> GearItem:
 	var old: GearItem = equipment.get(slot_key)
 	var before := max_hp
 	equipment[slot_key] = item
+	if carries_gun() and equipment.has("shield"):
+		displaced.append(equipment["shield"])
+		equipment.erase("shield")
 	stats_changed()
 	if max_hp > before:
 		heal(max_hp - before)
@@ -1124,9 +1140,11 @@ func overweight() -> bool:
 ## Whether this class can use a weapon: guns need Gun Carrier; a gunner
 ## (Lion, who starts with one) fights with guns only.
 func can_use(it: ItemData) -> bool:
+	var gunner := cls.start_weapon != null and cls.start_weapon.family == "gun"
+	if it.slot == ItemData.Slot.SHIELD:
+		return not gunner and not carries_gun()  # a gun needs both hands
 	if it.slot != ItemData.Slot.WEAPON:
 		return true
-	var gunner := cls.start_weapon != null and cls.start_weapon.family == "gun"
 	if it.family == "gun":
 		return card_level(&"gun_carrier") > 0
 	return not gunner

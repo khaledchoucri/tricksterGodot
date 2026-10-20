@@ -636,12 +636,19 @@ func _resume() -> void:
 
 
 func _equip(g: GearItem, slot_key: String) -> void:
+	if not Run.can_equip(g):
+		hud.log_line("[System] A gun needs both hands: no shield while you carry one.", MUTED)
+		_scrap(g)
+		return
 	var old := Run.equip(g, slot_key)
 	player.refresh_gear()
 	Audio.play("etc_item1.wav", -2.0)
 	hud.log_line("[System] Equipped %s." % g.title(), INFO)
 	if old:
 		_scrap(old)
+	for d in Run.displaced:
+		hud.log_line("[System] A gun needs both hands: %s put away." % d.title(), MUTED)
+		_scrap(d)
 
 
 func _scrap(g: GearItem) -> void:
