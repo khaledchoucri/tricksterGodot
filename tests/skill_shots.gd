@@ -2,7 +2,7 @@ extends Node
 ## Casts every attack of a class line at a few monsters and saves a frame of
 ## each just after it goes off (spells: after their cast time), plus a card
 ## pick with an upgrade offer and, for mages, a frame mid-cast. Needs a window:
-##   godot res://tests/skill_shots.tscn -- out=C:/some/folder [class=bunny|sheep|dragon]
+##   godot res://tests/skill_shots.tscn -- out=C:/some/folder [class=bunny|sheep|dragon|cat|raccoon]
 
 var out := "user://skill_shots"
 var game
@@ -39,7 +39,7 @@ func _shoot() -> void:
 	for e in game.room.enemies:
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	await _wait(1.6)
-	var line := "magic" if Run.cls.basic_skill else "power"
+	var line := "magic" if Run.cls.basic_skill else "charm" if Run.cls.id in [&"cat", &"raccoon"] else "power"
 	var ids: Array[StringName] = []
 	for c in Run.all_cards():
 		if c.is_skill() and c.resource_path.begins_with("res://data/skills/%s/" % line):
@@ -68,6 +68,17 @@ func _shoot() -> void:
 				dummies[k].global_position = home + [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)][k]
 		Run.cards[id] = 3
 		Run.loadout[0] = id
+		p.end_form()
+		# The Charm line's conditions: Galder in the purse, the beast form a
+		# beast skill needs, full HP for Mass Destruction.
+		Run.galder = 999
+		Run.hp = Run.max_hp
+		if SkillCaster.FORM_NEEDED.has(id) or id == &"beasts_instinct":
+			var need: StringName = SkillCaster.FORM_NEEDED.get(id, &"evolution")
+			need = need if need != &"" else &"metamorphosis"
+			Run.cards[need] = 3
+			p.enter_form(need, 30.0)
+			await _wait(0.3)
 		Run.mp = Run.max_mp
 		p.skills.slot_ready_at[0] = 0.0
 		p.skills.try_cast(0)
