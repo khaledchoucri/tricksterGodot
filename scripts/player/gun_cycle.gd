@@ -8,7 +8,9 @@ extends Node
 ##    120000 / GaugeSpeed ms. Walking or running resets it (Quick Reload keeps
 ##    it), and so does a hit (Invincible Reload keeps it) and a dash (our rule).
 ##  - Loaded, a power gauge fills by dt_ms x PowRange / 1200 up to 200; a shot
-##    fired with it above PowStartPoint is a power shot.
+##    fired with it above PowStartPoint is a power shot. Ours: the gauge is the
+##    Overcharge talent's, and every gun reaches RANGE_MULT x its table range
+##    (past the spells').
 ## No bullets (the user's rule): the gun is loaded or reloading, nothing else.
 
 signal changed
@@ -16,6 +18,7 @@ signal changed
 enum State { NONE, RELOADING, LOADED }
 
 const FULL := 200.0
+const RANGE_MULT := 1.5
 
 var state := State.NONE
 var progress := 0.0   # reload, 0..200
@@ -42,6 +45,16 @@ func loaded() -> bool:
 	return state == State.LOADED
 
 
+## How far the gun shoots: its MaxAttackRange, x RANGE_MULT.
+func range() -> float:
+	return float(gun.get("range", 220)) * RANGE_MULT
+
+
+## Whether the loaded gun charges a power gauge (Overcharge).
+func charges() -> bool:
+	return Run.card_level(&"overcharge") > 0
+
+
 ## A reload's length in seconds, as Speedloader leaves it.
 func reload_time() -> float:
 	return 120.0 / maxf(float(gun.get("speed", 100)), 1.0) * Run.reload_mult()
@@ -61,7 +74,7 @@ func zone_ratio() -> float:
 
 
 func in_power_zone() -> bool:
-	return loaded() and power > float(gun.get("zone", FULL))
+	return loaded() and charges() and power > float(gun.get("zone", FULL))
 
 
 ## Fires: true if the gun was loaded (and whether it was a power shot in
@@ -111,6 +124,6 @@ func _physics_process(delta: float) -> void:
 			power = 0.0
 			Audio.play("weapon_gun_reload.wav", -6.0)  # the client's etc_gun_reload
 		changed.emit()
-	elif state == State.LOADED and power < FULL:
+	elif state == State.LOADED and power < FULL and charges():
 		power = minf(power + ms * float(gun.get("power", 170)) / 1200.0, FULL)
 		changed.emit()

@@ -1123,6 +1123,16 @@ func sense_line() -> void:
 	var gun := p.gun
 	check(Run.cls.id == &"lion" and Run.job.id == &"engineer" and Run.card_level(&"gun_carrier") > 0
 		and Run.carries_gun() and gun.has_gun(), "Lion starts as an Engineer carrying a gun (Gun Carrier)")
+	check(Run.card_level(&"quick_reload") > 0 and Run.card_level(&"overcharge") == 0 and not gun.charges(),
+		"Lion starts with Quick Reload; the power gauge waits for Overcharge")
+	check(gun.range() > 300.0, "the gun outranges the spells (%d)" % gun.range())
+	var basic_hit := Run.GUN_SHOT * Run.gun_shot_mult()
+	var weakest := INF
+	for id: StringName in [&"power_shot", &"double_shot", &"butt_plate", &"shooting_spree", &"berserk"]:
+		var c := Run.card(id)
+		var per_hit := c.value_at(1) * Run.skill_mult(c) / maxf(c.param("count", 1, 1.0), 1.0)
+		weakest = minf(weakest, per_hit)
+	check(weakest > basic_hit, "every gun skill outhits a basic shot (weakest %d vs %d)" % [weakest, basic_hit])
 	var reload := gun.reload_time()
 	check(is_equal_approx(reload, 120.0 / 90.0), "the Old Ebony Gun reloads in 120000/GaugeSpeed ms (%.2f s)" % reload)
 	target = await _dummy(p, 120.0)
@@ -1151,6 +1161,7 @@ func sense_line() -> void:
 	check(gun.progress == 100.0, "Invincible Reload keeps the reload through a hit")
 	Run.cards.erase(&"invincible_reload")
 	await wait(0.5)
+	Run.cards.erase(&"quick_reload")  # Lion's starter: walking keeps the reload
 	p.enter(Player.State.MOVE)
 	gun.progress = 100.0
 	Input.action_press("move_right")
@@ -1164,7 +1175,6 @@ func sense_line() -> void:
 	Input.action_release("move_right")
 	check(moved < 50.0 and gun.progress > 100.0,
 		"walking resets the reload (%.0f), not with Quick Reload (%.0f)" % [moved, gun.progress])
-	Run.cards.erase(&"quick_reload")
 	Run.cards[&"speedloader"] = 5
 	check(gun.reload_time() < reload, "Speedloader shortens the reload (%.2f -> %.2f s)" % [reload, gun.reload_time()])
 	check(is_equal_approx(gun.reload_time(), reload / (1.0 + Run.card_value(&"speedloader") / 100.0)),
@@ -1179,10 +1189,26 @@ func sense_line() -> void:
 		"gun damage scales with AC (the server's gun formula): x%.2f -> x%.2f" % [ac0, Run.gun_stat_mult()])
 	Run.type_points["power"] -= 5
 	Run.stats_changed()
-	# The power zone.
+	# The power zone, with Overcharge.
 	gun.state = GunCycle.State.LOADED
 	gun.power = float(gun.gun.zone) + 5.0
-	check(gun.fire() and gun.last_power, "a shot fired above PowStartPoint is a power shot")
+	check(gun.fire() and not gun.last_power, "without Overcharge there is no power shot")
+	Run.cards[&"overcharge"] = 1
+	gun.state = GunCycle.State.LOADED
+	gun.power = float(gun.gun.zone) + 5.0
+	check(gun.fire() and gun.last_power, "with Overcharge, a shot fired above PowStartPoint is overcharged")
+	Run.cards.erase(&"overcharge")
+	# A gun skill fires without a load and leaves the reload alone.
+	gun.progress = 60.0
+	Run.cards[&"power_shot"] = 1
+	Run.loadout[0] = &"power_shot"
+	Run.mp = Run.max_mp
+	p.skills.slot_ready_at[0] = 0.0
+	var fired := p.skills.try_cast(0)
+	await wait(0.4)
+	check(fired and gun.state == GunCycle.State.RELOADING and gun.progress >= 60.0,
+		"Power Shot fires mid-reload and doesn't reset it (%.0f)" % gun.progress)
+	Run.cards.erase(&"power_shot")
 	_remove(target)
 
 	# A wall stops a shot.

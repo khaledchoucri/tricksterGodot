@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="JobData" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="JobData" load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/job_data.gd" id="1_s"]
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="2_c"]
@@ -17,6 +17,7 @@
 [ext_resource type="Resource" path="res://data/skills/sense/quick_reload.tres" id="c_quick_reload"]
 [ext_resource type="Resource" path="res://data/skills/sense/lucky_seven.tres" id="c_lucky_seven"]
 [ext_resource type="Resource" path="res://data/skills/sense/compound_master.tres" id="c_compound_master"]
+[ext_resource type="Resource" path="res://data/skills/sense/overcharge.tres" id="c_overcharge"]
 
 [resource]
 script = ExtResource("1_s")
@@ -25,6 +26,6 @@ display_name = "Engineer"
 actor = "lion"
 tier = 1
 starter = ExtResource("c_gun_carrier")
-cards = Array[ExtResource("2_c")]([ExtResource("c_invincible_drill"), ExtResource("c_stone_strike"), ExtResource("c_sixth_sense"), ExtResource("c_gun_carrier"), ExtResource("c_heavy_carrier"), ExtResource("c_shuriken_master"), ExtResource("c_sticky_foot"), ExtResource("c_invincible_reload"), ExtResource("c_gun_booster"), ExtResource("c_basic_detection"), ExtResource("c_armor_destructor"), ExtResource("c_quick_reload"), ExtResource("c_lucky_seven"), ExtResource("c_compound_master")])
+cards = Array[ExtResource("2_c")]([ExtResource("c_invincible_drill"), ExtResource("c_stone_strike"), ExtResource("c_sixth_sense"), ExtResource("c_gun_carrier"), ExtResource("c_heavy_carrier"), ExtResource("c_shuriken_master"), ExtResource("c_sticky_foot"), ExtResource("c_invincible_reload"), ExtResource("c_gun_booster"), ExtResource("c_basic_detection"), ExtResource("c_armor_destructor"), ExtResource("c_quick_reload"), ExtResource("c_lucky_seven"), ExtResource("c_compound_master"), ExtResource("c_overcharge")])
 text = "Engineers build guns and the devices that go with them, and fight at range. An Engineer advances to Inventor."
 next_jobs = Array[ExtResource("1_s")]([ExtResource("j_inventor")])

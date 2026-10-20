@@ -27,6 +27,8 @@ extends Resource
 ## Seconds between basic attacks when the basic skill's own cooldown is too
 ## slow for a left-click attack (Fox: Shuriken Master's 2 s; 0 keeps it).
 @export var basic_cooldown := 0.0
+## Talents the class starts every run with (Lion: Quick Reload).
+@export var start_cards: Array[StringName] = []
 ## Spells cast by this class can't be interrupted by hits (Invincible Casting).
 @export var steady_casting := false
 ## Cards this class is never offered (the other mage's basic spell).

@@ -1,9 +1,11 @@
 extends Skill
-## Gun skills that fire the loaded gun (GunCycle; each starts a reload):
-## Power Shot (3202, a concentrated round), Double Shot (3206, two in a row:
-## the second can't be dodged) and Shield Breaker (3207, a breaching round:
-## the enemy takes more gun damage for its seconds). They shoot along the
-## aim like the basic shot (gun_shot.gd's line).
+## Gun skills that fire along the aim like the basic shot (gun_shot.gd's
+## line): Power Shot (3202, a concentrated round), Double Shot (3206, two in
+## a row: the second can't be dodged) and Shield Breaker (3207, a breaching
+## round: the enemy takes more gun damage for its seconds). Their damage is a
+## multiple of a gun shot (the table's Ratio). They need a gun but not a
+## load, and leave the gun's cycle as it is (ours: in the original they used
+## up bullets).
 
 const GunShot := preload("res://scripts/skills/gun_shot.gd")
 
@@ -15,28 +17,23 @@ func _init() -> void:
 
 
 func start() -> void:
-	var gun := player.gun
-	if not gun.fire():
-		return
-	var power := gun.last_power
-	var reach := param("range", float(gun.gun.get("range", 220)))
+	var reach := player.gun.range()
+	var dir := GunShot.assisted_aim(self, reach)
 	if card.id == &"shield_breaker":
+		# The breaching round hits as a gun shot plus its breach (Ratio 0.2+).
 		var fx := {"debuffs": {"gunbreak": [card.value_at(level), param("seconds", 5.0)]}}
-		GunShot.fire_line(self, aim, reach, NORMAL_HIT_SHARE * Run.gun_shot_mult(), power, fx)
+		var amount := Run.GUN_SHOT * (1.0 + card.value_at(level) / 100.0) * Run.gun_shot_mult()
+		GunShot.fire_line(self, dir, reach, amount, false, fx)
 		return
 	var shots := maxi(int(param("count", 1)), 1)
 	var share := damage() / shots
 	if shots == 1:
-		GunShot.fire_line(self, aim, reach, share, power)
+		GunShot.fire_line(self, dir, reach, share, false)
 		return
 	linger()
 	for i in shots:
 		# The second of a Double Shot can't be dodged (it never grazes).
-		GunShot.fire_line(self, aim, reach, share, power or i > 0, {"no_graze": i > 0})
+		GunShot.fire_line(self, dir, reach, share, false, {"no_graze": i > 0})
 		if i < shots - 1 and not await wait_for(0.1):
 			break
 	release()
-
-
-## Shield Breaker's round itself hits lightly (the breach is the point).
-const NORMAL_HIT_SHARE := 29.0

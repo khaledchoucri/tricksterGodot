@@ -27,6 +27,9 @@ func _draw() -> void:
 	if gun.state == GunCycle.State.RELOADING:
 		draw_rect(Rect2(0, 0, WIDTH * gun.reload_ratio(), HEIGHT), Color(0.7, 0.72, 0.78))
 		return
+	if not gun.charges():
+		draw_rect(Rect2(0, 0, WIDTH, HEIGHT), Color(0.55, 0.85, 1.0))  # loaded, ready to fire
+		return
 	var zone := gun.zone_ratio()
 	draw_rect(Rect2(WIDTH * zone, 0, WIDTH * (1.0 - zone), HEIGHT), Color(0.45, 0.32, 0.08, 0.9))
 	var lit := gun.in_power_zone()

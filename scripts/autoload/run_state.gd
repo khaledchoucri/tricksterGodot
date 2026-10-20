@@ -305,6 +305,9 @@ func new_run() -> void:
 	_baseline = false
 	_stats.clear()
 	start_job(cls.start_job)
+	for id in cls.start_cards:
+		if card_level(id) == 0:
+			add_card(id)
 	_carry_heirloom()
 	_apply_restorations()
 	stats_changed()
@@ -931,8 +934,8 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 ## The class's basic spell, or a talent that improves it.
 ## The gun's own talents: they grow a gunner's basic shot, so they are offered
 ## like the cards that build on a basic skill.
-const GUN_GROWERS: Array[StringName] = [&"invincible_reload", &"quick_reload", &"gun_booster", &"keen_sense",
-	&"sharp_sense", &"speedloader", &"gun_overdrive"]
+const GUN_GROWERS: Array[StringName] = [&"overcharge", &"invincible_reload", &"quick_reload", &"gun_booster",
+	&"keen_sense", &"sharp_sense", &"speedloader", &"gun_overdrive"]
 
 
 func _grows_basic(c: CardData) -> bool:
@@ -1211,11 +1214,11 @@ func attack_mult() -> float:
 ## Damage multiplier for a skill, from the stat it scales with.
 func skill_mult(c: CardData = null) -> float:
 	var scaling := c.scaling if c else "AP"
-	# AP, MA and DA work as in Trickster (linear). GUN is a gun skill's: the
-	# gun's AP and your DA together. The runes' DP skills keep a damped curve.
+	# AP, MA and DA work as in Trickster (linear). A GUN skill's value is a %
+	# of a gun shot (its table Ratio). The runes' DP skills keep a damped curve.
 	var m := 1.0
 	if scaling == "GUN":
-		m = gun_stat_mult()
+		return gun_shot_mult() * GUN_SHOT / 100.0
 	elif scaling in ["AP", "MA", "DA"]:
 		m = _linear(scaling)
 	else:
@@ -1254,8 +1257,15 @@ const THROWN: Array[StringName] = [&"shuriken_master", &"fan_of_knives", &"chain
 const GUN_AP_PER_AC := 20.0
 
 
+## A gun shot's base damage (gun_shot.tres), which the gun skills' % refer to.
+const GUN_SHOT := 87.0
+
+
+## Gun Overdrive (CustomizingGun) multiplies the gun's Gun AP by its Ratio;
+## Gun Booster (PriMarksmanship) adds its AP to the shot's.
 func gun_attack() -> float:
-	return stat("AC") + gun_ap() / GUN_AP_PER_AC
+	var ap := gun_ap() * (1.0 + card_value(&"gun_overdrive") / 100.0) + card_value(&"gun_booster")
+	return stat("AC") + ap / GUN_AP_PER_AC
 
 
 ## The equipped gun's Gun AP (its table AP, raised by refining).
@@ -1268,11 +1278,11 @@ func gun_stat_mult() -> float:
 	return gun_attack() / maxf(float(_ref.get("AC", 0)), 1.0)
 
 
-## Damage multiplier for the basic gun shot: Gun Booster and Gun Overdrive
-## (the original: they boost the gun, not other skills).
+## Damage multiplier for a gun shot. The gun skills are multiples of it, so
+## they always outhit the basic shot (Gun Booster and Gun Overdrive included,
+## though the original keeps Overdrive to the basic shot).
 func gun_shot_mult() -> float:
-	return gun_stat_mult() * (1.0 + card_value(&"gun_booster") / 100.0) * (1.0 + card_value(&"gun_overdrive") / 100.0) \
-		* _berserk_mult()
+	return gun_stat_mult() * _berserk_mult()
 
 
 ## Extra power-shot damage, %: Keen Sense, or Sharp Sense on top of a mastered

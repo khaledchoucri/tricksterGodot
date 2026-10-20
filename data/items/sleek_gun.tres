@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sleek_gun"
+display_name = "Sleek Gun"
+item_id = 610104
+slot = 0
+family = "gun"
+level = 10
+weight = 20
+stats = {
+"AP": 20
+}
+compound_slots = 1
+refine_stat = "AP"
+gun = {
+"speed": 90,
+"power": 170,
+"zone": 150,
+"range": 220
+}

@@ -69,7 +69,7 @@ FIRST_JOBS = {'schoolgirl', 'fighter', 'librarian', 'shaman', 'archeologist', 'e
 
 # Master Louis's material for each card (the original's are monster drops
 # from SkillMasterInfo, most of which aren't in the game yet).
-MATERIALS = ['sharp_leg', 'baby_carrot', 'hard_scales', 'scorpion_sting', 'cooling_fan', 'acorn_nut',
+MATERIALS = ['sharp_leg', 'eye_drop', 'hard_scales', 'scorpion_sting', 'cooling_fan', 'acorn_nut',
              'cool_ice', 'cool_spring_water', 'duck_mole_paws', 'mole_feather', 'nemeth_towel', 'pine_resin',
              'pineapple_mask', 'sand_glass', 'slime_husk', 'turban_shell', 'twinkle_star', 'ugly_pearl']
 
@@ -204,7 +204,7 @@ def sounds_for(sk):
     return {}
 
 
-def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
+def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, extra_cards=None):
     """Writes one .tres per card in `spec` into data/skills/<out_dir> and
     fills the jobs' card lists. `jobs`: job id -> skill-id prefixes (or a
     callable taking the skill id). `starters`: job id -> card id. Returns
@@ -248,6 +248,7 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
             pre, lv = cp[f'PreSkill_{k}'], cp[f'PreSkillLv_{k}']
             if pre != '0' and pre in names:
                 requires[names[pre]] = need(lv)
+        requires.update(sp.get('requires_extra', {}))  # our own cards (Overcharge)
         listed = job_ids(cp['Job'])
         learners = [] if not listed or all(j in FIRST_JOBS for j in listed) else listed
         element = ELEMENT_NAMES.get(sp.get('element', ''), sp.get('element')) or ELEMENTS.get(sk['Element'], 'none')
@@ -305,7 +306,8 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False):
     for job, picks in jobs.items():
         test = picks if callable(picks) else (lambda i, p=picks: i[:2] in p)
         ids = sorted((i for i in spec if test(i) and not spec[i].get('held')), key=lambda i: (cards[i]['TMLV'], i))
-        _fill_job(job, [names[i] for i in ids], out_dir, (starters or {}).get(job))
+        # Hand-made cards of ours (`extra_cards`: job -> card ids) join the list.
+        _fill_job(job, [names[i] for i in ids] + (extra_cards or {}).get(job, []), out_dir, (starters or {}).get(job))
         print(f'{job}: {len(ids)} cards')
     print(f'{len(spec)} cards written to {out}')
     return names

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"overcharge"
+display_name = "Overcharge"
+kind = 0
+text = "Once loaded, your gun keeps charging: a shot fired in the charged zone is overcharged, {v}% stronger. Ours: the original gives every gun this power gauge."
+requires = {&"gun_carrier": 1}
+table = {"value": [20.0]}

@@ -44,7 +44,9 @@ func cost_of(card: CardData, level: int) -> int:
 	return roundi(card.mp_at(level) * m)
 
 
-const GUN_LOADED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot", &"shield_breaker"]
+## Only the basic shot needs a load; the gun skills fire without one and
+## leave the reload as it is.
+const GUN_LOADED: Array[StringName] = [&"gun_shot"]
 const GUN_NEEDED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot", &"shield_breaker", &"butt_plate",
 	&"shooting_spree", &"berserk"]
 

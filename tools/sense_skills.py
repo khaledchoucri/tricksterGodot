@@ -23,6 +23,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from skill_trees import NORMAL_HIT, build, pct_hit  # noqa: E402
 
 
+def gun_pct(r):
+    """A gun skill's Ratio as a % of a gun shot."""
+    return round(r['Ratio'] * 100)
+
+
 SPEC = {
     # ---- Archeologist and Engineer (shared 1st job)
     '3001': dict(card='invincible_drill', value=lambda r: 0,
@@ -43,7 +48,8 @@ SPEC = {
     '3009': dict(card='lucky_seven', value=lambda r: r['Comment'], text='+{v}% LK.'),
     '3010': dict(card='quick_reload', value=lambda r: 0, text='Your reload keeps filling while you walk or run.'),
     '3011': dict(card='invincible_reload', value=lambda r: 0, text='Being hit no longer resets your reload.'),
-    '3012': dict(card='gun_booster', value=lambda r: r['AP'], text='Gun shots hit {v}% harder.'),
+    # Gun Booster (PriMarksmanship) adds its AP to the basic shot's Gun AP.
+    '3012': dict(card='gun_booster', value=lambda r: r['AP'], text='Your gun shots carry {v} more Gun AP.'),
     '3013': dict(card='basic_detection', value=lambda r: r['Depth'] / 10.0,
                  text='You sense what lies below: digs reach {v} deeper.'),
     '3014': dict(card='compound_master', value=lambda r: r['Comment'], text='Compounding succeeds {v}% more often.'),
@@ -78,19 +84,22 @@ SPEC = {
                        'targets': 'KillNum'},
                  text='Throw knives high above: they rain on up to {targets} enemies at the cursor, {v} damage in all.'),
     # ---- Inventor (Lion)
-    '3201': dict(card='butt_plate', behavior='close_strike', value=pct_hit, scaling='GUN', rows={'range': 'Range'},
-                 text='Club the enemy in front with your gun\'s butt for {v} damage. Needs a gun.'),
-    '3202': dict(card='power_shot', behavior='gun_skill', value=pct_hit, scaling='GUN', rows={'range': 'Range'},
-                 text='Fire a concentrated round for {v} damage. Needs the gun loaded.'),
-    '3203': dict(card='shooting_spree', behavior='gun_spray', value=pct_hit, scaling='GUN',
+    # The gun skills' Ratio is a multiple of a gun shot (the server's gun
+    # formula times it), so they always outhit the basic shot.
+    '3201': dict(card='butt_plate', behavior='close_strike', value=gun_pct, scaling='GUN', rows={'range': 'Range'},
+                 text='Club the enemy in front with your gun\'s butt: {v}% of a gun shot. Needs a gun.'),
+    '3202': dict(card='power_shot', behavior='gun_skill', value=gun_pct, scaling='GUN', rows={'range': 'Range'},
+                 text='Fire a concentrated round: {v}% of a gun shot. It doesn\'t use up your load.'),
+    '3203': dict(card='shooting_spree', behavior='gun_spray', value=gun_pct, scaling='GUN',
                  rows={'radius': 'Radius', 'targets': 'MonNum'},
-                 text='A burst of shots at up to {targets} random enemies around you, {v} damage each.'),
+                 text='A burst of shots at up to {targets} random enemies around you, {v}% of a gun shot each.'),
     '3204': dict(card='lucky_fist', behavior='close_strike', value=pct_hit, scaling='AP', rows={'range': 'Range'},
                  text='Trust your luck: a punch for {v} damage, more with LK.'),
-    '3205': dict(card='keen_sense', value=lambda r: r['Comment'] - 100, text='Power shots deal {v}% more damage.'),
-    '3206': dict(card='double_shot', behavior='gun_skill', value=pct_hit, scaling='GUN',
+    '3205': dict(card='keen_sense', value=lambda r: r['Comment'] - 100, text='Overcharged shots deal {v}% more damage.',
+                 requires_extra={'overcharge': 1}),
+    '3206': dict(card='double_shot', behavior='gun_skill', value=lambda r: r['Comment'], scaling='GUN',
                  rows={'range': 'Range', 'count': lambda r: 2},
-                 text='Fire twice in a row, {v} damage in all. Needs the gun loaded.'),
+                 text='Fire twice in a row, {v}% of a gun shot in all; the second can\'t be dodged.'),
     '3207': dict(card='shield_breaker', behavior='gun_skill', value=lambda r: r['Comment'], scaling='GUN', kind='skill',
                  rows={'range': 'Range', 'seconds': 'Seconds'},
                  text='A breaching round: the enemy takes {v}% more gun damage for {seconds} s.'),
@@ -116,14 +125,14 @@ SPEC = {
     '3307': dict(card='exploit_weakness', behavior='close_strike', value=pct_hit, scaling='AP', rows={'range': 'Range'},
                  text='Strike through any defence for {v} damage.'),
     # ---- Scientist (Lion)
-    '3501': dict(card='berserk', behavior='gun_spray', value=pct_hit, scaling='GUN',
+    '3501': dict(card='berserk', behavior='gun_spray', value=gun_pct, scaling='GUN',
                  rows={'radius': 'Radius', 'targets': 'MonNum'},
-                 text='Shoot every enemy around you like crazy: up to {targets}, {v} damage each.'),
+                 text='Shoot every enemy around you like crazy: up to {targets}, {v}% of a gun shot each.'),
     '3502': dict(card='revealing_eye', value=lambda r: r['Radius'],
                  text='Hiding monsters within {v} can\'t escape your sight.'),
-    '3503': dict(card='gun_overdrive', value=lambda r: r['Comment'] - 100, text='Your gun\'s AP is {v}% higher.'),
+    '3503': dict(card='gun_overdrive', value=lambda r: r['Comment'] - 100, text='Your gun\'s Gun AP is {v}% higher.'),
     '3504': dict(card='sharp_sense', upgrades='3205', value=lambda r: r['Comment'] - 100,
-                 text='Power shots deal {v}% more damage on top of a mastered Keen Sense.'),
+                 text='Overcharged shots deal {v}% more damage on top of a mastered Keen Sense.'),
     '3505': dict(card='bunker', behavior='bunker', value=lambda r: r['Comment'], kind='skill',
                  rows={'seconds': 'Seconds'},
                  text='Dig in behind a bunker for {seconds} s: it takes the hits ({v}% of your max HP), and your shots hit harder.'),
@@ -141,7 +150,10 @@ JOBS = {
 
 
 def main():
-    build(SPEC, 'sense', JOBS, starters={'archeologist': 'shuriken_master', 'engineer': 'gun_carrier'})
+    # Overcharge is ours (data/skills/sense/overcharge.tres): the gun's power
+    # gauge, which the original gives every gun, as a talent.
+    build(SPEC, 'sense', JOBS, starters={'archeologist': 'shuriken_master', 'engineer': 'gun_carrier'},
+          extra_cards={'archeologist': ['overcharge'], 'engineer': ['overcharge']})
 
 
 if __name__ == '__main__':
