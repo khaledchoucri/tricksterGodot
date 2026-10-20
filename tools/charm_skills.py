@@ -15,9 +15,17 @@ Line-specific readings:
   (drops here are a run's, not a bank's) and strike through DP as on the
   server; they also scale with HV (the user's choice: the server's Galder x
   Ratio doesn't grow with stats).
-- Evolution and Metamorphosis turn you into the beast (trs001, trs002) with
-  the table's stat changes and MP drain; leaving the form doesn't halve your
-  HP (the user's choice). Beast-only skills need the form.
+- Evolution and Metamorphosis are talents here (the user's choice; the
+  original's are timed casts that drain MP and need 60% HP and MP): once
+  learned you stay the beast (trs001, trs002) for the run, with the table's
+  stat changes and no drain. Only the skills that beast can use work in it
+  (Evolution: Beast Claw, Fatal Wound, Raging Nail, Sharp Scream, Beast's
+  Instinct; Metamorphosis: Wild Nail, Heavy Hit, Card Soldier), new skills
+  are offered only if they do, and the beast skills ask for their form at
+  Lv 1 rather than the original's Lv 3, so a fresh beast isn't left with
+  no skill. Sharp Scream also asks for Evolution, so it comes after it.
+- Beast's Instinct stays a timed cast on top of Evolution (its own MP drain
+  while it lasts); when it ends, Evolution doesn't.
 - Held back for want of the system they act on: Team Bolster and Bodyguard
   (no party), Aura Shatter (monsters have no buffs), Super Hips (monsters
   don't crit), Warm Up (no job lists it).
@@ -70,14 +78,16 @@ SPEC = {
     '4104': dict(card='siren_song', behavior='charm_burst', value=pct_hit, scaling='0.1HPNOW+0.5DP',
                  rows={'range': 'Range', 'targets': 'MonNum', 'angle': 'Angle'},
                  text='Your voice hits up to {targets} enemies in front for {v} damage, more with HP and DP.'),
-    '4105': dict(card='evolution', behavior='transform', kind='skill', value=lambda r: (r['ApPRatio'] - 1) * 100,
-                 rows={'seconds': 'Seconds', 'dx': 'DxPValue', 'loss': lambda r: r['DpMRatio'] * 100},
-                 text='Become a beast for {seconds} s: {v}% more AP, faster attacks, {loss}% less DP, HV and LK. '
-                      'Drains MP; needs 60% HP and MP.'),
+    '4105': dict(card='evolution', kind='talent', value=lambda r: (r['ApPRatio'] - 1) * 100,
+                 rows={'dx': 'DxPValue', 'loss': lambda r: r['DpMRatio'] * 100},
+                 text='Become a beast for the rest of the run: {v}% more AP, faster attacks, {loss}% less DP, HV and LK. '
+                      'Only beast skills work in this form (Beast Claw, Fatal Wound, Raging Nail, Sharp Scream, '
+                      "Beast's Instinct): your other skills stop working."),
     '4106': dict(card='beast_claw', behavior='charm_strike', value=pct_hit, scaling='AP', rows={'range': 'Range'},
+                 requires_extra={'evolution': 1},
                  text='Beast form only: lunge at the enemy you aim at, a devastating claw for {v} damage.'),
     '4107': dict(card='fatal_wound', behavior='charm_strike', kind='skill', value=ratio_pct, scaling='AP',
-                 rows={'range': 'Range', 'bleed': 'Comment', 'seconds': 'Seconds'},
+                 rows={'range': 'Range', 'bleed': 'Comment', 'seconds': 'Seconds'}, requires_extra={'evolution': 1},
                  text='Beast form only: a deep wound for {v} damage that bleeds {bleed}% of it again over {seconds} s.'),
     '4108': dict(card='sumo_suit', value=lambda r: r['Comment'], text='All the padding you need: you take {v}% less damage.'),
     '4109': dict(card='fist_full_of_galders', behavior='card_throw', value=pct_hit, scaling='HV',
@@ -96,11 +106,13 @@ SPEC = {
     '4205': dict(card='impelling_rage', behavior='charm_burst', value=pct_hit, scaling='MA',
                  rows={'radius': 'Radius', 'targets': lambda r: 5},
                  text='Force your fighting spirit out: up to {targets} enemies around you are pushed back for {v} damage.'),
-    '4206': dict(card='metamorphosis', behavior='transform', kind='skill', value=lambda r: (r['DpPRatio'] - 1) * 100,
-                 rows={'seconds': 'Seconds', 'dx': 'DxMValue', 'loss': lambda r: r['ApMRatio'] * 100},
-                 text='Change at a cellular level for {seconds} s: {v}% more DP and HV, {loss}% less AP and LK, '
-                      'slower attacks. Drains MP; needs 60% HP and MP.'),
+    '4206': dict(card='metamorphosis', kind='talent', value=lambda r: (r['DpPRatio'] - 1) * 100,
+                 rows={'dx': 'DxMValue', 'loss': lambda r: r['ApMRatio'] * 100},
+                 text='Change at a cellular level for the rest of the run: {v}% more DP and HV, {loss}% less AP and LK, '
+                      'slower attacks. Only beast skills work in this form (Wild Nail, Heavy Hit, Card Soldier): '
+                      'your other skills stop working.'),
     '4207': dict(card='wild_nail', behavior='charm_strike', value=pct_hit, scaling='16HV', rows={'range': 'Range'},
+                 requires_extra={'metamorphosis': 1},
                  text='Beast form only: sharp nails for {v} damage, all from your HV.'),
     '4208': dict(card='flux_capacitor', behavior='transform', kind='skill', value=lambda r: r['Comment'],
                  rows={'hp': lambda r: r['HpRatio'] * 100},
@@ -125,12 +137,12 @@ SPEC = {
                  rows={'range': 'Range', 'ignore': lambda r: 100 - r['DisDefenceRatio']},
                  text='Beast form only: a raging claw for {v} damage that ignores {ignore}% of the enemy\'s DP.'),
     '4304': dict(card='sharp_scream', behavior='charm_burst', value=pct_hit, scaling='AP+16HV',
-                 rows={'range': 'Range', 'radius': 'Radius', 'targets': 'Count'},
+                 rows={'range': 'Range', 'radius': 'Radius', 'targets': 'Count'}, requires_extra={'evolution': 1},
                  text='Beast form only: a piercing scream hits up to {targets} enemies near you for {v} damage.'),
     '4305': dict(card='beasts_instinct', behavior='transform', kind='skill', value=lambda r: (r['AP_Ratio'] - 1) * 100,
                  rows={'seconds': 'Seconds', 'dx': 'DX_Ratio', 'loss': lambda r: r['DP_Ratio'] * 100},
-                 text='In Evolution: unleash the beast for {seconds} s, {v}% more AP and faster attacks but no skills. '
-                      'Evolution ends with it.'),
+                 text='In Evolution: unleash the beast for {seconds} s, {v}% more AP and faster attacks, but no skills '
+                      'and a steady MP drain.'),
     # ---- Gambler (Raccoon)
     '4501': dict(card='full_house', behavior='charm_burst', value=pct_hit, scaling='AP+8HV+8LK',
                  rows={'radius': 'Radius', 'targets': lambda r: 5},
@@ -144,6 +156,7 @@ SPEC = {
                  text='Beast form only: a massive blow for {v} damage, more with your HP, that sends the enemy flying.'),
     '4504': dict(card='card_soldier', behavior='charm_burst', value=lambda r: r['DamageRatio'] * NORMAL_HIT,
                  scaling='AP+8HV', rows={'range': 'Range', 'min': 'MinCard', 'max': 'MaxCard'},
+                 requires_extra={'metamorphosis': 1},
                  text='Beast form only: summon a card soldier numbered {min} to {max} at the cursor; it strikes for '
                       '{v} damage, more the higher its number.'),
     '4505': dict(card='four_of_a_kind', behavior='charm_burst', value=lambda r: pct_hit(r) / 4, scaling='AP',

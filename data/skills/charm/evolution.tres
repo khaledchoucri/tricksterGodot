@@ -1,19 +1,17 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/turban_shell.tres" id="m_master"]
-[ext_resource type="Script" path="res://scripts/skills/transform.gd" id="2_b"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"evolution"
 display_name = "Evolution"
-kind = 1
+kind = 0
 skill_id = 4105
-text = "Become a beast for {seconds} s: {v}% more AP, faster attacks, {loss}% less DP, HV and LK. Drains MP; needs 60% HP and MP."
+text = "Become a beast for the rest of the run: {v}% more AP, faster attacks, {loss}% less DP, HV and LK. Only beast skills work in this form (Beast Claw, Fatal Wound, Raging Nail, Sharp Scream, Beast's Instinct): your other skills stop working."
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva"])
-table = {"value": [30.0, 50.0, 80.0, 100.0, 150.0, 165.0, 180.0, 195.0], "mp": [60.0, 63.0, 67.0, 69.0, 75.0, 75.0, 75.0, 75.0], "cooldown": [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], "seconds": [50.0, 60.0, 75.0, 85.0, 110.0, 110.0, 110.0, 110.0], "dx": [1.0, 1.0, 2.0, 3.0, 4.0, 4.0, 4.0, 4.0], "loss": [20.0, 22.0, 25.0, 27.0, 30.0, 30.0, 30.0, 30.0]}
+table = {"value": [30.0, 50.0, 80.0, 100.0, 150.0, 165.0, 180.0, 195.0], "dx": [1.0, 1.0, 2.0, 3.0, 4.0, 4.0, 4.0, 4.0], "loss": [20.0, 22.0, 25.0, 27.0, 30.0, 30.0, 30.0, 30.0]}
 sounds = {"ap": "snd_c_205_ap.wav"}
 effects = {"ap": ["zeldaboom"]}
 master_material = ExtResource("m_master")
-behavior = ExtResource("2_b")

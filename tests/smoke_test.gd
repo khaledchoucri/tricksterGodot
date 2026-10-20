@@ -1431,37 +1431,122 @@ func charm_line() -> void:
 	check(Run.skill_mult(Run.card(&"wild_nail")) == Run.attack_power("16HV") / Run.attack_power("16HV", true),
 		"Wild Nail is HV alone")
 
-	# Evolution: 60% HP and MP, the beast's body and stats, MP drain, and
-	# leaving it keeps your HP.
-	Run.cards[&"evolution"] = 1
-	Run.loadout[0] = &"evolution"
-	Run.mp = Run.max_mp
-	Run.hp = Run.max_hp / 2
-	p.skills.slot_ready_at[0] = 0.0
-	check(not p.skills.try_cast(0) and Run.form == &"", "Evolution needs 60% HP")
-	Run.hp = Run.max_hp
+	# Evolution is a talent: learned, Cat is the beast (trs001) for good, with
+	# no MP drain; only Evolution's skills work, and only they are offered.
+	# Beast's Instinct is timed on top of it, and Evolution outlasts it.
+	check(not Run.card(&"evolution").is_skill(), "Evolution is a talent")
+	check(not Run.requirements_met(Run.card(&"beast_claw")) and not Run.requirements_met(Run.card(&"fatal_wound")),
+		"Evolution's skills aren't offered before it")
 	var ap0 := Run.stat("AP")
 	var dp0 := Run.stat("DP")
-	p.skills.slot_ready_at[0] = 0.0
-	check(p.skills.try_cast(0), "Evolution casts at full HP and MP")
-	await wait(0.7)
+	Run.add_card(&"evolution")
+	p.become_beast()
 	check(Run.form == &"evolution" and p.sprite.actor_name == "beast_evolution" and Run.stat("AP") > ap0
 		and Run.stat("DP") < dp0, "Evolution turns Cat into the beast (trs001): AP %d -> %d, DP %d -> %d" % [ap0,
 		Run.stat("AP"), dp0, Run.stat("DP")])
 	check(p.combo == Player.BEAST_COMBO and not p.weapon.visible, "the beast fights with its claws, no weapon")
+	check(Run.requirements_met(Run.card(&"beast_claw")) and Run.requirements_met(Run.card(&"fatal_wound")),
+		"with it, Beast Claw and Fatal Wound open up")
+	Run.mp = Run.max_mp / 2
 	var mp1 := Run.mp
 	await wait(1.2)
-	check(Run.mp < mp1, "the form drains MP (%d -> %d)" % [mp1, Run.mp])
+	check(Run.form == &"evolution" and Run.mp >= mp1, "Evolution never drains MP or ends (MP %d -> %d)" % [mp1, Run.mp])
+	Run.mp = Run.max_mp
+	for id: StringName in [&"volley_kick", &"beast_claw", &"wild_nail"]:
+		Run.cards[id] = 1
+	Run.loadout = [&"volley_kick", &"beast_claw", &"wild_nail"] as Array[StringName]
+	for i in 3:
+		p.skills.slot_ready_at[i] = 0.0
+	check(not p.skills.try_cast(0) and Run.form_block(&"volley_kick") == "Not in Evolution",
+		"Volley Kick doesn't work in Evolution")
+	check(not p.skills.try_cast(2), "nor Wild Nail, Metamorphosis's")
+	check(p.skills.try_cast(1), "Beast Claw does")
+	await wait(0.8)
+	var ent: JobData = load("res://data/jobs/entertainer.tres")
+	var job_e := Run.job
+	Run.jobs.append(ent)
+	Run.job = ent
+	var offered_e: Array[StringName] = []
+	for i in 20:
+		for c in Run.card_offers(3, false):
+			if c.is_skill():
+				offered_e.append(c.id)
+	var stray_e := offered_e.filter(func(id: StringName) -> bool: return not Run.form_allows(id))
+	check(stray_e.is_empty(), "Evolution is only offered skills it can use: %s" % [offered_e if stray_e.is_empty() else stray_e])
+	Run.jobs.erase(ent)
+	Run.job = job_e
+	Run.cards[&"beasts_instinct"] = 1
+	Run.loadout[0] = &"beasts_instinct"
+	Run.mp = Run.max_mp
+	p.skills.slot_ready_at[0] = 0.0
+	check(p.skills.try_cast(0), "Beast's Instinct casts in Evolution")
+	await wait(0.7)
+	var ap_i := Run.stat("AP")
+	check(Run.instinct and not p.skills.try_cast(1), "in Beast's Instinct, no skills (AP %d)" % ap_i)
+	mp1 = Run.mp
+	await wait(1.0)
+	check(Run.mp < mp1, "Beast's Instinct drains MP (%d -> %d)" % [mp1, Run.mp])
+	p.instinct_until = p.now()
+	await wait(0.2)
+	check(not Run.instinct and Run.form == &"evolution" and Run.stat("AP") < ap_i, "when it ends, Evolution stays")
+	for id: StringName in [&"evolution", &"volley_kick", &"beast_claw", &"wild_nail", &"beasts_instinct"]:
+		Run.cards.erase(id)
+	Run.loadout = [&"", &"", &""] as Array[StringName]
+	Run.form = &""
+	Run.stats_changed()
+	p.refresh_gear()
+	check(p.sprite.actor_name == "cat", "back to Cat for the next checks")
+
+	# Metamorphosis is a talent: learned, you're the beast for good, with no
+	# MP drain; only beast skills work, and only they are offered.
+	var meta := Run.card(&"metamorphosis")
+	check(not meta.is_skill(), "Metamorphosis is a talent")
+	check(not Run.requirements_met(Run.card(&"wild_nail")) and not Run.requirements_met(Run.card(&"card_soldier")),
+		"Metamorphosis's skills aren't offered before it")
+	ap0 = Run.stat("AP")
+	dp0 = Run.stat("DP")
+	Run.add_card(&"metamorphosis")
+	p.become_beast()
+	check(Run.form == &"metamorphosis" and p.sprite.actor_name == "beast_metamorphosis" and Run.stat("DP") > dp0
+		and Run.stat("AP") < ap0, "Metamorphosis turns you into the beast (trs002): DP %d -> %d, AP %d -> %d" % [dp0,
+		Run.stat("DP"), ap0, Run.stat("AP")])
+	check(Run.requirements_met(Run.card(&"wild_nail")) and Run.requirements_met(Run.card(&"heavy_hit"))
+		and Run.requirements_met(Run.card(&"card_soldier")), "with it, Wild Nail, Heavy Hit and Card Soldier open up")
+	Run.mp = Run.max_mp / 2
+	mp1 = Run.mp
+	await wait(1.2)
+	check(Run.form == &"metamorphosis" and Run.mp >= mp1, "it never drains MP or ends (MP %d -> %d)" % [mp1, Run.mp])
+	Run.mp = Run.max_mp
+	Run.cards[&"card_strike"] = 1
 	Run.cards[&"wild_nail"] = 1
+	Run.loadout[0] = &"card_strike"
 	Run.loadout[1] = &"wild_nail"
+	p.skills.slot_ready_at[0] = 0.0
 	p.skills.slot_ready_at[1] = 0.0
-	check(not p.skills.try_cast(1), "Wild Nail needs Metamorphosis, not Evolution")
-	var hp1 := Run.hp
-	p.end_form()
-	check(Run.form == &"" and p.sprite.actor_name == "cat" and Run.hp == hp1 and Run.stat("AP") == ap0,
-		"leaving the form restores Cat and keeps her HP")
-	Run.cards.erase(&"wild_nail")
+	check(not p.skills.try_cast(0) and Run.form_block(&"card_strike") != "", "Card Strike doesn't work in Metamorphosis")
+	check(p.skills.try_cast(1), "Wild Nail does")
+	await wait(0.6)
+	var cm: JobData = load("res://data/jobs/card_master.tres")
+	var job0 := Run.job
+	Run.jobs.append(cm)
+	Run.job = cm
+	var offered: Array[StringName] = []
+	for i in 20:
+		for c in Run.card_offers(3, false):
+			if c.is_skill():
+				offered.append(c.id)
+	var stray := offered.filter(func(id: StringName) -> bool: return not Run.form_allows(id))
+	check(stray.is_empty() and &"wild_nail" in Run.card_pool().map(func(c: CardData) -> StringName: return c.id),
+		"a beast is only offered skills it can use: %s" % [offered if stray.is_empty() else stray])
+	Run.jobs.erase(cm)
+	Run.job = job0
+	for id: StringName in [&"metamorphosis", &"card_strike", &"wild_nail"]:
+		Run.cards.erase(id)
+	Run.loadout[0] = &""
 	Run.loadout[1] = &""
+	Run.form = &""
+	Run.stats_changed()
+	p.refresh_gear()
 
 	# Galder: spent from the run's purse; short of it, no cast.
 	Run.cards[&"galder_thrower"] = 1
@@ -1480,7 +1565,7 @@ func charm_line() -> void:
 	for c in Run.all_cards():
 		if c.is_skill() and c.resource_path.begins_with("res://data/skills/charm/"):
 			skills.append(c)
-	check(skills.size() == 29, "the Charm line has 29 active skills: %d" % skills.size())
+	check(skills.size() == 27, "the Charm line has 27 active skills: %d" % skills.size())
 	for c in skills:
 		var kind := c.behavior.resource_path.get_file()
 		var ahead := 60.0 if kind == "charm_strike.gd" else 120.0 if kind in ["card_throw.gd", "pouch_throw.gd", "galder_barrage.gd"] else 50.0
@@ -1496,7 +1581,10 @@ func charm_line() -> void:
 				e2.max_hp = 99999
 				e2.hp = 99999
 		var before := dummy.hp
-		p.end_form()
+		p.end_instinct()
+		Run.form = &""  # the forms don't end on their own
+		Run.cards.erase(&"metamorphosis")
+		Run.cards.erase(&"evolution")
 		Run.cards[c.id] = 1
 		Run.loadout[0] = c.id
 		if SkillCaster.FORM_NEEDED.has(c.id) or c.id == &"beasts_instinct":
@@ -1504,7 +1592,6 @@ func charm_line() -> void:
 			Run.form = need if need != &"" else &"metamorphosis"
 			Run.cards[Run.form] = 1
 			Run.stats_changed()
-			p.form_until = p.now() + 30.0
 		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp
 		Run.galder = 500
@@ -1521,9 +1608,6 @@ func charm_line() -> void:
 		var did := false
 		var how := ""
 		match c.id:
-			&"evolution", &"metamorphosis":
-				did = Run.form == c.id
-				how = "form %s" % Run.form
 			&"beasts_instinct":
 				did = Run.instinct and Run.form == &"evolution"
 				how = "instinct %s" % Run.instinct
@@ -1537,7 +1621,8 @@ func charm_line() -> void:
 				did = dummy.hp < before
 				how = "%d -> %d" % [before, dummy.hp]
 		check(cast and did, "%s casts and works (%s)%s" % [c.id, how, "" if did else _why(cast, dummy, p)])
-		p.end_form()
+		p.end_instinct()
+		Run.form = &""
 		Run.cards.erase(c.id)
 		for e2 in extra:
 			_remove(e2)

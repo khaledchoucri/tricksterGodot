@@ -24,9 +24,8 @@ const FAMILY_COMBOS := {
 ## A beast fights with its claws ("without the assistance of equipment").
 const BEAST_COMBO := preload("res://data/combos/punch.tres")
 
-## Beast form timing (Run.form holds which): it ends at form_until, when MP
-## runs out, or with Beast's Instinct's end (instinct_until).
-var form_until := 0.0
+## Beast's Instinct (on Evolution, Run.instinct) ends at instinct_until or
+## when MP runs out; the forms themselves, talents, never end.
 var instinct_until := 0.0
 var _form_drain := 0.0
 
@@ -270,53 +269,54 @@ func _physics_process(delta: float) -> void:
 	_blink()
 
 
-## Turns you into the beast of `id` (evolution, metamorphosis) for
-## `seconds`; `instinct`: Beast's Instinct on an Evolution already running.
-func enter_form(id: StringName, seconds: float, instinct := false) -> void:
-	if instinct:
-		Run.instinct = true
-		instinct_until = now() + seconds
-	else:
-		Run.form = id
-		form_until = now() + seconds
+## Beast's Instinct for `seconds`, on Evolution.
+func start_instinct(seconds: float) -> void:
+	Run.instinct = true
+	instinct_until = now() + seconds
 	Run.stats_changed()
 	refresh_gear()
 	Sparks.burst(room, global_position + Vector2(0, -30), Color(1.0, 0.75, 0.9), 18, 160.0)
 
 
-## Back to your own body. Leaving the form keeps your HP (the original halves
-## it; the user's choice).
-func end_form() -> void:
-	if Run.form == &"":
+## A form just learned (Run.form): the body changes for good.
+func become_beast() -> void:
+	refresh_gear()
+	var c := Run.card(Run.form)
+	if c.sounds.has("ap"):
+		Audio.play(c.sounds.ap)
+	for name: String in c.effects.get("ap", []):
+		Cake.play(room, name, global_position)
+	Sparks.burst(room, global_position + Vector2(0, -30), Color(1.0, 0.75, 0.9), 18, 160.0)
+
+
+## Beast's Instinct is over; Evolution stays.
+func end_instinct() -> void:
+	if not Run.instinct:
 		return
-	Run.form = &""
 	Run.instinct = false
 	Run.stats_changed()
 	refresh_gear()
 	Sparks.burst(room, global_position + Vector2(0, -30), Color(0.9, 0.9, 1.0), 12, 120.0)
 
 
-## The forms drain MP while they last (MpConUnit 20 of a pool in the
-## thousands: 2% of max MP a second here; Beast's Instinct's 40, 4%).
-const FORM_DRAIN := 0.02
+## Beast's Instinct drains MP while it lasts (MpConUnit 40 of a pool in the
+## thousands: 4% of max MP a second here).
+const INSTINCT_DRAIN := 0.04
 
 
 func _tick_form(delta: float) -> void:
-	if Run.form == &"":
+	if not Run.instinct:
 		return
-	if Run.instinct and now() >= instinct_until:
-		end_form()  # "Evolution will be released when Beast's Instinct is released"
+	if now() >= instinct_until:
+		end_instinct()
 		return
-	_form_drain += Run.max_mp * FORM_DRAIN * (2.0 if Run.instinct else 1.0) * delta
+	_form_drain += Run.max_mp * INSTINCT_DRAIN * delta
 	if _form_drain >= 1.0:
 		var d := int(_form_drain)
 		_form_drain -= d
 		if not Run.spend_mp(d):
 			Run.mp = 0
-			end_form()
-			return
-	if now() >= form_until:
-		end_form()
+			end_instinct()
 
 
 ## Recovers `share` of max HP every `interval` seconds for `seconds`, until

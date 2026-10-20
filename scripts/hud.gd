@@ -110,7 +110,8 @@ func _refresh_slots(player: Player) -> void:
 		var left := 0.0
 		if is_instance_valid(player):
 			left = maxf(0.0, player.skills.slot_ready_at[i] - player.now())
-		_slots[i].show_skill(card, level, left, card.cooldown_at(level) * Run.skill_cooldown_mult(), Run.mp >= card.mp_at(level))
+		_slots[i].show_skill(card, level, left, card.cooldown_at(level) * Run.skill_cooldown_mult(), Run.mp >= card.mp_at(level),
+			not Run.form_allows(id))
 
 
 func _flash(node: CanvasItem, color: Color) -> void:

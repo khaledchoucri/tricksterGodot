@@ -68,7 +68,8 @@ func _shoot() -> void:
 				dummies[k].global_position = home + [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)][k]
 		Run.cards[id] = 3
 		Run.loadout[0] = id
-		p.end_form()
+		p.end_instinct()
+		Run.form = &""
 		# The Charm line's conditions: Galder in the purse, the beast form a
 		# beast skill needs, full HP for Mass Destruction.
 		Run.galder = 999
@@ -77,7 +78,8 @@ func _shoot() -> void:
 			var need: StringName = SkillCaster.FORM_NEEDED.get(id, &"evolution")
 			need = need if need != &"" else &"metamorphosis"
 			Run.cards[need] = 3
-			p.enter_form(need, 30.0)
+			Run.add_card(need)
+			p.become_beast()
 			await _wait(0.3)
 		Run.mp = Run.max_mp
 		p.skills.slot_ready_at[0] = 0.0

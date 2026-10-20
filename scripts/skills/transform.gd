@@ -1,11 +1,9 @@
 extends Skill
 ## The Charm line's self skills:
-##  - Evolution (4105, the Entertainer) and Metamorphosis (4206, the Card
-##    Master): become the beast (trs001, trs002) for the table's Seconds,
-##    with its stat changes (Run._form_stats). Needs 60% HP and MP; drains
-##    MP; casting it again in the form returns you to normal.
+##  (Evolution and Metamorphosis are talents here: Run.add_card makes them
+##  the form, with its stat changes in Run._form_stats.)
 ##  - Beast's Instinct (4305): in Evolution, the beast's full power for its
-##    Seconds, with no skills; Evolution ends with it.
+##    Seconds, with no skills and an MP drain.
 ##  - Flux Capacitor (4208): burns a share of max HP into MP.
 
 
@@ -17,13 +15,8 @@ func _init() -> void:
 
 func start() -> void:
 	match card.id:
-		&"evolution", &"metamorphosis":
-			if Run.form == card.id:
-				player.end_form()
-			else:
-				player.enter_form(card.id, param("seconds", 50.0))
 		&"beasts_instinct":
-			player.enter_form(&"evolution", param("seconds", 20.0), true)
+			player.start_instinct(param("seconds", 20.0))
 		&"flux_capacitor":
 			var burn := roundi(Run.max_hp * param("hp", 10.0) / 100.0)
 			burn = mini(burn, Run.hp - 1)

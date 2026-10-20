@@ -347,6 +347,8 @@ func _start_pick(kind: String, options: Array) -> void:
 					tag = "Upgrade"
 					text += "
 Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
+				if lvl == 0 and card.id in Run.FORM_ACTORS:
+					text += _beast_warning(card.id)
 				shown.append({"title": card.display_name, "tag": tag, "text": text})
 			title = "Level %d  ·  Train a skill" % (Run.level - Run.pending_levels) if _skill_training else "Choose a %s skill card" % Run.job.display_name
 			_skill_training = false
@@ -357,7 +359,10 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 					shown.append({"title": "Keep my skills", "tag": "", "text": "Skip %s." % _pending_skill.display_name, "cancel": true})
 				else:
 					var old := Run.card(Run.loadout[slot])
-					shown.append({"title": "Replace %s" % old.display_name, "tag": "[%s]" % Hud.SLOT_KEYS[slot],
+					var tag := "[%s]" % Hud.SLOT_KEYS[slot]
+					if not Run.form_allows(old.id):
+						tag += "  unusable in %s" % Run.card(Run.form).display_name
+					shown.append({"title": "Replace %s" % old.display_name, "tag": tag,
 						"text": "%s takes this slot (Lv %d is lost)." % [_pending_skill.display_name, Run.card_level(old.id)]})
 			title = "Skill slots are full"
 		"type":
@@ -504,6 +509,19 @@ func _gear_option(g: GearItem) -> Dictionary:
 	return {"title": g.title(), "tag": tag, "text": text, "icon": g.data.icon()}
 
 
+## A beast form's offer names the slotted skills it would shut off.
+func _beast_warning(form: StringName) -> String:
+	var lost: Array[String] = []
+	for id: StringName in Run.loadout:
+		if id != &"" and not Run.form_allows(id, form):
+			lost.append(Run.card(id).display_name)
+	if lost.is_empty():
+		return "
+You can't turn back."
+	return "
+You can't turn back. Stops working: %s." % ", ".join(lost)
+
+
 func _on_picked(i: int) -> void:
 	get_tree().paused = false
 	Audio.play("ui_btn_ok.wav")
@@ -514,8 +532,11 @@ func _on_picked(i: int) -> void:
 				_pending_skill = card
 				_start_pick("replace", [0, 1, 2, -1])
 				return
+			var was_beast := Run.form != &""
 			Run.add_card(card.id)
 			hud.log_line("[System] %s learned (Lv %d)." % [card.display_name, Run.card_level(card.id)], INFO)
+			if Run.form != &"" and not was_beast:
+				player.become_beast()
 		"replace":
 			var slot: int = _pick_options[i]
 			if slot >= 0:

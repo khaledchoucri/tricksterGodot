@@ -99,7 +99,8 @@ var _ref: Dictionary = {}    # level-1 stats this run's numbers are tuned agains
 ## Hide (Thief Master): monsters lose you until it ends.
 var hidden := false
 ## The beast form Evolution or Metamorphosis turned you into (&"" when none),
-## and Beast's Instinct on top of Evolution; the player times them.
+## and Beast's Instinct on top of Evolution (the player times it). Both
+## forms are talents: learned, one is your form for the rest of the run.
 var form: StringName = &""
 var instinct := false
 var hidden_until := 0.0
@@ -784,6 +785,26 @@ func start_job(j: JobData) -> void:
 const FORM_ACTORS := {&"evolution": "beast_evolution", &"metamorphosis": "beast_metamorphosis"}
 
 
+## Whether skill `id` works in your form: in a beast, only the skills either
+## form can use or that form's own (SkillCaster.FORM_NEEDED).
+func form_allows(id: StringName, as_form := form) -> bool:
+	if as_form == &"":
+		return true
+	return SkillCaster.FORM_NEEDED.get(id, &"none") in [&"", as_form]
+
+
+## Why a slotted skill can't be used in your current shape ("" when it can):
+## a beast skill outside its form, or another skill in a beast.
+func form_block(id: StringName) -> String:
+	if not form_allows(id):
+		return "Not in %s" % card(form).display_name
+	if SkillCaster.FORM_NEEDED.has(id):
+		var need: StringName = SkillCaster.FORM_NEEDED[id]
+		if form == &"" or (need != &"" and form != need):
+			return "Beast form only"
+	return ""
+
+
 func actor() -> String:
 	if form != &"":
 		return FORM_ACTORS[form]
@@ -853,6 +874,9 @@ func can_learn(c: CardData) -> bool:
 		return false
 	if cls and c.id in cls.excluded_cards:
 		return false
+	# A beast is offered only the skills it can use.
+	if c.is_skill() and not form_allows(c.id):
+		return false
 	if not c.jobs.is_empty() and job and job.id != &"trickster" and not job.id in c.jobs:
 		return false
 	for other: StringName in c.excludes:
@@ -879,6 +903,9 @@ func add_card(id: StringName, slot := -1) -> void:
 		stats_changed()
 		return
 	cards[id] = mini(card_level(id) + 1, card_cap(id))
+	if id in FORM_ACTORS:
+		form = id
+		instinct = false
 	stats_changed()
 	if not is_new or not c.is_skill() or is_basic(id):
 		return

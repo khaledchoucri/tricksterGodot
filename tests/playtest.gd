@@ -63,6 +63,14 @@ func _ready() -> void:
 		if e.first_hit_at >= 0.0:
 			kill_log.append({"region": Run.region_index(), "depth": Run.depth, "elite": e.is_elite or e.is_boss,
 				"boss": e.is_boss, "ttk": e.now() - e.first_hit_at, "hits": e.hits_taken, "max_hp": e.max_hp}))
+	# What the bot casts, and why a cast was refused (the caster's messages).
+	Events.skill_cast.connect(func(slot: int) -> void:
+		var c: CardData = game.player.skills.card_in(slot) if is_instance_valid(game) else null
+		if c:
+			_casts[c.id] = int(_casts.get(c.id, 0)) + 1)
+	Events.text_shown.connect(func(_at: Vector2, text: String, _color: Color) -> void:
+		if text in REFUSALS:
+			_refused[text] = int(_refused.get(text, 0)) + 1)
 	Events.player_hp_changed.connect(func() -> void:
 		if _hp_seen > Run.hp and Run.max_hp > 0:
 			hit_log.append({"region": Run.region_index(), "pct": 100.0 * (_hp_seen - Run.hp) / Run.max_hp})
@@ -105,6 +113,8 @@ func _play() -> void:
 func _one_run(index: int) -> void:
 	_room_log.clear()
 	_last_depth = -1
+	_casts = {}
+	_refused = {}
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	var t := 0.0
@@ -127,7 +137,8 @@ func _one_run(index: int) -> void:
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
 		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate(),
-		"rune": Run.rune.display_name if Run.rune else ""}
+		"rune": Run.rune.display_name if Run.rune else "", "casts": _casts.duplicate(), "refused": _refused.duplicate(),
+		"loadout": Run.loadout.duplicate()}
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
@@ -300,6 +311,11 @@ var digs := 0
 var kill_log: Array[Dictionary] = []
 var hit_log: Array[Dictionary] = []
 var _hp_seen := -1
+## Per run: casts by card, and refused casts by the caster's reason.
+const REFUSALS := ["Not enough Galder", "Beast form only", "Not in Evolution", "Not in Metamorphosis",
+	"Needs 80% HP", "Needs four enemies", "No skills in Beast's Instinct", "No gun"]
+var _casts := {}
+var _refused := {}
 ## Picks whose chosen option a player could not have clicked.
 var ui_bugs: PackedStringArray = []
 
@@ -539,6 +555,7 @@ func _report() -> void:
 		if not r.won:
 			print("   died near: %s" % ", ".join(r.around))
 		print("   cards: %s   rune %s   ore %d  galder %d" % [r.cards, r.rune, r.ore, r.galder])
+		print("   loadout %s  casts %s  refused %s" % [r.loadout, r.casts, r.refused])
 		var rooms: PackedStringArray = []
 		for room in r.rooms:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])

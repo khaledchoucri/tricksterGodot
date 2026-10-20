@@ -53,7 +53,8 @@ const GUN_NEEDED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot
 
 ## Skills only a beast can use: the form they need (&"" for either).
 const FORM_NEEDED := {&"beast_claw": &"evolution", &"fatal_wound": &"evolution", &"raging_nail": &"evolution",
-	&"wild_nail": &"metamorphosis", &"sharp_scream": &"", &"heavy_hit": &"", &"card_soldier": &""}
+	&"wild_nail": &"metamorphosis", &"sharp_scream": &"", &"heavy_hit": &"", &"card_soldier": &"",
+	&"beasts_instinct": &"evolution"}
 ## Skills paid in the run's Galder (their table's "galder", per throw).
 const GALDER_SKILLS: Array[StringName] = [&"galder_thrower", &"galder_barrage", &"fist_full_of_galders",
 	&"furious_galder_throw"]
@@ -64,21 +65,9 @@ const GALDER_SKILLS: Array[StringName] = [&"galder_thrower", &"galder_barrage", 
 func charm_block(card: CardData, level: int, slot: int) -> String:
 	if Run.instinct and slot != BASIC:
 		return "No skills in Beast's Instinct"
-	if FORM_NEEDED.has(card.id):
-		var need: StringName = FORM_NEEDED[card.id]
-		if Run.form == &"" or (need != &"" and Run.form != need):
-			return "Beast form only"
+	if slot != BASIC and Run.form_block(card.id) != "":
+		return Run.form_block(card.id)
 	match card.id:
-		&"evolution", &"metamorphosis":
-			if Run.form == card.id:
-				return ""  # casting it again turns you back
-			if Run.form != &"":
-				return "Already transformed"
-			if Run.hp < Run.max_hp * 0.6 or Run.mp < Run.max_mp * 0.6:
-				return "Needs 60% HP and MP"
-		&"beasts_instinct":
-			if Run.form != &"evolution":
-				return "Evolution only"
 		&"mass_destruction":
 			if Run.hp < Run.max_hp * 0.8:
 				return "Needs 80% HP"
