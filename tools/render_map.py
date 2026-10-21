@@ -40,6 +40,12 @@ class Canvas:
                 continue
             self._blend_row(row, x0, ty, alpha)
 
+    def blit_rows(self, rows, x0=0, y0=0):
+        """Draws a picture given as RGBA rows (a floor layer); transparent pixels are skipped."""
+        for y, row in enumerate(rows):
+            if 0 <= y0 + y < self.h:
+                self._blend_row(row, x0, y0 + y, 1.0)
+
     def _blend_row(self, row, x0, ty, alpha):
         for x in range(len(row) // 4):
             a = row[x * 4 + 3]
@@ -102,6 +108,8 @@ def render(m, draw_objects=True):
                                   p.opacity / 100.0 if p.opacity < 100 else 1.0, p.blend)
 
     for layer in m.layers:
+        if isinstance(layer, tm.FloorLayer):
+            c.blit_rows(layer.rows)
         if isinstance(layer, tm.GridLayer):
             for i, cell in enumerate(layer.cells):
                 t = tm.tile_for(m, cell)

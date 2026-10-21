@@ -10,7 +10,8 @@ Built:
 - 229 skill and talent cards from the original tables. Upgrades replace their base, buffs are talents, and
   supplements change their skill.
 - Three regions (Coral Beach, Desert Beach, Caballa Relics), nine rooms and a boss each, elites at the 4th and
-  8th rooms, and a job change after the 4th in the first two. 23 monsters with five attack patterns, three bosses
+  8th rooms, and a job change after the 4th in the first two. A rest stop at the original's gate follows the
+  first two bosses (32 rooms): half of max HP and MP back, Keeper Julio and the warehouse swap. 23 monsters with five attack patterns, three bosses
   (the Golden Mole, Tutankhamen, Tombeth).
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops. Gear comes from
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,
@@ -213,8 +214,8 @@ what forces the choice of what to keep.
 the chunk (under about 10% for the bots); a lucky, skilled run can. Measured with fresh-profile bots.
 
 **Build order:**
-1. Ten rooms per region (elites, the trial and the bands follow).
-2. Rest stops after the 1st and 2nd bosses: heal, story point, the warehouse.
+1. Ten rooms per region (elites, the trial and the bands follow). Done.
+2. Rest stops after the 1st and 2nd bosses: heal, story point, the warehouse. Done.
 3. The equipment window with the 13 slots, then the new slot types' items.
 4. The loadout before a run and the MinLevel gate; heirlooms and level sync removed.
 5. The lost bag and banking.

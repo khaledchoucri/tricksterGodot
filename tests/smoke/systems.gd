@@ -120,7 +120,7 @@ func run(Run: Node) -> void:
 	var want: Array[String] = []
 	for r: RegionData in Run.route.regions:
 		want.append_array([str(r.gear_levels.x), str(r.gear_levels.y)])
-	check(ranges == want and Run.route.plan.size() == 30, "each of the 30 rooms offers its region's gear levels (%s)" % " ".join(ranges))
+	check(ranges == want, "every region's rooms offer its own gear levels (%s)" % " ".join(ranges))
 	# The Caballa Relics offer their own tier: the level-50 and level-65 lines, every slot.
 	Run.route.depth = Run.route.plan.size() - 2
 	var relics_gear: Array = Run.gear.gear_offers(60)

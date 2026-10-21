@@ -24,11 +24,14 @@
 [ext_resource type="Resource" path="res://data/desert_beach/enemies/basic_mummy.tres" id="e_basic_mummy"]
 [ext_resource type="Resource" path="res://data/desert_beach/enemies/tutankhamen.tres" id="e_tutankhamen"]
 
+[ext_resource type="Resource" path="res://data/desert_beach/gate/rest_stop.tres" id="g_gate"]
+
 [resource]
 script = ExtResource("1_s")
 display_name = "Desert Beach"
 rooms = Array[ExtResource("2_r")]([ExtResource("r_delta_island_a"), ExtResource("r_delta_island_b"), ExtResource("r_delta_island_c"), ExtResource("r_anubis_a"), ExtResource("r_anubis_b"), ExtResource("r_anubis_c"), ExtResource("r_anubis_d"), ExtResource("r_parasol_river_a"), ExtResource("r_parasol_river_b")])
 boss_room = ExtResource("r_pyramid_steps")
+gate = ExtResource("g_gate")
 enemies = Array[ExtResource("3_e")]([ExtResource("e_fanta_slime"), ExtResource("e_shell_trap"), ExtResource("e_field_mole"), ExtResource("e_sea_scorpion"), ExtResource("e_pineapple"), ExtResource("e_fan_lizard"), ExtResource("e_sand_demon"), ExtResource("e_cannon_shell"), ExtResource("e_basic_mummy"), ExtResource("e_tutankhamen")])
 run_length = 9
 elite_depths = Array[int]([3, 7])

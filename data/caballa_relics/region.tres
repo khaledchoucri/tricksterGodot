@@ -25,11 +25,14 @@
 [ext_resource type="Resource" path="res://data/caballa_relics/enemies/naranjo.tres" id="e_naranjo"]
 [ext_resource type="Resource" path="res://data/caballa_relics/enemies/tombeth.tres" id="e_tombeth"]
 
+[ext_resource type="Resource" path="res://data/caballa_relics/gate/rest_stop.tres" id="g_gate"]
+
 [resource]
 script = ExtResource("1_s")
 display_name = "Caballa Relics"
 rooms = Array[ExtResource("2_r")]([ExtResource("r_atlas_a"), ExtResource("r_atlas_b"), ExtResource("r_atlas_c"), ExtResource("r_hand_of_giant_a"), ExtResource("r_hand_of_giant_b"), ExtResource("r_hand_of_giant_c"), ExtResource("r_monkey_statues_a"), ExtResource("r_monkey_statues_b"), ExtResource("r_monkey_statues_c"), ExtResource("r_altar_a"), ExtResource("r_altar_b"), ExtResource("r_altar_c")])
 boss_room = ExtResource("r_trident_maze")
+gate = ExtResource("g_gate")
 enemies = Array[ExtResource("3_e")]([ExtResource("e_mandragora"), ExtResource("e_stone_soldier"), ExtResource("e_mimic"), ExtResource("e_aposis"), ExtResource("e_punisher_aposis"), ExtResource("e_chimu"), ExtResource("e_naranjo"), ExtResource("e_tombeth")])
 run_length = 9
 elite_depths = Array[int]([3, 7])

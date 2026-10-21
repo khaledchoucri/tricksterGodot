@@ -180,7 +180,7 @@ func _audit_hub() -> void:
 	add_child(hub)
 	await _wait(1.5)
 	await audit("hub_city")
-	for npc: Npc in hub.npcs.duplicate():
+	for npc: Npc in hub.talker.npcs.duplicate():
 		var id := String(npc.data.id)
 		var top := await _talk(hub, npc, [], "hub_%s" % id)
 		for i in top.size():

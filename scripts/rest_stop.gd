@@ -24,11 +24,14 @@ func arrive(p_data: RestStopData, p_room: Room, player: Player, hud: Hud) -> voi
 	talker = Talker.new(Story.new(data.story), dialogue, hud)
 	talker.player = player
 	for n in data.npcs:
+		if n.requires != &"" and Profile.level(n.requires) <= 0:
+			continue  # as in the hub: Julio keeps the shelves once the warehouse is restored
 		var npc: Npc = NPC_SCENE.instantiate()
 		npc.data = n
 		npc.position = n.position if room.is_walkable(n.position) else room.nearest_reachable(n.position)
 		room.world.add_child(npc)
 		talker.npcs.append(npc)
+		hud.log_line("[%s] %s is here." % [data.room.display_name, n.display_name], Color("a8d8da"))
 	Run.heal(int(Run.max_hp * data.heal_share))
 	Run.gain_mp(int(Run.max_mp * data.heal_share))
 	Audio.play("eff_healing1.wav", -4.0)

@@ -51,6 +51,10 @@ func _shoot() -> void:
 		await _shoot_desert()
 		get_tree().quit()
 		return
+	if "rest" in OS.get_cmdline_user_args():
+		await _shoot_rest()
+		get_tree().quit()
+		return
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(3.0)
@@ -166,11 +170,60 @@ func _shoot_hub() -> void:
 	await _snap("12_card_album")
 
 
+## Each rest stop as a player meets it: arriving, walking up to Julio, pressing the talk
+## key, and paging through his conversation into the shelves.
+func _shoot_rest() -> void:
+	for r: RestorationData in Run.hub.restorations:
+		if r.effect == "system":
+			Profile.restorations[String(r.id)] = 1
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.0)
+	var n := 0
+	for d: int in Run.route.plan.size():
+		if not Run.route.plan[d].rest:
+			continue
+		Run.hp = int(Run.max_hp * 0.2)
+		Run.route.depth = d
+		game._load_room()
+		await _wait(3.0)
+		await _snap("40_rest_%d_arrive" % n)
+		var stop: RestStop = null
+		for c in game.room.get_children():
+			if c is RestStop:
+				stop = c
+		var julio := stop.talker.npc(&"julio") if stop else null
+		if julio:
+			game.player.global_position = game.room.nearest_reachable(julio.global_position + Vector2(24, 20))
+			await _wait(0.5)
+			await _snap("41_rest_%d_prompt" % n)
+			for i in 8:
+				_press("interact")
+				await _wait(0.6)
+				if i == 1:
+					await _snap("42_rest_%d_talk" % n)
+			await _snap("43_rest_%d_shelves" % n)
+			_press("ui_cancel")
+			await _wait(0.5)
+		n += 1
+
+
+## A real press and release of an input action, as the keyboard sends it.
+func _press(action: String) -> void:
+	for down: bool in [true, false]:
+		var e := InputEventAction.new()
+		e.action = action
+		e.pressed = down
+		Input.parse_input_event(e)
+		await get_tree().process_frame
+
+
 func _shoot_desert() -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.0)
-	for depth: int in [Run.route.regions[0].run_length + 1, Run.route.regions[0].run_length + 5, Run.route.plan.size() - 1]:
+	var desert := Run.route.plan.find_custom(func(p: RoomPlan) -> bool: return p.region == Run.route.regions[1] and p.local_depth == 0)
+	for depth: int in [desert, desert + 4, Run.route.plan.size() - 1]:
 		Run.route.depth = depth
 		game._load_room()
 		await _wait(3.5)
@@ -178,7 +231,7 @@ func _shoot_desert() -> void:
 			game.player.invulnerable_until = game.player.now() + 999.0
 		await _wait(1.5)
 		await _snap("20_desert_%d" % depth)
-		if depth == Run.route.regions[0].run_length + 1:
+		if depth == desert:
 			for i in Run.echoes.size():
 				game.room.spawn(Run.echoes[i].id, game.player.global_position + Vector2(-120 + 120 * i, -60))
 			Run.deck.take_rune(Run.echoes[0].runes[0])

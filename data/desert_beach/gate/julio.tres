@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="NpcData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/npc_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"julio"
+display_name = "Keeper Julio"
+actor = "julio"
+portrait = "julio"
+position = Vector2(1500, 650)
+facing = Vector2(-1, 1)
+is_object = false
+requires = &"warehouse"

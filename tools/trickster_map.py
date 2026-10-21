@@ -27,6 +27,17 @@ class GridLayer:
 
 
 @dataclass
+class FloorLayer:
+    """A whole-map floor picture (layer type 1): the 2011 gates draw their ground this way
+    instead of with tiles. Each row is stored as (u32 record bytes, u16 pixels, 16-bit pixels)."""
+    name: str
+    width: int
+    height: int
+    rows: list  # RGBA bytes per row
+    objects: list = field(default_factory=list)
+
+
+@dataclass
 class MapObject:
     x: int
     y: int
@@ -50,7 +61,7 @@ class TrickMap:
     sheet_starts: list    # index of each sheet's first tile within `tiles`
     grid_layers: list
     object_layers: list
-    layers: list          # every layer in draw order (GridLayer or ObjectLayer)
+    layers: list          # every layer in draw order (GridLayer, FloorLayer or ObjectLayer)
     fine_grid: tuple      # (cols, rows, cell size) of the .md3 fine grid
     md3: bytes
     bac: object           # nori.Nori or None
@@ -144,6 +155,14 @@ def read_layers(path: str):
             grid = GridLayer(name, cols, rows, cells, _read_objects(b, q + 4 * cols * rows))
             grids.append(grid)
             order.append(grid)
+        elif ltype == 1:
+            rows_rgba = []
+            for _ in range(rows):
+                size, n = struct.unpack_from('<IH', b, q)
+                rows_rgba.append(_decode_555(b[q + 6:q + 6 + 2 * n]))
+                q += size
+            floor = FloorLayer(name, cols, rows, rows_rgba)
+            order.append(floor)
         elif ltype == 0:
             layer = ObjectLayer(name, kind, _read_objects(b, q))
             objs.append(layer)

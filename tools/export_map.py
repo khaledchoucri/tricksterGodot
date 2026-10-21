@@ -42,8 +42,19 @@ def md3_sections(b: bytes) -> dict:
     return out
 
 
+# A plane offset past this is garbage: the Gate of Caballa Relics' hamster has one at
+# 0xCDCDCDCD (MSVC's fill for uninitialised memory), which the game can't have drawn.
+PLANE_LIMIT = 1 << 16
+
+
+def drawn_planes(bac, anim):
+    """The first frame's planes that have a bitmap and a sane offset."""
+    return [p for p in anim.frames[0].planes
+            if bac.bitmaps[p.bmp] is not None and abs(p.x) < PLANE_LIMIT and abs(p.y) < PLANE_LIMIT]
+
+
 def draw_anim_frame(canvas, bac, anim, x, y):
-    for p in anim.frames[0].planes:
+    for p in drawn_planes(bac, anim):
         bm = bac.bitmaps[p.bmp]
         if bm is not None:
             canvas.blit_bitmap(bm, x + p.x, y + p.y, p.flip,
@@ -58,6 +69,8 @@ def export(base: str, out: str) -> dict:
     ground = Canvas(m.width, m.height)
     upright, top = [], []
     for layer in m.layers:
+        if isinstance(layer, tm.FloorLayer):
+            ground.blit_rows(layer.rows)
         if isinstance(layer, tm.GridLayer):
             for i, cell in enumerate(layer.cells):
                 t = tm.tile_for(m, cell)
@@ -83,7 +96,7 @@ def export(base: str, out: str) -> dict:
         if o.anim in sprites:
             continue
         a = anims[o.anim]
-        planes = [p for p in a.frames[0].planes if m.bac.bitmaps[p.bmp] is not None]
+        planes = drawn_planes(m.bac, a)
         if not planes:
             continue
         x0 = min(p.x for p in planes)

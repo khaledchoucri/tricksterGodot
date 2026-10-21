@@ -75,8 +75,8 @@ func run() -> void:
 	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)
-	check(hub.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
-		"the hub builds Megalopolis with %d people and the gate" % hub.npcs.size())
+	check(hub.talker.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
+		"the hub builds Megalopolis with %d people and the gate" % hub.talker.npcs.size())
 	check(hub.talker.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
 	var guide: Npc = hub.talker.npc(&"cavalier")
 	hub.player.global_position = guide.global_position + Vector2(0, 20)

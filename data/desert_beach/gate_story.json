@@ -1,0 +1,15 @@
+{
+  "_doc": "The Gate of Desert Beach, the rest stop after the Golden Mole. Same format as data/megalopolis/story.json. Ours: the lines. The original has Keeper Julio at this gate (NpcTalk_Beach, NPC 1045).",
+  "npcs": {
+    "julio": [
+      {"id": "julio_gate_desert_first", "if": ["!met_julio_desert_gate"], "set": ["met_julio_desert_gate"], "then": "warehouse", "lines": [
+        ["julio", "You beat the Golden Mole? Then you've earned a sit-down. Mind the sand."],
+        ["julio", "I keep a counter at every gate. Old habit. In the server days the queue for storage went all the way back to the bridge."],
+        ["julio", "Your shelves came with me, every one. Swap what you're wearing for something you stored, or leave me a find before the desert eats it."]
+      ]},
+      {"id": "julio_gate_desert", "if": ["met_julio_desert_gate"], "then": "warehouse", "lines": [
+        ["julio", "Desert Beach is past the bridge. Take what you need off the shelves."]
+      ]}
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_doc": "The Gate of Caballa Relics, the rest stop after Tutankhamen. Same format as data/megalopolis/story.json. Ours: the lines. The original has Keeper Julio at this gate (NpcTalk_Relics, NPC 1045).",
+  "npcs": {
+    "julio": [
+      {"id": "julio_gate_relics_first", "if": ["!met_julio_relics_gate"], "set": ["met_julio_relics_gate"], "then": "warehouse", "lines": [
+        ["julio", "Tutankhamen, down for good. I'll put that on a shelf too. Metaphorically."],
+        ["julio", "The Relics are the last stretch. Things in there hit like the server never shut down. Rest, then pick what you're taking in."],
+        ["julio", "Whatever reaches my shelves is safe. Whatever you carry into the Relics... let's say it's in Tombeth's hands."]
+      ]},
+      {"id": "julio_gate_relics", "if": ["met_julio_relics_gate"], "then": "warehouse", "lines": [
+        ["julio", "The Relics are through the gate. Shelves are open."]
+      ]}
+    ]
+  }
+}
