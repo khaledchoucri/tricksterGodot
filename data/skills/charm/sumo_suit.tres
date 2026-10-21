@@ -15,3 +15,4 @@ jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
 table = {"value": [8.0, 14.0, 23.0, 29.0, 44.0, 48.0, 53.0, 57.0]}
 sounds = {"ap": "snd_c_208_ap.wav", "ke": "snd_c_208_ke.wav"}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"damage_cut%": "value"})

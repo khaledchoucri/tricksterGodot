@@ -17,3 +17,4 @@ sounds = {"ap": "snd_m_312_ap.wav", "ke": "snd_m_312_ke.wav"}
 effects = {"ap": ["M_312_dark_barrier_apply"], "ke": ["M_312_dark_barrier_keep"]}
 master_material = ExtResource("m_master")
 element = "Dark"
+mods = Dictionary[String, String]({"resist:Dark": "value"})

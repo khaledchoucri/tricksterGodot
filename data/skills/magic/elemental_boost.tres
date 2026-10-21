@@ -14,3 +14,4 @@ requires = {&"bolster_ballad": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [2.0, 4.0, 7.0, 9.0, 15.0, 15.0, 15.0, 15.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"boost:Fire%": "value", "boost:Water%": "value", "boost:Wind%": "value", "boost:Earth%": "value", "boost:Elec%": "value"})

@@ -1319,7 +1319,7 @@ func try_refine(g: GearItem, roll := -1.0) -> String:
 ## Berserker's rage, and Desperate Rally below its HP line (stronger the
 ## lower HP gets, up to double at 0).
 func _berserk_mult() -> float:
-	var m := 1.0 + card_value(&"berserker") / 100.0
+	var m := 1.0 + mod("damage%") / 100.0
 	var line := card(&"desperate_rally").param("hp", card_level(&"desperate_rally")) / 100.0 if card_level(&"desperate_rally") > 0 else 0.0
 	var frac := hp / float(maxi(max_hp, 1))
 	if line > 0.0 and frac < line:
@@ -1442,7 +1442,7 @@ const GUN_SHOT := 87.0
 ## Gun Overdrive (CustomizingGun) multiplies the gun's Gun AP by its Ratio;
 ## Gun Booster (PriMarksmanship) adds its AP to the shot's.
 func gun_attack() -> float:
-	var ap := gun_ap() * (1.0 + card_value(&"gun_overdrive") / 100.0) + card_value(&"gun_booster")
+	var ap := gun_ap() * (1.0 + mod("gun_AP%") / 100.0) + mod("gun_AP")
 	return stat("AC") + ap / GUN_AP_PER_AC
 
 
@@ -1471,18 +1471,18 @@ func power_shot_bonus() -> float:
 		var keen := card(&"keen_sense")
 		var top: float = keen.value_at(MAX_CARD_LEVEL) if keen else 0.0
 		return (100.0 + top) * (1.0 + card_value(&"sharp_sense") / 100.0) - 100.0
-	return card_value(&"keen_sense")
+	return mod("power_shot%")
 
 
 ## A reload's time against the gun's own. Speedloader sets the client's fill
 ## rate to 2 - Ratio/100 (Trickster.bin 0x4c04e0), its value being 100 - Ratio.
 func reload_mult() -> float:
-	return 1.0 / (1.0 + card_value(&"speedloader") / 100.0)
+	return 1.0 / (1.0 + mod("reload_speed%") / 100.0)
 
 
 ## Cooldowns are the original's; only Refreshing Dew shortens them.
 func skill_cooldown_mult() -> float:
-	return 1.0 - card_value(&"refreshing_dew") / 100.0
+	return 1.0 - mod("cooldown_cut%") / 100.0
 
 
 ## The elemental Shields and the Blessings that upgrade them (2117-2121, 2306-2310).
@@ -1502,27 +1502,18 @@ func resist(element: String) -> float:
 		# A Blessing keeps the resistance of the Shield it replaced, at its level.
 		if card_level(id) > 0 and SHIELDS[BLESSINGS[id]] == element:
 			r += card(BLESSINGS[id]).value_at(card_level(id))
-	if element == "Elec":
-		r += card_value(&"lightning_rod")
-	if element == "Light":
-		r += card_value(&"light_shield")
-	if element == "Dark":
-		r += card_value(&"dark_barrier")
+	if element in Mod.ELEMENTS:
+		r += mod("resist:" + element)
 	return minf(r, 80.0)
 
 
 ## Extra damage % for spells of an element (Elemental Boost, Dark Assimilation).
 func element_boost(element: String) -> float:
-	match element:
-		"Fire", "Water", "Wind", "Earth", "Elec":
-			return card_value(&"elemental_boost")
-		"Dark":
-			return card_value(&"dark_assimilation")
-	return 0.0
+	return mod("boost:%s%%" % element) if element in Mod.ELEMENTS else 0.0
 
 
 func attack_speed_mult() -> float:
-	return _ratio("DX", DX_SOFT) * (1.0 + (card_value(&"hyper_beat") + card_value(&"aura_of_haste")) / 100.0) * form_speed_mult()
+	return _ratio("DX", DX_SOFT) * (1.0 + mod("attack_speed%") / 100.0) * form_speed_mult()
 
 
 func speed_mult() -> float:
@@ -1572,9 +1563,9 @@ func damage_taken_mult(magic := false, element := "") -> float:
 	var m := (float(_ref.get(key, 0)) + DEF_SOFT) / (stat(key) + DEF_SOFT)
 	if has_passive(&"hired_blade"):
 		m *= 0.9
-	m *= 1.0 - card_value(&"sumo_suit") / 100.0
+	m *= 1.0 - mod("damage_cut%") / 100.0
 	if magic:
-		m *= 1.0 - card_value(&"mana_reflector") / 100.0  # the part it turns back
+		m *= 1.0 - mod("magic_damage_cut%") / 100.0  # Mana Reflector: the part it turns back
 	if element != "":
 		m *= 1.0 - resist(element) / 100.0
 	return m
@@ -1680,7 +1671,7 @@ func compound_targets() -> Array[String]:
 
 func compound(g: GearItem, mat: MaterialData) -> Dictionary:
 	materials[mat.id] -= mat.need
-	var c := g.compound(mat, clampf(stat("DA") / 60.0 * (1.0 + card_value(&"compound_master") / 100.0), 0.0, 1.0))
+	var c := g.compound(mat, clampf(stat("DA") / 60.0 * (1.0 + mod("compound%") / 100.0), 0.0, 1.0))
 	stats_changed()
 	return c
 

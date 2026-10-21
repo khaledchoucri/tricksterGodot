@@ -40,7 +40,7 @@ func card_in(slot: int) -> CardData:
 
 ## MP a cast of `card` at `level` costs (Bolster Ballad saves some).
 func cost_of(card: CardData, level: int) -> int:
-	var m := (0.9 if Run.has_passive(&"duelists_edge") else 1.0) * (1.0 - Run.card_value(&"bolster_ballad") / 100.0)
+	var m := (0.9 if Run.has_passive(&"duelists_edge") else 1.0) * (1.0 - Run.mod("mp_cost_cut%") / 100.0)
 	return roundi(card.mp_at(level) * m)
 
 

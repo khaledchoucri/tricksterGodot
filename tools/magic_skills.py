@@ -110,7 +110,7 @@ SPEC = {
     '2012': dict(card='mana_ring_booster', value=ring_flat, text='Mana Ring hits {v} harder.'),
     '2013': dict(card='mana_shield', mods={'MD%': 'value'}, value=lambda r: r['Comment'], text='+{v}% MD.'),
     # ---- Bard (Sheep)
-    '2101': dict(card='bolster_ballad', value=lambda r: r['Comment'], text='Spells cost {v}% less MP.'),
+    '2101': dict(card='bolster_ballad', mods={'mp_cost_cut%': 'value'}, value=lambda r: r['Comment'], text='Spells cost {v}% less MP.'),
     '2102': seal('seal_of_water', 'Seal of Water', 'water'),
     '2103': dict(card='drip_bomb', behavior='spell_burst', value=pct_hit, scaling='MA', rows={'range': 'Range', 'radius': lambda r: 70},
                  text='A cannonball of water bursts on the enemies at the cursor for {v} damage.'),
@@ -174,7 +174,7 @@ SPEC = {
     '2131': dict(card='tornado_blast', behavior='spell_burst', value=pct_hit, scaling='MA',
                  rows={'range': 'Range', 'radius': 'Radius', 'targets': 'KillNum'},
                  text='A tornado focused on the cursor hits up to {targets} enemies for {v} damage.'),
-    '2132': dict(card='elemental_boost', value=lambda r: r['Comment'], text='Fire, water, wind, thunder and earth damage +{v}%.'),
+    '2132': dict(card='elemental_boost', mods={'boost:Fire%': 'value', 'boost:Water%': 'value', 'boost:Wind%': 'value', 'boost:Earth%': 'value', 'boost:Elec%': 'value'}, value=lambda r: r['Comment'], text='Fire, water, wind, thunder and earth damage +{v}%.'),
     # ---- Magician (Dragon)
     '2201': dict(card='hinder_snare', behavior='spell_debuff', value=lambda r: 0, scaling='MA',
                  rows={'radius': 'Radius', 'seconds': 'Seconds', 'still': lambda r: 1, 'self': lambda r: 1}, kind='skill',
@@ -200,9 +200,9 @@ SPEC = {
                  text='Gravity crushes the enemies around you (up to {targets}) for {v} damage.'),
     '2211': dict(card='basic_healing', behavior='spell_heal', value=lambda r: 0, held=True,
                  text='Cures ailments from 1st-job magic.'),
-    '2212': dict(card='dark_barrier', value=lambda r: r['Value'], rows={'reflect': lambda r: r['ReflexRatio'] * 100},
+    '2212': dict(card='dark_barrier', mods={'resist:Dark': 'value'}, value=lambda r: r['Value'], rows={'reflect': lambda r: r['ReflexRatio'] * 100},
                  text='Dark resistance +{v}%, and {reflect}% of the physical damage you take is turned back on the attacker.'),
-    '2213': dict(card='light_shield', mods={'MD%': 'guard', 'DP%': 'guard'}, value=lambda r: r['Value'], rows={'guard': 'Comment'},
+    '2213': dict(card='light_shield', mods={'MD%': 'guard', 'DP%': 'guard', 'resist:Light': 'value'}, value=lambda r: r['Value'], rows={'guard': 'Comment'},
                  text='Light resistance +{v}%, DP and MD +{guard}%.'),
     '2214': dict(card='radiant_strike', behavior='spell_nova', value=pct_hit, scaling='MA', rows={'radius': 'Radius', 'targets': lambda r: 99},
                  text='Light floods the ground around you: every enemy in it takes {v} damage.'),
@@ -251,7 +251,7 @@ SPEC = {
     '2503': dict(card='celestial_strike', behavior='spell_burst', value=pct_hit, scaling='MA', rows={'range': 'Range', 'radius': 'Radius'},
                  text='A column of light rises at the cursor and strikes the monsters around it for {v} damage.'),
     '2504': dict(card='sacred_oath', value=lambda r: r['Comment'], text='Your faith adds {v}% of your max HP to every Oath of Light recovery.'),
-    '2505': dict(card='refreshing_dew', value=lambda r: r['Comment'], text='Skill cooldowns {v}% shorter.'),
+    '2505': dict(card='refreshing_dew', mods={'cooldown_cut%': 'value'}, value=lambda r: r['Comment'], text='Skill cooldowns {v}% shorter.'),
     # ---- Dark Lord (Dragon)
     '2701': dict(card='scythe', behavior='spell_sky', value=pct_hit, scaling='MA', rows={'range': 'Range', 'count': lambda r: 1},
                  text='The Grim Reaper swings at the enemy you aim at for {v} damage.'),
@@ -264,7 +264,7 @@ SPEC = {
     '2705': dict(card='ghostly_whisper', behavior='spell_whisper', value=pct_hit, scaling='MA',
                  rows={'radius': 'Radius', 'seconds': 'Seconds', 'targets': 'KillNum'},
                  text='The enemies nearest you (up to {targets}) are haunted for {seconds} s, taking {v} damage each second. Moving or casting ends it.'),
-    '2706': dict(card='dark_assimilation', value=lambda r: r['Comment'], text='Dark damage +{v}%.'),
+    '2706': dict(card='dark_assimilation', mods={'boost:Dark%': 'value'}, value=lambda r: r['Comment'], text='Dark damage +{v}%.'),
 }
 for sid, others in SEALS.items():
     SPEC[sid]['excludes'] = others

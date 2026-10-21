@@ -14,3 +14,4 @@ jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [4.0, 5.0, 6.0, 7.0, 10.0, 10.0, 10.0, 10.0]}
 effects = {"ap": ["eft_skl_m_101_spt"], "ed": ["eft_skl_m_101_eed"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"mp_cost_cut%": "value"})
