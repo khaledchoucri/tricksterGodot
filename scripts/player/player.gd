@@ -99,12 +99,12 @@ func now() -> float:
 ## Matches the held weapon and the combo to the equipped weapon, and adds
 ## the Extra Swing trait's swing.
 func refresh_gear() -> void:
-	var w := Run.equipped("weapon")
+	var w := Run.gear.equipped("weapon")
 	# A gun shows as the original draws it: through its pivots in the gun
 	# poses and idle, and held in the hand (its weapon sprite, at the frame's
 	# hand socket) while walking, running, dodging or hit. Its cycle
 	# (GunCycle) starts by loading it.
-	var carrying_gun := Run.carries_gun()
+	var carrying_gun := Run.gear.carries_gun()
 	if is_instance_valid(gun) and gun.gun != (w.data.gun if carrying_gun else {}):
 		gun.equip(w.data.gun if carrying_gun else {})
 	if w and Run.cls.armed:
@@ -114,8 +114,8 @@ func refresh_gear() -> void:
 	var armed := Run.cls.armed and Run.form == &""
 	weapon.visible = armed
 	weapon.set_process(armed)
-	var family := Run.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.weapon_family()))
-	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.weapon_family(), combo))
+	var family := Run.gear.weapon_family() if Run.cls.id != &"trickster" else String(Profile.custom.get("kit", Run.gear.weapon_family()))
+	combo = Run.cls.combo if Run.cls.combo else FAMILY_COMBOS.get(family, FAMILY_COMBOS.get(Run.gear.weapon_family(), combo))
 	if Run.form != &"":
 		combo = BEAST_COMBO
 	_steps = combo.steps.duplicate()
@@ -136,11 +136,11 @@ func dress() -> void:
 		sprite.setup(Run.actor())
 		sprite.play_action(act, sprite.facing, 0.0, true)
 	for slot: String in ["hat", "shield"]:
-		var g := Run.equipped(slot)
+		var g := Run.gear.equipped(slot)
 		sprite.wear(slot, g.data.worn_sprite() if g else "")
 	# A carried gun is worn too: the pivots place it in the gun poses.
-	var held := Run.equipped("weapon")
-	sprite.wear("gun", held.data.worn_sprite() if held and Run.carries_gun() else "")
+	var held := Run.gear.equipped("weapon")
+	sprite.wear("gun", held.data.worn_sprite() if held and Run.gear.carries_gun() else "")
 	var fashion := {}
 	for w in Run.worn_pieces():
 		fashion[w.slot] = w.worn_sprite()
@@ -443,7 +443,7 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	# The server's 0x59c4a0: each element adds base x attack% less the
 	# monster's resistance to it; physical resistance (its attribute 0x14)
 	# comes off a physical hit.
-	var el := Run.element_attack()
+	var el := Run.gear.element_attack()
 	for k: String in el:
 		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
 	if not fx.get("magic", false):
@@ -463,7 +463,7 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	debuffs.merge(effects.get("debuffs", {}), true)
 	if not debuffs.is_empty():
 		effects.debuffs = debuffs
-	if Run.legend_on(&"pharaohs_gold") and Run.rng.randf() < 0.2:
+	if Run.gear.legend_on(&"pharaohs_gold") and Run.rng.randf() < 0.2:
 		Run.purse.galder += 4
 		Events.text_shown.emit(e.global_position + Vector2(0, -60), "+4 G", Color(1.0, 0.85, 0.35))
 	if crit:

@@ -12,6 +12,9 @@ var route := RunRoute.new()
 ## What the run carries (Run.purse): Galder, ore, TM, shards and monster materials.
 var purse := RunPurse.new()
 
+## Your gear (Run.gear): what's equipped, refining and compounding it, its weight, guns and the shop.
+var gear := RunGear.new()
+
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
 	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
@@ -31,8 +34,6 @@ var barrier := 0
 var barrier_back_at := 0.0
 ## Revival (2221): when it can bring you back again.
 var revival_ready_at := 0.0
-## Equipment slots: the six core run-gear slots.
-const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc1", "acc2"]
 ## Echoes of other classes that can haunt elite rooms after the first clear.
 const ECHO_PATHS: Array[String] = ["res://data/echoes/echo_bard.tres", "res://data/echoes/echo_explorer.tres",
 	"res://data/echoes/echo_entertainer.tres"]
@@ -70,8 +71,6 @@ var type_points := {"power": 0, "magic": 0, "sense": 0, "charm": 0}
 var cards: Dictionary = {}  # StringName card id -> level
 ## Skill card ids in slots 1-3 (RMB, Q, E); &"" is an empty slot.
 var loadout: Array[StringName] = [&"", &"", &""]
-## EQUIP_SLOTS key -> GearItem.
-var equipment: Dictionary = {}
 ## The sky-blue rune's borrowed skill (slot 4, key F) and its level.
 var rune: CardData
 var rune_level := 0
@@ -287,7 +286,7 @@ func new_run(with_seed := -1) -> void:
 	cards = {}
 	loadout = [&"", &"", &""]
 	jobs.clear()
-	equipment = {"weapon": GearItem.make(cls.start_weapon)}
+	gear.equipment = {"weapon": GearItem.make(cls.start_weapon)}
 	purse.ore = 0
 	rune = null
 	rune_level = 0
@@ -338,7 +337,7 @@ func _carry_heirloom() -> void:
 	g.stored = Profile.heirloom
 	g.refine_cap = route.regions[0].refine_cap
 	g.sync_level = sync_level()
-	equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
+	gear.equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
 
 
 ## The item level gear is synced to at this depth (drops use the same scale).
@@ -348,7 +347,7 @@ func sync_level() -> int:
 
 ## Re-syncs carried heirlooms to the current depth and region (on entering a room).
 func sync_heirlooms() -> void:
-	for g: GearItem in equipment.values():
+	for g: GearItem in gear.equipment.values():
 		if g.sync_level >= 0:
 			g.sync_level = sync_level()
 			g.refine_cap = route.region.refine_cap
@@ -365,7 +364,7 @@ func item_by_id(id: StringName) -> ItemData:
 ## Portable Port: saves every stored item's progress, and sends `item` home
 ## (if given). Returns false if the warehouse is full.
 func save_point(item: GearItem = null) -> bool:
-	for g: GearItem in equipment.values():
+	for g: GearItem in gear.equipment.values():
 		if g.stored >= 0:
 			Profile.update_item(g.stored, g.to_dict())
 	if item == null:
@@ -381,7 +380,7 @@ func save_point(item: GearItem = null) -> bool:
 ## Stored items changed since the last save (what a rollback would undo).
 func unsaved_changes() -> Array[String]:
 	var out: Array[String] = []
-	for g: GearItem in equipment.values():
+	for g: GearItem in gear.equipment.values():
 		if g.stored < 0 or g.stored >= Profile.warehouse.size():
 			continue
 		var saved := GearItem.from_dict(Profile.warehouse[g.stored], item_by_id)
@@ -604,7 +603,7 @@ func _compute_stats() -> void:
 		var gain: Dictionary = Stats.TYPES[t].gain
 		for k: String in gain:
 			s[k] += gain[k] * pts
-	for g: GearItem in equipment.values():
+	for g: GearItem in gear.equipment.values():
 		var gs := g.stats()
 		for k: String in gs:
 			s[k] = s.get(k, 0.0) + gs[k]
@@ -1070,96 +1069,6 @@ func _grows_basic(c: CardData) -> bool:
 
 # ---------------------------------------------------------------- equipment
 
-func equipped(slot_key: String) -> GearItem:
-	return equipment.get(slot_key)
-
-
-## Equipment slot keys an item can go in.
-func slot_keys_for(data: ItemData) -> Array[String]:
-	match data.slot:
-		ItemData.Slot.WEAPON: return ["weapon"]
-		ItemData.Slot.HAT: return ["hat"]
-		ItemData.Slot.SHIELD: return ["shield"]
-		ItemData.Slot.INNERWEAR: return ["innerwear"]
-	return ["acc1", "acc2"]
-
-
-## Puts an item on (in the first free fitting slot unless `slot_key` is
-## given) and returns what it replaced, or null.
-## What the last equip() put away besides the item it replaced: a shield, when
-## a gun is taken up ("a loaded gun can't share your hands with a shield").
-var displaced: Array[GearItem] = []
-
-
-## Whether `item` can go on now: no shield while a gun is carried.
-func can_equip(item: GearItem) -> bool:
-	return not (item.data.slot == ItemData.Slot.SHIELD and carries_gun())
-
-
-func equip(item: GearItem, slot_key := "") -> GearItem:
-	displaced = []
-	if not can_equip(item):
-		return null
-	if slot_key == "":
-		var keys := slot_keys_for(item.data)
-		slot_key = keys[0]
-		for k in keys:
-			if not equipment.has(k):
-				slot_key = k
-				break
-	var old: GearItem = equipment.get(slot_key)
-	var before := max_hp
-	equipment[slot_key] = item
-	if carries_gun() and equipment.has("shield"):
-		displaced.append(equipment["shield"])
-		equipment.erase("shield")
-	stats_changed()
-	if max_hp > before:
-		heal(max_hp - before)
-	return old
-
-
-## City refining costs this many times a run anvil's Galder.
-const CITY_COST := 3
-
-
-func city_refine_cost(g: GearItem) -> Dictionary:
-	var cost := g.refine_cost()
-	cost.galder *= CITY_COST
-	return cost
-
-
-func can_city_refine(g: GearItem) -> bool:
-	var cost := city_refine_cost(g)
-	return g.can_refine() and Profile.ore >= cost.ore and Profile.galder >= cost.galder
-
-
-## Marx refines stored item `index` with banked Galder and ore: "success",
-## "fail" or "drop". Saves the item.
-func city_refine(index: int, roll := -1.0) -> String:
-	var g := GearItem.from_dict(Profile.warehouse[index], item_by_id)
-	var cost := city_refine_cost(g)
-	Profile.ore -= cost.ore
-	Profile.galder -= cost.galder
-	var result := "fail"
-	if (rng.randf() if roll < 0.0 else roll) < g.refine_chance():
-		g.refine += 1
-		result = "success"
-	elif g.refine >= 4 and rng.randf() < 0.5:
-		g.refine -= 1
-		result = "drop"
-	Profile.update_item(index, g.to_dict())
-	return result
-
-
-## Paul compounds a banked material into stored item `index`. Returns the compound.
-func city_compound(index: int, mat: MaterialData) -> Dictionary:
-	var g := GearItem.from_dict(Profile.warehouse[index], item_by_id)
-	Profile.materials[String(mat.id)] = int(Profile.materials.get(String(mat.id), 0)) - mat.need
-	var c := g.compound(mat)
-	Profile.update_item(index, g.to_dict())
-	return c
-
 
 ## Wardrobe pieces worn (from the Profile).
 func worn_pieces() -> Array[WardrobeData]:
@@ -1205,98 +1114,12 @@ func dig_rewards(depth_reached: int) -> Dictionary:
 			out.material = mats[rng.randi() % mats.size()]
 			out.count = 2 + depth_reached / 20
 	if depth_reached >= 40:
-		var offers := gear_offers(1)
+		var offers := gear.gear_offers(1)
 		if not offers.is_empty():
 			out.gear = offers[0]
 	if depth_reached >= 70:
 		out.shard = 1
 	return out
-
-
-## Whether an equipped legend has this effect.
-func legend_on(effect: StringName) -> bool:
-	for g: GearItem in equipment.values():
-		if g.data.legend and g.data.legend_effect == effect:
-			return true
-	return false
-
-
-func weapon_family() -> String:
-	var w := equipped("weapon")
-	return w.data.family if w else "sword"
-
-
-func equip_load() -> int:
-	var total := 0
-	for g: GearItem in equipment.values():
-		total += g.data.weight
-	return total
-
-
-func load_limit() -> int:
-	return stat("WT") / 4
-
-
-func overweight() -> bool:
-	return equip_load() > load_limit()
-
-
-## Up to `n` different items that can drop at this depth, rolled with DA.
-## Whether this class can use a weapon: guns need Gun Carrier; a gunner
-## (Lion, who starts with one) fights with guns only.
-func can_use(it: ItemData) -> bool:
-	var gunner := cls.start_weapon != null and cls.start_weapon.family == "gun"
-	if it.slot == ItemData.Slot.SHIELD:
-		return not gunner and not carries_gun()  # a gun needs both hands
-	if it.slot != ItemData.Slot.WEAPON:
-		return true
-	if it.family == "gun":
-		return holds_tag(&"carries_guns")
-	return not gunner
-
-
-func gear_offers(n: int) -> Array[GearItem]:
-	var pool: Array[ItemData] = []
-	var top := 1 + 3 * route.depth
-	for it in items:
-		if it.level <= top and it.level >= top - 24 and not it.legend and it != cls.start_weapon and can_use(it):
-			pool.append(it)
-	shuffle(pool)
-	var out: Array[GearItem] = []
-	var quality := clampf(stat("DA") / 60.0, 0.0, 1.0)
-	for it in pool.slice(0, n):
-		out.append(GearItem.roll(it, quality))
-	return out
-
-
-func refine_chance(g: GearItem) -> float:
-	var c := g.refine_chance() + stat("LK") / 1000.0
-	c += mod("refine_chance")
-	return clampf(c, 0.0, 0.99)
-
-
-func can_afford_refine(g: GearItem) -> bool:
-	var cost := g.refine_cost()
-	return g.can_refine() and purse.ore >= cost.ore and purse.galder >= cost.galder
-
-
-## One refine attempt: "success", "fail" or "drop" (failed from +4 or more
-## and lost a level). Pays the cost either way.
-func try_refine(g: GearItem, roll := -1.0) -> String:
-	var cost := g.refine_cost()
-	purse.ore -= cost.ore
-	purse.galder -= cost.galder
-	if roll < 0.0:
-		roll = rng.randf()
-	var result := "fail"
-	if roll < refine_chance(g):
-		g.refine += 1
-		result = "success"
-	elif g.refine >= 4 and rng.randf() < 0.5:
-		g.refine -= 1
-		result = "drop"
-	stats_changed()
-	return result
 
 
 # ---------------------------------------------------------------- combat numbers
@@ -1324,7 +1147,7 @@ func _linear(key: String) -> float:
 ## Damage multiplier for the basic combo.
 func attack_mult() -> float:
 	var m := _linear("AP") * _berserk_mult()
-	if has_passive(&"sword_mastery") and weapon_family() == "sword" and cls.armed:
+	if has_passive(&"sword_mastery") and gear.weapon_family() == "sword" and cls.armed:
 		m *= 1.15
 	if has_passive(&"boxers_footwork") and not cls.armed:
 		m *= 1.15
@@ -1385,13 +1208,6 @@ func in_bunker(now: float) -> bool:
 	return now < bunker_until and bunker_hp > 0
 
 
-## Whether the equipped weapon is a gun you can use: Gun Carrier (Lion
-## starts with it; Fox can learn it), as the client's "Gun_NotEquippable".
-func carries_gun() -> bool:
-	var w := equipped("weapon")
-	return w != null and w.data.family == "gun" and holds_tag(&"carries_guns")
-
-
 ## AP + DA against the starting character's: a gun hits harder with a better
 ## gun (its AP) and with Sense points (DA).
 ## The server's gun damage (GameServer.exe 0x59d440, GunAttackStrategy):
@@ -1414,7 +1230,7 @@ func gun_attack() -> float:
 
 ## The equipped gun's Gun AP (its table AP, raised by refining).
 func gun_ap() -> float:
-	var w := equipped("weapon")
+	var w := gear.equipped("weapon")
 	return float(w.stats().get("AP", 0)) if w and w.data.family == "gun" else 0.0
 
 
@@ -1465,11 +1281,11 @@ func attack_speed_mult() -> float:
 
 
 func speed_mult() -> float:
-	return mod_factor("move%", false, 0.85 if overweight() else 1.0)
+	return mod_factor("move%", false, 0.85 if gear.overweight() else 1.0)
 
 
 func dash_cooldown_mult() -> float:
-	var m := mod_factor("dash_cooldown_cut%", true, 1.3 if overweight() else 1.0)
+	var m := mod_factor("dash_cooldown_cut%", true, 1.3 if gear.overweight() else 1.0)
 	return m * (0.8 if not cls.armed else 1.0)  # fighting bare-handed keeps you light on your feet
 
 
@@ -1571,48 +1387,5 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 # ---------------------------------------------------------------- materials and compounding
 
 
-## Equipped items with a free compound slot (slot keys).
-func compound_targets() -> Array[String]:
-	var out: Array[String] = []
-	for k in EQUIP_SLOTS:
-		var g := equipped(k)
-		if g and g.free_slots() > 0:
-			out.append(k)
-	return out
-
-
-func compound(g: GearItem, mat: MaterialData) -> Dictionary:
-	purse.materials[mat.id] -= mat.need
-	var c := g.compound(mat, clampf(stat("DA") / 60.0 * (1.0 + mod("compound%") / 100.0), 0.0, 1.0))
-	stats_changed()
-	return c
-
-
-## Elemental attack from all equipped gear: element -> value.
-func element_attack() -> Dictionary:
-	var out := {}
-	for g: GearItem in equipment.values():
-		var el := g.elements()
-		for k: String in el:
-			out[k] = out.get(k, 0) + el[k]
-	return out
-
-
 # ---------------------------------------------------------------- shop
 
-## What a shop sells this visit: {"kind", "price", ...}.
-func shop_offers() -> Array[Dictionary]:
-	var out: Array[Dictionary] = []
-	var cut := mod_factor("shop_discount%", true)
-	for g in gear_offers(2):
-		out.append({"kind": "gear", "item": g, "price": int((160 + 24 * g.data.level + 50 * g.slots) * cut)})
-	out.append({"kind": "ore", "count": 3, "price": int(180 * cut)})
-	var mats: Array[MaterialData] = []
-	for e in route.region.enemies:
-		if e.material and route.local_depth() >= e.min_depth and not e.is_boss:
-			mats.append(e.material)
-	if mats.size() > 0:
-		var m: MaterialData = mats[rng.randi() % mats.size()]
-		out.append({"kind": "material", "material": m, "count": m.need, "price": int(70 * m.need * cut)})
-	out.append({"kind": "potion", "heal": 0.4, "price": int(160 * cut)})
-	return out

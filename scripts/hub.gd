@@ -424,17 +424,17 @@ func _forge_menu(npc: Npc) -> void:
 				options.append({"title": g.title() if g else "(unknown item)", "tag": "",
 					"text": "Can't be refined." if g else "", "disabled": true})
 				continue
-			var cost := Run.city_refine_cost(g)
+			var cost := Run.gear.city_refine_cost(g)
 			options.append({"title": "%s  →  +%d" % [g.title(), g.refine + 1], "tag": g.data.refine_stat,
 				"icon": g.data.icon(), "text": "%d%% chance  ·  %d Bronze, %d Galder%s" % [roundi(g.refine_chance() * 100),
 					cost.ore, cost.galder, "  ·  failing may lose a level" if g.refine >= 4 else ""],
-				"disabled": not Run.can_city_refine(g)})
+				"disabled": not Run.gear.can_city_refine(g)})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder and %d Bronze Fragments banked." % [Profile.galder, Profile.ore]})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "Bring it to the anvil."), options)
 		if pick < 0 or pick >= items.size():
 			return
 		Audio.play("ui_refine_proceed.wav")
-		var result := Run.city_refine(pick)
+		var result := Run.gear.city_refine(pick)
 		var g := GearItem.from_dict(Profile.warehouse[pick], Run.item_by_id)
 		match result:
 			"success":
@@ -479,7 +479,7 @@ func _compound_menu(npc: Npc) -> void:
 		if t < 0 or t >= targets.size():
 			continue
 		var g := items[targets[t]]
-		var c := Run.city_compound(targets[t], m)
+		var c := Run.gear.city_compound(targets[t], m)
 		Audio.play("ui_compose_success.wav")
 		hud.log_line("[System] Paul set %s into %s: %s +%d." % [m.display_name, g.title(),
 			c.stat + (" attack" if m.is_element() else ""), c.value], Color("e0b54d"))

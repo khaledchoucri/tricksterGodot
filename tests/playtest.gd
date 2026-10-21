@@ -142,9 +142,9 @@ func _one_run(index: int) -> void:
 			if e.is_hittable():
 				killers.append(e.display_name)
 	var gear: PackedStringArray = []
-	for k in Run.EQUIP_SLOTS:
-		if Run.equipped(k):
-			gear.append(Run.equipped(k).title())
+	for k in Run.gear.EQUIP_SLOTS:
+		if Run.gear.equipped(k):
+			gear.append(Run.gear.equipped(k).title())
 	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.route.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
@@ -374,12 +374,12 @@ func _choose() -> void:
 					best = gain
 					pick = i
 		"gear_slot":
-			pick = 0 if _score(Run.equipped("acc1")) <= _score(Run.equipped("acc2")) else 1
+			pick = 0 if _score(Run.gear.equipped("acc1")) <= _score(Run.gear.equipped("acc2")) else 1
 		"compound_mat":
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
 				var m: MaterialData = opts[i]
-				if Run.purse.material_count(m) >= m.need and not Run.compound_targets().is_empty():
+				if Run.purse.material_count(m) >= m.need and not Run.gear.compound_targets().is_empty():
 					pick = i
 					break
 		"compound_target":
@@ -405,8 +405,8 @@ func _choose() -> void:
 		"anvil":
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
-				var g := Run.equipped(opts[i])
-				if Run.can_afford_refine(g) and Run.refine_chance(g) >= 0.45:
+				var g := Run.gear.equipped(opts[i])
+				if Run.gear.can_afford_refine(g) and Run.gear.refine_chance(g) >= 0.45:
 					pick = i
 					break
 	if not game.hud.pick_reachable(pick):
@@ -426,10 +426,10 @@ func _type_pick(opts: Array) -> int:
 ## How much better an item is than what it would replace, by a rough score.
 func _gear_gain(g: GearItem) -> float:
 	var worst := INF
-	for k in Run.slot_keys_for(g.data):
-		worst = minf(worst, _score(Run.equipped(k)))
-	var load_after := Run.equip_load() + g.data.weight
-	var penalty := 20.0 if load_after > Run.load_limit() else 0.0
+	for k in Run.gear.slot_keys_for(g.data):
+		worst = minf(worst, _score(Run.gear.equipped(k)))
+	var load_after := Run.gear.equip_load() + g.data.weight
+	var penalty := 20.0 if load_after > Run.gear.load_limit() else 0.0
 	return _score(g) - worst - penalty
 
 
@@ -455,14 +455,14 @@ func _city_craft() -> void:
 		return
 	for _i in 6:
 		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
-		if not Run.can_city_refine(g) or g.refine_chance() < 0.45:
+		if not Run.gear.can_city_refine(g) or g.refine_chance() < 0.45:
 			break
-		print("   city refine %s: %s" % [g.title(), Run.city_refine(h)])
+		print("   city refine %s: %s" % [g.title(), Run.gear.city_refine(h)])
 	for id: String in Profile.materials.keys():
 		var m := Run.purse.material_by_id(StringName(id))
 		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
 		if m and g.free_slots() > 0 and int(Profile.materials[id]) >= m.need:
-			var c := Run.city_compound(h, m)
+			var c := Run.gear.city_compound(h, m)
 			print("   city compound %s into %s: %s +%d" % [m.display_name, g.title(), c.stat, c.value])
 
 

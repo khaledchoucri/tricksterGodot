@@ -310,9 +310,9 @@ func show_results(won: bool) -> void:
 	for id: StringName in Run.cards:
 		cards.append("%s Lv %d" % [Run.card(id).display_name, Run.cards[id]])
 	var gear: PackedStringArray = []
-	for k in Run.EQUIP_SLOTS:
-		if Run.equipped(k):
-			gear.append(Run.equipped(k).title())
+	for k in Run.gear.EQUIP_SLOTS:
+		if Run.gear.equipped(k):
+			gear.append(Run.gear.equipped(k).title())
 	var rows := [["Rooms cleared", "%d / %d" % [Run.route.depth + (1 if won else 0), Run.route.plan.size()]],
 		["Time", "%d:%04.1f" % [int(Run.time) / 60, fmod(Run.time, 60.0)]],
 		["Level", "%d  %s" % [Run.level, Run.job.display_name]],

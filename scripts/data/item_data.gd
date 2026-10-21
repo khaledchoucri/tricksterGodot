@@ -24,7 +24,7 @@ const SLOT_NAMES: Array[String] = ["Weapon", "Hat", "Shield", "Innerwear", "Acce
 ## Compound slots (the original CompoundSlot); drops can roll one more.
 @export var compound_slots := 1
 ## Legendary: never in normal drops or shops, only from its boss, with a
-## unique effect (checked by code through Run.legend_on()).
+## unique effect (checked by code through Run.gear.legend_on()).
 @export var legend := false
 @export var legend_effect: StringName
 @export_multiline var legend_text := ""

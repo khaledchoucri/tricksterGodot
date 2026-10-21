@@ -55,9 +55,9 @@ func _shoot() -> void:
 	add_child(game)
 	await _wait(3.0)
 	var player: Player = game.player
-	Run.equip(GearItem.roll(load("res://data/items/pretty_hammer.tres"), 0.8))
-	Run.equip(GearItem.roll(load("res://data/items/wood_helmet.tres"), 0.8))
-	Run.equip(GearItem.roll(load("res://data/items/lucky_amulet.tres"), 0.8))
+	Run.gear.equip(GearItem.roll(load("res://data/items/pretty_hammer.tres"), 0.8))
+	Run.gear.equip(GearItem.roll(load("res://data/items/wood_helmet.tres"), 0.8))
+	Run.gear.equip(GearItem.roll(load("res://data/items/lucky_amulet.tres"), 0.8))
 	while Run.type_points.power < 6:
 		Run.apply_type("power")
 	Run.apply_type("sense")
@@ -65,8 +65,8 @@ func _shoot() -> void:
 	for e in game.room.enemies:
 		e.global_position = player.global_position + Vector2(60, 20)
 	player.aim = Vector2(1, 0.3).normalized()
-	Run.equip(GearItem.make(load("res://data/items/marky_tricorn.tres")), "hat")
-	Run.equip(GearItem.make(load("res://data/items/teddy_bear_shield.tres")), "shield")
+	Run.gear.equip(GearItem.make(load("res://data/items/marky_tricorn.tres")), "hat")
+	Run.gear.equip(GearItem.make(load("res://data/items/teddy_bear_shield.tres")), "shield")
 	Run.start_job(load("res://data/jobs/knight.tres"))
 	player.refresh_gear()
 	await _wait(0.3)
@@ -87,7 +87,7 @@ func _shoot() -> void:
 	await _wait(0.3)
 	await _snap("04_type_pick")
 	game.hud._on_pick(0)
-	game._start_pick("gear", Run.gear_offers(2))
+	game._start_pick("gear", Run.gear.gear_offers(2))
 	await _wait(0.3)
 	await _snap("05_gear_pick")
 	game.hud.pick_panel.visible = false

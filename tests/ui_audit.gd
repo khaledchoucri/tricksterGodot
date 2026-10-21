@@ -270,10 +270,10 @@ func _audit_game() -> void:
 	Run.loadout = skills
 	Run.take_rune(Run.echoes[0].runes[0])
 	var items := _longest_items(60)
-	for k in Run.EQUIP_SLOTS:
+	for k in Run.gear.EQUIP_SLOTS:
 		for g in items:
-			if k in Run.slot_keys_for(g.data):
-				Run.equip(g, k)
+			if k in Run.gear.slot_keys_for(g.data):
+				Run.gear.equip(g, k)
 				break
 	Run.level = 99
 	Run.purse.galder = 999999
@@ -294,7 +294,7 @@ func _audit_game() -> void:
 		"replace": [0, 1, 2, -1],
 		"type": Stats.TYPE_ORDER.duplicate(),
 		"job": Run.job.next_jobs.duplicate() if Run.job.next_jobs.size() else [Run.job],
-		"gear": Run.gear_offers(3),
+		"gear": Run.gear.gear_offers(3),
 		"gear_slot": ["acc1", "acc2", ""],
 		"rune": Run.echoes[0].runes + [null],
 	}
@@ -307,9 +307,9 @@ func _audit_game() -> void:
 	await _check_pick(game, "run_pick_anvil")
 	game._open_compounder()
 	await _check_pick(game, "run_pick_compound_mat")
-	game._start_pick("compound_target", Run.compound_targets() + [""])
+	game._start_pick("compound_target", Run.gear.compound_targets() + [""])
 	await _check_pick(game, "run_pick_compound_target")
-	game._shop = Run.shop_offers()
+	game._shop = Run.gear.shop_offers()
 	game._open_shop()
 	await _check_pick(game, "run_pick_shop")
 	game._open_port()

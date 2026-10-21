@@ -219,7 +219,7 @@ func _grant(reward: String) -> void:
 				_start_pick("card", opts)
 				return
 		"gear":
-			var offers := Run.gear_offers(1 + int(Run.mod("gear_choices")))
+			var offers := Run.gear.gear_offers(1 + int(Run.mod("gear_choices")))
 			if not offers.is_empty():
 				Audio.play("etc_item1.wav", -4.0)
 				_start_pick("gear", offers)
@@ -235,7 +235,7 @@ func _grant(reward: String) -> void:
 			_open_compounder()
 			return
 		"shop":
-			_shop = Run.shop_offers()
+			_shop = Run.gear.shop_offers()
 			_return_to = "shop"
 			Audio.play("ui_card.wav")
 			_open_shop()
@@ -393,7 +393,7 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 					shown.append({"title": "Keep my accessories", "tag": "", "cancel": true,
 						"text": "Scrap %s for %d Galder." % [_pending_gear.title(), SCRAP_GALDER]})
 				else:
-					var old := Run.equipped(k)
+					var old := Run.gear.equipped(k)
 					shown.append({"title": "Replace %s" % old.title(), "tag": "", "icon": old.data.icon(),
 						"text": _pending_gear.summary(old)})
 			title = "Both accessory slots are full"
@@ -403,14 +403,14 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 					shown.append({"title": "Leave the anvil", "tag": "", "cancel": true,
 						"text": "%d %ss and %d Galder left." % [Run.purse.ore, Run.purse.ORE_NAME, Run.purse.galder]})
 					continue
-				var g := Run.equipped(k)
+				var g := Run.gear.equipped(k)
 				var cost := g.refine_cost()
-				var text := "%d%% chance  ·  %d %s%s, %d Galder" % [roundi(Run.refine_chance(g) * 100), cost.ore,
+				var text := "%d%% chance  ·  %d %s%s, %d Galder" % [roundi(Run.gear.refine_chance(g) * 100), cost.ore,
 					Run.purse.ORE_NAME, "s" if cost.ore != 1 else "", cost.galder]
 				if g.refine >= 4:
 					text += "  ·  failing may lose a level"
 				shown.append({"title": "%s  →  +%d" % [g.title(), g.refine + 1], "tag": g.data.refine_stat,
-					"icon": g.data.icon(), "text": text, "disabled": not Run.can_afford_refine(g)})
+					"icon": g.data.icon(), "text": text, "disabled": not Run.gear.can_afford_refine(g)})
 			title = "Anvil  ·  refine your gear"
 		"compound_mat":
 			for m: MaterialData in options:
@@ -420,14 +420,14 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 				var have := Run.purse.material_count(m)
 				shown.append({"title": m.display_name, "tag": "%d / %d" % [have, m.need], "icon": m.icon(),
 					"text": "Compounds %s into a free slot." % m.describe(),
-					"disabled": have < m.need or Run.compound_targets().is_empty()})
-			title = "Compounder  ·  choose a material" if Run.compound_targets().size() else "Compounder  ·  no free compound slots"
+					"disabled": have < m.need or Run.gear.compound_targets().is_empty()})
+			title = "Compounder  ·  choose a material" if Run.gear.compound_targets().size() else "Compounder  ·  no free compound slots"
 		"compound_target":
 			for k: String in options:
 				if k == "":
 					shown.append({"title": "Back", "tag": "", "text": "Choose another material.", "cancel": true})
 					continue
-				var g := Run.equipped(k)
+				var g := Run.gear.equipped(k)
 				shown.append({"title": g.title(), "tag": "%d free slot%s" % [g.free_slots(), "s" if g.free_slots() > 1 else ""],
 					"icon": g.data.icon(), "text": g.summary()})
 			title = "Compound %s into..." % _pending_mat.display_name
@@ -493,13 +493,13 @@ func _type_option(t: String) -> Dictionary:
 
 func _gear_option(g: GearItem) -> Dictionary:
 	var current: GearItem = null
-	for k in Run.slot_keys_for(g.data):
-		current = Run.equipped(k)
+	for k in Run.gear.slot_keys_for(g.data):
+		current = Run.gear.equipped(k)
 		if current == null:
 			break
-	var load_after := Run.equip_load() + g.data.weight - (current.data.weight if current else 0)
-	var text := g.summary(current) + "\nWeight %d  ·  Load %d / %d" % [g.data.weight, load_after, Run.load_limit()]
-	if load_after > Run.load_limit():
+	var load_after := Run.gear.equip_load() + g.data.weight - (current.data.weight if current else 0)
+	var text := g.summary(current) + "\nWeight %d  ·  Load %d / %d" % [g.data.weight, load_after, Run.gear.load_limit()]
+	if load_after > Run.gear.load_limit():
 		text += "  ·  overweight"
 	var tag := g.data.slot_name()
 	if g.data.family != "":
@@ -566,8 +566,8 @@ func _on_picked(i: int) -> void:
 			if g == null:
 				_scrap(null)
 			else:
-				var keys := Run.slot_keys_for(g.data)
-				if keys.size() > 1 and keys.all(func(k: String) -> bool: return Run.equipped(k) != null):
+				var keys := Run.gear.slot_keys_for(g.data)
+				if keys.size() > 1 and keys.all(func(k: String) -> bool: return Run.gear.equipped(k) != null):
 					_pending_gear = g
 					var slot_options: Array = keys.duplicate()
 					slot_options.append("")
@@ -587,15 +587,15 @@ func _on_picked(i: int) -> void:
 				_return_to = ""
 			else:
 				_pending_mat = m
-				var keys: Array = Run.compound_targets()
+				var keys: Array = Run.gear.compound_targets()
 				keys.append("")
 				_start_pick("compound_target", keys)
 				return
 		"compound_target":
 			var k: String = _pick_options[i]
 			if k != "":
-				var g := Run.equipped(k)
-				var c := Run.compound(g, _pending_mat)
+				var g := Run.gear.equipped(k)
+				var c := Run.gear.compound(g, _pending_mat)
 				Audio.play("ui_compose_success.wav")
 				var what: String = c.stat + (" attack" if _pending_mat.is_element() else "")
 				hud.notice("%s +%d on %s" % [what, c.value, g.title()])
@@ -636,7 +636,7 @@ func _on_picked(i: int) -> void:
 		"anvil":
 			var k: String = _pick_options[i]
 			if k != "":
-				_refine(Run.equipped(k))
+				_refine(Run.gear.equipped(k))
 				return
 			Audio.play_ambience(Run.route.region.field_ambience)
 	_resume()
@@ -657,17 +657,17 @@ func _resume() -> void:
 
 
 func _equip(g: GearItem, slot_key: String) -> void:
-	if not Run.can_equip(g):
+	if not Run.gear.can_equip(g):
 		hud.log_line("[System] A gun needs both hands: no shield while you carry one.", MUTED)
 		_scrap(g)
 		return
-	var old := Run.equip(g, slot_key)
+	var old := Run.gear.equip(g, slot_key)
 	player.refresh_gear()
 	Audio.play("etc_item1.wav", -2.0)
 	hud.log_line("[System] Equipped %s." % g.title(), INFO)
 	if old:
 		_scrap(old)
-	for d in Run.displaced:
+	for d in Run.gear.displaced:
 		hud.log_line("[System] A gun needs both hands: %s put away." % d.title(), MUTED)
 		_scrap(d)
 
@@ -723,8 +723,8 @@ func _buy(o: Dictionary) -> bool:
 	match o.kind:
 		"gear":
 			var g: GearItem = o.item
-			var keys := Run.slot_keys_for(g.data)
-			if keys.size() > 1 and keys.all(func(k: String) -> bool: return Run.equipped(k) != null):
+			var keys := Run.gear.slot_keys_for(g.data)
+			if keys.size() > 1 and keys.all(func(k: String) -> bool: return Run.gear.equipped(k) != null):
 				_pending_gear = g
 				var slot_options: Array = keys.duplicate()
 				slot_options.append("")
@@ -744,8 +744,8 @@ func _buy(o: Dictionary) -> bool:
 ## The Portable Port: send one item home (anything not already stored), or just save.
 func _open_port() -> void:
 	var opts: Array = []
-	for k in Run.EQUIP_SLOTS:
-		var g := Run.equipped(k)
+	for k in Run.gear.EQUIP_SLOTS:
+		var g := Run.gear.equipped(k)
 		if g and g.stored < 0 and g.data != Run.cls.start_weapon:
 			opts.append(g)
 	opts.append(null)
@@ -795,8 +795,8 @@ func _start_ambush() -> void:
 
 func _open_anvil() -> void:
 	var keys: Array = []
-	for k in Run.EQUIP_SLOTS:
-		var g := Run.equipped(k)
+	for k in Run.gear.EQUIP_SLOTS:
+		var g := Run.gear.equipped(k)
 		if g and g.can_refine():
 			keys.append(k)
 	keys.append("")
@@ -806,7 +806,7 @@ func _open_anvil() -> void:
 ## One refine attempt at the anvil, then back to the anvil.
 func _refine(g: GearItem) -> void:
 	Audio.play("ui_refine_proceed.wav")
-	var result := Run.try_refine(g)
+	var result := Run.gear.try_refine(g)
 	await get_tree().create_timer(0.5).timeout
 	match result:
 		"success":

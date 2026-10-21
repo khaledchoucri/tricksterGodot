@@ -343,9 +343,9 @@ func _core_rewards() -> void:
 	var found: GearItem = game._pick_options[0]
 	game.hud._on_pick(0)
 	await wait(0.2)
-	check(Run.equipment.values().has(found), "picking the gear equips %s" % found.title())
+	check(Run.gear.equipment.values().has(found), "picking the gear equips %s" % found.title())
 	check(game.hud.pick_panel.visible and game._pick_kind == "anvil", "an Anvil reward opens the anvil")
-	var weapon: GearItem = Run.equipped("weapon")
+	var weapon: GearItem = Run.gear.equipped("weapon")
 	Run.purse.galder = 1000
 	var ore_before: int = Run.purse.ore
 	var cost: Dictionary = weapon.refine_cost()
@@ -355,7 +355,7 @@ func _core_rewards() -> void:
 		"refining at the anvil spends ore and returns to it (%s)" % weapon.title())
 	game.hud._on_pick(game._pick_options.size() - 1)
 	await wait(0.2)
-	Run.equip(GearItem.make(_item("pretty_hammer")))
+	Run.gear.equip(GearItem.make(_item("pretty_hammer")))
 	while Run.type_points.power < 6:
 		Run.apply_type("power")
 	game.player.refresh_gear()
@@ -366,7 +366,7 @@ func _core_rewards() -> void:
 	check(game.player.combo == Player.FAMILY_COMBOS.hammer and steps.size() == 4
 		and game.player.weapon.weapon_name == "item_40004",
 		"a hammer swaps the combo; Extra Swing adds a 4th swing (%d)" % steps.size())
-	Run.equip(GearItem.make(Run.cls.start_weapon))
+	Run.gear.equip(GearItem.make(Run.cls.start_weapon))
 	game.player.refresh_gear()
 	check(game.hud.pick_panel.visible and game._pick_kind == "type", "the queued level-up offers the four types next")
 	game.hud._on_pick(0)
@@ -619,6 +619,36 @@ func _lint() -> void:
 			if ids.has(id) and not id in own.get(path, []) and not "%s %s" % [path.get_file(), id] in cross:
 				cross.append("%s %s" % [path.get_file(), id])
 	check(cross.is_empty(), "skill scripts name only their own cards%s" % ("" if cross.is_empty() else ": " + ", ".join(cross)))
+	# Every script compiles, with the autoloads in place (scenes the suite never opens too).
+	var broken: PackedStringArray = []
+	var all_scripts := _scripts_under("res://scripts")
+	all_scripts.append_array(_scripts_under("res://tests"))
+	for path in all_scripts:
+		var s: GDScript = load(path)
+		if s == null or not s.can_instantiate():
+			broken.append(path.get_file())
+	check(broken.is_empty(), "all %d scripts compile%s" % [all_scripts.size(), "" if broken.is_empty() else ": " + ", ".join(broken)])
+	# Every Run.<member> and Run.<module>.<member> the scripts name exists (calls on an
+	# autoload are only resolved when they run, so a stale name would wait for a player).
+	var run_ref := RegEx.create_from_string("\\bRun\\.([A-Za-z_]\\w*)(?:\\.([A-Za-z_]\\w*))?")
+	var missing := {}
+	for path in all_scripts:
+		for m in run_ref.search_all(FileAccess.get_file_as_string(path)):
+			var a := m.get_string(1)
+			var b := m.get_string(2)
+			if not _has_member(Run, a):
+				missing["Run.%s (%s)" % [a, path.get_file()]] = true
+			elif b != "" and Run.get(a) is RefCounted and not _has_member(Run.get(a), b):
+				missing["Run.%s.%s (%s)" % [a, b, path.get_file()]] = true
+	check(missing.is_empty(), "every Run member the scripts name exists%s" % ("" if missing.is_empty() else ": " + ", ".join(missing.keys())))
+
+
+## Whether `o` has a method, property, constant or signal called `n`.
+func _has_member(o: Object, n: String) -> bool:
+	if o.has_method(n) or n in o or o.has_signal(n):
+		return true
+	var s: Script = o.get_script()
+	return s != null and s.get_script_constant_map().has(n)
 
 
 ## Every .gd file under `dir`, recursively.
@@ -640,7 +670,7 @@ func _systems(Run: Node) -> void:
 		Run.new_run(s)
 		var rooms: Array = Run.route.plan.map(func(r) -> String: return String(r.data.id) + ("*" if r.elite else ""))
 		var offers: Array = Run.card_offers(3, false).map(func(c: CardData) -> String: return String(c.id))
-		var gear: Array = Run.gear_offers(3).map(func(g: GearItem) -> String: return g.title() + str(g.stats))
+		var gear: Array = Run.gear.gear_offers(3).map(func(g: GearItem) -> String: return g.title() + str(g.stats))
 		replays.append("%s | %s | %s" % [", ".join(rooms), ", ".join(offers), ", ".join(gear)])
 	check(replays[0] == replays[1] and replays[0] != replays[2] and Run.run_seed == 43,
 		"the same seed replays the room plan, offers and gear, and another seed doesn't (%s...)" % replays[0].left(60))
@@ -670,7 +700,7 @@ func _systems(Run: Node) -> void:
 	Profile.give_wardrobe(&"newbie_sprint")
 	Profile.wear("ear", &"bunny_ears")
 	Profile.wear("speed", &"newbie_sprint")
-	var fast: float = Run.speed_mult() / (0.85 if Run.overweight() else 1.0)
+	var fast: float = Run.speed_mult() / (0.85 if Run.gear.overweight() else 1.0)
 	check(Run.mod("move%") == 18.0 and is_equal_approx(fast, 1.08 * 1.1),
 		"Bunny's Ears and Newbie Sprint add their move%% and compound (x%.3f)" % fast)
 	Profile.worn = worn_before
@@ -688,41 +718,41 @@ func _systems(Run: Node) -> void:
 
 	Run.new_run()
 	var mult: float = Run.attack_mult()
-	Run.equip(GearItem.make(_item("wood_sword")))
+	Run.gear.equip(GearItem.make(_item("wood_sword")))
 	check(Run.stat("AP") == Run.cls.base.AP + 20 and Run.attack_mult() > mult * 1.2,
 		"a Wood Sword raises AP and combo damage (x%.2f)" % (Run.attack_mult() / mult))
-	Run.equip(GearItem.make(_item("lucky_amulet")))
-	Run.equip(GearItem.make(_item("topaz_ring")))
-	check(Run.equipped("acc1").data.id == &"lucky_amulet" and Run.equipped("acc2").data.id == &"topaz_ring",
+	Run.gear.equip(GearItem.make(_item("lucky_amulet")))
+	Run.gear.equip(GearItem.make(_item("topaz_ring")))
+	check(Run.gear.equipped("acc1").data.id == &"lucky_amulet" and Run.gear.equipped("acc2").data.id == &"topaz_ring",
 		"two accessories fill both accessory slots")
-	check(not Run.overweight() and Run.speed_mult() == 1.0, "light gear stays under the load limit")
-	Run.equip(GearItem.make(_item("bamboo_sword")))
-	Run.equip(GearItem.make(_item("clam_shield")))
-	check(Run.overweight() and Run.speed_mult() < 1.0, "heavy gear past WT / 4 (%d / %d) slows you" % [Run.equip_load(), Run.load_limit()])
+	check(not Run.gear.overweight() and Run.speed_mult() == 1.0, "light gear stays under the load limit")
+	Run.gear.equip(GearItem.make(_item("bamboo_sword")))
+	Run.gear.equip(GearItem.make(_item("clam_shield")))
+	check(Run.gear.overweight() and Run.speed_mult() < 1.0, "heavy gear past WT / 4 (%d / %d) slows you" % [Run.gear.equip_load(), Run.gear.load_limit()])
 	var pouch := GearItem.make(_item("pocket_pouch"))
-	Run.equip(pouch, "acc1")
-	check(not Run.overweight(), "a Pocket Pouch (+200 WT) carries the load")
+	Run.gear.equip(pouch, "acc1")
+	check(not Run.gear.overweight(), "a Pocket Pouch (+200 WT) carries the load")
 
 	var sword := GearItem.make(_item("wood_sword"))
-	Run.equip(sword)
+	Run.gear.equip(sword)
 	Run.purse.ore = 50
 	Run.purse.galder = 5000
 	var before: int = Run.stat("AP")
-	check(Run.try_refine(sword, 0.0) == "success" and sword.refine == 1 and Run.stat("AP") > before
+	check(Run.gear.try_refine(sword, 0.0) == "success" and sword.refine == 1 and Run.stat("AP") > before
 		and sword.title() == "Wood Sword +1", "refining succeeds and raises AP (%d -> %d)" % [before, Run.stat("AP")])
 	var dropped := false
 	for _i in 40:
 		sword.refine = 5
-		if Run.try_refine(sword, 0.999) == "drop":
+		if Run.gear.try_refine(sword, 0.999) == "drop":
 			dropped = sword.refine == 4
 			break
 	check(dropped, "a failed refine from +5 can drop a level")
-	check(not Run.can_afford_refine(sword) or Run.purse.ore > 0, "refining costs Bronze Fragments and Galder")
+	check(not Run.gear.can_afford_refine(sword) or Run.purse.ore > 0, "refining costs Bronze Fragments and Galder")
 
 	Run.route.depth = 0
-	var early: Array = Run.gear_offers(30)
+	var early: Array = Run.gear.gear_offers(30)
 	Run.route.depth = 5
-	var late: Array = Run.gear_offers(30)
+	var late: Array = Run.gear.gear_offers(30)
 	check(early.all(func(g: GearItem) -> bool: return g.data.level <= 1)
 		and late.any(func(g: GearItem) -> bool: return g.data.level >= 13), "deeper rooms drop higher-level gear")
 	var rolls: Array = []
@@ -777,21 +807,21 @@ func _systems(Run: Node) -> void:
 	check(drop.material == ice and Run.purse.material_count(ice) == 2, "an elite Blue Penguin drops 2 Cool Ice")
 	Run.purse.add_material(ice, 2)
 	var blade := GearItem.make(_item("wood_sword"))
-	Run.equip(blade)
-	check(Run.purse.compoundable_materials().has(ice) and Run.compound_targets().has("weapon"),
+	Run.gear.equip(blade)
+	check(Run.purse.compoundable_materials().has(ice) and Run.gear.compound_targets().has("weapon"),
 		"4 Cool Ice can be compounded into the Wood Sword's slot")
-	var c: Dictionary = Run.compound(blade, ice)
+	var c: Dictionary = Run.gear.compound(blade, ice)
 	check(c.stat == "Water" and c.value >= ice.min_value and c.value <= ice.max_value and Run.purse.material_count(ice) == 0
 		and blade.free_slots() == 0, "compounding uses 4 Cool Ice and rolls Water attack %d" % c.value)
-	check(Run.element_attack().get("Water", 0) == c.value, "the sword's Water attack counts toward elemental damage")
+	check(Run.gear.element_attack().get("Water", 0) == c.value, "the sword's Water attack counts toward elemental damage")
 	var hard: MaterialData = Run.route.region.enemy(&"bustshell").material
 	var helm := GearItem.make(_item("candy_hat"))
-	Run.equip(helm)
+	Run.gear.equip(helm)
 	var dp: int = Run.stat("DP")
 	Run.purse.add_material(hard, hard.need)
-	var hc: Dictionary = Run.compound(helm, hard)
+	var hc: Dictionary = Run.gear.compound(helm, hard)
 	check(Run.stat("DP") == dp + hc.value, "Hard Scales compounded into a hat add DP (+%d)" % hc.value)
-	var shop: Array[Dictionary] = Run.shop_offers()
+	var shop: Array[Dictionary] = Run.gear.shop_offers()
 	check(shop.any(func(o: Dictionary) -> bool: return o.kind == "gear") and shop.any(func(o: Dictionary) -> bool: return o.kind == "potion"),
 		"the shop sells gear and potions")
 	Run.route.depth = 4
@@ -810,11 +840,11 @@ func _systems(Run: Node) -> void:
 	Run.new_run()
 	var heir := GearItem.make(_item("wood_sword"))
 	heir.refine = 5
-	Run.equip(heir)
+	Run.gear.equip(heir)
 	check(Run.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == 0, "a Portable Port sends the sword home")
 	Profile.set_heirloom(0)
 	Run.new_run()
-	var carried: GearItem = Run.equipped("weapon")
+	var carried: GearItem = Run.gear.equipped("weapon")
 	check(carried.data.id == &"wood_sword" and carried.refine == 5 and carried.effective_refine() == 3
 		and carried.sync_factor() < 1.0, "the heirloom comes back level-synced: %s" % carried.title())
 	var synced_ap: int = carried.stats().AP
@@ -825,14 +855,14 @@ func _systems(Run: Node) -> void:
 	Run.route.depth = 0
 	Run.purse.ore = 20
 	Run.purse.galder = 5000
-	Run.try_refine(carried, 0.0)
+	Run.gear.try_refine(carried, 0.0)
 	check(Run.unsaved_changes().size() == 1, "refining the heirloom is unsaved until a Port")
 	Run.new_run()
-	check(Run.equipped("weapon").refine == 5, "dying without saving rolls the heirloom back to +5")
-	Run.try_refine(Run.equipped("weapon"), 0.0)
+	check(Run.gear.equipped("weapon").refine == 5, "dying without saving rolls the heirloom back to +5")
+	Run.gear.try_refine(Run.gear.equipped("weapon"), 0.0)
 	Run.save_point()
 	Run.new_run()
-	check(Run.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
+	check(Run.gear.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
 	var kept: Dictionary = Profile.bank_leftovers(false, 101, 5, {&"cool_ice": 3})
 	check(kept.galder == 50 and Profile.ore == 2 and Profile.materials.get("cool_ice", 0) == 1,
 		"a rollback banks half the leftover Galder, ore and materials")
@@ -1300,7 +1330,7 @@ func sense_line() -> void:
 	p.velocity = Vector2.ZERO
 	var gun := p.gun
 	check(Run.cls.id == &"lion" and Run.job.id == &"engineer" and Run.card_level(&"gun_carrier") > 0
-		and Run.carries_gun() and gun.has_gun(), "Lion starts as an Engineer carrying a gun (Gun Carrier)")
+		and Run.gear.carries_gun() and gun.has_gun(), "Lion starts as an Engineer carrying a gun (Gun Carrier)")
 	check(Run.card_level(&"quick_reload") > 0 and Run.card_level(&"overcharge") == 0 and not gun.charges(),
 		"Lion starts with Quick Reload; the power gauge waits for Overcharge")
 	check(gun.range() > 300.0, "the gun outranges the spells (%d)" % gun.range())
@@ -1577,7 +1607,7 @@ func elements_and_shields() -> void:
 	Profile.class_id = "buffalo"
 	Run.new_run()
 	p.refresh_gear()
-	var w := Run.equipped("weapon")
+	var w := Run.gear.equipped("weapon")
 	var target := await _dummy(p, 60.0)
 	target.elements = {}
 	# A plain hit, then one with Fire and Water compounded on the weapon.
@@ -1629,7 +1659,7 @@ func elements_and_shields() -> void:
 	var offered_shield := false
 	for i in 40:
 		Run.route.depth = i % 16
-		for g in Run.gear_offers(3):
+		for g in Run.gear.gear_offers(3):
 			offered_shield = offered_shield or g.data.slot == ItemData.Slot.SHIELD
 	Run.route.depth = 0
 	check(not offered_shield, "a gunner is never offered a shield")
@@ -1637,12 +1667,12 @@ func elements_and_shields() -> void:
 	Run.new_run()
 	Run.cards[&"gun_carrier"] = 1
 	var shield := GearItem.roll(load("res://data/items/wood_buckler.tres"), 0.0)
-	Run.equip(shield)
-	check(Run.equipped("shield") == shield, "Fox wears a shield with a sword")
-	Run.equip(GearItem.roll(load("res://data/items/ebony_gun.tres"), 0.0))
-	check(Run.carries_gun() and Run.equipped("shield") == null and shield in Run.displaced,
+	Run.gear.equip(shield)
+	check(Run.gear.equipped("shield") == shield, "Fox wears a shield with a sword")
+	Run.gear.equip(GearItem.roll(load("res://data/items/ebony_gun.tres"), 0.0))
+	check(Run.gear.carries_gun() and Run.gear.equipped("shield") == null and shield in Run.gear.displaced,
 		"taking up a gun puts the shield away")
-	check(Run.equip(shield) == null and Run.equipped("shield") == null, "no shield goes on beside a gun")
+	check(Run.gear.equip(shield) == null and Run.gear.equipped("shield") == null, "no shield goes on beside a gun")
 	Profile.class_id = saved
 	Run.new_run()
 	p.refresh_gear()

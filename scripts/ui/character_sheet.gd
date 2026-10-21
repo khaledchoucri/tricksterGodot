@@ -78,11 +78,11 @@ func _skills_text() -> String:
 
 func _gear_text() -> String:
 	var lines: PackedStringArray = []
-	var over := Run.overweight()
+	var over := Run.gear.overweight()
 	lines.append("[font_size=18]Equipment[/font_size]   [color=#%s]Load %d / %d%s[/color]" % [
-		"f07a62" if over else "9fb2c0", Run.equip_load(), Run.load_limit(), "  overweight" if over else ""])
-	for k in Run.EQUIP_SLOTS:
-		var g := Run.equipped(k)
+		"f07a62" if over else "9fb2c0", Run.gear.equip_load(), Run.gear.load_limit(), "  overweight" if over else ""])
+	for k in Run.gear.EQUIP_SLOTS:
+		var g := Run.gear.equipped(k)
 		var label: String = {"weapon": "Weapon", "hat": "Hat", "shield": "Shield", "innerwear": "Innerwear",
 			"acc1": "Accessory", "acc2": "Accessory"}[k]
 		if g:
@@ -95,7 +95,7 @@ func _gear_text() -> String:
 		worn.append(w.display_name)
 	if worn.size():
 		lines.append("[color=#9fb2c0]Wardrobe[/color]  " + ", ".join(worn))
-	var el := Run.element_attack()
+	var el := Run.gear.element_attack()
 	if not el.is_empty():
 		var parts: PackedStringArray = []
 		for k: String in el:
