@@ -144,7 +144,8 @@ func can_use(it: ItemData) -> bool:
 ## The item level offered in the current room: its region's gear levels, read along its rooms.
 func gear_level() -> int:
 	var r := Run.route.region
-	return r.gear_levels.x + roundi(float(r.gear_levels.y - r.gear_levels.x) * Run.route.local_depth() / maxi(1, r.run_length))
+	var along := maxi(0, Run.route.local_depth())  # a rest stop counts as the region's first room
+	return r.gear_levels.x + roundi(float(r.gear_levels.y - r.gear_levels.x) * along / maxi(1, r.run_length))
 
 
 func gear_offers(n: int) -> Array[GearItem]:

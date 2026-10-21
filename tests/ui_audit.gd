@@ -204,7 +204,7 @@ func _audit_hub() -> void:
 ## explored (enabled and not the exit).
 func _talk(hub: Hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
 	var explorable: Array[bool] = []
-	hub.talking = false
+	hub.talker.talking = false
 	hub.player.global_position = npc.global_position + Vector2(-40, 30)
 	hub.talk(npc)
 	var d: DialogueBox = hub.dialogue
@@ -213,7 +213,7 @@ func _talk(hub: Hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
 	for _i in 400:
 		await _wait(0.05)
 		if not d.visible:
-			if not hub.talking:
+			if not hub.talker.talking:
 				break
 			continue
 		if not d._scroll.visible:

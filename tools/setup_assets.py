@@ -123,7 +123,8 @@ PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003
              'louis': 'data/npc/npc017_illu.nri', 'marky': 'data/npc/npc180_illu.nri',
              'stella': 'data/npc/npc222_illu.nri'}
 MAPS = ['map_fd11d', 'map_fd11e', 'map_fd11f', 'map_fd11g', 'map_dg11b', 'map_sq00', 'mapf01g', 'mapf01f', 'mapf01d',
-        'mapf03a', 'mapf03b', 'mapf03c', 'mapf03d', 'map_dg03e']
+        'mapf03a', 'mapf03b', 'mapf03c', 'mapf03d', 'map_dg03e',
+        'mapg01', 'mapg03']  # the Gates of Desert Beach and Caballa Relics (the rest stops)
 SOUNDS = [
     # EtcSound's etc_gun_shot, _critical, _hit and _reload (the client's GunAttack and GunProcessHandler).
     'weapon_gun_shot.wav', 'weapon_gun_critical.wav', 'weapon_gun_hit.wav', 'weapon_gun_reload.wav',
@@ -136,6 +137,7 @@ SOUNDS = [
     'weapon002.wav', 'weapon003.wav', 'etc_item1.wav', 'ui_refine_proceed.wav', 'ui_refine_success.wav',
     'ui_refine_fail.wav', 'ui_compose_success.wav', 'bgs_blacksmith.wav', 'bgs_sandwind.wav',
     'bgs_pyramid_loop_evening.wav', 'bgs_forest.wav', 'snd_ui_crazydrill_boom.wav', 'ui_drillboy1.wav', 'ui_drillboy2.wav',
+    'bgs_night_sea.wav', 'bgs_softwind.wav',  # MapSound_Beach and _Relics: the gates' ambience
 ]
 # From data/sound/skillsound.
 SKILL_SOUNDS = [
@@ -143,7 +145,7 @@ SKILL_SOUNDS = [
     'snd_p_305_ht.wav', 'snd_p_305_ht2.wav', 'snd_skl_p_008_sbg.wav', 'snd_p_603_ht.wav', 'snd_skl_p_015_ebg1.wav',
     'skill_throw_hit_dorw.wav',  # EtcSound's throw_hit_drow
 ]
-MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3', 'crap.mp3', 'jtrick.mp3']
+MUSIC = ['coral_day.mp3', 'Boss_Monster.mp3', 'Megalopolis_Night.mp3', 'crap.mp3', 'jtrick.mp3', 'xus.mp3', 'tkfield.mp3']
 
 
 def card_sounds():

@@ -93,11 +93,30 @@ def _decode_555(raw: bytes) -> bytes:
     return bytes(out)
 
 
+def _blocks_fit(b: bytes, offs: list) -> bool:
+    """Whether each tile block at these offsets holds exactly cols x rows tiles within the file."""
+    base = 4 * len(offs)
+    for o in offs:
+        if base + o + 12 > len(b):
+            return False
+        sz, cols, rows = struct.unpack_from('<3I', b, base + o)
+        if sz != cols * rows * TILE * TILE * 2 or base + o + 12 + sz > len(b):
+            return False
+    return True
+
+
 def read_tiles(path: str):
     """Tile sets: an offset table, then blocks of (size, cols, rows, pixels).
-    Pixels are stored tile after tile (each 32x32 tile contiguous, 16-bit)."""
+    Pixels are stored tile after tile (each 32x32 tile contiguous, 16-bit).
+    An empty .til (the Gate of Caballa Relics) has no tiles. With a single block
+    the block's size can pass for a second offset (the Gate of Desert Beach), so
+    offsets are dropped until every block's header fits the file."""
+    if os.path.getsize(path) < 12:
+        return [], []
     b = _load(path)
     offs = _offset_table(b)
+    while offs and not _blocks_fit(b, offs):
+        offs.pop()
     base = 4 * len(offs)
     tiles, starts = [], []
     tile_bytes = TILE * TILE * 2

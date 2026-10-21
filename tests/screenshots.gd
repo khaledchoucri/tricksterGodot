@@ -135,7 +135,7 @@ func _shoot_hub() -> void:
 	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	add_child(hub)
 	await _wait(1.5)
-	var julio: Npc = hub._npc(&"julio")
+	var julio: Npc = hub.talker.npc(&"julio")
 	hub.player.global_position = julio.global_position + Vector2(-40, 30)
 	await _wait(0.5)
 	await _snap("10_hub_julio")
@@ -150,8 +150,8 @@ func _shoot_hub() -> void:
 	await _snap("11_warehouse_menu")
 	hub.dialogue._chosen.emit(hub.dialogue._choices.get_child_count() - 1)
 	await _wait(0.5)
-	var eugene: Npc = hub._npc(&"eugene")
-	hub.talking = false
+	var eugene: Npc = hub.talker.npc(&"eugene")
+	hub.talker.talking = false
 	hub.player.global_position = eugene.global_position + Vector2(-40, 30)
 	hub.talk(eugene)
 	for _i in 12:

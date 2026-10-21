@@ -15,13 +15,10 @@ const GATE_RANGE := 30.0
 var hub: HubData
 var room: Room
 var player: Player
-var npcs: Array[Npc] = []
 var gate: Door
-var story: Story
-var talking := false
+## People and conversations (shared with the rest stops).
+var talker: Talker
 var leaving := false
-
-var _portraits: Dictionary = {}
 
 @onready var hud: Hud = $Hud
 @onready var dialogue: DialogueBox = $Ui/DialogueBox
@@ -32,7 +29,7 @@ func _ready() -> void:
 	if not FileAccess.file_exists(Assets.map_dir(hub.room.map) + "map.json"):
 		hud.center("Original assets not found.\nRun tools/setup_assets.py (see docs/poc/README.md), then reopen the project.")
 		return
-	story = Story.new(hub.story)
+	talker = Talker.new(Story.new(hub.story), dialogue, hud)
 	Run.new_run()  # fresh state for the HUD and the player's stats (and the chosen class's look)
 	room = Room.new()
 	add_child(room)
@@ -57,7 +54,7 @@ func _add_npc(data: NpcData) -> Npc:
 	npc.data = data
 	npc.position = data.position if room.is_walkable(data.position) else room.nearest_reachable(data.position)
 	room.world.add_child(npc)
-	npcs.append(npc)
+	talker.npcs.append(npc)
 	return npc
 
 
@@ -68,6 +65,7 @@ func _spawn_player() -> void:
 	room.player = player
 	room.world.add_child(player)
 	player.set_camera_limits(room.rect, CAMERA_MARGIN)
+	talker.player = player
 
 
 func _welcome() -> void:
@@ -77,7 +75,7 @@ func _welcome() -> void:
 		hud.log_line("[Notice] Service has ended. Thank you for playing.", Color("f07a62"))
 		hud.log_line("[Megalopolis] Players online: 1", Color("94a7b2"))
 		await get_tree().create_timer(1.2).timeout
-		var guide := _npc(&"cavalier")
+		var guide := talker.npc(&"cavalier")
 		if guide and is_inside_tree():
 			await talk(guide)
 		return
@@ -97,24 +95,11 @@ func _welcome() -> void:
 			r.kept.ore, r.kept.materials, "" if r.won else " (half was lost in the rollback)"], Color("a8d8da"))
 
 
-func _npc(id: StringName) -> Npc:
-	for n in npcs:
-		if n.data.id == id:
-			return n
-	return null
-
-
 func _physics_process(_delta: float) -> void:
-	if talking or leaving or not is_instance_valid(player):
+	if talker.talking or leaving or not is_instance_valid(player):
 		return
-	var nearest: Npc = null
-	for n in npcs:
-		n.prompt.visible = false
-		if n.in_range(player.global_position) and (nearest == null or \
-				n.global_position.distance_to(player.global_position) < nearest.global_position.distance_to(player.global_position)):
-			nearest = n
+	var nearest := talker.nearest(player.global_position)
 	if nearest:
-		nearest.prompt.visible = true
 		if Input.is_action_just_pressed("interact"):
 			talk(nearest)
 			return
@@ -133,16 +118,9 @@ func _process(_delta: float) -> void:
 
 ## Plays the NPC's current conversation, then any follow-up (the restoration menu).
 func talk(npc: Npc) -> void:
-	var c := story.conversation_for(String(npc.data.id))
+	var c := await talker.converse(npc)
 	if c.is_empty():
 		return
-	_set_talking(true)
-	npc.prompt.visible = false
-	var lines: Array = []
-	for l: Array in c.get("lines", []):
-		lines.append(_line(String(l[0]), String(l[1])))
-	await dialogue.play(lines)
-	story.finish(c)
 	match c.get("then", ""):
 		"restore":
 			await _restore_menu(npc)
@@ -160,34 +138,7 @@ func talk(npc: Npc) -> void:
 			await _drill_menu(npc)
 		"compound":
 			await _compound_menu(npc)
-	_set_talking(false)
-
-
-func _line(speaker: String, text: String) -> Dictionary:
-	if speaker == "system":
-		return {"name": "", "portrait": null, "text": text}
-	var npc := _npc(StringName(speaker))
-	var data: NpcData = npc.data if npc else null
-	return {"name": data.display_name if data else speaker.capitalize(), "portrait": _portrait(data), "text": text}
-
-
-func _portrait(data: NpcData) -> Texture2D:
-	if data == null or data.portrait.is_empty():
-		return null
-	if not _portraits.has(data.portrait):
-		var path := Assets.portrait(data.portrait)
-		_portraits[data.portrait] = load(path) if ResourceLoader.exists(path) else null
-	return _portraits[data.portrait]
-
-
-func _set_talking(on: bool) -> void:
-	talking = on
-	hud.set_log_visible(not on)
-	player.set_physics_process(not on)
-	player.set_process_unhandled_input(not on)
-	if on:
-		player.velocity = Vector2.ZERO
-		player.sprite.play_action("idle")
+	talker.set_talking(false)
 
 
 ## The guide's menu: restore parts of the city with banked TM and shards.
@@ -209,7 +160,7 @@ func _restore_menu(npc: Npc) -> void:
 				"tag": "Restored" if maxed else cost, "text": r.describe(maxi(lvl, 1)),
 				"disabled": maxed or not Profile.can_buy(r)})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "You have %d TM and %d Harkon Shards." % [Profile.tm, Profile.shards]})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "What shall we restore?"), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "What shall we restore?"), options)
 		if pick < 0 or pick >= hub.restorations.size():
 			return
 		var r: RestorationData = hub.restorations[pick]
@@ -217,7 +168,7 @@ func _restore_menu(npc: Npc) -> void:
 			Audio.play("ui_unique_get.wav", -4.0)
 			hud.log_line("[System] %s restored (%d/%d)." % [r.display_name, Profile.level(r.id), r.max_level], Color("e0b54d"))
 			for data in hub.npcs:
-				if data.requires == r.id and _npc(data.id) == null:
+				if data.requires == r.id and talker.npc(data.id) == null:
 					_add_npc(data)
 					hud.log_line("[Megalopolis] %s logged in." % data.display_name, Color("94a7b2"))
 
@@ -240,7 +191,7 @@ func _warehouse_menu(npc: Npc) -> void:
 			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints."})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
 		var line := "Which one goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
-		var pick := await dialogue.choose(_line(String(npc.data.id), line), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), line), options)
 		if pick == items.size():
 			Profile.set_heirloom(-1)
 			continue
@@ -250,7 +201,7 @@ func _warehouse_menu(npc: Npc) -> void:
 		if pick < 0 or pick > items.size() + 1:
 			return
 		var g := items[pick]
-		var what := await dialogue.choose(_line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
+		var what := await dialogue.choose(talker.line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
 			{"title": "Carry it as my heirloom", "tag": "", "text": "Equipped at the start of every run, synced to the area's level."},
 			{"title": "Throw it away", "tag": "", "text": "Frees the shelf. It can't be undone."},
 			{"title": "Back", "cancel": true, "tag": "", "text": ""}])
@@ -285,7 +236,7 @@ func _wardrobe_menu(npc: Npc) -> void:
 			options.append({"title": "%s: %s" % [WardrobeData.SLOT_NAMES[slot], w.display_name if w else "nothing"],
 				"tag": "", "icon": w.icon() if w else null, "text": w.describe() if w else "Empty."})
 		options.append({"title": "Done", "cancel": true, "tag": "", "text": ""})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "Dress up. It's still a game."), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Dress up. It's still a game."), options)
 		if pick < 0 or pick >= WardrobeData.SLOTS.size():
 			return
 		var slot: String = WardrobeData.SLOTS[pick]
@@ -297,7 +248,7 @@ func _wardrobe_menu(npc: Npc) -> void:
 				choices.append({"title": w.display_name, "tag": "Worn" if Profile.worn.get(slot, "") == String(w.id) else "",
 					"icon": w.icon(), "text": w.describe()})
 		choices.append({"title": "Wear nothing", "tag": "", "text": "" if pieces.size() else "You own nothing for this slot yet."})
-		var c := await dialogue.choose(_line(String(npc.data.id), "Which one?"), choices)
+		var c := await dialogue.choose(talker.line(String(npc.data.id), "Which one?"), choices)
 		if c >= 0 and c < pieces.size():
 			Profile.wear(slot, pieces[c].id)
 			Audio.play("etc_item1.wav")
@@ -308,7 +259,7 @@ func _wardrobe_menu(npc: Npc) -> void:
 ## Eugene's album: claim finished sets, or buy pieces with TM and shards.
 func _cards_menu(npc: Npc) -> void:
 	while true:
-		var page := await dialogue.choose(_line(String(npc.data.id), "The album, or the shop?"), [
+		var page := await dialogue.choose(talker.line(String(npc.data.id), "The album, or the shop?"), [
 			{"title": "The album", "tag": "%d cards" % Profile.cards.size(), "text": "Card sets and their rewards."},
 			{"title": "The shop", "tag": "%d TM" % Profile.tm, "text": "Wardrobe pieces for Time Marks and shards."},
 			{"title": "Leave", "cancel": true, "tag": "", "text": "Wear pieces through Keeper Julio's wardrobe."}])
@@ -341,7 +292,7 @@ func _album(npc: Npc, sets: bool) -> void:
 				options.append({"title": "Buy %s" % w.display_name, "tag": price, "icon": w.icon(), "text": w.describe(),
 					"disabled": Profile.tm < w.price_tm or Profile.shards < w.price_shards})
 		options.append({"title": "Back", "cancel": true, "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "The album, then." if sets else "Take your pick."), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "The album, then." if sets else "Take your pick."), options)
 		var n_sets := hub.card_sets.size() if sets else 0
 		if pick < 0 or pick >= n_sets + shop.size():
 			return
@@ -377,7 +328,7 @@ func _drill_menu(npc: Npc) -> void:
 			options.append({"title": d.display_name, "tag": tag, "icon": d.icon(), "text": d.describe(),
 				"disabled": not owned and (Profile.tm < d.price_tm or Profile.shards < d.price_shards)})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d TM, %d Harkon Shards." % [Profile.tm, Profile.shards]})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "Pick a drill. Carry one at a time!"), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Pick a drill. Carry one at a time!"), options)
 		if pick < 0 or pick >= hub.drills.size():
 			return
 		var d := hub.drills[pick]
@@ -407,7 +358,7 @@ func _mastery_menu(npc: Npc) -> void:
 				"tag": "Mastered" if maxed else "%d %s (%d)  ·  %d G" % [cost.count, cost.material.display_name, have, cost.galder],
 				"icon": cost.material.icon(), "text": c.describe(Run.deck.card_cap(c.id)), "disabled": not Run.deck.can_master(c)})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder banked." % Profile.galder})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "Which technique do you want to take further?"), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Which technique do you want to take further?"), options)
 		if pick < 0 or pick >= cards.size():
 			return
 		Run.deck.master_card(cards[pick])
@@ -431,7 +382,7 @@ func _forge_menu(npc: Npc) -> void:
 					cost.ore, cost.galder, "  ·  failing may lose a level" if g.refine >= 4 else ""],
 				"disabled": not Run.gear.can_city_refine(g)})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder and %d Bronze Fragments banked." % [Profile.galder, Profile.ore]})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "Bring it to the anvil."), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Bring it to the anvil."), options)
 		if pick < 0 or pick >= items.size():
 			return
 		Audio.play("ui_refine_proceed.wav")
@@ -463,7 +414,7 @@ func _compound_menu(npc: Npc) -> void:
 				"text": "Compounds %s into a free slot of a stored item." % m.describe(),
 				"disabled": Profile.materials[id] < m.need})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "" if mats.size() else "No materials banked yet."})
-		var pick := await dialogue.choose(_line(String(npc.data.id), "What are we setting today?"), options)
+		var pick := await dialogue.choose(talker.line(String(npc.data.id), "What are we setting today?"), options)
 		if pick < 0 or pick >= mats.size():
 			return
 		var m := mats[pick]
@@ -476,7 +427,7 @@ func _compound_menu(npc: Npc) -> void:
 				item_opts.append({"title": items[i].title(), "tag": "%d free" % items[i].free_slots(),
 					"icon": items[i].data.icon(), "text": items[i].summary()})
 		item_opts.append({"title": "Back", "cancel": true, "tag": "", "text": "" if targets.size() else "No stored item has a free slot."})
-		var t := await dialogue.choose(_line(String(npc.data.id), "Into which piece?"), item_opts)
+		var t := await dialogue.choose(talker.line(String(npc.data.id), "Into which piece?"), item_opts)
 		if t < 0 or t >= targets.size():
 			continue
 		var g := items[targets[t]]
@@ -499,7 +450,7 @@ func _server_menu(npc: Npc) -> void:
 		options.append({"title": "Done", "cancel": true, "tag": "Heat %d" % heat,
 			"text": "+%d%% TM per run. Best Heat cleared: %s." % [roundi(heat * ServerSettings.TM_PER_HEAT * 100),
 				str(Profile.best_heat) if Profile.best_heat >= 0 else "none"]})
-		var pick := await dialogue.choose(_line(String(npc.data.id),
+		var pick := await dialogue.choose(talker.line(String(npc.data.id),
 			"Server settings. Heat %d. Clear a run at a new best Heat and I'll find you a Harkon Shard per level." % heat),
 			options)
 		if pick < 0 or pick >= ServerSettings.ORDER.size():
@@ -512,7 +463,7 @@ func _server_menu(npc: Npc) -> void:
 
 ## With more than one character slot, the gate asks who logs in.
 func _choose_character() -> void:
-	_set_talking(true)
+	talker.set_talking(true)
 	var options: Array = []
 	for c in Run.classes:
 		options.append({"title": c.display_name, "tag": "Playing" if String(c.id) == Profile.class_id else "",
@@ -534,15 +485,15 @@ func _choose_character() -> void:
 	if pick == n or (made and pick == n + 1):
 		if not made or pick == n + 1:
 			if not await _create_trickster():
-				_set_talking(false)
+				talker.set_talking(false)
 				player.global_position += Vector2(0, 60)
 				return
 		Profile.class_id = "trickster"
 		Profile.save()
-		_set_talking(false)
+		talker.set_talking(false)
 		_depart()
 		return
-	_set_talking(false)
+	talker.set_talking(false)
 	if pick < 0 or pick >= n:
 		player.global_position += Vector2(0, 60)
 		return

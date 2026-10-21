@@ -79,13 +79,58 @@ func build_trickster() -> ClassData:
 func carry_heirloom() -> void:
 	if not system_on(&"warehouse") or Profile.heirloom < 0 or Profile.heirloom >= Profile.warehouse.size():
 		return
-	var g := GearItem.from_dict(Profile.warehouse[Profile.heirloom], Run.gear.item_by_id)
-	if g == null:
-		return
-	g.stored = Profile.heirloom
-	g.refine_cap = Run.route.regions[0].refine_cap
-	g.sync_level = sync_level()
-	Run.gear.equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
+	var g := from_shelf(Profile.heirloom)
+	if g:
+		Run.gear.equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
+
+
+## The item on warehouse shelf `index`, ready to wear here: its shelf noted (so its
+## progress can be saved back) and level-synced to the current room. Null if unknown.
+func from_shelf(index: int) -> GearItem:
+	if index < 0 or index >= Profile.warehouse.size():
+		return null
+	var g := GearItem.from_dict(Profile.warehouse[index], Run.gear.item_by_id)
+	if g:
+		g.stored = index
+		g.refine_cap = Run.route.region.refine_cap
+		g.sync_level = sync_level()
+	return g
+
+
+## Whether the item on shelf `index` is being worn in this run.
+func worn_from_shelf(index: int) -> bool:
+	return Run.gear.equipment.values().any(func(g: GearItem) -> bool: return g.stored == index)
+
+
+## Sends a worn item home now: a found one takes a free shelf, a stored one saves its
+## progress to its shelf. It stays worn. False if the warehouse is full.
+func bank(g: GearItem) -> bool:
+	if g.stored >= 0:
+		Profile.update_item(g.stored, g.to_dict())
+		return true
+	return save_point(g)
+
+
+## A rest stop's swap: puts on the item from shelf `index` and banks what it replaces
+## (and a shield a gun puts away). False if it's already worn, can't go on, or a found
+## item it replaces would have no free shelf.
+func swap_from_shelf(index: int) -> bool:
+	var g := from_shelf(index)
+	if g == null or worn_from_shelf(index) or not Run.gear.can_equip(g):
+		return false
+	var keys := Run.gear.slot_keys_for(g.data)
+	var key: String = keys[0]
+	for k in keys:
+		if Run.gear.equipped(k) == null:
+			key = k
+			break
+	var old := Run.gear.equipped(key)
+	if old and old.stored < 0 and Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE:
+		return false
+	Run.gear.equip(g, key)
+	for put_away: GearItem in ([old] if old else []) + Run.gear.displaced:
+		bank(put_away)
+	return true
 
 
 ## The item level gear is synced to in this room: a little above what it offers.

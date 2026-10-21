@@ -4,10 +4,12 @@ extends RefCounted
 
 var data: RoomData
 var region: RegionData
-## Depth within its region (elites, the trial and monster unlocks use it).
+## Depth within its region (elites, the trial and monster unlocks use it); -1 for a rest stop.
 var local_depth := 0
 var elite := false
 var boss := false
+## The rest stop this room is (no encounter), or null.
+var rest: RestStopData
 ## Monster the room's waves lean on (chosen with the door), or &"".
 var feature: StringName
 

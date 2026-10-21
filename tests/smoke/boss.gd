@@ -77,16 +77,16 @@ func run() -> void:
 	await wait(1.0)
 	check(hub.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
 		"the hub builds Megalopolis with %d people and the gate" % hub.npcs.size())
-	check(hub.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
-	var guide: Npc = hub._npc(&"cavalier")
+	check(hub.talker.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
+	var guide: Npc = hub.talker.npc(&"cavalier")
 	hub.player.global_position = guide.global_position + Vector2(0, 20)
 	hub.talk(guide)
 	for _i in 30:
 		await wait(0.05)
 		hub.dialogue._typing = false
 		hub.dialogue._advanced.emit()
-	check(P.has_flag("met_cavalier") and not hub.talking, "finishing a conversation sets its flag")
-	check(hub.story.conversation_for("cavalier").get("id") == "cav_rollback", "after a death he remembers the rollback")
+	check(P.has_flag("met_cavalier") and not hub.talker.talking, "finishing a conversation sets its flag")
+	check(hub.talker.story.conversation_for("cavalier").get("id") == "cav_rollback", "after a death he remembers the rollback")
 	P.tm = 10000
 	var hall: RestorationData = Run.hub.restorations.filter(func(r: RestorationData) -> bool: return r.id == &"training_hall")[0]
 	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 10000 - hall.tm_cost(1), "restoring the Training Hall spends TM")

@@ -5,6 +5,8 @@ extends Resource
 @export var display_name := ""
 @export var rooms: Array[RoomData] = []
 @export var boss_room: RoomData
+## The rest stop on the way in, after the region before it (none for the first).
+@export var gate: RestStopData
 @export var enemies: Array[EnemyData] = []
 @export var cards: Array[CardData] = []
 ## Combat rooms before the boss.

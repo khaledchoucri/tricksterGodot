@@ -111,13 +111,20 @@ func _load_room() -> void:
 	Run.gain_mp(ROOM_MP + Run.city.room_mp_bonus())
 	if Run.mod("room_heal%") > 0.0:
 		Run.heal(int(Run.max_hp * (Run.mod("room_heal%") / 100.0)))
-	Audio.play_music(Run.route.region.boss_music if plan.boss else Run.route.region.field_music)
-	Audio.play_ambience(Run.route.region.boss_ambience if plan.boss else Run.route.region.field_ambience)
+	if plan.rest:
+		Audio.play_music(plan.rest.music)
+		Audio.play_ambience(plan.rest.ambience)
+	else:
+		Audio.play_music(Run.route.region.boss_music if plan.boss else Run.route.region.field_music)
+		Audio.play_ambience(Run.route.region.boss_ambience if plan.boss else Run.route.region.field_ambience)
 	var heat := ServerSettings.heat()
 	hud.set_room("%s  ·  %d / %d%s" % [plan.data.display_name, Run.route.depth + 1, Run.route.plan.size(),
 		"  ·  Heat %d" % heat if heat > 0 else ""])
 	hud.hide_boss()
 	await hud.fade(0.0, 0.3)
+	if plan.rest:
+		_arrive_at_rest(plan)
+		return
 	if plan.boss:
 		_boss_name = _region_boss_name()
 	var title := _region_boss_name() if plan.boss else plan.data.display_name
@@ -132,6 +139,16 @@ func _load_room() -> void:
 	if room and room.is_inside_tree():
 		phase = Phase.FIGHT
 		room.start_encounter(Run.route.local_depth(), plan.elite, plan.boss)
+
+
+## A rest stop: nothing to fight. Heal, meet its people, and the way on is open.
+func _arrive_at_rest(plan: RoomPlan) -> void:
+	var stop := RestStop.new()
+	room.add_child(stop)
+	stop.arrive(plan.rest, room, player, hud)
+	hud.center("%s\nRest stop" % plan.data.display_name, 1.2)
+	phase = Phase.REWARD
+	_open_doors()
 
 
 func _spawn_player(at: Vector2) -> void:
@@ -293,6 +310,8 @@ func _open_doors() -> void:
 	var next: RoomPlan = Run.route.plan[mini(Run.route.depth + 1, Run.route.plan.size() - 1)]
 	if next.boss:
 		rewards = ["boss"]
+	elif next.rest:
+		rewards = ["rest"]  # a rest stop is never cleared, so its door carries no reward
 	else:
 		var pool := REWARD_POOL.filter(func(r: String) -> bool:
 			if r == "heal" and ServerSettings.hardcore():

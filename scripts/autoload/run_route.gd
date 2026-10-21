@@ -14,15 +14,20 @@ var region: RegionData:
 
 ## Rooms cleared so far: the index of the current room in `plan`.
 var depth := 0
-## Every room of the run, region by region, each region ending in its boss.
+## Every room of the run, region by region, each region ending in its boss, with a rest stop
+## between regions.
 var plan: Array[RoomPlan] = []
 
 
-## A fresh plan: each region's rooms shuffled (the run's RNG), its elite depths marked,
-## then its boss room.
+## A fresh plan: each region's rest stop on the way in (after the first), its rooms
+## shuffled (the run's RNG) with its elite depths marked, then its boss room.
 func plan_rooms() -> Array[RoomPlan]:
 	var out: Array[RoomPlan] = []
 	for r in regions:
+		if r.gate and not out.is_empty():
+			var stop := RoomPlan.new(r.gate.room, r, -1)
+			stop.rest = r.gate
+			out.append(stop)
 		var pool := r.rooms.duplicate()
 		Run.shuffle(pool)
 		for i in r.run_length:
