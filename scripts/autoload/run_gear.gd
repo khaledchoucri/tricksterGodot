@@ -27,6 +27,17 @@ func slot_keys_for(data: ItemData) -> Array[String]:
 var displaced: Array[GearItem] = []
 
 
+## Takes `item` off: a weapon gives way to the class's own, anything else leaves its slot empty.
+func take_off(item: GearItem) -> void:
+	for k: String in equipment.keys():
+		if equipment[k] == item:
+			if k == "weapon":
+				equipment[k] = GearItem.make(Run.cls.start_weapon)
+			else:
+				equipment.erase(k)
+	Run.stats_changed()
+
+
 ## Whether `item` can go on now: no shield while a gun is carried.
 func can_equip(item: GearItem) -> bool:
 	return not (item.data.slot == ItemData.Slot.SHIELD and carries_gun())

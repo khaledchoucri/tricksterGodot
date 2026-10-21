@@ -231,12 +231,23 @@ func _tick(delta: float) -> void:
 			_fight(player, delta)
 		game.Phase.DOORS:
 			_release()
-			if not game.room.doors.is_empty():
+			var bag := _lost_bag()
+			if bag:
+				player.global_position = bag.global_position  # a player picks the bag up before leaving
+			elif not game.room.doors.is_empty():
 				var d: Door = game.room.doors[bot_rng.randi() % game.room.doors.size()]
 				if d.ready_to_enter():
 					player.global_position = d.global_position
 		_:
 			_release()
+
+
+## The lost bag lying in this room, or null.
+func _lost_bag() -> LostBag:
+	for c in game.room.world.get_children():
+		if c is LostBag and not c.is_queued_for_deletion():
+			return c
+	return null
 
 
 func _fight(player: Player, delta: float) -> void:

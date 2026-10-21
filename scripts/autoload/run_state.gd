@@ -203,6 +203,10 @@ func new_run(with_seed := -1) -> void:
 	route.plan = route.plan_rooms()
 
 
+## What the last death left in the lost bag (names), for the results.
+var last_bag: Array[String] = []
+
+
 ## Survives a fatal blow if a revive (Rollback Cache) or Second Wind is left.
 func try_revive() -> bool:
 	if ServerSettings.hardcore():

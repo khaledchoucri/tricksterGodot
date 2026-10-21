@@ -115,15 +115,6 @@ func worn_from_shelf(index: int) -> bool:
 	return Run.gear.equipment.values().any(func(g: GearItem) -> bool: return g.stored == index)
 
 
-## Sends a worn item home now: a found one takes a free shelf, a stored one saves its
-## progress to its shelf. It stays worn. False if the warehouse is full.
-func bank(g: GearItem) -> bool:
-	if g.stored >= 0:
-		Profile.update_item(g.stored, g.to_dict())
-		return true
-	return save_point(g)
-
-
 ## A rest stop's swap: puts on the item from shelf `index` and banks what it replaces
 ## (and a shield a gun puts away). False if it's already worn, can't go on, or a found
 ## item it replaces would have no free shelf.
@@ -146,6 +137,70 @@ func swap_from_shelf(index: int) -> bool:
 	return true
 
 
+## Sends a worn item home at a Port or rest stop: it's safe on a shelf (a stored one keeps its
+## progress), and you stop wearing it for the rest of the run. Decided with the user, 2026-10-21:
+## banking costs you the item's power, so carrying it stays a risk. False if the warehouse is full.
+func bank(g: GearItem) -> bool:
+	if g.stored >= 0:
+		Profile.update_item(g.stored, g.to_dict())
+	elif not save_point(g):
+		return false
+	Run.gear.take_off(g)
+	return true
+
+
+## The lost bag (decided with the user, 2026-10-21; the original's death costs EXP, not items): on a
+## death everything worn but the class's own weapon goes into a bag where you fell, stored pieces
+## off their shelves, progress and all. A new death with something to lose replaces the old bag.
+## Returns the names of what went in.
+func drop_bag(at: Vector2) -> Array[String]:
+	var items: Array = []
+	var names: Array[String] = []
+	var shelves: Array[int] = []
+	for g: GearItem in Run.gear.equipment.values():
+		if g.stored < 0 and g.data == Run.cls.start_weapon:
+			continue
+		items.append(g.to_dict())
+		names.append(g.title())
+		if g.stored >= 0:
+			shelves.append(g.stored)
+	shelves.sort()
+	shelves.reverse()
+	for i in shelves:
+		Profile.discard_item(i)
+	if not items.is_empty():
+		Profile.lost_bag = {"region": Run.route.region_index(), "room": Run.route.local_depth(),
+			"x": at.x, "y": at.y, "items": items}
+		Profile.save()
+	return names
+
+
+## Whether the lost bag lies in the current room.
+func bag_here() -> bool:
+	var b := Profile.lost_bag
+	return not b.is_empty() and int(b.region) == Run.route.region_index() and int(b.room) == Run.route.local_depth() \
+		and Run.route.current_room().rest == null
+
+
+## Picks the lost bag up: its items go back on the shelves while there's room (the rest stay in it).
+## Returns the names put away.
+func pick_up_bag() -> Array[String]:
+	var names: Array[String] = []
+	var left: Array = []
+	for d: Dictionary in Profile.lost_bag.get("items", []):
+		var g := GearItem.from_dict(d, Run.gear.item_by_id)
+		if g and Profile.store_item(d) >= 0:
+			names.append(g.title())
+		else:
+			left.append(d)
+	if left.is_empty():
+		Profile.lost_bag = {}
+	else:
+		Profile.lost_bag.items = left
+	Profile.save()
+	return names
+
+
 ## Portable Port: saves every stored item's progress, and sends `item` home
 ## (if given). Returns false if the warehouse is full.
 func save_point(item: GearItem = null) -> bool:
@@ -160,18 +215,6 @@ func save_point(item: GearItem = null) -> bool:
 	Profile.set_flag("stored_any")
 	item.stored = index
 	return true
-
-
-## Stored items changed since the last save (what a rollback would undo).
-func unsaved_changes() -> Array[String]:
-	var out: Array[String] = []
-	for g: GearItem in Run.gear.equipment.values():
-		if g.stored < 0 or g.stored >= Profile.warehouse.size():
-			continue
-		var saved := GearItem.from_dict(Profile.warehouse[g.stored], Run.gear.item_by_id)
-		if saved == null or JSON.stringify(saved.to_dict()) != JSON.stringify(g.to_dict()):
-			out.append(g.title())
-	return out
 
 
 ## Permanent bonuses from the city's restorations (Profile).
@@ -231,5 +274,7 @@ func finish(p_won: bool) -> void:
 		Profile.best_heat = heat
 	Run.last_result = {"won": p_won, "depth": reached, "tm": Run.purse.tm, "shards": Run.purse.shards, "heat": heat, "bounty": bounty}
 	Profile.bank_run(p_won, reached, Run.purse.tm, Run.purse.shards, String(Run.job.id))
+	if p_won:
+		save_point()  # what you wore from the shelves comes home with its progress
 	if system_on(&"warehouse"):
 		Run.last_result.kept = Profile.bank_leftovers(p_won, Run.purse.galder, Run.purse.ore, Run.purse.materials)

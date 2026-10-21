@@ -73,9 +73,10 @@ func _warehouse_menu(npc: Npc) -> void:
 			actions.append(Run.city.swap_from_shelf.bind(i))
 		for key: String in RunGear.EQUIP_SLOTS:
 			var g := Run.gear.equipped(key)
-			if g and g.stored < 0:
-				options.append({"title": "Send home: " + g.title(), "icon": g.data.icon(), "tag": "Shelves full" if full else "",
-					"text": "It stays on you, and it's safe on a shelf if you fall.", "disabled": full})
+			if g and not (g.stored < 0 and g.data == Run.cls.start_weapon):
+				var no_room := full and g.stored < 0
+				options.append({"title": "Send home: " + g.title(), "icon": g.data.icon(), "tag": "Shelves full" if no_room else "",
+					"text": "Safe on a shelf, but you stop wearing it for the rest of the run.", "disabled": no_room})
 				actions.append(Run.city.bank.bind(g))
 		options.append({"title": "Leave", "cancel": true, "tag": "",
 			"text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
@@ -86,5 +87,7 @@ func _warehouse_menu(npc: Npc) -> void:
 			return
 		if actions[pick].call():
 			Audio.play("etc_item1.wav")
+			talker.player.dress()
+			talker.player.refresh_gear()
 		else:
 			Audio.play("ui_btn_ok.wav", -8.0)

@@ -221,7 +221,11 @@ Weight, and what doesn't fit is left behind.
 - Gear you take in or find, unless it's banked, drops in a **lost bag** in the room where you die.
 - A later run that reaches that room picks the bag up. Die before then and it's gone. There is one bag at a
   time: a new death replaces it.
-- **Banking:** sending an item home at a Portable Port or a rest stop makes it safe.
+- **Banking:** sending an item home at a Portable Port or a rest stop makes it safe, and you stop wearing
+  it for the rest of the run (decided with the user, 2026-10-21), so safety costs power.
+- Worn gear no longer rolls back at a death: it goes into the bag with its progress, and a clear brings it
+  home with its progress. The bag arms once you step clear of it, so one left at a room's spawn is found
+  by walking onto it.
 - Wardrobe pieces are never at stake.
 
 **The warehouse is the original's grid** (`WareHouseUI.ucf`): 8 x 3 = 24 items to start. Each upgrade
@@ -239,7 +243,7 @@ what forces the choice of what to keep.
 3. The equipment window with the 13 slots (done), then the new slot types' items.
 4. Heat raises the gear bands; the original's higher item ladders fill them. Done.
 5. The loadout before a run; worn gear stops counting against the load; heirlooms and level sync removed. Done.
-6. The lost bag and banking.
+6. The lost bag and banking. Done.
 7. Warehouse rows and their price.
 8. Bots for the three targets, and tuning Heat's monster scaling to them.
 

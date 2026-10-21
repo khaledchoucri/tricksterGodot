@@ -255,15 +255,27 @@ func run(Run: Node) -> void:
 	Run.purse.ore = 20
 	Run.purse.galder = 5000
 	Run.gear.try_refine(carried, 0.0)
-	check(Run.city.unsaved_changes().size() == 1, "refining a worn stored item is unsaved until a Port")
+	# Banking at a Port makes an item safe but takes it off you.
+	var worn_hat: GearItem = Run.gear.equipped("hat")
+	check(Run.city.bank(worn_hat) and Run.gear.equipped("hat") == null and Profile.warehouse.size() == 2,
+		"sending the worn hat home keeps it safe on its shelf and takes it off you")
+	# A death in room 4 leaves what you wear in a lost bag: the +6 sword leaves its shelf.
+	Run.route.depth = 3
+	var bagged: Array[String] = Run.city.drop_bag(Vector2(320, 240))
+	check(bagged.size() == 1 and bagged[0] == "Wood Sword +6" and Profile.warehouse.size() == 1
+		and not Profile.loadout.has("weapon"), "a death leaves the +6 sword in a lost bag, off its shelf (%s)" % ", ".join(bagged))
 	Run.new_run()
-	check(Run.gear.equipped("weapon").refine == 5, "dying without saving rolls it back to +5")
-	Run.gear.try_refine(Run.gear.equipped("weapon"), 0.0)
-	Run.city.save_point()
-	Run.new_run()
-	check(Run.gear.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
-	Profile.discard_item(1)
-	check(Profile.loadout == {"weapon": 0}, "throwing a worn item away takes it out of the loadout")
+	check(not Run.city.bag_here() and Run.gear.equipped("weapon").data == Run.cls.start_weapon,
+		"the next run sets out without it")
+	Run.route.depth = 3
+	var here: bool = Run.city.bag_here()
+	var found: Array[String] = Run.city.pick_up_bag() if here else ([] as Array[String])
+	var back := GearItem.from_dict(Profile.warehouse[-1], Run.gear.item_by_id)
+	check(found == ["Wood Sword +6"] and Profile.lost_bag.is_empty() and back.refine == 6,
+		"reaching room 4 again finds the bag, and the sword goes back on a shelf at +6")
+	Run.route.depth = 0
+	Profile.discard_item(0)
+	check(Profile.loadout.is_empty(), "throwing a worn item away takes it out of the loadout")
 	Profile.loadout = {}
 	Profile.legacy_heirloom = 0
 	Run.new_run()

@@ -325,6 +325,9 @@ func show_results(won: bool) -> void:
 		t += "[cell][color=#9fb2c0]%s[/color]     [/cell][cell]%s[/cell]" % r
 	t += "[/table]\n\n[color=#9fb2c0]Cards[/color]  %s\n[color=#9fb2c0]Gear[/color]  %s" % [
 		", ".join(cards) if cards.size() else "none", ", ".join(gear) if gear.size() else "none"]
+	if not won and not Run.last_bag.is_empty():
+		t += "\n[color=#f07a62]Lost bag[/color]  %s, left in room %d. Reach it again to pick it up." % [
+			", ".join(Run.last_bag), Run.route.depth + 1]
 	%ResultsBody.text = t
 	pick_panel.visible = false
 	var sb := results_panel.get_theme_stylebox("panel")

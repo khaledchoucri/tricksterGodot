@@ -51,6 +51,10 @@ func _shoot() -> void:
 		await _shoot_desert()
 		get_tree().quit()
 		return
+	if "bag" in OS.get_cmdline_user_args():
+		await _shoot_bag()
+		get_tree().quit()
+		return
 	if "loadout" in OS.get_cmdline_user_args():
 		await _shoot_loadout()
 		get_tree().quit()
@@ -176,6 +180,61 @@ func _shoot_hub() -> void:
 	hub.dialogue._chosen.emit(0)
 	await _wait(0.5)
 	await _snap("12_card_album")
+
+
+## The lost bag as a player meets it: wearing a stored sword, die in room 3 to a monster's
+## hit (the results name the bag), then a new run reaches room 3, where the bag lies, and walking
+## onto it with the movement keys puts the sword back on the shelf.
+func _shoot_bag() -> void:
+	for r: RestorationData in Run.hub.restorations:
+		Profile.restorations[String(r.id)] = r.max_level
+	Profile.lost_bag = {}
+	Run.new_run()
+	var sword := GearItem.make(load("res://data/items/edge_sabre.tres"))
+	Run.city.save_point(sword)
+	Profile.wear_stored(Profile.warehouse.size() - 1, "weapon")
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.0)
+	Run.route.depth = 2
+	game._load_room()
+	await _wait(3.0)
+	# The restored city brings revives (Rollback Cache, Second Wind): hit until the run really ends.
+	for _i in 6:
+		if game.player.state == Player.State.DEAD:
+			break
+		game.player.invulnerable_until = 0.0
+		game.player.take_hit(99999, Vector2.RIGHT, 0.0)
+		await _wait(0.4)
+	await _wait(4.0)
+	await _snap("48_bag_dropped")
+	game.queue_free()
+	await _wait(0.5)
+	Run.new_run()
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.0)
+	Run.route.depth = 2
+	game._load_room()
+	await _wait(3.0)
+	for e: Enemy in game.room.enemies:
+		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
+	game.player.invulnerable_until = game.player.now() + 999.0
+	await _wait(1.0)
+	var bag: LostBag = null
+	for c in game.room.world.get_children():
+		if c is LostBag:
+			bag = c
+	if bag:
+		game.player.global_position = game.room.nearest_reachable(bag.global_position + Vector2(-90, 0))
+		await _wait(0.4)
+		await _snap("49_bag_found")
+		Input.action_press("move_right")
+		await _wait(1.2)
+		Input.action_release("move_right")
+		await _wait(0.5)
+	await _snap("50_bag_picked")
+	print("bag left: ", Profile.lost_bag, " shelves: ", Profile.warehouse.size())
 
 
 ## Designing the loadout in the city as a player does: C opens the sheet, a click on the

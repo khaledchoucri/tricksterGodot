@@ -127,6 +127,8 @@ func _load_room() -> void:
 	if plan.rest:
 		_arrive_at_rest(plan)
 		return
+	if Run.city.bag_here():
+		_place_lost_bag()
 	if plan.boss:
 		_boss_name = _region_boss_name()
 	var title := _region_boss_name() if plan.boss else plan.data.display_name
@@ -141,6 +143,18 @@ func _load_room() -> void:
 	if room and room.is_inside_tree():
 		phase = Phase.FIGHT
 		room.start_encounter(Run.route.local_depth(), plan.elite, plan.boss)
+
+
+## The lost bag of the last death lies in this room.
+func _place_lost_bag() -> void:
+	var bag := LostBag.new()
+	bag.room = room
+	bag.position = room.nearest_reachable(Vector2(float(Profile.lost_bag.x), float(Profile.lost_bag.y)))
+	bag.picked_up.connect(func(names: Array[String]) -> void:
+		Audio.play("etc_item1.wav")
+		hud.log_line("[System] You found your lost bag: %s went back on your shelves." % ", ".join(names), Color("e0b54d")))
+	room.world.add_child(bag)
+	hud.log_line("[System] Your lost bag is in this room.", Color("f0c070"))
 
 
 ## A rest stop: nothing to fight. Heal, meet its people, and the way on is open.
@@ -467,14 +481,15 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base
 			var full := Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE
 			for g: GearItem in options:
 				if g == null:
-					shown.append({"title": "Save and go on" if phase != Phase.WON else "Save and log out", "tag": "", "cancel": true,
-						"text": "Saves the progress of what you wear from the shelves. Dying rolls back to the last save."})
+					shown.append({"title": "Go on" if phase != Phase.WON else "Log out", "tag": "", "cancel": true,
+						"text": "What you wear stays at stake: a death leaves it in a lost bag." if phase != Phase.WON
+							else "What you wore from the shelves goes home with its progress."})
 					continue
-				shown.append({"title": "Send %s home" % g.title(), "tag": g.data.slot_name(), "icon": g.data.icon(),
+				shown.append({"title": "Send %s home" % g.title(), "tag": "On a shelf" if g.stored >= 0 else g.data.slot_name(), "icon": g.data.icon(),
 					"text": g.summary() + ("
 The warehouse is full." if full else "
-Kept in the Megalopolis warehouse, refines and compounds included."),
-					"disabled": full})
+Safe on a shelf, refines and compounds included; you stop wearing it."),
+					"disabled": full and g.stored < 0})
 			title = "Portable Port  ·  save your progress"
 		"rune":
 			for c: CardData in options:
@@ -637,12 +652,12 @@ func _on_picked(i: int) -> void:
 				return
 		"port":
 			var g: GearItem = _pick_options[i]
-			Run.city.save_point(g)
-			Audio.play("ui_unique_get.wav", -4.0)
-			if g:
+			if g and Run.city.bank(g):
+				Audio.play("ui_unique_get.wav", -4.0)
 				hud.notice("%s sent home" % g.title())
-				hud.log_line("[System] %s was sent to the Megalopolis warehouse." % g.title(), Color("e0b54d"))
-			hud.log_line("[System] Progress saved.", Color("c9a4ff"))
+				hud.log_line("[System] %s is safe in the Megalopolis warehouse." % g.title(), Color("e0b54d"))
+				player.dress()
+				player.refresh_gear()
 			if phase == Phase.WON:
 				_show_win_results()
 				return
@@ -765,7 +780,7 @@ func _open_port() -> void:
 	var opts: Array = []
 	for k in Run.gear.EQUIP_SLOTS:
 		var g := Run.gear.equipped(k)
-		if g and g.stored < 0 and g.data != Run.cls.start_weapon:
+		if g and not (g.stored < 0 and g.data == Run.cls.start_weapon):
 			opts.append(g)
 	opts.append(null)
 	_start_pick("port", opts)
@@ -849,15 +864,17 @@ func _refine(g: GearItem) -> void:
 
 func _on_player_died() -> void:
 	phase = Phase.DEAD
-	var lost := Run.city.unsaved_changes()
+	var bagged := Run.city.drop_bag(player.global_position) if Run.city.system_on(&"warehouse") else ([] as Array[String])
+	Run.last_bag = bagged
 	Run.city.finish(false)
 	Audio.play("shchr002.wav")
 	await get_tree().create_timer(1.2).timeout
 	hud.log_line("[System] Connection lost.", Color("f07a62"))
 	await hud.fade(0.85, 0.6)
 	hud.log_line("[System] Rolling back server state...", Color("f07a62"))
-	for t in lost:
-		hud.log_line("[System] %s rolled back to its last save." % t, Color("f07a62"))
+	if not bagged.is_empty():
+		hud.log_line("[System] Your gear fell in a lost bag here: %s. Reach this room again to pick it up."
+			% ", ".join(bagged), Color("f07a62"))
 	hud.show_results(false)
 
 

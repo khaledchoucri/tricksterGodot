@@ -25,6 +25,9 @@ var restorations: Dictionary = {}  # restoration id -> level
 var warehouse: Array = []
 ## What is worn from the warehouse in every run: gear slot key -> shelf index.
 var loadout: Dictionary = {}
+## The lost bag (empty: none): {"region", "room" (its depth in the region), "x", "y", "items"
+## (GearItem.to_dict())}. Run.city drops and picks it up.
+var lost_bag: Dictionary = {}
 ## A save from before the loadout carried one heirloom (its shelf, or -1): Run.city wears it.
 var legacy_heirloom := -1
 ## GM console ranks (ServerSettings ids -> rank) and the best Heat cleared.
@@ -72,6 +75,7 @@ func load_profile() -> void:
 	restorations = {}
 	warehouse = []
 	loadout = {}
+	lost_bag = {}
 	server_settings = {}
 	best_heat = -1
 	cards = {}
@@ -104,6 +108,7 @@ func load_profile() -> void:
 	for k: String in data.get("loadout", {}):
 		loadout[k] = int(data.loadout[k])
 	legacy_heirloom = int(data.get("heirloom", -1))
+	lost_bag = data.get("lost_bag", {})
 	for k: String in data.get("server_settings", {}):
 		server_settings[k] = int(data.server_settings[k])
 	best_heat = int(data.get("best_heat", -1))
@@ -127,7 +132,7 @@ func save() -> void:
 		return
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "galder": galder, "ore": ore,
 		"materials": materials, "stats": stats,
-		"flags": flags, "restorations": restorations, "warehouse": warehouse, "loadout": loadout,
+		"flags": flags, "restorations": restorations, "warehouse": warehouse, "loadout": loadout, "lost_bag": lost_bag,
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
 		"worn": worn, "mastery": mastery, "start_skills": start_skills, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
