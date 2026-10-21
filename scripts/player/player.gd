@@ -13,8 +13,6 @@ enum State { MOVE, ATTACK, DASH, SKILL, HURT, DEAD }
 
 const BODY_RADIUS := 11.0
 const VAULT_HOP := 14.0
-## Berserker's HP and MP loss per second while enemies are near (the
-## original drains 20 of each during the rage).
 ## Basic combo for each weapon family.
 const FAMILY_COMBOS := {
 	"sword": preload("res://data/combos/sword.tres"),
