@@ -94,17 +94,15 @@ func _apply(s: ComboStep) -> void:
 
 
 func _mult(s: ComboStep) -> float:
-	var m := Run.attack_mult() * (1.0 + Run.card_value(&"chi_sword") / 100.0)
+	var m := Run.attack_mult() * (1.0 + Run.mod("combo_damage%") / 100.0)
 	if s.finisher:
-		if Run.has_passive(&"champions_fury"):
-			m *= 1.25
+		m = Run.mod_factor("finisher_damage%", false, m)
 	return m
 
 
 ## Reach of a swing; Chi Sword makes the blade bigger.
 func _reach(s: ComboStep) -> float:
-	var lvl := Run.card_level(&"chi_sword")
-	return s.reach * (1.0 + Run.card(&"chi_sword").param("reach", lvl) / 100.0) if lvl > 0 else s.reach
+	return s.reach * (1.0 + Run.mod("combo_reach%") / 100.0)
 
 
 ## Talent and trait effects carried by basic attacks.

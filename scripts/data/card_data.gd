@@ -52,12 +52,18 @@ enum Kind { TALENT, SKILL }
 ##  - thrown: a thrown weapon (Precise Pitch's thrown_damage%)
 ##  - grows_gun: a gun talent, offered like the cards that build on a gunner's basic
 ##  - retaliate: strikes back at a monster that hits you (the elemental Blessings)
+##  - cast_staggered: can be cast while staggered, cancelling the hit (Clinch Release)
+##  - power_gauge, reload_while_moving, reload_through_hits: the gun talents' rules
+##  - instinct: while active, its rows replace its form's (Beast's Instinct)
 @export var tags: Array[StringName] = []
 ## The beast form this skill needs: a form card's id (Evolution, Metamorphosis), "beast"
 ## for either, or empty for any shape (and then it doesn't work in a beast).
 @export var form: StringName
 ## On a form card (Evolution, Metamorphosis): the beast body learning it turns you into.
 @export var form_actor := ""
+## On a form card: the stats the form raises by its value, and lowers by its "loss" row.
+@export var form_gains: Array[String] = []
+@export var form_losses: Array[String] = []
 ## The debuff your hits carry while this talent is held (an Enemy.debuffs key): its
 ## value for `seconds` (its table row) when it has one, else for its value in seconds.
 @export var inflicts := ""

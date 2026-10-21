@@ -63,7 +63,7 @@ SPEC = {
                  text='Four blows at vital points, {v} damage and stronger with every one that lands.'),
     '1109': dict(card='desperate_rally', value=lambda r: r['Comment'], rows={'hp': 'HPPercent'},
                  text='Below {hp}% HP, +{v}% AP, rising the lower your HP gets.'),
-    '1110': dict(card='clinch_release', kind='skill', behavior='clinch_release', value=lambda r: 0,
+    '1110': dict(card='clinch_release', tags=['cast_staggered'], kind='skill', behavior='clinch_release', value=lambda r: 0,
                  text='Usable while staggered: shake off the hit, its knockback and anything holding you.'),
     # ---- Knight
     '1201': dict(card='faint', mods={'shockwave.stun_chance': 'value', 'shockwave.stun_seconds': 'seconds'}, value=lambda r: r['ApplyRatio'] * 100, rows={'seconds': 'Seconds'},
@@ -112,7 +112,7 @@ SPEC = {
     '1504': dict(card='gale_strike', kind='skill', behavior='wind_blades', value=pct_hit, element='wind', upgrades='1209',
                  rows={'radius': 'Radius', 'targets': 'KillNum'},
                  text='A gale of wind blades shreds the enemies around you (up to {targets}) for {v} wind damage.'),
-    '1505': dict(card='chi_sword', value=lambda r: r['Comment'], rows={'reach': lambda r: (r['Range'] / 80.0 - 1.0) * 100},
+    '1505': dict(card='chi_sword', mods={'combo_damage%': 'value', 'combo_reach%': 'reach'}, value=lambda r: r['Comment'], rows={'reach': lambda r: (r['Range'] / 80.0 - 1.0) * 100},
                  text='Your blade swells with chi: basic attacks reach {reach}% further and deal {v}% more damage.'),
     '1506': dict(card='chakra_balance', kind='skill', behavior='chakra_balance', value=lambda r: r['Heal'] / 100.0,
                  rows={'seconds': 'Time', 'interval': 'Interval'},

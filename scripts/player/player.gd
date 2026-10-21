@@ -334,7 +334,7 @@ func _tick_talents(delta: float) -> void:
 	sprite.modulate.a = 0.35 if Run.hidden else 1.0
 	if Run.cls.mp_regen > 0.0 and state != State.DEAD:
 		# Mages regenerate MP; Aura of Mana raises the rate.
-		_mp_regen += Run.max_mp * Run.cls.mp_regen * (1.0 + Run.card_value(&"aura_of_mana") / 100.0) * delta
+		_mp_regen += Run.max_mp * Run.cls.mp_regen * (1.0 + Run.mod("mp_regen%") / 100.0) * delta
 		if _mp_regen >= 1.0:
 			Run.gain_mp(int(_mp_regen))
 			_mp_regen -= int(_mp_regen)
@@ -423,8 +423,8 @@ func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 ## Clinch Release can be cast while staggered: it cancels the hit.
 func _clinch_release() -> bool:
 	for i in SkillCaster.SLOT_ACTIONS.size():
-		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else &""
-		if id == &"clinch_release" and take_buffer(SkillCaster.SLOT_ACTIONS[i]):
+		var c := skills.card_in(i)
+		if c and c.has_tag(&"cast_staggered") and take_buffer(SkillCaster.SLOT_ACTIONS[i]):
 			knock = Vector2.ZERO
 			enter(State.MOVE)
 			return skills.try_cast(i)

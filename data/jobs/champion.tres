@@ -16,6 +16,7 @@ actor = "power_f"
 tier = 3
 cards = Array[ExtResource("2_c")]([ExtResource("c_flash_cut"), ExtResource("c_adrenaline"), ExtResource("c_flaming_fist"), ExtResource("c_mega_flash_cut"), ExtResource("c_chi_release")])
 passive = &"champions_fury"
+passive_mods = Dictionary[String, float]({"finisher_damage%": 25.0})
 passive_name = "Champion's Fury"
 passive_text = "Combo finishers deal 25% more damage."
 text = "An advanced Boxer: short-range combat and every physical attack there is."

@@ -13,3 +13,4 @@ text = "MP regeneration +{v}%."
 requires = {&"cure": 3}
 table = {"value": [200.0, 230.0, 275.0, 305.0, 360.0, 396.0, 432.0, 468.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"mp_regen%": "value"})

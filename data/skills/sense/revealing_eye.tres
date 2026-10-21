@@ -16,3 +16,4 @@ table = {"value": [160.0, 180.0, 210.0, 230.0, 280.0, 308.0, 336.0, 364.0]}
 sounds = {"ap": "skill_magic_concen.wav", "ke": "snd_s_602_ke.wav"}
 effects = {"ap": ["S_602_optical eyes_apply"], "ke": ["S_602_optical eyes_keep"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"reveal_radius": "value"})

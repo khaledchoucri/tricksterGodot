@@ -19,6 +19,8 @@ const STAT_FLAT: Array[String] = ["HP", "MP", "WT"]
 ##  - gun_AP%: the gun's own Gun AP
 ##  - compound%: compounding succeeds more often
 ##  - thrown_damage%: thrown weapons (cards tagged "thrown")
+##  - combo_damage%, combo_reach%, finisher_damage%: the basic combo (Chi Sword, Champion's Fury)
+##  - mp_regen%: a mage's MP regeneration (Aura of Mana)
 ##  - skill_damage%: your skills (job passives); elite_damage%: against elites and bosses
 ##  - move%, dash_distance%, dash_cooldown_cut%: moving and dashing
 ##  - galder%: Galder from kills; shop_discount%: shop prices
@@ -26,7 +28,8 @@ const STAT_FLAT: Array[String] = ["HP", "MP", "WT"]
 const PERCENT: Array[String] = ["damage%", "attack_speed%", "cooldown_cut%", "mp_cost_cut%", "damage_cut%",
 	"magic_damage_cut%", "reload_speed%", "power_shot%", "gun_AP%", "compound%", "skill_damage%",
 	"elite_damage%", "move%", "dash_distance%", "dash_cooldown_cut%", "galder%", "shop_discount%",
-	"room_heal%", "clear_heal%", "thrown_damage%"]
+	"room_heal%", "clear_heal%", "thrown_damage%", "combo_damage%", "combo_reach%",
+	"finisher_damage%", "mp_regen%"]
 ## Other flat amounts:
 ##  - gun_AP: Gun AP added to every shot
 ##  - crit_damage: added to the critical multiplier (1.75)
@@ -34,8 +37,9 @@ const PERCENT: Array[String] = ["damage%", "attack_speed%", "cooldown_cut%", "mp
 ##  - kill_mp, hit_mp: MP restored per kill, per hit
 ##  - card_choices, gear_choices: more options in those rewards
 ##  - job_change_points: free type points on every job change
+##  - reveal_radius: nothing hides within this distance of you (Revealing Eye)
 const FLAT: Array[String] = ["gun_AP", "crit_damage", "evade", "material_drop", "refine_chance", "kill_mp",
-	"hit_mp", "card_choices", "gear_choices", "job_change_points"]
+	"hit_mp", "card_choices", "gear_choices", "job_change_points", "reveal_radius"]
 ## The elements with their own keys: "resist:<element>" (resistance, %) and
 ## "boost:<element>%" (your spells of that element).
 const ELEMENTS: Array[String] = ["Fire", "Water", "Wind", "Earth", "Elec", "Light", "Dark"]

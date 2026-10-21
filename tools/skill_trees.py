@@ -306,6 +306,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
             lines.append(f'form = &"{sp["form"]}"')
         if sp.get('form_actor'):
             lines.append(f'form_actor = "{sp["form_actor"]}"')
+        for field in ('form_gains', 'form_losses'):
+            if sp.get(field):
+                lines.append(f'{field} = Array[String]([' + ', '.join(f'"{k}"' for k in sp[field]) + '])')
         if sp.get('inflicts'):
             lines.append(f'inflicts = "{sp["inflicts"]}"')
         if sp.get('mods'):

@@ -78,7 +78,7 @@ SPEC = {
     '4104': dict(card='siren_song', behavior='charm_burst', value=pct_hit, scaling='0.1HPNOW+0.5DP',
                  rows={'range': 'Range', 'targets': 'MonNum', 'angle': 'Angle'},
                  text='Your voice hits up to {targets} enemies in front for {v} damage, more with HP and DP.'),
-    '4105': dict(card='evolution', form_actor='beast_evolution', kind='talent', value=lambda r: (r['ApPRatio'] - 1) * 100,
+    '4105': dict(card='evolution', form_actor='beast_evolution', form_gains=['AP'], form_losses=['DP', 'HV', 'LK'], kind='talent', value=lambda r: (r['ApPRatio'] - 1) * 100,
                  rows={'dx': 'DxPValue', 'loss': lambda r: r['DpMRatio'] * 100},
                  text='Become a beast for the rest of the run: {v}% more AP, faster attacks, {loss}% less DP, HV and LK. '
                       'Only beast skills work in this form (Beast Claw, Fatal Wound, Raging Nail, Sharp Scream, '
@@ -106,7 +106,7 @@ SPEC = {
     '4205': dict(card='impelling_rage', behavior='charm_burst', value=pct_hit, scaling='MA',
                  rows={'radius': 'Radius', 'targets': lambda r: 5},
                  text='Force your fighting spirit out: up to {targets} enemies around you are pushed back for {v} damage.'),
-    '4206': dict(card='metamorphosis', form_actor='beast_metamorphosis', kind='talent', value=lambda r: (r['DpPRatio'] - 1) * 100,
+    '4206': dict(card='metamorphosis', form_actor='beast_metamorphosis', form_gains=['DP', 'HV'], form_losses=['AP', 'LK'], kind='talent', value=lambda r: (r['DpPRatio'] - 1) * 100,
                  rows={'dx': 'DxMValue', 'loss': lambda r: r['ApMRatio'] * 100},
                  text='Change at a cellular level for the rest of the run: {v}% more DP and HV, {loss}% less AP and LK, '
                       'slower attacks. Only beast skills work in this form (Wild Nail, Heavy Hit, Card Soldier): '
@@ -139,7 +139,7 @@ SPEC = {
     '4304': dict(card='sharp_scream', form='beast', behavior='charm_burst', value=pct_hit, scaling='AP+16HV',
                  rows={'range': 'Range', 'radius': 'Radius', 'targets': 'Count'}, requires_extra={'evolution': 1},
                  text='Beast form only: a piercing scream hits up to {targets} enemies near you for {v} damage.'),
-    '4305': dict(card='beasts_instinct', form='evolution', behavior='transform', kind='skill', value=lambda r: (r['AP_Ratio'] - 1) * 100,
+    '4305': dict(card='beasts_instinct', form='evolution', tags=['instinct'], behavior='transform', kind='skill', value=lambda r: (r['AP_Ratio'] - 1) * 100,
                  rows={'seconds': 'Seconds', 'dx': 'DX_Ratio', 'loss': lambda r: r['DP_Ratio'] * 100},
                  text='In Evolution: unleash the beast for {seconds} s, {v}% more AP and faster attacks, but no skills '
                       'and a steady MP drain.'),

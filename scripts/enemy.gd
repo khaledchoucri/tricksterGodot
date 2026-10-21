@@ -238,7 +238,7 @@ func can_hide() -> bool:
 	if debuff("pinned") > 0.0:
 		return false
 	# Revealing Eye: nothing hides within its radius of you.
-	var eye := Run.card_value(&"revealing_eye")
+	var eye := Run.mod("reveal_radius")
 	return not (eye > 0.0 and is_instance_valid(player) and Combat.in_circle(global_position, player.global_position, eye))
 
 

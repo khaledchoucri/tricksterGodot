@@ -16,3 +16,5 @@ sounds = {"ap": "snd_c_306_ap.wav", "ht": "snd_skl_m_015_eed.wav"}
 effects = {"ap": ["zeldaboom"]}
 master_material = ExtResource("m_master")
 form_actor = "beast_metamorphosis"
+form_gains = Array[String](["DP", "HV"])
+form_losses = Array[String](["AP", "LK"])

@@ -89,7 +89,7 @@ SPEC = {
                  text='A mana arrow at the enemy you aim at for {v} damage. Dragon\'s basic attack.'),
     '2002': dict(card='invincible_casting', value=lambda r: 0, held=True,
                  text='Hits can\'t interrupt your casting (innate for mages).'),
-    '2003': dict(card='aura_of_mana', value=lambda r: r['Comment'], text='MP regeneration +{v}%.'),
+    '2003': dict(card='aura_of_mana', mods={'mp_regen%': 'value'}, value=lambda r: r['Comment'], text='MP regeneration +{v}%.'),
     '2004': dict(card='bottle_of_mana', mods={'MP': 'value'}, value=lambda r: mp_like(r['MP']), text='+{v} max MP.'),
     '2005': dict(card='cure', behavior='spell_heal', value=lambda r: r['Comment'], scaling='MA',
                  text='Recover {v}% of your max HP.'),

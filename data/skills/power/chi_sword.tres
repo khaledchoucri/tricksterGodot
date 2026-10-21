@@ -16,3 +16,4 @@ table = {"value": [2.0, 14.0, 33.0, 45.0, 77.0, 85.0, 92.0, 100.0], "reach": [0.
 sounds = {"ht": "snd_P_605_ht.wav"}
 effects = {"ht": ["P_605_Energy_Sword_ht"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"combo_damage%": "value", "combo_reach%": "reach"})

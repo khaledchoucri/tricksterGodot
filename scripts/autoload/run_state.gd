@@ -688,25 +688,25 @@ func _compute_stats() -> void:
 func _form_stats(s: Dictionary) -> void:
 	if form == &"":
 		return
-	var c := card(form)
-	var lvl := maxi(card_level(form), 1)
+	var shape := card(form)
+	var c := _form_rows()
+	var lvl := maxi(card_level(c.id), 1)
 	var gain := c.value_at(lvl) / 100.0
 	var loss := c.param("loss", lvl) / 100.0
-	if form == &"evolution":
-		var ap := 1.0 + gain
-		if instinct and card(&"beasts_instinct"):
-			var il := maxi(card_level(&"beasts_instinct"), 1)
-			ap = 1.0 + card(&"beasts_instinct").value_at(il) / 100.0
-			loss = card(&"beasts_instinct").param("loss", il) / 100.0
-		s.AP *= ap
-		s.DP *= 1.0 - loss
-		s.HV *= 1.0 - loss
-		s.LK *= 1.0 - loss
-	else:
-		s.DP *= 1.0 + gain
-		s.HV *= 1.0 + gain
-		s.AP *= 1.0 - loss
-		s.LK *= 1.0 - loss
+	for k: String in shape.form_gains:
+		s[k] *= 1.0 + gain
+	for k: String in shape.form_losses:
+		s[k] *= 1.0 - loss
+
+
+## The card whose rows the form uses now: an active instinct of that form (Beast's
+## Instinct sharpens Evolution), else the form card itself.
+func _form_rows() -> CardData:
+	if instinct:
+		for c in held_cards():
+			if c.has_tag(&"instinct") and c.form == form:
+				return c
+	return card(form)
 
 
 ## Attack speed in a beast form: the table's DX change, 8% a point (the
@@ -714,9 +714,8 @@ func _form_stats(s: Dictionary) -> void:
 func form_speed_mult() -> float:
 	if form == &"":
 		return 1.0
-	var dx := card(form).param("dx", maxi(card_level(form), 1))
-	if instinct and card(&"beasts_instinct"):
-		dx = card(&"beasts_instinct").param("dx", maxi(card_level(&"beasts_instinct"), 1))
+	var c := _form_rows()
+	var dx := c.param("dx", maxi(card_level(c.id), 1))
 	return maxf(0.5, 1.0 + 0.08 * dx)
 
 
