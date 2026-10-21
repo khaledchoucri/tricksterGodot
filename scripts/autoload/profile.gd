@@ -1,8 +1,8 @@
 extends Node
 ## The player's saved progress across runs (autoloaded as `Profile`): banked
 ## Time Marks and Harkon Shards, run statistics, story flags, the city's
-## restorations, and the warehouse of items sent home (one can be carried
-## into runs as an heirloom). Saved as JSON in user://profile.json after
+## restorations, and the warehouse of items sent home (its loadout is worn
+## in every run). Saved as JSON in user://profile.json after
 ## every change.
 
 const VERSION := 2
@@ -21,9 +21,12 @@ var materials: Dictionary = {}  # MaterialData id (String) -> count
 var stats := {"runs": 0, "deaths": 0, "clears": 0, "best_depth": 0, "shards_found": 0, "tm_earned": 0}
 var flags: Dictionary = {}         # String -> true
 var restorations: Dictionary = {}  # restoration id -> level
-## Items sent home (GearItem.to_dict()), and which one runs carry (-1: none).
+## Items sent home (GearItem.to_dict()).
 var warehouse: Array = []
-var heirloom := -1
+## What is worn from the warehouse in every run: gear slot key -> shelf index.
+var loadout: Dictionary = {}
+## A save from before the loadout carried one heirloom (its shelf, or -1): Run.city wears it.
+var legacy_heirloom := -1
 ## GM console ranks (ServerSettings ids -> rank) and the best Heat cleared.
 var server_settings: Dictionary = {}
 var best_heat := -1
@@ -68,7 +71,7 @@ func load_profile() -> void:
 	flags = {}
 	restorations = {}
 	warehouse = []
-	heirloom = -1
+	loadout = {}
 	server_settings = {}
 	best_heat = -1
 	cards = {}
@@ -98,7 +101,9 @@ func load_profile() -> void:
 	for k: String in data.get("restorations", {}):
 		restorations[k] = int(data.restorations[k])
 	warehouse = data.get("warehouse", [])
-	heirloom = int(data.get("heirloom", -1))
+	for k: String in data.get("loadout", {}):
+		loadout[k] = int(data.loadout[k])
+	legacy_heirloom = int(data.get("heirloom", -1))
 	for k: String in data.get("server_settings", {}):
 		server_settings[k] = int(data.server_settings[k])
 	best_heat = int(data.get("best_heat", -1))
@@ -122,7 +127,7 @@ func save() -> void:
 		return
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "galder": galder, "ore": ore,
 		"materials": materials, "stats": stats,
-		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
+		"flags": flags, "restorations": restorations, "warehouse": warehouse, "loadout": loadout,
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
 		"worn": worn, "mastery": mastery, "start_skills": start_skills, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
@@ -207,26 +212,48 @@ func store_item(item: Dictionary) -> int:
 	return warehouse.size() - 1
 
 
-## Saves a stored item's new state (an heirloom improved during a run).
+## Saves a stored item's new state (worn and improved during a run).
 func update_item(index: int, item: Dictionary) -> void:
 	if index >= 0 and index < warehouse.size():
 		warehouse[index] = item
 		save()
 
 
-func set_heirloom(index: int) -> void:
-	heirloom = index if index >= 0 and index < warehouse.size() else -1
+## Wears shelf `index` in gear slot `key` in every run (replacing what was there).
+func wear_stored(index: int, key: String) -> void:
+	if index < 0 or index >= warehouse.size():
+		return
+	for k: String in loadout.keys():
+		if int(loadout[k]) == index:
+			loadout.erase(k)
+	loadout[key] = index
 	save()
+
+
+## Takes off what slot `key` wears from the shelves.
+func take_off(key: String) -> void:
+	loadout.erase(key)
+	save()
+
+
+## The gear slot shelf `index` is worn in, or "".
+func worn_in(index: int) -> String:
+	for k: String in loadout:
+		if int(loadout[k]) == index:
+			return k
+	return ""
 
 
 func discard_item(index: int) -> void:
 	if index < 0 or index >= warehouse.size():
 		return
 	warehouse.remove_at(index)
-	if heirloom == index:
-		heirloom = -1
-	elif heirloom > index:
-		heirloom -= 1
+	for k: String in loadout.keys():
+		var i := int(loadout[k])
+		if i == index:
+			loadout.erase(k)
+		elif i > index:
+			loadout[k] = i - 1
 	save()
 
 

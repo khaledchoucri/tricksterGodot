@@ -1,7 +1,7 @@
 class_name RunCity
 extends RefCounted
 ## What a run takes from Megalopolis and gives back (Run.city): the restorations' systems and
-## bonuses, heirlooms and the warehouse, the custom Trickster, and banking the finished run.
+## bonuses, the loadout and the warehouse, the custom Trickster, and banking the finished run.
 
 ## Trees a Trickster can pick from: every class's 2nd and 3rd jobs, and
 ## the other classes' trees learned through Echo runes.
@@ -75,25 +75,38 @@ func build_trickster() -> ClassData:
 	return c
 
 
-## Equips the heirloom chosen in the warehouse, level-synced to the region.
-func carry_heirloom() -> void:
-	if not system_on(&"warehouse") or Profile.heirloom < 0 or Profile.heirloom >= Profile.warehouse.size():
+## Wears the loadout: each slot's item from its warehouse shelf, at full strength (decided
+## with the user, 2026-10-21: no level sync, no level or weight gate).
+func carry_loadout() -> void:
+	if not system_on(&"warehouse"):
 		return
-	var g := from_shelf(Profile.heirloom)
-	if g:
-		Run.gear.equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
+	if Profile.legacy_heirloom >= 0:
+		var old := from_shelf(Profile.legacy_heirloom)
+		if old and Profile.worn_in(Profile.legacy_heirloom) == "":
+			Profile.wear_stored(Profile.legacy_heirloom, Run.gear.slot_keys_for(old.data)[0])
+		Profile.legacy_heirloom = -1
+	for key: String in Profile.loadout:
+		var g := from_shelf(int(Profile.loadout[key]))
+		if g and Run.gear.can_equip(g):
+			Run.gear.equip(g, key)
 
 
-## The item on warehouse shelf `index`, ready to wear here: its shelf noted (so its
-## progress can be saved back) and level-synced to the current room. Null if unknown.
+## Puts the loadout on afresh after it changes in the city: the class's own weapon, then the
+## loadout over it (without starting a new run, which would spend the run's seed).
+func rewear_loadout() -> void:
+	Run.gear.equipment = {"weapon": GearItem.make(Run.cls.start_weapon)}
+	carry_loadout()
+	Run.stats_changed()
+
+
+## The item on warehouse shelf `index`, ready to wear: its shelf noted, so its progress
+## can be saved back. Null if unknown.
 func from_shelf(index: int) -> GearItem:
 	if index < 0 or index >= Profile.warehouse.size():
 		return null
 	var g := GearItem.from_dict(Profile.warehouse[index], Run.gear.item_by_id)
 	if g:
 		g.stored = index
-		g.refine_cap = Run.route.region.refine_cap
-		g.sync_level = sync_level()
 	return g
 
 
@@ -131,20 +144,6 @@ func swap_from_shelf(index: int) -> bool:
 	for put_away: GearItem in ([old] if old else []) + Run.gear.displaced:
 		bank(put_away)
 	return true
-
-
-## The item level gear is synced to in this room: a little above what it offers.
-func sync_level() -> int:
-	return Run.gear.gear_level() + 2
-
-
-## Re-syncs carried heirlooms to the current depth and region (on entering a room).
-func sync_heirlooms() -> void:
-	for g: GearItem in Run.gear.equipment.values():
-		if g.sync_level >= 0:
-			g.sync_level = sync_level()
-			g.refine_cap = Run.route.region.refine_cap
-	Run.stats_changed()
 
 
 ## Portable Port: saves every stored item's progress, and sends `item` home

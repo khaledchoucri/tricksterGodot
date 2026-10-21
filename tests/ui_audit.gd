@@ -261,7 +261,7 @@ func _check_choices(hub: Hub, screen: String) -> void:
 # ---------------------------------------------------------------- run
 
 func _audit_game() -> void:
-	Profile.heirloom = -1
+	Profile.loadout = {}
 	var game: Game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.5)

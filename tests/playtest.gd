@@ -171,7 +171,7 @@ func _one_run(index: int) -> void:
 		print("   last HP losses: %s" % "; ".join(drops))
 		if t >= RUN_LIMIT:
 			print("   (stopped at the %d s run limit: not a death)" % int(RUN_LIMIT))
-	_choose_heirloom()
+	_choose_loadout()
 	_restore_city()
 	_city_craft()
 	get_tree().paused = false
@@ -465,9 +465,7 @@ func _gear_gain(g: GearItem) -> float:
 	var worst := INF
 	for k in Run.gear.slot_keys_for(g.data):
 		worst = minf(worst, _score(Run.gear.equipped(k)))
-	var load_after := Run.gear.equip_load() + g.data.weight
-	var penalty := 20.0 if load_after > Run.gear.load_limit() else 0.0
-	return _score(g) - worst - penalty
+	return _score(g) - worst
 
 
 func _score(g: GearItem) -> float:
@@ -479,7 +477,7 @@ func _score(g: GearItem) -> float:
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
 
 
-## Between runs, invest banked leftovers in the heirloom and in a starting
+## Between runs, invest banked leftovers in the worn stored gear and in a starting
 ## skill, as a player would: the bot masters the first skill it can start
 ## with as far as it can, and carries it.
 func _city_craft() -> void:
@@ -493,9 +491,14 @@ func _city_craft() -> void:
 			if Run.deck.start_level(c.id) > 0:
 				Profile.start_skills[String(Run.cls.id)] = String(c.id)
 				break
-	var h := Profile.heirloom
-	if h < 0 or not Run.city.system_on(&"warehouse"):
+	if not Run.city.system_on(&"warehouse"):
 		return
+	for h: int in Profile.loadout.values():
+		_invest(h)
+
+
+## Refines and compounds a worn stored item in the city while the odds are fair.
+func _invest(h: int) -> void:
 	for _i in 6:
 		var g := GearItem.from_dict(Profile.warehouse[h], Run.gear.item_by_id)
 		if not Run.gear.can_city_refine(g) or g.refine_chance() < 0.45:
@@ -537,18 +540,24 @@ func _take(w: WardrobeData, how: String) -> void:
 	print("   %s %s" % [how, w.display_name])
 
 
-## Between runs, carry the best item in the warehouse (as a player would).
-func _choose_heirloom() -> void:
-	var best := -1
-	var best_score := 0.0
+## Between runs, wear the best stored item for each slot (as a player would).
+func _choose_loadout() -> void:
+	var order: Array[int] = []
 	for i in Profile.warehouse.size():
 		var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
-		if g and g.data.slot == ItemData.Slot.WEAPON and _score(g) > best_score:
-			best_score = _score(g)
-			best = i
-	Profile.set_heirloom(best)
-	if best >= 0:
-		print("   carrying %s next" % GearItem.from_dict(Profile.warehouse[best], Run.gear.item_by_id).title())
+		if g and Run.gear.can_use(g.data):
+			order.append(i)
+	var score := func(i: int) -> float: return _score(GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id))
+	order.sort_custom(func(a: int, b: int) -> bool: return score.call(a) > score.call(b))
+	Profile.loadout = {}
+	for i in order:
+		var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
+		for k in Run.gear.slot_keys_for(g.data):
+			if not Profile.loadout.has(k):
+				Profile.loadout[k] = i
+				print("   wearing %s next" % g.title())
+				break
+	Profile.save()
 
 
 # ---------------------------------------------------------------- report

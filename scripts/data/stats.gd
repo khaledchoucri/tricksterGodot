@@ -17,7 +17,7 @@ const NAMES := {
 const USES := {
 	"AP": "physical damage", "AC": "hits evasive foes cleanly", "DX": "attack speed",
 	"MP": "max mana", "MA": "skill cooldowns", "MD": "less magic damage",
-	"WT": "equip load (WT / 4)", "DA": "better drops, more ore", "LK": "critical hits, refining",
+	"WT": "no effect yet", "DA": "better drops, more ore", "LK": "critical hits, refining",
 	"HP": "max health", "DP": "less physical damage", "HV": "evade attacks",
 }
 

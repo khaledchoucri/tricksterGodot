@@ -77,6 +77,7 @@ func run() -> void:
 	await wait(1.0)
 	check(hub.talker.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
 		"the hub builds Megalopolis with %d people and the gate" % hub.talker.npcs.size())
+	check(hub.hud.sheet.equipment.editable, "in the city the equipment window is where the loadout is designed")
 	check(hub.talker.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
 	var guide: Npc = hub.talker.npc(&"cavalier")
 	hub.player.global_position = guide.global_position + Vector2(0, 20)

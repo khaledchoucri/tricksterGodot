@@ -248,11 +248,11 @@ func attack_speed_mult() -> float:
 
 
 func speed_mult() -> float:
-	return Run.mod_factor("move%", false, 0.85 if Run.gear.overweight() else 1.0)
+	return Run.mod_factor("move%", false)
 
 
 func dash_cooldown_mult() -> float:
-	var m := Run.mod_factor("dash_cooldown_cut%", true, 1.3 if Run.gear.overweight() else 1.0)
+	var m := Run.mod_factor("dash_cooldown_cut%", true)
 	return m * (0.8 if not Run.cls.armed else 1.0)  # fighting bare-handed keeps you light on your feet
 
 

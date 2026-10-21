@@ -51,6 +51,10 @@ func _shoot() -> void:
 		await _shoot_desert()
 		get_tree().quit()
 		return
+	if "loadout" in OS.get_cmdline_user_args():
+		await _shoot_loadout()
+		get_tree().quit()
+		return
 	if "sheet" in OS.get_cmdline_user_args():
 		await _shoot_sheet()
 		get_tree().quit()
@@ -172,6 +176,54 @@ func _shoot_hub() -> void:
 	hub.dialogue._chosen.emit(0)
 	await _wait(0.5)
 	await _snap("12_card_album")
+
+
+## Designing the loadout in the city as a player does: C opens the sheet, a click on the
+## weapon slot lists the stored weapons, the 1 key wears the first, and the sheet shows it.
+func _shoot_loadout() -> void:
+	for r: RestorationData in Run.hub.restorations:
+		Profile.restorations[String(r.id)] = r.max_level
+	Profile.set_flag("met_cavalier")
+	Run.new_run()
+	for id: String in ["edge_sabre", "focus_buckler_cap"]:
+		Run.city.save_point(GearItem.make(load("res://data/items/%s.tres" % id)))
+	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
+	add_child(hub)
+	await _wait(2.0)
+	hub.dialogue.visible = false
+	hub.talker.talking = false
+	_press("character")
+	await _wait(0.5)
+	await _snap("45_loadout_sheet")
+	var cell: Control = hub.hud.sheet.equipment._icons["weapon"]
+	_click(cell.get_global_rect().get_center())
+	await _wait(0.8)
+	await _snap("46_loadout_choose")
+	_key(KEY_1)
+	await _wait(0.8)
+	await _snap("47_loadout_worn")
+
+
+## A real left click at `at` (screen pixels), as the mouse sends it.
+func _click(at: Vector2) -> void:
+	for down: bool in [true, false]:
+		var e := InputEventMouseButton.new()
+		e.button_index = MOUSE_BUTTON_LEFT
+		e.pressed = down
+		e.position = at
+		e.global_position = at
+		Input.parse_input_event(e)
+		await get_tree().process_frame
+
+
+## A real key press and release.
+func _key(code: Key) -> void:
+	for down: bool in [true, false]:
+		var e := InputEventKey.new()
+		e.keycode = code
+		e.pressed = down
+		Input.parse_input_event(e)
+		await get_tree().process_frame
 
 
 ## The character sheet with its equipment window, opened with the character key, wearing a

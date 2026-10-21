@@ -34,6 +34,11 @@ const SLOTS: Array[Dictionary] = [
 ## The fashion grid, row by row (the art's outlines). Our wardrobe's head and face pieces go here.
 const FASHION: Array[String] = ["head", "face", "hand item", "top", "coat", "hands", "socks", "shoes", "bottom", "belt"]
 
+## A gear or wardrobe slot was clicked while the window is `editable` (the city's loadout).
+signal slot_pressed(kind: String, key: String)
+
+## Whether clicking a slot asks to change it (in the city, between runs; a run's window only shows).
+var editable := false
 var _icons: Dictionary[String, TextureRect] = {}
 var _preview: ActorSprite
 
@@ -51,7 +56,9 @@ func _ready() -> void:
 	add_child(bg)
 	_add_preview()
 	for s in SLOTS:
-		_add_icon(String(s.key), GRID + CELL * Vector2(s.cell), CELL)
+		var t := _add_icon(String(s.key), GRID + CELL * Vector2(s.cell), CELL)
+		if String(s.kind) in ["gear", "wardrobe"]:
+			t.gui_input.connect(_on_slot_input.bind(String(s.kind), String(s.key)))
 	for i in FASHION.size():
 		_add_icon("fashion:" + FASHION[i], FASHION_GRID + FASHION_CELL * Vector2(i % 5, i / 5), FASHION_CELL)
 
@@ -74,7 +81,12 @@ func _add_preview() -> void:
 	view.add_child(_preview)
 
 
-func _add_icon(key: String, at: Vector2, cell: Vector2) -> void:
+func _on_slot_input(event: InputEvent, kind: String, key: String) -> void:
+	if editable and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		slot_pressed.emit(kind, key)
+
+
+func _add_icon(key: String, at: Vector2, cell: Vector2) -> TextureRect:
 	var t := TextureRect.new()
 	t.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -84,6 +96,7 @@ func _add_icon(key: String, at: Vector2, cell: Vector2) -> void:
 	t.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(t)
 	_icons[key] = t
+	return t
 
 
 func refresh() -> void:

@@ -55,7 +55,7 @@ func run(Run: Node) -> void:
 	Profile.give_wardrobe(&"newbie_sprint")
 	Profile.wear("ear", &"bunny_ears")
 	Profile.wear("speed", &"newbie_sprint")
-	var fast: float = Run.formulas.speed_mult() / (0.85 if Run.gear.overweight() else 1.0)
+	var fast: float = Run.formulas.speed_mult()
 	check(Run.mod("move%") == 18.0 and is_equal_approx(fast, 1.08 * 1.1),
 		"Bunny's Ears and Newbie Sprint add their move%% and compound (x%.3f)" % fast)
 	Profile.worn = worn_before
@@ -80,13 +80,9 @@ func run(Run: Node) -> void:
 	Run.gear.equip(GearItem.make(_item("topaz_ring")))
 	check(Run.gear.equipped("acc1").data.id == &"lucky_amulet" and Run.gear.equipped("acc2").data.id == &"topaz_ring",
 		"two accessories fill both accessory slots")
-	check(not Run.gear.overweight() and Run.formulas.speed_mult() == 1.0, "light gear stays under the load limit")
 	Run.gear.equip(GearItem.make(_item("bamboo_sword")))
 	Run.gear.equip(GearItem.make(_item("clam_shield")))
-	check(Run.gear.overweight() and Run.formulas.speed_mult() < 1.0, "heavy gear past WT / 4 (%d / %d) slows you" % [Run.gear.equip_load(), Run.gear.load_limit()])
-	var pouch := GearItem.make(_item("pocket_pouch"))
-	Run.gear.equip(pouch, "acc1")
-	check(not Run.gear.overweight(), "a Pocket Pouch (+200 WT) carries the load")
+	check(Run.formulas.speed_mult() == 1.0, "heavy gear doesn't slow you: worn gear counts against no load")
 
 	var sword := GearItem.make(_item("wood_sword"))
 	Run.gear.equip(sword)
@@ -224,33 +220,40 @@ func run(Run: Node) -> void:
 				penguins += 1 if e.id == &"blue_penguin" else 0
 	check(penguins * 3 >= total, "a Blue Penguin den fills its waves with penguins (%d of %d)" % [penguins, total])
 
-	# Warehouse, heirlooms, level sync and rollback.
+	# Warehouse, the loadout and rollback.
 	Run.new_run()
 	var heir := GearItem.make(_item("wood_sword"))
 	heir.refine = 5
 	Run.gear.equip(heir)
 	check(Run.city.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == 0, "a Portable Port sends the sword home")
-	Profile.set_heirloom(0)
+	var hat := GearItem.make(_item("candy_hat"))
+	Run.gear.equip(hat)
+	Run.city.save_point(hat)
+	Profile.wear_stored(0, "weapon")
+	Profile.wear_stored(1, "hat")
 	Run.new_run()
 	var carried: GearItem = Run.gear.equipped("weapon")
-	check(carried.data.id == &"wood_sword" and carried.refine == 5 and carried.effective_refine() == 3
-		and carried.sync_factor() < 1.0, "the heirloom comes back level-synced: %s" % carried.title())
-	var synced_ap: int = carried.stats().AP
-	Run.route.depth = 3
-	Run.city.sync_heirlooms()
-	check(carried.stats().AP > synced_ap and carried.sync_factor() == 1.0, "deeper rooms lift the sync (AP %d -> %d)"
-		% [synced_ap, carried.stats().AP])
-	Run.route.depth = 0
+	var full_ap: int = GearItem.from_dict(Profile.warehouse[0], Run.gear.item_by_id).stats().AP
+	check(carried.data.id == &"wood_sword" and carried.refine == 5 and carried.stats().AP == full_ap
+		and Run.gear.equipped("hat").data.id == &"candy_hat",
+		"the loadout is worn from the first room at full strength: %s and %s" % [carried.title(), Run.gear.equipped("hat").title()])
 	Run.purse.ore = 20
 	Run.purse.galder = 5000
 	Run.gear.try_refine(carried, 0.0)
-	check(Run.city.unsaved_changes().size() == 1, "refining the heirloom is unsaved until a Port")
+	check(Run.city.unsaved_changes().size() == 1, "refining a worn stored item is unsaved until a Port")
 	Run.new_run()
-	check(Run.gear.equipped("weapon").refine == 5, "dying without saving rolls the heirloom back to +5")
+	check(Run.gear.equipped("weapon").refine == 5, "dying without saving rolls it back to +5")
 	Run.gear.try_refine(Run.gear.equipped("weapon"), 0.0)
 	Run.city.save_point()
 	Run.new_run()
 	check(Run.gear.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
+	Profile.discard_item(1)
+	check(Profile.loadout == {"weapon": 0}, "throwing a worn item away takes it out of the loadout")
+	Profile.loadout = {}
+	Profile.legacy_heirloom = 0
+	Run.new_run()
+	check(Profile.loadout == {"weapon": 0} and Run.gear.equipped("weapon").data.id == &"wood_sword",
+		"an old save's heirloom is worn in its slot")
 	var kept: Dictionary = Profile.bank_leftovers(false, 101, 5, {&"cool_ice": 3})
 	check(kept.galder == 50 and Profile.ore == 2 and Profile.materials.get("cool_ice", 0) == 1,
 		"a rollback banks half the leftover Galder, ore and materials")

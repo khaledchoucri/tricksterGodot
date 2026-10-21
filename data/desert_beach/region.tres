@@ -37,7 +37,6 @@ run_length = 9
 elite_depths = Array[int]([3, 7])
 gear_levels = Vector2i(25, 46)
 job_change_depth = 3
-refine_cap = 6
 hp_scale = 1.1
 damage_scale = 0.7
 tm_scale = 0.15

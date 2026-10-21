@@ -98,7 +98,6 @@ func _load_room() -> void:
 		room = null
 		player = null
 	var plan := Run.route.current_room()
-	Run.city.sync_heirlooms()
 	room = Room.new()
 	add_child(room)
 	if not room.build(plan.data):
@@ -466,7 +465,7 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base
 			for g: GearItem in options:
 				if g == null:
 					shown.append({"title": "Save and go on" if phase != Phase.WON else "Save and log out", "tag": "", "cancel": true,
-						"text": "Saves your heirloom's progress. Dying rolls back to the last save."})
+						"text": "Saves the progress of what you wear from the shelves. Dying rolls back to the last save."})
 					continue
 				shown.append({"title": "Send %s home" % g.title(), "tag": g.data.slot_name(), "icon": g.data.icon(),
 					"text": g.summary() + ("
@@ -517,10 +516,7 @@ func _gear_option(g: GearItem) -> Dictionary:
 		current = Run.gear.equipped(k)
 		if current == null:
 			break
-	var load_after := Run.gear.equip_load() + g.data.weight - (current.data.weight if current else 0)
-	var text := g.summary(current) + "\nWeight %d  ·  Load %d / %d" % [g.data.weight, load_after, Run.gear.load_limit()]
-	if load_after > Run.gear.load_limit():
-		text += "  ·  overweight"
+	var text := g.summary(current)
 	var tag := g.data.slot_name()
 	if g.data.family != "":
 		tag += " · " + g.data.family

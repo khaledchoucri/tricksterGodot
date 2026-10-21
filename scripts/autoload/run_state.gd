@@ -195,7 +195,7 @@ func new_run(with_seed := -1) -> void:
 		if deck.card_level(id) == 0:
 			deck.add_card(id)
 	deck.carry_start_skill()
-	city.carry_heirloom()
+	city.carry_loadout()
 	city.apply_restorations()
 	stats_changed()
 	hp = max_hp

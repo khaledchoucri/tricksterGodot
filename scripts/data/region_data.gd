@@ -17,8 +17,6 @@ extends Resource
 @export var gear_levels := Vector2i(1, 22)
 ## Depth of the room whose clear brings the job change (the trial).
 @export var job_change_depth := 3
-## Level sync: the highest refine an heirloom counts as here.
-@export var refine_cap := 3
 ## Scales on the original monsters' HP and damage, so a region's numbers
 ## follow on from the one before.
 @export var hp_scale := 1.0

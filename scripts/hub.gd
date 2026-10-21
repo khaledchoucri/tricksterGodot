@@ -43,6 +43,7 @@ func _ready() -> void:
 	gate.position = room.nearest_reachable(hub.gate_position)
 	room.world.add_child(gate)
 	hud.set_hub_mode(true)
+	hud.sheet.equipment.slot_pressed.connect(_on_loadout_slot)
 	hud.set_room(hub.room.display_name)
 	Audio.play_music(hub.music)
 	Audio.play_ambience(hub.ambience)
@@ -173,7 +174,7 @@ func _restore_menu(npc: Npc) -> void:
 					hud.log_line("[Megalopolis] %s logged in." % data.display_name, Color("94a7b2"))
 
 
-## The warehouse: choose the heirloom to carry into runs, or clear shelves.
+## The warehouse: what you wear from the shelves in every run (the loadout), and clearing shelves.
 func _warehouse_menu(npc: Npc) -> void:
 	while true:
 		var items: Array[GearItem] = []
@@ -184,33 +185,106 @@ func _warehouse_menu(npc: Npc) -> void:
 			if g == null:
 				options.append({"title": "(unknown item)", "text": "", "disabled": true})
 				continue
-			options.append({"title": g.title(), "tag": "Carried" if Profile.heirloom == i else g.data.slot_name(),
+			var worn := Profile.worn_in(i)
+			options.append({"title": g.title(), "tag": "Worn" if worn != "" else g.data.slot_name(),
 				"icon": g.data.icon(), "text": g.summary(), "submenu": "stored_item"})
-		options.append({"title": "Carry nothing", "tag": "", "text": "Head out with only the Rookie Sword."})
+		options.append({"title": "Wear nothing", "tag": "", "text": "Head out with only your class's own weapon."})
 		options.append({"title": "Wardrobe", "tag": "%d pieces" % Profile.wardrobe.size(),
 			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints.", "submenu": "wardrobe"})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
-		var line := "Which one goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
+		var line := "What goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
 		var pick := await dialogue.choose(talker.line(String(npc.data.id), line), options)
 		if pick == items.size():
-			Profile.set_heirloom(-1)
+			for key: String in Profile.loadout.keys():
+				Profile.take_off(key)
+			_rewear()
 			continue
 		if pick == items.size() + 1:
 			await _wardrobe_menu(npc)
 			continue
 		if pick < 0 or pick > items.size() + 1:
 			return
-		var g := items[pick]
-		var what := await dialogue.choose(talker.line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
-			{"title": "Carry it as my heirloom", "tag": "", "text": "Equipped at the start of every run, synced to the area's level."},
-			{"title": "Throw it away", "tag": "", "text": "Frees the shelf. It can't be undone."},
-			{"title": "Back", "cancel": true, "tag": "", "text": ""}])
-		if what == 0:
-			Profile.set_heirloom(pick)
+		await _stored_item_menu(npc, pick, items[pick])
+
+
+## One stored item at Keeper Julio's: wear it in every run, take it off, or throw it away.
+func _stored_item_menu(npc: Npc, index: int, g: GearItem) -> void:
+	var worn := Profile.worn_in(index)
+	var key := _loadout_key(g.data)
+	var replaced: GearItem = Run.gear.equipped(key)
+	var what := await dialogue.choose(talker.line(String(npc.data.id), "%s. What should I do with it?" % g.title()), [
+		{"title": "Take it off" if worn != "" else "Wear it", "tag": "",
+			"text": "You'll set out without it." if worn != "" else "Worn from the first room of every run, at full strength."
+				+ (" Replaces %s." % replaced.title() if replaced and replaced.stored >= 0 else "")},
+		{"title": "Throw it away", "tag": "", "text": "Frees the shelf. It can't be undone."},
+		{"title": "Back", "cancel": true, "tag": "", "text": ""}])
+	if what == 0:
+		if worn != "":
+			Profile.take_off(worn)
+		else:
+			Profile.wear_stored(index, key)
 			Audio.play("etc_item1.wav")
-			hud.log_line("[System] You'll carry %s." % g.title(), Color("a8d8da"))
-		elif what == 1:
-			Profile.discard_item(pick)
+			hud.log_line("[System] You'll wear %s." % g.title(), Color("a8d8da"))
+		_rewear()
+	elif what == 1:
+		Profile.discard_item(index)
+		_rewear()
+
+
+## The loadout slot an item goes in: its slot, or the first accessory slot the loadout leaves free.
+func _loadout_key(data: ItemData) -> String:
+	var keys := Run.gear.slot_keys_for(data)
+	for k in keys:
+		if not Profile.loadout.has(k):
+			return k
+	return keys[0]
+
+
+## A slot clicked in the character sheet's equipment window: choose what's worn there. The
+## sheet closes while the choice is open and comes back with the change.
+func _on_loadout_slot(kind: String, key: String) -> void:
+	if talker.talking or leaving:
+		return
+	if not Run.city.system_on(&"warehouse"):
+		hud.log_line("[System] Your shelves are Keeper Julio's: restore the warehouse first.", Color("94a7b2"))
+		return
+	hud.sheet.toggle()
+	talker.set_talking(true)
+	if kind == "gear":
+		await _choose_stored_for(key)
+	else:
+		await _choose_piece("julio", key)
+	talker.set_talking(false)
+	hud.sheet.toggle()
+
+
+## Picks the stored item the loadout wears in gear slot `key`, or takes it off.
+func _choose_stored_for(key: String) -> void:
+	var shelves: Array[int] = []
+	var options: Array = []
+	for i in Profile.warehouse.size():
+		var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
+		if g and key in Run.gear.slot_keys_for(g.data) and Run.gear.can_use(g.data):
+			shelves.append(i)
+			options.append({"title": g.title(), "icon": g.data.icon(), "text": g.summary(),
+				"tag": "Worn" if Profile.loadout.get(key, -1) == i else ("Worn elsewhere" if Profile.worn_in(i) != "" else "")})
+	options.append({"title": "Take it off", "tag": "", "text": "Set out with nothing from the shelves here.",
+		"disabled": not Profile.loadout.has(key)})
+	options.append({"title": "Back", "cancel": true, "tag": "", "text": ""})
+	var line := "What do you wear here?" if shelves.size() else "Nothing on the shelves fits here yet."
+	var pick := await dialogue.choose(talker.line("julio", line), options)
+	if pick >= 0 and pick < shelves.size():
+		Profile.wear_stored(shelves[pick], key)
+		Audio.play("etc_item1.wav")
+	elif pick == shelves.size():
+		Profile.take_off(key)
+	_rewear()
+
+
+## Dresses the character in the changed loadout.
+func _rewear() -> void:
+	Run.city.rewear_loadout()
+	player.dress()
 
 
 func _stored_items() -> Array[GearItem]:
@@ -239,21 +313,26 @@ func _wardrobe_menu(npc: Npc) -> void:
 		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Dress up. It's still a game."), options)
 		if pick < 0 or pick >= WardrobeData.SLOTS.size():
 			return
-		var slot: String = WardrobeData.SLOTS[pick]
-		var pieces: Array[WardrobeData] = []
-		var choices: Array = []
-		for w in hub.wardrobe:
-			if w.slot == slot and Profile.owns(w.id):
-				pieces.append(w)
-				choices.append({"title": w.display_name, "tag": "Worn" if Profile.worn.get(slot, "") == String(w.id) else "",
-					"icon": w.icon(), "text": w.describe()})
-		choices.append({"title": "Wear nothing", "tag": "", "text": "" if pieces.size() else "You own nothing for this slot yet."})
-		var c := await dialogue.choose(talker.line(String(npc.data.id), "Which one?"), choices)
-		if c >= 0 and c < pieces.size():
-			Profile.wear(slot, pieces[c].id)
-			Audio.play("etc_item1.wav")
-		elif c == pieces.size():
-			Profile.wear(slot, &"")
+		await _choose_piece(String(npc.data.id), WardrobeData.SLOTS[pick])
+
+
+## Picks the wardrobe piece worn in `slot` (or none); `speaker` says the line.
+func _choose_piece(speaker: String, slot: String) -> void:
+	var pieces: Array[WardrobeData] = []
+	var choices: Array = []
+	for w in hub.wardrobe:
+		if w.slot == slot and Profile.owns(w.id):
+			pieces.append(w)
+			choices.append({"title": w.display_name, "tag": "Worn" if Profile.worn.get(slot, "") == String(w.id) else "",
+				"icon": w.icon(), "text": w.describe()})
+	choices.append({"title": "Wear nothing", "tag": "", "text": "" if pieces.size() else "You own nothing for this slot yet."})
+	var c := await dialogue.choose(talker.line(speaker, "Which one?"), choices)
+	if c >= 0 and c < pieces.size():
+		Profile.wear(slot, pieces[c].id)
+		Audio.play("etc_item1.wav")
+	elif c == pieces.size():
+		Profile.wear(slot, &"")
+	player.dress()
 
 
 ## Eugene's album: claim finished sets, or buy pieces with TM and shards.

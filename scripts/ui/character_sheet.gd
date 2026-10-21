@@ -2,13 +2,13 @@ class_name CharacterSheet
 extends PanelContainer
 ## The character window (C / Tab): job and level, type points and the
 ## traits they unlocked, all twelve stats by type, skill cards, and the
-## original's equipment window (EquipmentWindow) with the load below it.
+## original's equipment window (EquipmentWindow) with the rest of your gear below it.
 ## Opens over the game without pausing it.
 
 @onready var _left: RichTextLabel = %Left
 @onready var _middle: RichTextLabel = %Middle
 @onready var _right: RichTextLabel = %Right
-@onready var _equipment: EquipmentWindow = %Equipment
+@onready var equipment: EquipmentWindow = %Equipment
 
 
 func _ready() -> void:
@@ -36,7 +36,7 @@ func refresh() -> void:
 	_left.text = _header_text() + "
 " + _types_text(["power", "magic"])
 	_middle.text = _types_text(["sense", "charm"]).trim_prefix("\n") + "\n\n" + _skills_text()
-	_equipment.refresh()
+	equipment.refresh()
 	_right.text = _gear_text()
 
 
@@ -81,9 +81,6 @@ func _skills_text() -> String:
 
 func _gear_text() -> String:
 	var lines: PackedStringArray = []
-	var over := Run.gear.overweight()
-	lines.append("[color=#%s]Load %d / %d%s[/color]" % [
-		"f07a62" if over else "9fb2c0", Run.gear.equip_load(), Run.gear.load_limit(), "  overweight" if over else ""])
 	var el := Run.gear.element_attack()
 	if not el.is_empty():
 		var parts: PackedStringArray = []

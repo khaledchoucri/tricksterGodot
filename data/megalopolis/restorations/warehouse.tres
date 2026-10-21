@@ -6,7 +6,7 @@
 script = ExtResource("1_s")
 id = &"warehouse"
 display_name = "Warehouse"
-text = "Brings back Keeper Julio. Portable Ports let you send items home and carry an heirloom."
+text = "Brings back Keeper Julio. Portable Ports send items home, and what's on the shelves can be worn in every run."
 max_level = 1
 per_level = 1.0
 effect = "system"

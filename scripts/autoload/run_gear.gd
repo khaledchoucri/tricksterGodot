@@ -1,6 +1,6 @@
 class_name RunGear
 extends RefCounted
-## Your gear (Run.gear): what's equipped, refining and compounding it, its weight, guns and the shop.
+## Your gear (Run.gear): what's equipped, refining and compounding it, guns and the shop.
 
 ## Equipment slots: the six core run-gear slots.
 const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc1", "acc2"]
@@ -110,21 +110,6 @@ func legend_on(effect: StringName) -> bool:
 func weapon_family() -> String:
 	var w := equipped("weapon")
 	return w.data.family if w else "sword"
-
-
-func equip_load() -> int:
-	var total := 0
-	for g: GearItem in equipment.values():
-		total += g.data.weight
-	return total
-
-
-func load_limit() -> int:
-	return Run.stat("WT") / 4
-
-
-func overweight() -> bool:
-	return equip_load() > load_limit()
 
 
 ## Up to `n` different items that can drop at this depth, rolled with DA.

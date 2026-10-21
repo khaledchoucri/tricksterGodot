@@ -47,13 +47,15 @@ func set_hub_mode(on: bool) -> void:
 	%SlotBar.visible = not on
 	%CardsLabel.visible = not on
 	sheet.visible = false
+	sheet.equipment.editable = on  # the loadout is designed on it between runs
 	_update_hint()
 
 
 ## The controls line; a mage's left click casts their basic spell.
 func _update_hint() -> void:
 	var basic := "LMB %s" % Run.cls.basic_skill.display_name if Run.cls and Run.cls.basic_skill else "LMB combo"
-	var text := "WASD move  ·  F talk  ·  Space dash" if _hub_mode 		else "WASD move  ·  %s  ·  RMB / Q / E skills  ·  Space dash  ·  C character" % basic
+	var run_hint := "WASD move  ·  %s  ·  RMB / Q / E skills  ·  Space dash  ·  C character" % basic
+	var text := "WASD move  ·  F talk  ·  Space dash  ·  C loadout" if _hub_mode else run_hint
 	if $Root/Hint.text != text:
 		$Root/Hint.text = text
 
@@ -269,8 +271,8 @@ func _on_pick(i: int) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _hub_mode and event.is_action_pressed("character"):
-		sheet.toggle()
+	if event.is_action_pressed("character"):
+		sheet.toggle()  # in the city it shows the character you'll set out as
 	if pick_panel.visible and event.is_action_pressed("ui_cancel") and _pick_cancel >= 0:
 		get_viewport().set_input_as_handled()
 		_on_pick(_pick_cancel)

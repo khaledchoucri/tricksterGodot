@@ -16,8 +16,7 @@ Built:
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops. Gear comes from
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,
   written by `tools/gear_items.py` and `tools/gun_items.py`).
-- The warehouse, heirlooms with level sync, Ports and rollback.
-  (Being replaced by the loadout: see section 3, "The loadout".)
+- The warehouse and the loadout (worn in every run, designed on the equipment window), Ports and rollback.
 - Megalopolis: 11 people, 12 restorations that switch systems on, and the story.
 - Server Settings (Heat), monster cards, card sets and the wardrobe, the Skill Master, Echoes and sky-blue
   runes, drilling, and the custom Trickster class.
@@ -238,7 +237,7 @@ what forces the choice of what to keep.
 2. Rest stops after the 1st and 2nd bosses: heal, story point, the warehouse. Done.
 3. The equipment window with the 13 slots (done), then the new slot types' items.
 4. Heat raises the gear bands; the original's higher item ladders fill them. Done.
-5. The loadout before a run; worn gear stops counting against the load; heirlooms and level sync removed.
+5. The loadout before a run; worn gear stops counting against the load; heirlooms and level sync removed. Done.
 6. The lost bag and banking.
 7. Warehouse rows and their price.
 8. Bots for the three targets, and tuning Heat's monster scaling to them.
@@ -283,7 +282,7 @@ Hades paces its unlocks and how the story already works.
 | Blacksmith Row | the Refiner | gear drops, anvil rooms, forging |
 | Compounder's Stall | the Compounder | compound slots, monster materials, compound rooms, recipe compounding in the city |
 | Job Hall | the Job Master | job change at bosses; branch-unlock quests ("clear Coral Beach as Knight without dashing") |
-| Warehouse | the Warehouse Keeper | sending items home, heirlooms, appearance transfer |
+| Warehouse | the Warehouse Keeper | sending items home, the loadout, appearance transfer |
 | Skill Shrine | the Skill Master | mastering a skill with monster materials to start runs with it, one level higher per mastery (permanent hunting goals) |
 | Card House | the Card Collector | monster cards, a bestiary, set rewards that grant wardrobe items |
 | Drill Shop | the Drill Merchant | dig sites, drill upgrades |

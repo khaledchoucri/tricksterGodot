@@ -47,7 +47,7 @@ func run() -> void:
 	var window: EquipmentWindow = game.hud.sheet.get_node("%Equipment")
 	var shown := window.shown()
 	check(shown.size() == 23 and shown["hat"].contains(hat.title()) and shown["pet"] == "Pet: empty"
-		and window.get_global_rect().end.y <= 720.0,
+		and window.get_global_rect().end.y <= 720.0 and not window.editable,
 		"the equipment window shows 13 slots and the fashion grid, the hat in its slot (%d cells, bottom %d)"
 		% [shown.size(), window.get_global_rect().end.y])
 	game.hud.sheet.toggle()
