@@ -38,7 +38,8 @@ baseline is a bug in the refactor, not a tuning change.
 
 Each phase must pass its check before the next starts.
 
-**Status:** phase 0 done (2026-10-21): the same seed gives an identical bot run. Next: phase 1.
+**Status (2026-10-21):** phases 0 and 1 done. A seed replays a run exactly; 33 cards, the wardrobe, the numeric
+traits and job passives declare `mods`; the lint allows 122 card id literals in shared code. Next: phase 2.
 
 | # | Phase | Check |
 |---|---|---|

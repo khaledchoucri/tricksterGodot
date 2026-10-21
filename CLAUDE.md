@@ -72,7 +72,7 @@ if card.has_tag(&"galder"): ...
 
 - **Every behaviour change has a check** in the smoke test section for its class or system. Run just that
   section while working (`tests/run_smoke.sh charm`, `tests/run_smoke.sh lion ui`; sections: core, power,
-  magic, sense, elements, charm, balance, ui, boss, systems). Each section passes on its own. Changes to
+  magic, sense, elements, charm, balance, ui, boss, systems, lint). Each section passes on its own. Changes to
   shared code, and every commit, run the full suite (`tests/run_smoke.sh`). It runs at a fixed 60 fps and a
   fixed seed (`-- seed=N` to change it), so the full suite takes under a minute and a result repeats exactly.
 - **Test like a player.** Use input actions and real button presses, the real window size and the game clock.
@@ -101,9 +101,10 @@ Pay these down when you're working near them, and remove each line when it's fix
 
 - `run_state.gd` is about 1,700 lines and does too much: stats, cards and offers, the economy, gear, the room
   plan and formulas. Split it into modules behind `Run`.
-- 46 `card_value/card_level/has_passive(&"id")` calls in `run_state.gd`, and more in `player.gd`,
-  `combo_attack.gd`, `skill_caster.gd`, `enemy.gd` and `game.gd`. Replace them with card `stat_mods`, effects
-  and tags.
+- 122 card id literals in shared code (the `lint` smoke section counts them and won't let the number rise):
+  conditional and behavioural hooks (Revival, Desperate Rally, Sword Mastery, the forms, the reload talents)
+  and the id lists below. Plain numbers already go through `mods` / `Run.mod()`; the rest move to tags
+  (phase 2) and talent hooks (phase 3).
 - Id lists in code: `FORM_NEEDED`, `GALDER_SKILLS`, `GUN_NEEDED`, `GUN_LOADED`, `GUN_GROWERS`, `THROWN`,
   `BREAKERS`, `SHIELDS`, `BLESSINGS`.
 - Enemy attack patterns are five consts in `Enemy.KINDS`.

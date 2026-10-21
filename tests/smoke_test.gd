@@ -8,7 +8,11 @@ extends Node
 ## shared code still run the full suite (CLAUDE.md, section 5).
 
 ## The sections, in the order they run.
-const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "balance", "ui", "boss", "systems"]
+const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "balance", "ui", "boss", "systems",
+	"lint"]
+## Card id literals allowed in shared code (scripts/ outside skills/ and tools/): CLAUDE.md,
+## section 2. Lower it as hooks move into card data; it may never rise.
+const CARD_ID_LITERALS_MAX := 122
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
@@ -113,6 +117,8 @@ func _run() -> void:
 		await _end_of_run()
 	if _on("systems"):
 		_systems(run_state())
+	if _on("lint"):
+		_lint()
 
 	print("\n%s: %d failure(s)%s" % ["OK" if failures == 0 else "FAILED", failures,
 		"" if only.is_empty() else " in " + ", ".join(only)])
@@ -580,6 +586,38 @@ func _item(id: String) -> ItemData:
 
 
 ## Stats, types and traits, jobs and prerequisites, gear, weight and refining.
+## Code rules the smoke test enforces (CLAUDE.md, sections 2 and 5).
+func _lint() -> void:
+	var ids := {}
+	for c: CardData in Run.all_cards():
+		ids[String(c.id)] = true
+	var literal := RegEx.create_from_string('&"([a-z0-9_]+)"')
+	var total := 0
+	var worst: PackedStringArray = []
+	for path in _scripts_under("res://scripts"):
+		if path.begins_with("res://scripts/skills/") or path.begins_with("res://scripts/tools/"):
+			continue
+		var n := 0
+		for m in literal.search_all(FileAccess.get_file_as_string(path)):
+			n += 1 if ids.has(m.get_string(1)) else 0
+		total += n
+		if n > 0:
+			worst.append("%s %d" % [path.get_file(), n])
+	check(total <= CARD_ID_LITERALS_MAX, "card id literals in shared code: %d (at most %d; %s)"
+		% [total, CARD_ID_LITERALS_MAX, ", ".join(worst)])
+
+
+## Every .gd file under `dir`, recursively.
+func _scripts_under(dir: String) -> PackedStringArray:
+	var out: PackedStringArray = []
+	for f in DirAccess.get_files_at(dir):
+		if f.ends_with(".gd"):
+			out.append(dir.path_join(f))
+	for d in DirAccess.get_directories_at(dir):
+		out.append_array(_scripts_under(dir.path_join(d)))
+	return out
+
+
 func _systems(Run: Node) -> void:
 	_restore_all(Run)
 	# A seed replays a run: the same room plan, card offers and gear rolls.

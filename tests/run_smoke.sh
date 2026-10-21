@@ -3,7 +3,7 @@
 #   tests/run_smoke.sh               everything
 #   tests/run_smoke.sh charm ui      the Charm line and the UI audit
 #   tests/run_smoke.sh lion          the section that tests Lion (sense)
-# Sections: core power magic sense elements charm balance ui boss systems.
+# Sections: core power magic sense elements charm balance ui boss systems lint.
 # It runs at a fixed 60 fps: the same game time a player gets, as fast as the CPU allows, and with
 # the default seed the results repeat exactly (the full suite takes under a minute).
 G="${GODOT:-/c/Users/Khaled/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe}"
