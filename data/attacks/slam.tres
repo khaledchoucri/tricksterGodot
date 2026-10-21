@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AttackPattern" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/attack_pattern.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+range = 70.0
+windup = 0.9
+active = 0.1
+recover = 0.85
+shape = "circle"
+radius = 78.0
+poise = -1
+shakes = true

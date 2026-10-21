@@ -349,7 +349,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 			# At most MAX_SHOOTERS ranged monsters a wave: a pack that backs off
 			# and fires leaves a melee build nothing to do but chase.
 			var options := pool.filter(func(e: EnemyData) -> bool:
-				return e.cost <= budget and (e.kind != "shot" or shooters < MAX_SHOOTERS))
+				return e.cost <= budget and (not e.attack.ranged or shooters < MAX_SHOOTERS))
 			if options.is_empty():
 				break
 			var pick: EnemyData = options[Run.rng.randi() % options.size()]
@@ -357,7 +357,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 			var featured := Run.route.enemy(Run.route.current_room().feature) if Run.route.current_room().feature != &"" else null
 			if featured and featured in options and Run.rng.randf() < 0.5:
 				pick = featured
-			if pick.kind == "shot":
+			if pick.attack.ranged:
 				shooters += 1
 			wave_list.append({"id": pick.id, "elite": false})
 			budget -= pick.cost

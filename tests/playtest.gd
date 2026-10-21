@@ -242,7 +242,7 @@ func _fight(player: Player, delta: float) -> void:
 	# Dodge a wind-up aimed at us.
 	for e in room.enemies:
 		if e.state == Enemy.State.WINDUP and e._t > e._state_len * 0.45:
-			var reach: float = e.cfg.get("range", 50.0) + e.cfg.get("radius", 40.0) + 10.0
+			var reach: float = e.attack.range + (40.0 if e.attack.shape == "lane" else e.attack.radius) + 10.0
 			if Combat.ground(e.global_position - player.global_position).length() < reach and player.can_dash():
 				var away := (player.global_position - e.global_position).normalized().rotated(bot_rng.randf_range(-0.6, 0.6))
 				_press(away)

@@ -8,8 +8,8 @@ extends Resource
 @export var monster_id := ""
 ## Overrides the original name (where two monsters would share one).
 @export var display_name := ""
-## Attack pattern in Enemy.KINDS: melee, lunge, slam, spin or shot.
-@export_enum("melee", "lunge", "slam", "spin", "shot") var kind := "melee"
+## How it attacks: one of data/attacks/ (melee, lunge, slam, spin, shot).
+@export var attack: AttackPattern
 @export var body_radius := 14.0
 ## Encounter budget price.
 @export var cost := 1
@@ -32,5 +32,5 @@ extends Resource
 ## Signature drop for compounding, and the chance a kill drops one.
 @export var material: MaterialData
 @export var material_chance := 0.2
-## Overrides for the pattern's numbers (windup, radius, length...).
+## Overrides for its attack pattern's numbers (windup, radius, length...).
 @export var tune: Dictionary = {}

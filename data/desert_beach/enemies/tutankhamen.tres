@@ -1,15 +1,16 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_mat"]
 [ext_resource type="PackedScene" path="res://scenes/boss_tutankhamen.tscn" id="2_scene"]
 [ext_resource type="Resource" path="res://data/items/golden_sword.tres" id="3_drop"]
+[ext_resource type="Resource" path="res://data/attacks/slam.tres" id="atk"]
 
 [resource]
 script = ExtResource("1_s")
 id = &"tutankhamen"
 monster_id = "2097"
-kind = "slam"
+attack = ExtResource("atk")
 body_radius = 30.0
 cost = 0
 min_depth = 0

@@ -9,20 +9,6 @@ signal died(enemy: Enemy)
 
 enum State { SPAWN, IDLE, CHASE, WINDUP, ATTACK, RECOVER, HURT, DEAD }
 
-## Attack patterns. "poise" is how many hits it shrugs off before staggering
-## (0 = every hit staggers, -1 = never staggers).
-const KINDS := {
-	"melee": {"range": 42.0, "windup": 0.6, "active": 0.12, "recover": 0.55, "shape": "wedge",
-		"radius": 54.0, "arc": 100.0, "poise": 0},
-	"lunge": {"range": 150.0, "windup": 0.75, "active": 0.32, "recover": 0.7, "shape": "lane",
-		"length": 160.0, "width": 36.0, "poise": 0},
-	"slam": {"range": 70.0, "windup": 0.9, "active": 0.1, "recover": 0.85, "shape": "circle",
-		"radius": 78.0, "poise": -1},
-	"spin": {"range": 56.0, "windup": 0.7, "active": 0.35, "recover": 0.6, "shape": "circle",
-		"radius": 64.0, "poise": 1},
-	"shot": {"range": 260.0, "windup": 0.7, "active": 0.05, "recover": 0.9, "shape": "lane",
-		"length": 120.0, "width": 18.0, "poise": 0, "keep_away": 150.0, "shot_speed": 210.0},
-}
 ## Loaded on first use, not preloaded: projectile.gd refers back to Enemy,
 ## and that cycle could leave a preloaded scene empty (Tutankhamen's curse
 ## once failed with "node count is 0").
@@ -39,7 +25,8 @@ const DEPTH_HP := 0.06
 
 var data: EnemyData
 var display_name := ""
-var cfg: Dictionary = {}
+## Its attack pattern, with its own overrides applied (a copy: elites and Heat change it).
+var attack: AttackPattern
 var max_hp := 60
 var hp := 60
 var damage := 8
@@ -94,8 +81,7 @@ var debuffs: Dictionary = {}
 
 func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void:
 	data = p_data
-	cfg = KINDS[data.kind].duplicate()
-	cfg.merge(data.tune, true)
+	attack = data.attack.tuned(data.tune)
 	body_radius = data.body_radius
 	is_boss = data.is_boss
 	is_elite = elite
@@ -128,13 +114,13 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 		display_name = "Elite " + display_name
 		max_hp = int(max_hp * 2.5)
 		damage = roundi(damage * 1.25)
-		cfg.windup *= 0.85
-		cfg.poise = -1 if cfg.poise < 0 else cfg.poise + 2
+		attack.windup *= 0.85
+		attack.poise = -1 if attack.poise < 0 else attack.poise + 2
 		for k: String in rewards:
 			rewards[k] *= 2
 	max_hp = roundi(max_hp * ServerSettings.monster_hp_mult())
 	damage = roundi(damage * ServerSettings.monster_damage_mult())
-	cfg.windup *= ServerSettings.windup_mult()
+	attack.windup *= ServerSettings.windup_mult()
 	hp = max_hp
 
 
@@ -330,7 +316,7 @@ func _state_chase() -> void:
 		return
 	var to := player.global_position - global_position
 	var dist := Combat.ground(to).length()
-	if data.kind == "shot" and dist < cfg.keep_away:
+	if attack.ranged and dist < attack.keep_away:
 		# Ranged enemies back away to keep their distance.
 		var away := -to.normalized()
 		if room.is_walkable(global_position + away * 24.0):
@@ -342,8 +328,8 @@ func _state_chase() -> void:
 		sprite.play_action("idle")
 		return
 	# Entrancing Wink: an entranced monster can't cast its magic (its shots).
-	var silenced := data.kind == "shot" and debuff("silence") > 0.0
-	if dist <= cfg.range + body_radius and debuff("fear") <= 0.0 and not silenced and room.line_clear(global_position, player.global_position) \
+	var silenced := attack.ranged and debuff("silence") > 0.0
+	if dist <= attack.range + body_radius and debuff("fear") <= 0.0 and not silenced and room.line_clear(global_position, player.global_position) \
 			and room.request_attack_token(self):
 		_start_windup()
 		return
@@ -376,20 +362,20 @@ func _wander() -> void:
 func _start_windup() -> void:
 	_attack_dir = Combat.ground(player.global_position - global_position).normalized()
 	# Sense Breaker dulls its perception: it takes longer to see an attack through.
-	var windup: float = cfg.windup * (1.0 + (debuff("perception") + debuff("dx")) / 100.0) * (2.0 if debuff("delay") > 0.0 else 1.0)
+	var windup: float = attack.windup * (1.0 + (debuff("perception") + debuff("dx")) / 100.0) * (2.0 if debuff("delay") > 0.0 else 1.0)
 	_enter(State.WINDUP, windup)
 	_hits_taken = 0
 	var opts := {"dir": _attack_dir}
-	match cfg.shape:
+	match attack.shape:
 		"circle":
-			opts.radius = cfg.radius
+			opts.radius = attack.radius
 		"wedge":
-			opts.radius = cfg.radius
-			opts.arc = deg_to_rad(cfg.arc)
+			opts.radius = attack.radius
+			opts.arc = deg_to_rad(attack.arc)
 		"lane":
-			opts.length = cfg.length
-			opts.width = cfg.width
-	_telegraph = Telegraph.make(cfg.shape, windup, opts)
+			opts.length = attack.length
+			opts.width = attack.width
+	_telegraph = Telegraph.make(attack.shape, windup, opts)
 	room.add_ground_fx(_telegraph, global_position)
 	# Hold the first frame of the attack as an anticipation pose.
 	sprite.play_action("attack", Combat.screen(_attack_dir), 0.0, true)
@@ -399,20 +385,20 @@ func _start_windup() -> void:
 
 func _start_active() -> void:
 	_attack_landed = false
-	_enter(State.ATTACK, cfg.active)
-	sprite.play_action("attack", Combat.screen(_attack_dir), cfg.active + cfg.recover * 0.6, true)
+	_enter(State.ATTACK, attack.active)
+	sprite.play_action("attack", Combat.screen(_attack_dir), attack.active + attack.recover * 0.6, true)
 	if is_instance_valid(_telegraph):
 		_telegraph.trigger()
-	if data.kind == "slam":
+	if attack.shakes:
 		Events.shake_requested.emit(3.0)
-	if data.kind == "shot":
+	if attack.ranged:
 		_fire()
 
 
 func _fire() -> void:
 	var p: Projectile = projectile_scene().instantiate()
 	p.direction = Combat.screen(_attack_dir).normalized()
-	p.speed = cfg.shot_speed
+	p.speed = attack.shot_speed
 	p.damage = maxi(1, roundi(damage * (1.0 - debuff("ma") / 100.0)))  # Magic Meltdown
 	p.accuracy = accuracy()
 	p.shooter = self
@@ -423,17 +409,17 @@ func _fire() -> void:
 
 
 func _state_attack() -> void:
-	if data.kind == "lunge":
-		velocity = Combat.screen(_attack_dir) * (cfg.length / cfg.active)
+	if attack.dashes:
+		velocity = Combat.screen(_attack_dir) * (attack.length / attack.active)
 	else:
 		velocity = Vector2.ZERO
-	if not _attack_landed and data.kind != "shot" and is_instance_valid(player):
+	if not _attack_landed and not attack.ranged and is_instance_valid(player):
 		var hit := false
-		match cfg.shape:
+		match attack.shape:
 			"wedge":
-				hit = Combat.in_wedge(global_position, player.global_position, _attack_dir, cfg.radius, deg_to_rad(cfg.arc), 10.0)
+				hit = Combat.in_wedge(global_position, player.global_position, _attack_dir, attack.radius, deg_to_rad(attack.arc), 10.0)
 			"circle":
-				hit = Combat.in_circle(global_position, player.global_position, cfg.radius, 10.0)
+				hit = Combat.in_circle(global_position, player.global_position, attack.radius, 10.0)
 			"lane":
 				hit = Combat.in_circle(global_position, player.global_position, body_radius + 14.0)
 		if hit and not player.is_invulnerable():
@@ -441,7 +427,7 @@ func _state_attack() -> void:
 			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0, false, accuracy(), self)
 	if _t >= _state_len:
 		room.release_attack_token(self)
-		_enter(State.RECOVER, cfg.recover)
+		_enter(State.RECOVER, attack.recover)
 
 
 ## Drags the enemy this frame (screen-space velocity), e.g. toward a whirlwind.
@@ -477,7 +463,7 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 	var applied: Dictionary = fx.get("debuffs", {})
 	for k: String in applied:
 		apply_debuff(k, applied[k][0], applied[k][1])
-	var armored: bool = cfg.poise < 0 or (state == State.ATTACK and data.kind == "lunge")
+	var armored: bool = attack.poise < 0 or (state == State.ATTACK and attack.dashes)
 	_knock = Combat.screen(dir) * knockback * (0.35 if armored else 1.0)
 	if is_boss:
 		Events.boss_health_changed.emit(self)
@@ -490,7 +476,7 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 		_cancel_attack()
 		_enter(State.HURT, stun)
 		sprite.play_action("hit", -Combat.screen(dir), 0.2, true)
-	elif not armored and _hits_taken > cfg.poise:
+	elif not armored and _hits_taken > attack.poise:
 		_cancel_attack()
 		_enter(State.HURT, 0.28 if heavy else 0.2)
 		sprite.play_action("hit", -Combat.screen(dir), 0.2, true)

@@ -105,7 +105,6 @@ if card.has_tag(&"galder"): ...
 
 Pay these down when you're working near them, and remove each line when it's fixed.
 
-- Enemy attack patterns are five consts in `Enemy.KINDS`.
 - 35 literal `res://original_assets/` paths in 23 scripts.
 - `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and
   Bunny.

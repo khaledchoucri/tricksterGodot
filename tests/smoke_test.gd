@@ -641,6 +641,20 @@ func _lint() -> void:
 			elif b != "" and Run.get(a) is RefCounted and not _has_member(Run.get(a), b):
 				missing["Run.%s.%s (%s)" % [a, b, path.get_file()]] = true
 	check(missing.is_empty(), "every Run member the scripts name exists%s" % ("" if missing.is_empty() else ": " + ", ".join(missing.keys())))
+	# Every monster names an attack pattern, and its tune overrides only that pattern's fields.
+	var bad_attacks: PackedStringArray = []
+	var monsters: Array[EnemyData] = Run.echoes.duplicate()
+	for r in Run.route.regions:
+		monsters.append_array(r.enemies)
+	for e in monsters:
+		if e.attack == null:
+			bad_attacks.append("%s has none" % e.id)
+			continue
+		for key: String in e.tune:
+			if not key in e.attack:
+				bad_attacks.append("%s.tune.%s" % [e.id, key])
+	check(bad_attacks.is_empty(), "all %d monsters have an attack pattern their tune fits%s"
+		% [monsters.size(), "" if bad_attacks.is_empty() else ": " + ", ".join(bad_attacks)])
 
 
 ## Whether `o` has a method, property, constant or signal called `n`.
