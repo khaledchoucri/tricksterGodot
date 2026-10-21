@@ -130,10 +130,18 @@ func _one_run(index: int) -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	var t := 0.0
+	# The last HP losses, for a death's report: when, how much, and the nearest monster.
+	var drops: PackedStringArray = []
+	var last_hp := Run.hp
 	while not game.hud.results_panel.visible and t < 1800.0:
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		_tick(get_physics_process_delta_time())
+		if Run.hp < last_hp:
+			drops.append("%.1fs -%d (%d left, %s)" % [Run.time, last_hp - Run.hp, Run.hp, _nearest_foe()])
+			if drops.size() > 6:
+				drops.remove_at(0)
+		last_hp = Run.hp
 	_release()
 	_end_room()
 	var killers: PackedStringArray = []
@@ -154,6 +162,8 @@ func _one_run(index: int) -> void:
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
+	if not r.won:
+		print("   last HP losses: %s" % "; ".join(drops))
 	_choose_heirloom()
 	_restore_city()
 	_city_craft()
@@ -164,6 +174,16 @@ func _one_run(index: int) -> void:
 
 
 # ---------------------------------------------------------------- the bot
+
+## The nearest live monster and its distance, or "none".
+func _nearest_foe() -> String:
+	var best: Enemy = null
+	var player: Player = game.player
+	for e: Enemy in game.room.enemies:
+		if e.is_hittable() and (best == null or e.global_position.distance_to(player.global_position) < best.global_position.distance_to(player.global_position)):
+			best = e
+	return "none" if best == null else "%s at %.0f px" % [best.display_name, best.global_position.distance_to(player.global_position)]
+
 
 func _tick(delta: float) -> void:
 	if game.hud.drill.visible:
@@ -253,8 +273,11 @@ func _fight(player: Player, delta: float) -> void:
 		var id: StringName = Run.deck.loadout[i] if i < Run.deck.loadout.size() else (Run.deck.rune.id if Run.deck.rune else &"")
 		if id == &"clinch_release" or (id == &"chakra_balance" and Run.hp > Run.max_hp * 0.6):
 			continue  # Clinch Release is for staggers; Chakra Balance for when hurt
+		# Like a player, it doesn't press a skill the caster would refuse (wrong form, short of
+		# Galder): pressing it again every frame left the bot standing still, not fighting.
 		if id != &"" and best < (200.0 if Run.cls.basic_skill else 140.0) and player.now() >= player.skills.slot_ready_at[i] \
-				and Run.mp >= Run.deck.card(id).mp_at(Run.deck.card_level(id)):
+				and Run.mp >= Run.deck.card(id).mp_at(Run.deck.card_level(id)) \
+				and player.skills.charm_block(Run.deck.card(id), maxi(Run.deck.card_level(id), 1), i) == "":
 			player.buffer_action(SkillCaster.SLOT_ACTIONS[i])
 			_release()
 			return
@@ -409,6 +432,13 @@ func _choose() -> void:
 				if Run.gear.can_afford_refine(g) and Run.gear.refine_chance(g) >= 0.45:
 					pick = i
 					break
+	# A player can't press a disabled option (a locked job): take the first one that isn't.
+	var buttons: Array[PickOption] = game.hud._pick_buttons
+	if pick < buttons.size() and buttons[pick].disabled:
+		for i in buttons.size():
+			if not buttons[i].disabled:
+				pick = i
+				break
 	if not game.hud.pick_reachable(pick):
 		var bug := "%s option %d of %d is off screen" % [game._pick_kind, pick + 1, opts.size()]
 		if not bug in ui_bugs:
@@ -590,6 +620,9 @@ func _kite(player: Player, target: Enemy, best: float, delta: float) -> void:
 		if not player.gun.loaded() and best <= reach and Run.deck.card_level(&"quick_reload") <= 0:
 			_release()
 			return
+	# Ranged bots always back away from a close monster. Kiting rules decide ranged clear rates
+	# more than the game's numbers do (2026-10-21: attack-when-ready and flee-then-fight each
+	# swung Dragon, Lion and Sheep by several clears in 5), so their clears aren't a balance signal.
 	if best < 95.0 and not (gunner and Run.deck.card_level(&"quick_reload") <= 0):
 		var away := (player.global_position - target.global_position).normalized()
 		for turn: float in [0.0, 0.7, -0.7, 1.4, -1.4]:
