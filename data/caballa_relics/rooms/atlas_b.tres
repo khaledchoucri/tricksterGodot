@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"atlas_b"
+display_name = "Atlas"
+map = "mapf03a"
+rect = Rect2i(2304, 2176, 1120, 680)

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"ginseng_root"
+display_name = "Ginseng Root"
+item_id = 10412
+stat = "HP"
+min_value = 120
+max_value = 260
+need = 4

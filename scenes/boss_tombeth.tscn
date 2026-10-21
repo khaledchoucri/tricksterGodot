@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/boss_tombeth.gd" id="1_boss"]
+[ext_resource type="Script" path="res://scripts/actor_sprite.gd" id="2_sprite"]
+[ext_resource type="Script" path="res://scripts/fx/health_bar.gd" id="3_bar"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+resource_local_to_scene = true
+radius = 30.0
+
+[node name="BossTombeth" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 15
+script = ExtResource("1_boss")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+script = ExtResource("2_sprite")
+
+[node name="HealthBar" type="Node2D" parent="."]
+z_index = 25
+position = Vector2(0, 10)
+script = ExtResource("3_bar")

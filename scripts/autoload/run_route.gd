@@ -3,7 +3,8 @@ extends RefCounted
 ## The run's route (Run.route): the regions it crosses, the planned rooms and how deep you are.
 
 ## Regions a run passes through, in order; the last one's boss ends it.
-const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
+const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres",
+	"res://data/caballa_relics/region.tres"]
 var regions: Array[RegionData] = []
 
 ## The region of the room the run is in.

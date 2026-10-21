@@ -527,6 +527,26 @@ func _end_of_run() -> void:
 		await wait(1.3)
 		check(enemies().size() >= 3, "boss summons Torobbies below 66%% HP (%d enemies)" % enemies().size())
 
+	# The Caballa Relics: the last region's boss room is the Trident Maze, with Tombeth, who
+	# calls Chimu as he loses his first life.
+	await clear_room()
+	Run.route.depth = Run.route.plan.size() - 1
+	game.get_tree().paused = false
+	game.hud.pick_panel.visible = false
+	game._load_room()
+	await wait(3.0)
+	var tombeth: Enemy = null
+	for e: Enemy in enemies():
+		if e.is_boss:
+			tombeth = e
+	check(tombeth is BossTombeth and game.room.data.map == "map_dg03e" and Run.route.final_boss(),
+		"the last boss room is the Trident Maze with Tombeth (%s)" % (tombeth.data.id if tombeth else "no boss"))
+	if tombeth:
+		tombeth.take_hit(int(tombeth.max_hp * 0.36), Vector2.RIGHT, 0.0, true)
+		await wait(1.3)
+		var chimus := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"chimu").size()
+		check(chimus >= 1, "Tombeth calls Chimu as he loses a life (%d)" % chimus)
+
 	# A lingering spell outlives its room (a run ending, a room change) cleanly:
 	# the field's end effect used to wait on a freed player and error.
 	check(Enemy.projectile_scene().instantiate() is Projectile, "monster shots load (Tutankhamen's curse once got an empty scene)")
@@ -685,6 +705,20 @@ func _scripts_under(dir: String) -> PackedStringArray:
 
 func _systems(Run: Node) -> void:
 	_restore_all(Run)
+	# The run crosses three regions; every room's map is exported and every monster has its
+	# original stats.
+	var names: PackedStringArray = []
+	var gaps: PackedStringArray = []
+	for r: RegionData in Run.route.regions:
+		names.append(r.display_name)
+		for room: RoomData in r.rooms + [r.boss_room]:
+			if not FileAccess.file_exists(Assets.map_dir(room.map) + "map.json"):
+				gaps.append("%s's map %s" % [room.id, room.map])
+		for e: EnemyData in r.enemies:
+			if not Run.monster_data.has(e.monster_id):
+				gaps.append("%s's stats (row %s)" % [e.id, e.monster_id])
+	check(names == PackedStringArray(["Coral Beach", "Desert Beach", "Caballa Relics"]) and gaps.is_empty(),
+		"a run crosses %s, every room and monster exported%s" % [" > ".join(names), "" if gaps.is_empty() else ": " + ", ".join(gaps)])
 	# A seed replays a run: the same room plan, card offers and gear rolls.
 	var replays: Array[String] = []
 	for s: int in [42, 42, 43]:

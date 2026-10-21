@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/gold_plated_wheel.tres" id="m_mat"]
+[ext_resource type="Resource" path="res://data/attacks/slam.tres" id="atk"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"stone_soldier"
+monster_id = "2012"
+attack = ExtResource("atk")
+body_radius = 20.0
+cost = 2
+min_depth = 0
+tune = {"windup": 0.8, "radius": 70.0}
+material = ExtResource("m_mat")

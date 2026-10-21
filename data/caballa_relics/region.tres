@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="RegionData" load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/region_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2_r"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="3_e"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/atlas_a.tres" id="r_atlas_a"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/atlas_b.tres" id="r_atlas_b"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/atlas_c.tres" id="r_atlas_c"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/hand_of_giant_a.tres" id="r_hand_of_giant_a"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/hand_of_giant_b.tres" id="r_hand_of_giant_b"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/hand_of_giant_c.tres" id="r_hand_of_giant_c"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/monkey_statues_a.tres" id="r_monkey_statues_a"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/monkey_statues_b.tres" id="r_monkey_statues_b"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/monkey_statues_c.tres" id="r_monkey_statues_c"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/altar_a.tres" id="r_altar_a"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/altar_b.tres" id="r_altar_b"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/altar_c.tres" id="r_altar_c"]
+[ext_resource type="Resource" path="res://data/caballa_relics/rooms/trident_maze.tres" id="r_trident_maze"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/mandragora.tres" id="e_mandragora"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/stone_soldier.tres" id="e_stone_soldier"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/mimic.tres" id="e_mimic"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/aposis.tres" id="e_aposis"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/punisher_aposis.tres" id="e_punisher_aposis"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/chimu.tres" id="e_chimu"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/naranjo.tres" id="e_naranjo"]
+[ext_resource type="Resource" path="res://data/caballa_relics/enemies/tombeth.tres" id="e_tombeth"]
+
+[resource]
+script = ExtResource("1_s")
+display_name = "Caballa Relics"
+rooms = Array[ExtResource("2_r")]([ExtResource("r_atlas_a"), ExtResource("r_atlas_b"), ExtResource("r_atlas_c"), ExtResource("r_hand_of_giant_a"), ExtResource("r_hand_of_giant_b"), ExtResource("r_hand_of_giant_c"), ExtResource("r_monkey_statues_a"), ExtResource("r_monkey_statues_b"), ExtResource("r_monkey_statues_c"), ExtResource("r_altar_a"), ExtResource("r_altar_b"), ExtResource("r_altar_c")])
+boss_room = ExtResource("r_trident_maze")
+enemies = Array[ExtResource("3_e")]([ExtResource("e_mandragora"), ExtResource("e_stone_soldier"), ExtResource("e_mimic"), ExtResource("e_aposis"), ExtResource("e_punisher_aposis"), ExtResource("e_chimu"), ExtResource("e_naranjo"), ExtResource("e_tombeth")])
+run_length = 7
+elite_depths = Array[int]([3, 6])
+job_change_depth = 3
+refine_cap = 8
+hp_scale = 1.1
+damage_scale = 0.7
+tm_scale = 0.15
+galder_scale = 0.3
+field_music = "jtrick.mp3"
+boss_music = "Boss_Monster.mp3"
+field_ambience = "bgs_forest.wav"
+boss_ambience = "bgs_cave01.wav"

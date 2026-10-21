@@ -22,6 +22,7 @@ done
 set -- $extra
 [ -n "$sections" ] && set -- "$@" "only=${sections#,}"
 [ -n "$classes" ] && set -- "$@" "class=${classes#,}"
-# A script that fails to load can leave the test waiting forever: give up after 10 minutes.
-if [ $# -eq 0 ]; then exec timeout 600 "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn; fi
-exec timeout 600 "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn -- "$@"
+# A script that fails to parse leaves the test waiting forever: give up after 3 minutes (the full
+# suite takes under one).
+if [ $# -eq 0 ]; then exec timeout 180 "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn; fi
+exec timeout 180 "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn -- "$@"

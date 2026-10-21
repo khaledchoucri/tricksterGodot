@@ -9,8 +9,9 @@ Built:
   and the beast forms as permanent talents). Hybrid 3rd jobs unlock after a clear.
 - 229 skill and talent cards from the original tables. Upgrades replace their base, buffs are talents, and
   supplements change their skill.
-- Two regions (Coral Beach, Desert Beach), seven rooms and a boss each, elites at the 3rd and 6th rooms, and the
-  job change after the 3rd. 16 monsters with five attack patterns, two bosses.
+- Three regions (Coral Beach, Desert Beach, Caballa Relics), seven rooms and a boss each, elites at the 3rd and
+  6th rooms, and a job change after the 3rd in the first two. 23 monsters with five attack patterns, three bosses
+  (the Golden Mole, Tutankhamen, Tombeth).
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops.
 - The warehouse, heirlooms with level sync, Ports and rollback.
 - Megalopolis: 11 people, 12 restorations that switch systems on, and the story.
@@ -20,7 +21,9 @@ Built:
 Still to do:
 - A guardian companion (pets).
 - Spell cards.
-- More regions.
+- More regions (Seabed and Swamp come next in the original's field chain).
+- Monster tactics: the original's monsters cast skills (Aposis's Mana Arrow, Mimic's charge); ours use attack
+  patterns.
 - The fashion tab.
 
 
