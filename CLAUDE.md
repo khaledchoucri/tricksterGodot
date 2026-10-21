@@ -14,6 +14,7 @@ fixed in the same change or tracked in "Known debt" below.
 | `scripts/autoload/profile.gd` | what persists between runs | run-only state |
 | `scripts/autoload/events.gd` | the signal bus and game clock | state |
 | `scripts/skills/*.gd` | what one skill *does* when cast | stat bonuses or another card's rules |
+| `scripts/talents/*.gd` | what one talent does beyond its numbers (`Talent` hooks: tick, guard, absorb, retaliate, revive, adjust, on_cast) | numbers a `mod` can carry |
 | `game.gd`, `hud.gd`, `hub.gd` | flow and presentation | combat maths |
 
 - **Signals up, calls down.** Gameplay emits `Events.*`, and the game and HUD decide how to show it. Gameplay
@@ -38,7 +39,9 @@ if card.has_tag(&"galder"): ...
 
 - **No card or monster id literals** outside the generators, `data/`, and the behaviour script of that same card.
   An id list in code (`GUN_GROWERS`, `FORM_NEEDED`, `BREAKERS`...) means a field or tag is missing.
-- **Truly unique behaviour** (Mana Arrow's flight, Bunker) lives in the card's own `behavior` script.
+- **Truly unique behaviour** (Mana Arrow's flight, Bunker) lives in the card's own `behavior` script; a
+  talent's (Guard's block, Revival) in its `talent` script. A talent that changes one skill (Faint on
+  Shockwave) declares a scoped mod (`"shockwave.stun_chance"`) that the skill reads with `skill_mod()`.
 - **Monsters follow the same rule.** Attack patterns, skills and tactics live in `EnemyData` and come from the
   original tables, not from consts in `enemy.gd`.
 
