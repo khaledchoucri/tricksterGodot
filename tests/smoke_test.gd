@@ -1,7 +1,19 @@
 extends Node
 ## Headless smoke test for a Coral Beach run.
-## Run: godot --headless --path . res://tests/smoke_test.tscn
+## Run everything: godot --headless --path . res://tests/smoke_test.tscn
+## Run some sections: add `-- only=charm,ui` (sections by name) or `-- class=cat,lion`
+## (the sections that test those characters); tests/run_smoke.sh wraps both.
+## Each section sets up what it needs, so any subset passes on its own. Changes to
+## shared code still run the full suite (CLAUDE.md, section 5).
 
+## The sections, in the order they run.
+const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "balance", "ui", "boss", "systems"]
+## The section that tests each character.
+const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
+	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
+
+## The sections picked on the command line; empty runs them all.
+var only: Array[String] = []
 var failures := 0
 var game
 
@@ -21,8 +33,25 @@ func run_state() -> Node:
 
 
 func _ready() -> void:
+	for arg in OS.get_cmdline_user_args():
+		var kv := arg.split("=")
+		var names := kv[1].split(",", false) if kv.size() == 2 else PackedStringArray([arg])
+		for name in names:
+			if kv[0] == "only" and name in SECTIONS:
+				only.append(name)
+			elif kv[0] == "class" and CLASS_SECTION.has(name):
+				only.append(CLASS_SECTION[name])
+			else:
+				push_error("smoke test: unknown argument %s (sections: %s)" % [arg, ", ".join(SECTIONS)])
+				get_tree().quit(2)
+				return
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	_run.call_deferred()
+
+
+## Whether a section runs: every one, or those picked on the command line.
+func _on(section: String) -> bool:
+	return only.is_empty() or section in only
 
 
 func enemies() -> Array:
@@ -46,9 +75,46 @@ func _run() -> void:
 	profile().use_path("user://smoke_test_profile.json", true)  # never touch the real save
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
-	var Run := run_state()
 	await wait(2.6)
+	if _on("core"):
+		await _core_room()
+	if _on("power"):
+		await _power_attacks()
+	if _on("core"):
+		await _core_rewards()
+	if _on("power"):
+		# Job changes, upgrade skills and the Power-line talents.
+		await skill_rules()
+	if _on("magic"):
+		# The Magic line: Sheep and Dragon, casting, Seals and Pacts, every spell.
+		await magic_line()
+	if _on("sense"):
+		# The Sense line: Fox and Lion, the gun's cycle, every Sense skill.
+		await sense_line()
+	if _on("elements"):
+		# Elemental attack compounds and their hit effects; shields and guns.
+		await elements_and_shields()
+	if _on("charm"):
+		# The Charm line: Cat and Raccoon, the beast forms, every Charm skill.
+		await charm_line()
+	if _on("balance"):
+		_balance()
+	if _on("ui"):
+		await _ui_audit()
+	if _on("boss"):
+		await _end_of_run()
+	if _on("systems"):
+		_systems(run_state())
 
+	print("\n%s: %d failure(s)%s" % ["OK" if failures == 0 else "FAILED", failures,
+		"" if only.is_empty() else " in " + ", ".join(only)])
+	Engine.time_scale = 1.0
+	get_tree().quit(1 if failures else 0)
+
+
+## The first room builds, a wave spawns, a punch lands, and pathfinding works.
+func _core_room() -> void:
+	var Run := run_state()
 	var room: Room = game.room
 	check(room != null and room.world != null, "first room builds from %s" % (room.data.map if room else "?"))
 	check(room.is_walkable(game.player.global_position), "player starts on walkable ground")
@@ -74,6 +140,12 @@ func _run() -> void:
 	var b := room.random_spot(a, 300.0)
 	check(room.find_path(a, b).size() > 1, "grid pathfinding finds a route across the room")
 
+
+## Every Power-line attack and echo rune casts and damages a monster in front of Buffalo.
+func _power_attacks() -> void:
+	var Run := run_state()
+	var room: Room = game.room
+	var player: Player = game.player
 	# Every Power-line attack casts and damages a monster in front of Buffalo.
 	check(Run.loadout[0] == Run.cls.start_job.starter.id, "the run starts with %s in slot 1" % Run.cls.start_job.starter.id)
 	var skill_ids: Array[StringName] = []
@@ -188,6 +260,12 @@ func _run() -> void:
 	Run.pending_levels = 0  # the dummies' EXP shouldn't queue level-ups for the checks below
 	Run.xp = 0
 
+
+## Fading props, vaulting, the room reward, gear, the anvil, level-ups, a door, and a monster's shot.
+func _core_rewards() -> void:
+	var Run := run_state()
+	var room: Room = game.room
+	var player: Player = game.player
 	# Scenery in front of the player fades and the silhouette shows.
 	var behind := Vector2.INF
 	for prop in room.props:
@@ -324,19 +402,10 @@ func _run() -> void:
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
 
-	# Job changes, upgrade skills and the Power-line talents.
-	await skill_rules()
-	# The Magic line: Sheep and Dragon, casting, Seals and Pacts, every spell.
-	await magic_line()
-	# The Sense line: Fox and Lion, the gun's cycle, every Sense skill.
-	await sense_line()
-	# Elemental attack compounds and their hit effects; shields and guns.
-	await elements_and_shields()
-	# The Charm line: Cat and Raccoon, the beast forms, every Charm skill.
-	await charm_line()
 
-	# Progression guards: damage grows with its stat as in Trickster, and
-	# monsters are as tough as their original level, not as deep as the room.
+## Progression guards: damage grows with its stat as in Trickster, and monsters are as tough as their original level.
+func _balance() -> void:
+	var Run := run_state()
 	var outliers: PackedStringArray = []
 	for ri in Run.regions.size():
 		var r: RegionData = Run.regions[ri]
@@ -386,7 +455,10 @@ func _run() -> void:
 	Profile.class_id = "buffalo"
 	Run.new_run()
 
-	# UI audit: the worst-case pick lists fit on screen and can be left.
+
+## The worst-case pick lists fit on screen and can be left.
+func _ui_audit() -> void:
+	var Run := run_state()
 	var saved_mats: Dictionary = Run.materials.duplicate()
 	for path in DirAccess.get_files_at("res://data/materials"):
 		var m: MaterialData = load("res://data/materials/" + path.trim_suffix(".remap"))
@@ -419,7 +491,10 @@ func _run() -> void:
 		% [game.hud.pick_reachable(20), game.hud.pick_panel.get_global_rect().end.y])
 	game.hud.pick_panel.visible = false
 
-	# Jump to Coral Beach's boss room.
+
+## The boss room, a lingering spell, death and the rollback, then Megalopolis.
+func _end_of_run() -> void:
+	var Run := run_state()
 	await clear_room()
 	Run.depth = Run.regions[0].run_length
 	game.get_tree().paused = false
@@ -490,11 +565,6 @@ func _run() -> void:
 	var reach: float = Combat.ground(hub.room.nearest_reachable(Run.hub.gate_position) - hub.gate.global_position).length()
 	check(reach < 1.0, "the expedition gate stands on reachable ground")
 	hub.queue_free()
-	_systems(Run)
-
-	print("\n%s: %d failure(s)" % ["OK" if failures == 0 else "FAILED", failures])
-	Engine.time_scale = 1.0
-	get_tree().quit(1 if failures else 0)
 
 
 func _item(id: String) -> ItemData:
@@ -929,11 +999,15 @@ func _dummy(p: Player, ahead: float) -> Enemy:
 	p.aim = dir
 	for other in room.enemies.duplicate():
 		_remove(other)  # nothing else may take the hit
-	var e: Enemy = room.spawn(&"torobbie", spot + Combat.screen(dir) * ahead)
+	var at := spot + Combat.screen(dir) * ahead
+	var e: Enemy = room.spawn(&"torobbie", at)
 	for _w in 30:
 		await wait(0.1)
 		if e.is_hittable():
 			break
+	# It walks toward the player while it spawns; put it back where the check expects it
+	# (left close, it could fall outside a skill's aim wedge and the check would flake).
+	e.global_position = at
 	e.max_hp = 99999
 	e.hp = 99999
 	return e
@@ -1617,6 +1691,10 @@ func charm_line() -> void:
 			&"skunk_pouch", &"deadly_funk":
 				did = dummy.state == Enemy.State.HURT
 				how = "state %s" % dummy.state
+			&"full_house":
+				# One card in five is a bad hand (BAD_HAND) that hurts you instead.
+				did = dummy.hp < before or Run.hp < hp_before
+				how = "%d -> %d, HP %d -> %d" % [before, dummy.hp, hp_before, Run.hp]
 			_:
 				did = dummy.hp < before
 				how = "%d -> %d" % [before, dummy.hp]
