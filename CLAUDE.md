@@ -61,7 +61,8 @@ if card.has_tag(&"galder"): ...
 - **Size.** A function is about 50 lines at most, a file about 600. Past that, split by responsibility.
 - **No magic numbers.** Use a named `const` with its source or `Ours:` tag.
 - **Time** is the game clock (`Events.time` / `player.now()`), never wall time. **Randomness** goes through
-  the run's seeded RNG (`Run.rng`), so a seed reproduces a run.
+  the run's seeded RNG (`Run.rng`, `Run.shuffle()`, `Run.pick()`), so a seed reproduces a run. Only effects
+  that are purely visual or audible (particles, pitch, shake) use the global `randf()`/`randi()`.
 - **Paths to original assets** go through one asset lookup, never a literal `res://original_assets/...`
   string, so new art can replace them through a manifest.
 - **Naming.** `snake_case` files and functions, `PascalCase` classes, `SCREAMING_CASE` constants. Private
@@ -76,8 +77,9 @@ if card.has_tag(&"galder"): ...
 - **Test like a player.** Use input actions and real button presses, the real window size and the game clock.
   Measure combat feel (hits to kill, time to kill) with `tests/progression_probe.tscn` and the bots
   (`tests/playtest.tscn`).
-- **Refactors keep behaviour.** Record the same smoke results and seeded bot and probe numbers before and
-  after.
+- **Refactors keep behaviour.** `tests/baseline.sh record before`, make the change, `tests/baseline.sh record
+  after`, then `tests/baseline.sh compare before after`: smoke results, the probe and seeded bots for all
+  eight characters must match.
 - **A flaky check is a bug.** Fix it, or skip it with a comment naming why and a debt entry.
 - **Lint checks** (in the smoke test) enforce sections 2 and 4: no card id literals in shared code, and
   generated data matches its generator.
@@ -104,8 +106,8 @@ Pay these down when you're working near them, and remove each line when it's fix
 - Id lists in code: `FORM_NEEDED`, `GALDER_SKILLS`, `GUN_NEEDED`, `GUN_LOADED`, `GUN_GROWERS`, `THROWN`,
   `BREAKERS`, `SHIELDS`, `BLESSINGS`.
 - Enemy attack patterns are five consts in `Enemy.KINDS`.
-- 87 unseeded `randi`/`randf`/`shuffle` calls in `scripts/`.
 - 35 literal `res://original_assets/` paths in 23 scripts.
 - `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and
   Bunny.
-- The `poison_assault` smoke check is flaky.
+- The `poison_assault` smoke check was flaky; the dummy-placement fix (2026-10-21) should have cured it.
+  Remove this line once it has stayed green for a week.

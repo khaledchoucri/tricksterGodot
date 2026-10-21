@@ -46,7 +46,7 @@ func start(drill: DrillData, zone_bonus := 0.0) -> void:
 
 
 func _new_spot() -> void:
-	_spot = randf_range(_zone / 2.0 + 0.05, 1.0 - _zone / 2.0 - 0.05)
+	_spot = Run.rng.randf_range(_zone / 2.0 + 0.05, 1.0 - _zone / 2.0 - 0.05)
 
 
 func _marker() -> float:

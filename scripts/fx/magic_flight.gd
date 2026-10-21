@@ -105,8 +105,8 @@ func _physics_process(delta: float) -> void:
 		1:
 			if _wait < 0.0 and _t >= fire:
 				# The group fires: kicked back, then a wait or a curve of its own.
-				_vel = -_to_target() * KICK + Vector3(randi_range(-4, 4), randi_range(-4, 4), randi_range(-4, 4))
-				_wait = float(randi() % maxi(wait_steps, 1)) * 0.1
+				_vel = -_to_target() * KICK + Vector3(Run.rng.randi_range(-4, 4), Run.rng.randi_range(-4, 4), Run.rng.randi_range(-4, 4))
+				_wait = float(Run.rng.randi() % maxi(wait_steps, 1)) * 0.1
 				if curve:
 					_start_curve()
 			elif _wait >= 0.0:
@@ -139,10 +139,10 @@ func _appear() -> void:
 	_phase = 1
 	visible = true
 	var base := Combat.ground(caster.global_position if is_instance_valid(caster) else target_point)
-	_ground = base + Vector2(randf_range(-50, 50), randf_range(-50, 50))
-	_height = maxf(30.0 + randf_range(-50, 50), 6.0)
+	_ground = base + Vector2(Run.rng.randf_range(-50, 50), Run.rng.randf_range(-50, 50))
+	_height = maxf(30.0 + Run.rng.randf_range(-50, 50), 6.0)
 	_vel = -_to_target() * DRIFT
-	_angle = randf() * TAU
+	_angle = Run.rng.randf() * TAU
 	global_position = Combat.screen(_ground)
 	if on_appear.is_valid():
 		on_appear.call()
@@ -160,9 +160,9 @@ func _start_curve() -> void:
 	var p0 := global_position
 	var p3 := Combat.screen(_aim_ground())
 	var back := Combat.screen(Vector2(_vel.x, _vel.z).normalized() * KICK)
-	var p1 := p0 + back + Combat.screen(Vector2(randi_range(-4, 3), randi_range(-4, 3)) * 100.0 * 0.25)
+	var p1 := p0 + back + Combat.screen(Vector2(Run.rng.randi_range(-4, 3), Run.rng.randi_range(-4, 3)) * 100.0 * 0.25)
 	var side := func() -> float:
-		var k := randi_range(-3, 2)
+		var k := Run.rng.randi_range(-3, 2)
 		return float(k if k != 0 else 1)
 	var p2 := p0 + (p3 - p0) / 3.0 + Combat.screen(Vector2(side.call(), side.call()) * 40.0)
 	var length := p0.distance_to(p1) + p1.distance_to(p2) + p2.distance_to(p3)

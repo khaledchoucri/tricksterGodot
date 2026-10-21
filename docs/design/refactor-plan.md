@@ -38,6 +38,8 @@ baseline is a bug in the refactor, not a tuning change.
 
 Each phase must pass its check before the next starts.
 
+**Status:** phase 0 done (2026-10-21): the same seed gives an identical bot run. Next: phase 1.
+
 | # | Phase | Check |
 |---|---|---|
 | 0 | `Run.rng`; `seed=` in the bots and probe; `tests/baseline.sh` records the smoke results, the probe, and 8 characters × 3 seeds of bots | the same seed twice gives identical results (otherwise compare averages over more seeds) |

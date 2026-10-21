@@ -5,6 +5,7 @@ extends Node
 ##
 ## Run it as fast as the CPU allows (fixed frame time):
 ##   godot --headless --fixed-fps 60 res://tests/playtest.tscn -- runs=5 build=power
+## seed=N makes the runs reproducible: run i plays seed N + i, for the game and the bot alike.
 ## build: power | magic | sense | charm | mixed (how the bot spends type points)
 
 const MOVES: Array[String] = ["move_left", "move_right", "move_up", "move_down"]
@@ -21,6 +22,10 @@ var god := false
 ## tag=x: separate profile file, so several bots can run at once.
 var tag := ""
 var city := "earn"
+## seed=N: run i uses the run seed N + i; below 0, every run is random.
+var seed_base := -1
+## The bot's own choices (doors, picks, dodges), seeded with the run so a seed replays it.
+var bot_rng := RandomNumberGenerator.new()
 ## class=trickster: its two trees (e.g. trees=knight+bard_tree).
 var trees: PackedStringArray = ["knight", "bard_tree"]
 var game
@@ -59,6 +64,8 @@ func _ready() -> void:
 			god = kv[1] == "1"
 		elif kv.size() == 2 and kv[0] == "trees":
 			trees = kv[1].split("+")
+		elif kv.size() == 2 and kv[0] == "seed":
+			seed_base = int(kv[1])
 	Events.enemy_died.connect(func(e: Enemy) -> void:
 		if e.first_hit_at >= 0.0:
 			kill_log.append({"region": Run.region_index(), "depth": Run.depth, "elite": e.is_elite or e.is_boss,
@@ -115,6 +122,11 @@ func _one_run(index: int) -> void:
 	_last_depth = -1
 	_casts = {}
 	_refused = {}
+	if seed_base >= 0:
+		Run.next_seed = seed_base + index
+		bot_rng.seed = hash(seed_base + index)
+	else:
+		bot_rng.randomize()
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	var t := 0.0
@@ -133,7 +145,7 @@ func _one_run(index: int) -> void:
 	for k in Run.EQUIP_SLOTS:
 		if Run.equipped(k):
 			gear.append(Run.equipped(k).title())
-	var r := {"run": index + 1, "won": game.phase == game.Phase.WON, "depth": Run.depth + (1 if Run.won else 0),
+	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
 		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate(),
@@ -193,7 +205,7 @@ func _tick(delta: float) -> void:
 		game.Phase.DOORS:
 			_release()
 			if not game.room.doors.is_empty():
-				var d: Door = game.room.doors[randi() % game.room.doors.size()]
+				var d: Door = game.room.doors[bot_rng.randi() % game.room.doors.size()]
 				if d.ready_to_enter():
 					player.global_position = d.global_position
 		_:
@@ -232,7 +244,7 @@ func _fight(player: Player, delta: float) -> void:
 		if e.state == Enemy.State.WINDUP and e._t > e._state_len * 0.45:
 			var reach: float = e.cfg.get("range", 50.0) + e.cfg.get("radius", 40.0) + 10.0
 			if Combat.ground(e.global_position - player.global_position).length() < reach and player.can_dash():
-				var away := (player.global_position - e.global_position).normalized().rotated(randf_range(-0.6, 0.6))
+				var away := (player.global_position - e.global_position).normalized().rotated(bot_rng.randf_range(-0.6, 0.6))
 				_press(away)
 				player.buffer_action("dash")
 				return
@@ -272,10 +284,10 @@ func _fight(player: Player, delta: float) -> void:
 		elif _stuck_t > 0.4:
 			_stuck_t = 0.0
 			_path_t = 0.0
-			if player.can_dash() and randf() < 0.5:
+			if player.can_dash() and bot_rng.randf() < 0.5:
 				player.buffer_action("dash")
 			else:
-				_detour = dir.rotated(PI / 2.0 * (1 if randf() < 0.5 else -1))
+				_detour = dir.rotated(PI / 2.0 * (1 if bot_rng.randf() < 0.5 else -1))
 				_detour_t = 0.35
 				dir = _detour
 		_press(dir)
@@ -323,7 +335,7 @@ var ui_bugs: PackedStringArray = []
 func _dig(p: DrillPanel) -> void:
 	if p._left == p._drill.strikes and p._t < 0.02:
 		digs += 1
-	if p._left > 0 and absf(p._marker() - p._spot) < p._zone * (0.35 if randf() < 0.7 else 0.9):
+	if p._left > 0 and absf(p._marker() - p._spot) < p._zone * (0.35 if bot_rng.randf() < 0.7 else 0.9):
 		p._strike()
 
 
@@ -334,7 +346,7 @@ func _choose() -> void:
 	var pick := 0
 	match game._pick_kind:
 		"card":
-			pick = randi() % opts.size()
+			pick = bot_rng.randi() % opts.size()
 			for i in opts.size():
 				if opts[i].is_skill() and Run.free_slot() >= 0:
 					pick = i
@@ -408,7 +420,7 @@ func _choose() -> void:
 func _type_pick(opts: Array) -> int:
 	if build in opts:
 		return opts.find(build)
-	return randi() % opts.size()
+	return bot_rng.randi() % opts.size()
 
 
 ## How much better an item is than what it would replace, by a rough score.
@@ -549,8 +561,8 @@ func _report() -> void:
 	for r in results:
 		clears += 1 if r.won else 0
 		depth += r.depth
-		print("run %d  %s  room %d  Lv %d %s  %.0fs  kills %d  types %s" % [r.run, "CLEAR" if r.won else "died ",
-			r.depth, r.level, r.job, r.time, r.kills, r.types])
+		print("run %d  %s  room %d  Lv %d %s  %.0fs  kills %d  types %s  seed %d" % [r.run, "CLEAR" if r.won else "died ",
+			r.depth, r.level, r.job, r.time, r.kills, r.types, r.seed])
 		print("   gear: %s" % ", ".join(r.gear))
 		if not r.won:
 			print("   died near: %s" % ", ".join(r.around))

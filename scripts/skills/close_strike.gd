@@ -33,7 +33,7 @@ func update(t: float, _delta: float) -> void:
 	match card.id:
 		&"lucky_fist":
 			# More LK, more upside: anywhere from half to (1 + LK/50) times.
-			amount *= randf_range(0.5, 1.0 + Run.stat("LK") / 50.0)
+			amount *= Run.rng.randf_range(0.5, 1.0 + Run.stat("LK") / 50.0)
 		&"exploit_weakness":
 			fx.pierce = true
 		&"butt_plate":

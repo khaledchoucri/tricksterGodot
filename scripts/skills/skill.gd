@@ -155,7 +155,7 @@ func _supplements(fx: Dictionary, amount: float) -> void:
 				fx.burn_for = Run.card(&"wicked_flame").param("seconds", lvl)
 		&"scythe":  # Fear: no attacking for a while
 			var lvl := Run.card_level(&"fear")
-			if lvl > 0 and randf() * 100.0 < Run.card(&"fear").param("chance", lvl):
+			if lvl > 0 and Run.rng.randf() * 100.0 < Run.card(&"fear").param("chance", lvl):
 				debuffs["fear"] = [1.0, Run.card_value(&"fear")]
 	if not debuffs.is_empty():
 		fx.debuffs = debuffs

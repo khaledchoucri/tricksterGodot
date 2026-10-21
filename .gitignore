@@ -12,3 +12,6 @@ art_build/
 
 # Python
 __pycache__/
+
+# Behaviour baselines (tests/baseline.sh): per machine
+tests/baselines/

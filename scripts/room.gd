@@ -257,7 +257,7 @@ func nearest_reachable(target: Vector2) -> Vector2:
 
 func random_spot(avoid: Vector2, min_dist: float) -> Vector2:
 	for _i in 120:
-		var p := Vector2(randf_range(rect.position.x + 40, rect.end.x - 40), randf_range(rect.position.y + 40, rect.end.y - 40))
+		var p := Vector2(Run.rng.randf_range(rect.position.x + 40, rect.end.x - 40), Run.rng.randf_range(rect.position.y + 40, rect.end.y - 40))
 		if is_open_spot(p) and p.distance_to(avoid) >= min_dist:
 			return p
 	return nearest_reachable(rect.get_center())
@@ -352,10 +352,10 @@ func _make_waves(depth: int, elite: bool) -> Array:
 				return e.cost <= budget and (e.kind != "shot" or shooters < MAX_SHOOTERS))
 			if options.is_empty():
 				break
-			var pick: EnemyData = options[randi() % options.size()]
+			var pick: EnemyData = options[Run.rng.randi() % options.size()]
 			# A featured monster (its den) fills about half of each wave.
 			var featured := Run.enemy(Run.current_room().feature) if Run.current_room().feature != &"" else null
-			if featured and featured in options and randf() < 0.5:
+			if featured and featured in options and Run.rng.randf() < 0.5:
 				pick = featured
 			if pick.kind == "shot":
 				shooters += 1
@@ -363,7 +363,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 			budget -= pick.cost
 		for _i in ServerSettings.extra_per_wave():
 			if not pool.is_empty():
-				wave_list.append({"id": pool[randi() % pool.size()].id, "elite": false})
+				wave_list.append({"id": pool[Run.rng.randi() % pool.size()].id, "elite": false})
 		if ServerSettings.pk_mode() and depth >= 1 and not wave_list.is_empty():
 			wave_list[0].elite = true
 		out.append(wave_list)

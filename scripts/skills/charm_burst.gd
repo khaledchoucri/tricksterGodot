@@ -66,7 +66,7 @@ func update(t: float, _delta: float) -> void:
 			var radius := param("radius", 160.0)
 			_ring(at, radius)
 			for e in closest_in_circle(at, radius, int(param("targets", 5))):
-				if randf() < BAD_HAND:
+				if Run.rng.randf() < BAD_HAND:
 					var back := roundi(damage() * BAD_SHARE)
 					Run.take_damage(mini(back, Run.hp - 1))  # never fatal
 					Events.text_shown.emit(at + Vector2(0, -70), "Bad hand", Color(1.0, 0.5, 0.5))
@@ -91,7 +91,7 @@ func update(t: float, _delta: float) -> void:
 				hit(e, damage(), 80.0, true)
 		&"card_soldier":
 			var spot := target_spot(160.0)
-			var number := randi_range(int(param("min", 2)), int(param("max", 5)))
+			var number := Run.rng.randi_range(int(param("min", 2)), int(param("max", 5)))
 			Events.text_shown.emit(spot + Vector2(0, -60), "Card %d" % number, Color(1.0, 0.85, 0.6))
 			effect("ht", spot)
 			for e in closest_in_circle(spot, 50.0, 1):

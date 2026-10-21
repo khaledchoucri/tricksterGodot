@@ -51,6 +51,16 @@ var classes: Array[ClassData] = []
 var items: Array[ItemData] = []
 var monster_data: Dictionary = {}  # original stats by monster id (generated, may be empty)
 
+## The run's gameplay randomness (rolls, drops, offers, the room plan, AI), seeded by
+## new_run() so a seed reproduces a run. Effects that are only visual or audible use
+## the global RNG instead, so they can't change a fight.
+var rng := RandomNumberGenerator.new()
+## The seed the current run started from.
+var run_seed := 0
+## When 0 or more, the next new_run() uses this seed (for the bots and tests); it's
+## then cleared.
+var next_seed := -1
+
 var depth := 0
 var plan: Array[RoomPlan] = []
 var level := 1
@@ -270,7 +280,25 @@ func chosen_class() -> ClassData:
 	return classes[0]
 
 
-func new_run() -> void:
+## Shuffles an array in place with the run's RNG (Array.shuffle() uses the global one).
+func shuffle(a: Array) -> void:
+	for i in range(a.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var held: Variant = a[i]
+		a[i] = a[j]
+		a[j] = held
+
+
+## A random element of an array, with the run's RNG; null when it's empty.
+func pick(a: Array) -> Variant:
+	return null if a.is_empty() else a[rng.randi_range(0, a.size() - 1)]
+
+
+## Starts a fresh run. A seed of 0 or more (or next_seed) makes it reproducible.
+func new_run(with_seed := -1) -> void:
+	run_seed = with_seed if with_seed >= 0 else next_seed if next_seed >= 0 else randi()  # the global RNG picks a seed
+	next_seed = -1
+	rng.seed = run_seed
 	hidden = false
 	hidden_until = 0.0
 	bunker_until = 0.0
@@ -405,7 +433,7 @@ func _apply_restorations() -> void:
 					if c.is_skill() and can_learn(c):
 						pool.append(c.id)
 				if pool.size() > 0:
-					add_card(pool[randi() % pool.size()])
+					add_card(pool[rng.randi() % pool.size()])
 
 
 ## Whether a city restoration has switched a system on (smithing, jobs,
@@ -472,7 +500,7 @@ func _plan_rooms() -> Array[RoomPlan]:
 	var out: Array[RoomPlan] = []
 	for r in regions:
 		var pool := r.rooms.duplicate()
-		pool.shuffle()
+		shuffle(pool)
 		for i in r.run_length:
 			out.append(RoomPlan.new(pool[i % pool.size()], r, i, i in r.elite_depths))
 		out.append(RoomPlan.new(r.boss_room, r, r.run_length, false, true))
@@ -597,9 +625,9 @@ func monster_stats(enemy: EnemyData) -> Dictionary:
 
 ## Whether an Echo joins this elite room (after the first clear).
 func echo_here() -> EnemyData:
-	if not current_room().elite or int(Profile.stats.get("clears", 0)) < 1 or randf() > 0.45:
+	if not current_room().elite or int(Profile.stats.get("clears", 0)) < 1 or rng.randf() > 0.45:
 		return null
-	return echoes[randi() % echoes.size()]
+	return echoes[rng.randi() % echoes.size()]
 
 
 ## Takes a sky-blue rune: its skill goes in slot 4, stronger in later regions.
@@ -990,8 +1018,8 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 		# Training can also teach what grows the basic spell (Arrow Rush).
 		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or ((not upgrade or _grows_basic(c)) and can_learn(c)):
 			(skills if c.is_skill() else talents).append(c)
-	skills.shuffle()
-	talents.shuffle()
+	shuffle(skills)
+	shuffle(talents)
 	var out: Array[CardData] = []
 	# A mage's basic spell is its main weapon: its level-ups and the cards that
 	# grow it (Arrow Rush, Mana Ring Booster) are always among the offers.
@@ -1002,15 +1030,15 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 			talents.erase(c)
 	if upgrade:
 		var rest := skills + talents
-		rest.shuffle()
+		shuffle(rest)
 		out.append_array(rest.slice(0, n - out.size()))
-		out.shuffle()
+		shuffle(out)
 		return out
 	var want_skills := mini(skills.size(), maxi(n - 1 - out.size(), 0) if talents.size() > 0 else n - out.size())
 	out.append_array(skills.slice(0, want_skills))
 	out.append_array(talents.slice(0, n - out.size()))
 	out.append_array(skills.slice(want_skills, want_skills + n - out.size()))
-	out.shuffle()
+	shuffle(out)
 	return out
 
 
@@ -1103,10 +1131,10 @@ func city_refine(index: int, roll := -1.0) -> String:
 	Profile.ore -= cost.ore
 	Profile.galder -= cost.galder
 	var result := "fail"
-	if (randf() if roll < 0.0 else roll) < g.refine_chance():
+	if (rng.randf() if roll < 0.0 else roll) < g.refine_chance():
 		g.refine += 1
 		result = "success"
-	elif g.refine >= 4 and randf() < 0.5:
+	elif g.refine >= 4 and rng.randf() < 0.5:
 		g.refine -= 1
 		result = "drop"
 	Profile.update_item(index, g.to_dict())
@@ -1146,7 +1174,7 @@ func roll_card(enemy_id: StringName, elite: bool, boss: bool) -> bool:
 	if not system_on(&"cards"):
 		return false
 	var chance := 0.5 if boss else (0.15 if elite else 0.02 + stat("DA") / 1000.0)
-	return randf() < chance
+	return rng.randf() < chance
 
 
 ## The drill carried (the first one once the Drill Shop is restored).
@@ -1171,7 +1199,7 @@ func dig_rewards(depth_reached: int) -> Dictionary:
 			if e.material and not e.is_boss:
 				mats.append(e.material)
 		if not mats.is_empty():
-			out.material = mats[randi() % mats.size()]
+			out.material = mats[rng.randi() % mats.size()]
 			out.count = 2 + depth_reached / 20
 	if depth_reached >= 40:
 		var offers := gear_offers(1)
@@ -1239,7 +1267,7 @@ func gear_offers(n: int) -> Array[GearItem]:
 	for it in items:
 		if it.level <= top and it.level >= top - 24 and not it.legend and it != cls.start_weapon and can_use(it):
 			pool.append(it)
-	pool.shuffle()
+	shuffle(pool)
 	var out: Array[GearItem] = []
 	var quality := clampf(stat("DA") / 60.0, 0.0, 1.0)
 	for it in pool.slice(0, n):
@@ -1266,12 +1294,12 @@ func try_refine(g: GearItem, roll := -1.0) -> String:
 	ore -= cost.ore
 	galder -= cost.galder
 	if roll < 0.0:
-		roll = randf()
+		roll = rng.randf()
 	var result := "fail"
 	if roll < refine_chance(g):
 		g.refine += 1
 		result = "success"
-	elif g.refine >= 4 and randf() < 0.5:
+	elif g.refine >= 4 and rng.randf() < 0.5:
 		g.refine -= 1
 		result = "drop"
 	stats_changed()
@@ -1591,7 +1619,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 	var found := 0
 	if boss:
 		found = 3
-	elif elite or randf() < (0.12 + stat("DA") / 400.0) * ServerSettings.drop_mult():
+	elif elite or rng.randf() < (0.12 + stat("DA") / 400.0) * ServerSettings.drop_mult():
 		found = 1
 	ore += found
 	var count := 0
@@ -1600,7 +1628,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 			count = 3
 		elif elite:
 			count = 2
-		elif randf() < (mat_chance + stat("DA") / 200.0 + (0.1 if quirk(&"sly") else 0.0)) * ServerSettings.drop_mult():
+		elif rng.randf() < (mat_chance + stat("DA") / 200.0 + (0.1 if quirk(&"sly") else 0.0)) * ServerSettings.drop_mult():
 			count = 1
 		add_material(mat, count)
 	if quirk(&"mana_tail"):
@@ -1673,7 +1701,7 @@ func shop_offers() -> Array[Dictionary]:
 		if e.material and local_depth() >= e.min_depth and not e.is_boss:
 			mats.append(e.material)
 	if mats.size() > 0:
-		var m: MaterialData = mats[randi() % mats.size()]
+		var m: MaterialData = mats[rng.randi() % mats.size()]
 		out.append({"kind": "material", "material": m, "count": m.need, "price": int(70 * m.need * cut)})
 	out.append({"kind": "potion", "heal": 0.4, "price": int(160 * cut)})
 	return out

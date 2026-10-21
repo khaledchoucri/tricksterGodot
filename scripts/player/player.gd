@@ -470,9 +470,9 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var power_shot: bool = fx.get("power_shot", false)
 	# The basic gun shot never rolls a critical: the server's gun formula
 	# (0x59b310) only misses, hits, or lands a power shot.
-	var crit: bool = power_shot or fx.get("force_crit", false) or (not fx.get("no_crit", false) and randf() < Run.crit_chance(e))
+	var crit: bool = power_shot or fx.get("force_crit", false) or (not fx.get("no_crit", false) and Run.rng.randf() < Run.crit_chance(e))
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
-	var graze: bool = not crit and not fx.get("no_graze", false) and randf() < e.evade_chance(Run.stat("AC"))
+	var graze: bool = not crit and not fx.get("no_graze", false) and Run.rng.randf() < e.evade_chance(Run.stat("AC"))
 	# Elemental attack from compounds adds its % on top, less the monster's resistance.
 	var element := 1.0
 	# An elemental skill is resisted like its element.
@@ -502,12 +502,12 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	debuffs.merge(effects.get("debuffs", {}), true)
 	if not debuffs.is_empty():
 		effects.debuffs = debuffs
-	if Run.legend_on(&"pharaohs_gold") and randf() < 0.2:
+	if Run.legend_on(&"pharaohs_gold") and Run.rng.randf() < 0.2:
 		Run.galder += 4
 		Events.text_shown.emit(e.global_position + Vector2(0, -60), "+4 G", Color(1.0, 0.85, 0.35))
 	if crit:
 		Audio.play("etc_critical.wav", -6.0)
-		if Run.has_trait(&"lucky_strikes") and randf() < 0.3:
+		if Run.has_trait(&"lucky_strikes") and Run.rng.randf() < 0.3:
 			Run.ore += 1
 			Events.loot_found.emit("+1 " + Run.ORE_NAME)
 	var origin := global_position if from == Vector2.INF else from
@@ -631,7 +631,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 		Audio.play("weapon003.wav", -6.0)
 		Ring.spawn(room.ground_fx, global_position, 30.0, 0.25, Color(0.85, 0.9, 1.0, 0.9))
 		return
-	if randf() < Run.evade_chance(accuracy):
+	if Run.rng.randf() < Run.evade_chance(accuracy):
 		invulnerable_until = now() + 0.25
 		Events.text_shown.emit(global_position + Vector2(0, -70), "Evade", Color(0.75, 0.95, 1.0))
 		Audio.play("etc_miss.wav", -8.0)

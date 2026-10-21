@@ -30,7 +30,7 @@ func update(t: float, _delta: float) -> void:
 			feedback(0.08, 5.0)
 	if once(t, 0.32, "counter") and is_instance_valid(_target) and _target.is_hittable():
 		var lvl := Run.card_level(&"counter_punch")
-		if lvl > 0 and randf() * 100.0 < Run.card(&"counter_punch").param("chance", lvl):
+		if lvl > 0 and Run.rng.randf() * 100.0 < Run.card(&"counter_punch").param("chance", lvl):
 			player.deal_hit(_target, Run.card_value(&"counter_punch") * Run.skill_mult(Run.card(&"counter_punch")),
 				1.0, 120.0, true, {}, player.global_position)
 			Events.text_shown.emit(_target.global_position + Vector2(0, -70), "Counter", COLOR)

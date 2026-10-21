@@ -15,7 +15,7 @@ func _init() -> void:
 
 func start() -> void:
 	var foes := enemies_in_circle(player.global_position, param("radius", 160.0) * 0.8)
-	foes.shuffle()
+	Run.shuffle(foes)
 	foes = foes.slice(0, maxi(int(param("targets", 2)), 1))
 	if foes.is_empty():
 		Audio.play("weapon_gun_shot.wav", -6.0)

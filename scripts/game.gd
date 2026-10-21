@@ -272,8 +272,8 @@ func _grant(reward: String) -> void:
 			Audio.play("eff_healing1.wav", -4.0)
 			hud.notice("Recovered %d HP" % amount)
 		"galder":
-			var g := randi_range(120, 220)
-			var o := randi_range(1, 2)
+			var g := Run.rng.randi_range(120, 220)
+			var o := Run.rng.randi_range(1, 2)
 			Run.galder += g
 			Run.ore += o
 			Audio.play("etc_money.wav")
@@ -297,7 +297,7 @@ func _open_doors() -> void:
 			if r == "heal" and ServerSettings.hardcore():
 				return false
 			return not REWARD_SYSTEMS.has(r) or Run.system_on(REWARD_SYSTEMS[r]))
-		pool.shuffle()
+		Run.shuffle(pool)
 		rewards.append(pool[0])
 		for r in pool:
 			if r != pool[0]:
@@ -309,7 +309,7 @@ func _open_doors() -> void:
 		if not e.is_boss and e.min_depth <= next.local_depth:
 			pool.append(e)
 	for r in rewards:
-		features.append(&"" if r == "boss" or pool.is_empty() else pool[randi() % pool.size()].id)
+		features.append(&"" if r == "boss" or pool.is_empty() else pool[Run.rng.randi() % pool.size()].id)
 	room.open_doors(rewards, features)
 	Audio.play("etc_warpzone.wav", -6.0)
 	hud.log_line("[System] Exits opened.", Color("94a7b2"))
@@ -936,7 +936,7 @@ func _on_enemy_died(e: Enemy) -> void:
 		hud.log_line("[System] The %s fades. A sky-blue rune is left behind." % e.display_name, Color("8fd8ff"))
 	if e.is_boss:
 		hud.hide_boss()
-		if e.data.drop_item and Run.system_on(&"smithing") and randf() < e.data.drop_chance:
+		if e.data.drop_item and Run.system_on(&"smithing") and Run.rng.randf() < e.data.drop_chance:
 			_legend = GearItem.roll(e.data.drop_item, clampf(Run.stat("DA") / 60.0, 0.0, 1.0))
 			Audio.play("ui_unique_get.wav")
 			hud.log_line("[Notice] %s dropped the legendary %s!" % [e.display_name, _legend.title()], Color("e0b54d"))

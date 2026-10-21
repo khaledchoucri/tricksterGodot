@@ -123,7 +123,7 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	var g: Array = stats_row.get("galder", [0, 20])
 	rewards = {"exp": int(float(stats_row.get("exp", 100)) * 0.6),
 		"tm": int(float(stats_row.get("tm", 30)) * Run.region.tm_scale),
-		"galder": int(randi_range(int(g[0]), int(g[1])) * Run.region.galder_scale) if randf() < 0.6 else 0}
+		"galder": int(Run.rng.randi_range(int(g[0]), int(g[1])) * Run.region.galder_scale) if Run.rng.randf() < 0.6 else 0}
 	if elite:
 		display_name = "Elite " + display_name
 		max_hp = int(max_hp * 2.5)
@@ -369,8 +369,8 @@ func _steer_toward(target: Vector2) -> Vector2:
 
 
 func _wander() -> void:
-	_wander_target = global_position + Vector2(randf_range(-80, 80), randf_range(-40, 40))
-	_enter(State.IDLE, randf_range(idle_stay.x, idle_stay.y))
+	_wander_target = global_position + Vector2(Run.rng.randf_range(-80, 80), Run.rng.randf_range(-40, 40))
+	_enter(State.IDLE, Run.rng.randf_range(idle_stay.x, idle_stay.y))
 
 
 func _start_windup() -> void:

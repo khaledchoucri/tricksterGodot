@@ -43,5 +43,5 @@ func _strike(at: Vector2, e: Enemy) -> void:
 		for other in enemies_in_circle(at, 34.0):
 			hit(other, damage(), 90.0, true)
 		return
-	var fx := {"stun": param("stun", 3.0)} if randf() * 100.0 < param("chance", 50.0) else {}
+	var fx := {"stun": param("stun", 3.0)} if Run.rng.randf() * 100.0 < param("chance", 50.0) else {}
 	hit(e, damage(), 90.0, true, fx)

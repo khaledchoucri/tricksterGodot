@@ -28,8 +28,8 @@ func update(t: float, _delta: float) -> void:
 ## Faint and Guard Break: each hit has their chance to apply.
 func _riders() -> Dictionary:
 	var fx := {}
-	if Run.card_level(&"faint") > 0 and randf() * 100.0 < Run.card_value(&"faint"):
+	if Run.card_level(&"faint") > 0 and Run.rng.randf() * 100.0 < Run.card_value(&"faint"):
 		fx.stun = Run.card(&"faint").param("seconds", 1)
-	if Run.card_level(&"guard_break") > 0 and randf() * 100.0 < Run.card_value(&"guard_break"):
+	if Run.card_level(&"guard_break") > 0 and Run.rng.randf() * 100.0 < Run.card_value(&"guard_break"):
 		fx.debuffs = {"guard": [1.0, Run.card(&"guard_break").param("seconds", 1)]}
 	return fx

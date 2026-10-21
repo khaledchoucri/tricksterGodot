@@ -574,6 +574,16 @@ func _item(id: String) -> ItemData:
 ## Stats, types and traits, jobs and prerequisites, gear, weight and refining.
 func _systems(Run: Node) -> void:
 	_restore_all(Run)
+	# A seed replays a run: the same room plan, card offers and gear rolls.
+	var replays: Array[String] = []
+	for s in [42, 42, 43]:
+		Run.new_run(s)
+		var rooms: Array = Run.plan.map(func(r) -> String: return String(r.data.id) + ("*" if r.elite else ""))
+		var offers: Array = Run.card_offers(3, false).map(func(c: CardData) -> String: return String(c.id))
+		var gear: Array = Run.gear_offers(3).map(func(g: GearItem) -> String: return g.title() + str(g.stats))
+		replays.append("%s | %s | %s" % [", ".join(rooms), ", ".join(offers), ", ".join(gear)])
+	check(replays[0] == replays[1] and replays[0] != replays[2] and Run.run_seed == 43,
+		"the same seed replays the room plan, offers and gear, and another seed doesn't (%s...)" % replays[0].left(60))
 	Run.new_run()
 	var ap: int = Run.stat("AP")
 	var ac: int = Run.stat("AC")

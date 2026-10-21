@@ -41,7 +41,7 @@ func start() -> void:
 			if Run.card_level(&"lady_luck") > 0:
 				var lady := Run.card(&"lady_luck")
 				var lvl := Run.card_level(&"lady_luck")
-				cards = randi_range(int(lady.param("min", lvl)), int(Run.card_value(&"lady_luck")))
+				cards = Run.rng.randi_range(int(lady.param("min", lvl)), int(Run.card_value(&"lady_luck")))
 			throws = cards
 			amount = amount / 2.0  # the pair's damage, a card's share each
 		&"furious_galder_throw":
@@ -98,7 +98,7 @@ func _land(e: Enemy, amount: float) -> void:
 
 ## A Furious handful's Galder, as the server rolls it.
 func _roll() -> int:
-	var r := randi() % 100
+	var r := Run.rng.randi() % 100
 	for row: Array in FURIOUS:
 		r -= int(row[1])
 		if r < 0:

@@ -87,7 +87,7 @@ func _sand_coffins() -> void:
 	sprite.play_action("attack", Combat.screen(Combat.ground(player.global_position - global_position)), 0.8, true)
 	var spots: Array[Vector2] = [player.global_position]
 	for i in 2:
-		var off := Vector2.from_angle(randf() * TAU) * Vector2(90.0, 45.0)
+		var off := Vector2.from_angle(Run.rng.randf() * TAU) * Vector2(90.0, 45.0)
 		var p := player.global_position + off
 		spots.append(p if room.is_walkable(p) else room.nearest_reachable(p))
 	room.release_attack_token(self)

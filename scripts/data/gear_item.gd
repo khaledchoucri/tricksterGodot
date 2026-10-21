@@ -58,24 +58,24 @@ static func roll(p_data: ItemData, quality: float) -> GearItem:
 	for k: String in p_data.stats:
 		var base: int = p_data.stats[k]
 		var lo := 0.85 + 0.1 * quality
-		var t := pow(randf(), 1.0 - 0.5 * quality)  # quality leans toward high rolls
+		var t := pow(Run.rng.randf(), 1.0 - 0.5 * quality)  # quality leans toward high rolls
 		stats[k] = maxi(1, roundi(base * lerpf(lo, 1.15, t))) if base > 0 else base
 	var p := ""
 	var options: Array[String] = []
 	for key: String in PREFIXES:
 		if p_data.slot in PREFIXES[key].slots and not p_data.display_name.begins_with(PREFIXES[key].name):
 			options.append(key)
-	if options.size() > 0 and randf() < 0.3 + 0.4 * quality:
-		p = options[randi() % options.size()]
+	if options.size() > 0 and Run.rng.randf() < 0.3 + 0.4 * quality:
+		p = options[Run.rng.randi() % options.size()]
 		var info: Dictionary = PREFIXES[p]
 		for k: String in info.get("scale", {}):
 			if stats.has(k):
 				stats[k] = roundi(stats[k] * (1.0 + info.scale[k]))
 		for k: String in info.get("add", {}):
 			var r: Array = info.add[k]
-			stats[k] = stats.get(k, 0) + randi_range(r[0], r[1])
+			stats[k] = stats.get(k, 0) + Run.rng.randi_range(r[0], r[1])
 	var g := make(p_data, p, stats)
-	if p == "shrewd" or randf() < 0.15 + 0.3 * quality:
+	if p == "shrewd" or Run.rng.randf() < 0.15 + 0.3 * quality:
 		g.slots += 1
 	return g
 
@@ -143,7 +143,7 @@ func free_slots() -> int:
 ## Fills a slot with a material, rolling its value; `quality` (0..1, from DA)
 ## leans the roll upward. Returns the compound added.
 func compound(mat: MaterialData, quality := 0.0) -> Dictionary:
-	var t := clampf((randf() + randf()) / 2.0 + 0.25 * quality * randf(), 0.0, 1.0)
+	var t := clampf((Run.rng.randf() + Run.rng.randf()) / 2.0 + 0.25 * quality * Run.rng.randf(), 0.0, 1.0)
 	var c := {"material": String(mat.id), "stat": mat.stat, "value": roundi(lerpf(mat.min_value, mat.max_value, t))}
 	compounds.append(c)
 	return c

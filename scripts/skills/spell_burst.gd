@@ -34,7 +34,7 @@ func start() -> void:
 	var landed := false
 	for e in closest_in_circle(_spot, radius, cap):
 		var fx := {}
-		if param("freeze") > 0.0 and randf() * 100.0 < param("chance"):
+		if param("freeze") > 0.0 and Run.rng.randf() * 100.0 < param("chance"):
 			fx.debuffs = {"hold": [1.0, param("freeze")]}
 		hit(e, damage(), 140.0, true, fx, _spot)
 		landed = true
