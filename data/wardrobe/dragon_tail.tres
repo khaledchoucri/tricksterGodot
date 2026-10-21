@@ -11,7 +11,7 @@ slot = "tail"
 stats = {
 "MP": 40
 }
-quirk = &"mana_tail"
+mods = Dictionary[String, float]({"kill_mp": 3.0})
 text = "Every kill restores 3 MP."
 price_tm = 6000
 price_shards = 0

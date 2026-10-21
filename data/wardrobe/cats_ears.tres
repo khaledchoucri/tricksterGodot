@@ -11,7 +11,7 @@ slot = "ear"
 stats = {
 "HV": 3
 }
-quirk = &"catlike"
+mods = Dictionary[String, float]({"evade": 0.06})
 text = "+6% chance to evade attacks."
 price_tm = 0
 price_shards = 0

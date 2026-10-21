@@ -13,7 +13,6 @@ stats = {
 "DP": 10,
 "MD": 10
 }
-quirk = &""
 text = "A small cape from the summer festival."
 price_tm = 0
 price_shards = 0

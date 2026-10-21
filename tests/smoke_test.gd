@@ -612,6 +612,16 @@ func _systems(Run: Node) -> void:
 		"a held AP%% card raises AP by its value (+%s%%: %d -> %d)" % [heart.value_at(3), ap0, Run.stat("AP")])
 	Run.cards.erase(&"pumping_heart")
 	Run.stats_changed()
+	# Wardrobe quirks are mods too; two pieces that each speed you up compound.
+	var worn_before: Dictionary = Profile.worn.duplicate()
+	Profile.give_wardrobe(&"bunny_ears")
+	Profile.give_wardrobe(&"newbie_sprint")
+	Profile.wear("ear", &"bunny_ears")
+	Profile.wear("speed", &"newbie_sprint")
+	var fast: float = Run.speed_mult() / (0.85 if Run.overweight() else 1.0)
+	check(Run.mod("move%") == 18.0 and is_equal_approx(fast, 1.08 * 1.1),
+		"Bunny's Ears and Newbie Sprint add their move%% and compound (x%.3f)" % fast)
+	Profile.worn = worn_before
 	var ap: int = Run.stat("AP")
 	var ac: int = Run.stat("AC")
 	var t: Dictionary = Run.apply_type("power")
@@ -798,7 +808,7 @@ func _systems(Run: Node) -> void:
 	Profile.wear("ear", &"buffalo_horn")
 	Run.new_run()
 	var mult_horn: float = Run.attack_mult()
-	check(Run.quirk(&"elite_bane") and Run.stat("AP") == Run.cls.base.AP + 2 + 6 and mult_horn > 1.0,
+	check(Run.mod("elite_damage%") == 10.0 and Run.stat("AP") == Run.cls.base.AP + 2 + 6 and mult_horn > 1.0,
 		"wearing Buffalo's Horn adds AP and its quirk")
 	Profile.wear("ear", &"")
 	Run.new_run()

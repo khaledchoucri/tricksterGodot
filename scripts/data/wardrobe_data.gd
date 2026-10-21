@@ -1,8 +1,8 @@
 class_name WardrobeData
 extends Resource
 ## A wardrobe piece: one of the slow, persistent slots (ear, tail, head,
-## face, cape, speed) worn between runs. Small stats and one quirk, checked
-## by code through Run.quirk(). Earned from card sets or bought from the
+## face, cape, speed) worn between runs. Small stats and a quirk, its `mods`
+## (summed with the rest by Run.mod()). Earned from card sets or bought from the
 ## Card Hunter with TM and shards.
 
 const SLOTS: Array[String] = ["ear", "tail", "head", "face", "cape", "speed"]
@@ -15,7 +15,8 @@ const SLOT_NAMES := {"ear": "Ear", "tail": "Tail", "head": "Head", "face": "Face
 @export_enum("ear", "tail", "head", "face", "cape", "speed") var slot := "ear"
 ## Stat key (Stats.KEYS) -> value.
 @export var stats: Dictionary = {}
-@export var quirk: StringName
+## The quirk: Mod key -> amount (see scripts/data/mod.gd).
+@export var mods: Dictionary[String, float] = {}
 @export_multiline var text := ""
 ## Card Hunter prices; 0 TM means it can only be earned from a card set.
 @export var price_tm := 0

@@ -487,11 +487,11 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 		element += el[k] / 100.0 * (1.0 - e.resist(k) / 100.0)
 	if not fx.get("magic", false):
 		element -= e.resist("Physical") / 100.0
-	if Run.quirk(&"elite_bane") and (e.is_elite or e.is_boss):
-		mult *= 1.1
+	if e.is_elite or e.is_boss:
+		mult = Run.mod_factor("elite_damage%", false, mult)
 	if fx.get("gun", false):
 		mult *= 1.0 + e.debuff("gunbreak") / 100.0  # Shield Breaker
-	var crit_mult := 2.0 if Run.quirk(&"sharp_eye") else 1.75
+	var crit_mult := 1.75 + Run.mod("crit_damage")
 	if power_shot:
 		crit_mult = 1.0  # the shot already carries its power-shot factor
 	var amount := maxi(1, roundi(base * mult * element * (crit_mult if crit else 1.0) * (0.5 if graze else 1.0) * _defense(e, fx)))
@@ -548,7 +548,7 @@ func start_dash() -> void:
 	var input := move_input()
 	_dash_dir = input.normalized() if input != Vector2.ZERO else Combat.screen(aim).normalized()
 	# Vault over obstacles when there's open ground to land on past them.
-	var reach := dash_distance * (1.25 if Run.quirk(&"long_dash") else 1.0)
+	var reach := Run.mod_factor("dash_distance%", false, dash_distance)
 	var vault := room.vault_distance(global_position, _dash_dir, reach, vault_extra)
 	_vaulting = vault > 0.0
 	_dash_len = dash_time * (vault / dash_distance if _vaulting else reach / dash_distance)
@@ -639,7 +639,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 	var element := attacker.attack_element() if is_instance_valid(attacker) else ""
 	if is_instance_valid(attacker):
 		amount = roundi(amount * (1.0 - attacker.debuff("ap") / 100.0))  # Rust
-	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic, element) * (0.75 if magic and Run.quirk(&"umbrella") else 1.0)))
+	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic, element)))
 	_retaliate(attacker, amount, magic)
 	if Run.in_bunker(now()):
 		Run.bunker_hp -= amount

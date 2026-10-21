@@ -11,7 +11,7 @@ slot = "ear"
 stats = {
 "AP": 6
 }
-quirk = &"elite_bane"
+mods = Dictionary[String, float]({"elite_damage%": 10.0})
 text = "Deal 10% more damage to elites and bosses."
 price_tm = 0
 price_shards = 0

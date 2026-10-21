@@ -11,7 +11,7 @@ slot = "head"
 stats = {
 "MD": 8
 }
-quirk = &"umbrella"
+mods = Dictionary[String, float]({"magic_damage_cut%": 25.0})
 text = "Projectiles deal 25% less damage to you."
 price_tm = 0
 price_shards = 0

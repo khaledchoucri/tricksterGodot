@@ -7,6 +7,7 @@
 G="${GODOT:-/c/Users/Khaled/Downloads/Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe}"
 cd "$(dirname "$0")/.." || exit 1
 BASE=tests/baselines
+BATCH=${BATCH:-4}  # bots at once (BATCH=8 when memory allows)
 CLASSES="buffalo:power bunny:power sheep:magic dragon:magic fox:sense lion:sense cat:charm raccoon:charm"
 
 # The lines of a bot log that describe what happened, without wall-clock noise.
@@ -26,10 +27,13 @@ record() {
 	grep -E "^(PASS|FAIL|SKIP|OK|FAILED)" "$out/smoke.log" > "$out/smoke.txt"  # seeded: numbers included
 	"$G" --headless --path . res://tests/progression_probe.tscn > "$out/probe.log" 2>&1
 	grep -vE "^(Godot Engine|$)" "$out/probe.log" > "$out/probe.txt"
+	n=0
 	for pair in $CLASSES; do
 		cls=${pair%%:*}
 		"$G" --headless --fixed-fps 60 --path . res://tests/playtest.tscn -- \
 			runs="$seeds" seed=1 class="$cls" build="${pair##*:}" city=full tag="_base_$cls" > "$out/bots/$cls.log" 2>&1 &
+		n=$((n + 1))
+		[ $((n % BATCH)) -eq 0 ] && wait  # about 300 MB a bot
 	done
 	wait
 	for pair in $CLASSES; do

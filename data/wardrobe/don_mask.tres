@@ -11,7 +11,7 @@ slot = "face"
 stats = {
 "AC": 2
 }
-quirk = &"masked"
+mods = Dictionary[String, float]({"shop_discount%": 20.0})
 text = "Shops sell for 20% less."
 price_tm = 6000
 price_shards = 0

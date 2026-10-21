@@ -11,7 +11,7 @@ slot = "tail"
 stats = {
 "LK": 2
 }
-quirk = &"thrifty"
+mods = Dictionary[String, float]({"galder%": 20.0})
 text = "Monsters drop 20% more Galder."
 price_tm = 0
 price_shards = 0

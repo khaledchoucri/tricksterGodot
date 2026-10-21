@@ -11,7 +11,7 @@ slot = "tail"
 stats = {
 "HP": 40
 }
-quirk = &"hearty"
+mods = Dictionary[String, float]({"clear_heal%": 5.0})
 text = "Recover 5% HP whenever a room is cleared."
 price_tm = 4000
 price_shards = 0

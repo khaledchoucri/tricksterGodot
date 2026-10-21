@@ -11,7 +11,7 @@ slot = "face"
 stats = {
 "LK": 2
 }
-quirk = &"sharp_eye"
+mods = Dictionary[String, float]({"crit_damage": 0.25})
 text = "Critical hits deal 25% more damage."
 price_tm = 0
 price_shards = 0

@@ -108,8 +108,8 @@ func _load_room() -> void:
 	room.door_entered.connect(_on_door_entered)
 	_spawn_player(room.entry)
 	Run.gain_mp(ROOM_MP + Run.room_mp_bonus())
-	if Run.quirk(&"well_rested"):
-		Run.heal(int(Run.max_hp * 0.08))
+	if Run.mod("room_heal%") > 0.0:
+		Run.heal(int(Run.max_hp * (Run.mod("room_heal%") / 100.0)))
 	Audio.play_music(Run.region.boss_music if plan.boss else Run.region.field_music)
 	Audio.play_ambience(Run.region.boss_ambience if plan.boss else Run.region.field_ambience)
 	var heat := ServerSettings.heat()
@@ -156,8 +156,8 @@ func _on_room_cleared() -> void:
 		return
 	phase = Phase.REWARD
 	Audio.play("etc_monq_complete.wav", -4.0)
-	if Run.quirk(&"hearty"):
-		Run.heal(int(Run.max_hp * 0.05))
+	if Run.mod("clear_heal%") > 0.0:
+		Run.heal(int(Run.max_hp * (Run.mod("clear_heal%") / 100.0)))
 	hud.log_line("[System] Room cleared.", Color("94a7b2"))
 	var cleared_room := room
 	await get_tree().create_timer(0.6).timeout
@@ -195,7 +195,7 @@ func _next_step() -> void:
 func _grant(reward: String) -> void:
 	match reward:
 		"card", "upgrade":
-			var n := (4 if Run.quirk(&"sunshine") else 3) + (1 if Run.has_passive(&"data_bleed") else 0)
+			var n := 3 + int(Run.mod("card_choices"))
 			var opts := Run.card_offers(n, reward == "upgrade")
 			if opts.is_empty():
 				opts = Run.card_offers(n, reward != "upgrade")
@@ -219,7 +219,7 @@ func _grant(reward: String) -> void:
 				_start_pick("card", opts)
 				return
 		"gear":
-			var offers := Run.gear_offers(2 if Run.has_trait(&"treasure_sense") else 1)
+			var offers := Run.gear_offers(1 + int(Run.mod("gear_choices")))
 			if not offers.is_empty():
 				Audio.play("etc_item1.wav", -4.0)
 				_start_pick("gear", offers)

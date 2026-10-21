@@ -11,7 +11,7 @@ slot = "ear"
 stats = {
 "DA": 3
 }
-quirk = &"sly"
+mods = Dictionary[String, float]({"material_drop": 0.1})
 text = "Monsters drop their materials 10% more often."
 price_tm = 5000
 price_shards = 0

@@ -11,7 +11,7 @@ slot = "cape"
 stats = {
 "HP": 30
 }
-quirk = &"job_cloak"
+mods = Dictionary[String, float]({"job_change_points": 1.0})
 text = "Every job change also gives a free type point."
 price_tm = 10000
 price_shards = 2

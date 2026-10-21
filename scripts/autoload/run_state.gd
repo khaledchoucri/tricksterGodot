@@ -261,6 +261,7 @@ func build_trickster() -> ClassData:
 	j.passive = &"data_bleed"
 	j.passive_name = "Data Bleed"
 	j.passive_text = "Skill card rewards offer one more choice."
+	j.passive_mods = {"card_choices": 1.0}
 	var pool: Array[CardData] = []
 	for c2 in classes[0].start_job.cards:
 		pool.append(c2)
@@ -794,8 +795,8 @@ func heal(amount: int) -> void:
 func start_job(j: JobData) -> void:
 	job = j
 	jobs.append(j)
-	if jobs.size() > 1 and quirk(&"job_cloak"):
-		pending_levels += 1  # a free type point
+	if jobs.size() > 1:
+		pending_levels += int(mod("job_change_points"))  # the Job Cloak's free type point
 	if j.starter and card_level(j.starter.id) == 0:
 		add_card(j.starter.id)
 	stats_changed()
@@ -996,17 +997,46 @@ func card_level(id: StringName) -> int:
 	return cards.get(id, 0)
 
 
-## The sum of every held card's `mods` for `key` (a Mod key), at the card's level.
+## The sum of `key` (a Mod key) over everything held: cards at their level, then job
+## passives, unlocked traits and worn wardrobe pieces.
 func mod(key: String) -> float:
-	assert(Mod.is_key(key), "not a Mod key: " + key)
 	var total := 0.0
+	for v: float in _mod_values(key):
+		total += v
+	return total
+
+
+## `start` multiplied by each source's 1 + v / 100 in turn (1 - v / 100 when `cut`), for
+## effects that multiply rather than add: two pieces that each move you faster compound.
+func mod_factor(key: String, cut := false, start := 1.0) -> float:
+	var f := start
+	for v: float in _mod_values(key):
+		f *= 1.0 - v / 100.0 if cut else 1.0 + v / 100.0
+	return f
+
+
+## Every held source's amount for `key`, in the order mod() documents.
+func _mod_values(key: String) -> Array[float]:
+	assert(Mod.is_key(key), "not a Mod key: " + key)
+	var out: Array[float] = []
 	for id: StringName in cards:
 		var c := card(id)
 		if c and c.mods.has(key):
-			total += c.mod_at(key, card_level(id))
+			out.append(c.mod_at(key, card_level(id)))
 	if rune and not cards.has(rune.id) and rune.mods.has(key):
-		total += rune.mod_at(key, rune_level)
-	return total
+		out.append(rune.mod_at(key, rune_level))
+	for j in jobs:
+		if j.passive_mods.has(key):
+			out.append(j.passive_mods[key])
+	for type: String in Stats.TYPE_ORDER:
+		for i in trait_count(type):
+			var t: Dictionary = Stats.trait_at(type, i).get("mods", {})
+			if t.has(key):
+				out.append(t[key])
+	for w in ([] as Array[WardrobeData] if _baseline else worn_pieces()):
+		if w.mods.has(key):
+			out.append(w.mods[key])
+	return out
 
 
 func card_value(id: StringName) -> float:
@@ -1169,14 +1199,6 @@ func worn_pieces() -> Array[WardrobeData]:
 	return out
 
 
-## Whether a worn wardrobe piece has this quirk.
-func quirk(id: StringName) -> bool:
-	for w in worn_pieces():
-		if w.quirk == id:
-			return true
-	return false
-
-
 ## Monster card drop for a kill (rare; elites and bosses more often).
 func roll_card(enemy_id: StringName, elite: bool, boss: bool) -> bool:
 	if not system_on(&"cards"):
@@ -1285,8 +1307,7 @@ func gear_offers(n: int) -> Array[GearItem]:
 
 func refine_chance(g: GearItem) -> float:
 	var c := g.refine_chance() + stat("LK") / 1000.0
-	if has_trait(&"smiths_eye"):
-		c += 0.1
+	c += mod("refine_chance")
 	return clampf(c, 0.0, 0.99)
 
 
@@ -1364,10 +1385,7 @@ func skill_mult(c: CardData = null) -> float:
 		m = _ratio(scaling, {"DP": 60.0}.get(scaling, AP_SOFT))
 	if c and c.id in THROWN:
 		m *= 1.0 + card_value(&"precise_pitch") / 100.0
-	if has_passive(&"arena_champion"):
-		m *= 1.15
-	if has_passive(&"duelists_edge"):
-		m *= 1.1
+	m = mod_factor("skill_damage%", false, m)
 	return m * _berserk_mult()
 
 
@@ -1517,16 +1535,11 @@ func attack_speed_mult() -> float:
 
 
 func speed_mult() -> float:
-	var m := 0.85 if overweight() else 1.0
-	if quirk(&"swift"):
-		m *= 1.08
-	if quirk(&"swift_feet"):
-		m *= 1.1
-	return m
+	return mod_factor("move%", false, 0.85 if overweight() else 1.0)
 
 
 func dash_cooldown_mult() -> float:
-	var m := (1.3 if overweight() else 1.0) * (0.8 if quirk(&"quick_dash") else 1.0)
+	var m := mod_factor("dash_cooldown_cut%", true, 1.3 if overweight() else 1.0)
 	return m * (0.8 if not cls.armed else 1.0)  # fighting bare-handed keeps you light on your feet
 
 
@@ -1561,11 +1574,9 @@ func crit_chance(e: Enemy = null) -> float:
 func damage_taken_mult(magic := false, element := "") -> float:
 	var key := "MD" if magic else "DP"
 	var m := (float(_ref.get(key, 0)) + DEF_SOFT) / (stat(key) + DEF_SOFT)
-	if has_passive(&"hired_blade"):
-		m *= 0.9
-	m *= 1.0 - mod("damage_cut%") / 100.0
+	m = mod_factor("damage_cut%", true, m)
 	if magic:
-		m *= 1.0 - mod("magic_damage_cut%") / 100.0  # Mana Reflector: the part it turns back
+		m = mod_factor("magic_damage_cut%", true, m)  # Mana Reflector turns its part back
 	if element != "":
 		m *= 1.0 - resist(element) / 100.0
 	return m
@@ -1575,15 +1586,12 @@ func damage_taken_mult(magic := false, element := "") -> float:
 func evade_chance(ac: int) -> float:
 	var hv := stat("HV")
 	var c := hv / float(hv + ac + 150)
-	if has_trait(&"light_feet"):
-		c += 0.08
-	if quirk(&"catlike"):
-		c += 0.06
+	c += mod("evade")
 	return minf(c, 0.6)
 
 
 func mp_per_hit() -> int:
-	return 8 if has_trait(&"mana_flow") else 5
+	return 5 + int(mod("hit_mp"))
 
 
 func gain_mp(amount: int) -> void:
@@ -1614,7 +1622,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 		mat: MaterialData = null, mat_chance := 0.0) -> Dictionary:
 	kills += 1
 	tm += tm_amount
-	galder += int(galder_amount * (1.0 + stat("LK") / 100.0) * (1.2 if quirk(&"thrifty") else 1.0))
+	galder += int(galder_amount * (1.0 + stat("LK") / 100.0) * mod_factor("galder%"))
 	var found := 0
 	if boss:
 		found = 3
@@ -1627,11 +1635,11 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 			count = 3
 		elif elite:
 			count = 2
-		elif rng.randf() < (mat_chance + stat("DA") / 200.0 + (0.1 if quirk(&"sly") else 0.0)) * ServerSettings.drop_mult():
+		elif rng.randf() < (mat_chance + stat("DA") / 200.0 + mod("material_drop")) * ServerSettings.drop_mult():
 			count = 1
 		add_material(mat, count)
-	if quirk(&"mana_tail"):
-		gain_mp(3)
+	if mod("kill_mp") > 0.0:
+		gain_mp(int(mod("kill_mp")))
 	gain_exp(exp_amount)
 	return {"ore": found, "material": mat if count > 0 else null, "count": count}
 
@@ -1691,7 +1699,7 @@ func element_attack() -> Dictionary:
 ## What a shop sells this visit: {"kind", "price", ...}.
 func shop_offers() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	var cut := 0.8 if quirk(&"masked") else 1.0
+	var cut := mod_factor("shop_discount%", true)
 	for g in gear_offers(2):
 		out.append({"kind": "gear", "item": g, "price": int((160 + 24 * g.data.level + 50 * g.slots) * cut)})
 	out.append({"kind": "ore", "count": 3, "price": int(180 * cut)})

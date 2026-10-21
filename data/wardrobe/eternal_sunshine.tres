@@ -11,7 +11,7 @@ slot = "head"
 stats = {
 "LK": 1
 }
-quirk = &"sunshine"
+mods = Dictionary[String, float]({"card_choices": 1.0})
 text = "Skill card rewards offer four choices."
 price_tm = 12000
 price_shards = 3

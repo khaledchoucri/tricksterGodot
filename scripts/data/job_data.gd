@@ -11,8 +11,10 @@ extends Resource
 @export var cards: Array[CardData] = []
 ## Granted when the job begins (a 1st job's starting skill).
 @export var starter: CardData
-## Job passive, checked by code through Run.has_passive().
+## Job passive: its id, for passives with their own behaviour (Run.has_passive()), and its
+## plain numbers as mods (Mod key -> amount, summed by Run.mod()).
 @export var passive: StringName
+@export var passive_mods: Dictionary[String, float] = {}
 @export var passive_name := ""
 @export_multiline var passive_text := ""
 @export_multiline var text := ""

@@ -44,17 +44,17 @@ const TRAITS := {
 		{"id": &"armor_crush", "name": "Armor Crush", "text": "Finishers expose enemies: +25% damage taken for 4 s."},
 	],
 	"magic": [
-		{"id": &"mana_flow", "name": "Mana Flow", "text": "Hits restore 3 more MP."},
+		{"id": &"mana_flow", "name": "Mana Flow", "text": "Hits restore 3 more MP.", "mods": {"hit_mp": 3.0}},
 		{"id": &"dash_casting", "name": "Dash Casting", "text": "Cast skills in the middle of a dash."},
 		{"id": &"overcast", "name": "Overcast", "text": "Short on MP, pay the rest with HP (2 HP per MP)."},
 	],
 	"sense": [
-		{"id": &"treasure_sense", "name": "Treasure Sense", "text": "Gear rewards offer a choice of two."},
-		{"id": &"smiths_eye", "name": "Smith's Eye", "text": "Refining succeeds 10% more often."},
+		{"id": &"treasure_sense", "name": "Treasure Sense", "text": "Gear rewards offer a choice of two.", "mods": {"gear_choices": 1.0}},
+		{"id": &"smiths_eye", "name": "Smith's Eye", "text": "Refining succeeds 10% more often.", "mods": {"refine_chance": 0.1}},
 		{"id": &"lucky_strikes", "name": "Lucky Strikes", "text": "Critical hits can knock loose Bronze Fragments."},
 	],
 	"charm": [
-		{"id": &"light_feet", "name": "Light Feet", "text": "+8% chance to evade attacks."},
+		{"id": &"light_feet", "name": "Light Feet", "text": "+8% chance to evade attacks.", "mods": {"evade": 0.08}},
 		{"id": &"perfect_dodge", "name": "Perfect Dodge", "text": "Dashing through an attack resets your dash."},
 		{"id": &"second_wind", "name": "Second Wind", "text": "Once per run, a fatal blow leaves you at 30% HP."},
 	],

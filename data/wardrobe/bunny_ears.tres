@@ -11,7 +11,7 @@ slot = "ear"
 stats = {
 "DX": 2
 }
-quirk = &"swift"
+mods = Dictionary[String, float]({"move%": 8.0})
 text = "Move 8% faster."
 price_tm = 0
 price_shards = 0

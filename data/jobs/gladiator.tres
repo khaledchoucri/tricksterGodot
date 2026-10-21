@@ -17,6 +17,7 @@ actor = "power_m"
 tier = 3
 cards = Array[ExtResource("2_c")]([ExtResource("c_shadow"), ExtResource("c_suffocate"), ExtResource("c_sonic_slash"), ExtResource("c_gale_strike"), ExtResource("c_chi_sword"), ExtResource("c_chakra_balance")])
 passive = &"arena_champion"
+passive_mods = Dictionary[String, float]({"skill_damage%": 15.0})
 passive_name = "Arena Champion"
 passive_text = "Your skills deal 15% more damage."
 text = "An advanced Knight with an even wider range of skills. A perfect match for a Thief Master."

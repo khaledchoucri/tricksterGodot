@@ -11,7 +11,7 @@ slot = "face"
 stats = {
 "HP": 20
 }
-quirk = &"well_rested"
+mods = Dictionary[String, float]({"room_heal%": 8.0})
 text = "Recover 8% HP on entering each room."
 price_tm = 8000
 price_shards = 1

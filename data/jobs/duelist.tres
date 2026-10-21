@@ -22,6 +22,7 @@ actor = "power_f"
 tier = 3
 cards = Array[ExtResource("2_c")]([ExtResource("c_faint"), ExtResource("c_lacerator"), ExtResource("c_berserker"), ExtResource("c_piercing_wave"), ExtResource("c_aura_of_haste"), ExtResource("c_tidal_slash"), ExtResource("c_earthquake_blade"), ExtResource("c_blazing_strike"), ExtResource("c_inferno_blade"), ExtResource("c_tempest_strike"), ExtResource("c_lightning_strike")])
 passive = &"duelists_edge"
+passive_mods = Dictionary[String, float]({"skill_damage%": 10.0, "mp_cost_cut%": 10.0})
 passive_name = "Duelist's Edge"
 passive_text = "Your skills deal 10% more damage and cost 10% less MP."
 text = "Learns Knight skills too: two jobs' trees at the expense of new skills."

@@ -21,6 +21,7 @@ actor = "power_m"
 tier = 3
 cards = Array[ExtResource("2_c")]([ExtResource("c_guard_break"), ExtResource("c_boxer_dash"), ExtResource("c_uppercut"), ExtResource("c_quad_punch"), ExtResource("c_counter_punch"), ExtResource("c_eagle_eye"), ExtResource("c_guard"), ExtResource("c_tetra_punch"), ExtResource("c_desperate_rally"), ExtResource("c_clinch_release")])
 passive = &"hired_blade"
+passive_mods = Dictionary[String, float]({"damage_cut%": 10.0})
 passive_name = "Hired Blade"
 passive_text = "You take 10% less damage."
 text = "Learns Boxer skills too: two jobs' trees at the expense of new skills."
