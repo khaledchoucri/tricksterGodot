@@ -11,6 +11,9 @@ extends Node
 const MOVES: Array[String] = ["move_left", "move_right", "move_up", "move_down"]
 ## Game seconds a room may take before the bot gives up on it.
 const ROOM_LIMIT := 150.0
+## Seconds a whole run may take, menus included, before the bot gives up (three regions of rooms
+## take up to about 30 minutes; a capped run is reported as such, not as a death).
+const RUN_LIMIT := 3600.0
 
 var runs := 4
 var build := "mixed"
@@ -133,7 +136,7 @@ func _one_run(index: int) -> void:
 	# The last HP losses, for a death's report: when, how much, and the nearest monster.
 	var drops: PackedStringArray = []
 	var last_hp := Run.hp
-	while not game.hud.results_panel.visible and t < 1800.0:
+	while not game.hud.results_panel.visible and t < RUN_LIMIT:
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		_tick(get_physics_process_delta_time())
@@ -164,6 +167,8 @@ func _one_run(index: int) -> void:
 		r.level, r.job, r.time, r.kills])
 	if not r.won:
 		print("   last HP losses: %s" % "; ".join(drops))
+		if t >= RUN_LIMIT:
+			print("   (stopped at the %d s run limit: not a death)" % int(RUN_LIMIT))
 	_choose_heirloom()
 	_restore_city()
 	_city_craft()
@@ -556,14 +561,14 @@ func _end_room() -> void:
 ## Hits and seconds to kill, and how hard monsters hit, by depth band.
 func _feel_report() -> void:
 	print("---- combat feel ----")
-	for band: Array in [[0, 3], [4, 7], [8, 11], [12, 16]]:
+	for band: Array in [[0, 3], [4, 7], [8, 11], [12, 16], [17, 20], [21, 24]]:
 		var n := []
 		var e := []
 		for k in kill_log:
 			if k.depth >= band[0] and k.depth <= band[1] and not k.boss:
 				(e if k.elite else n).append(k)
 		print("rooms %d-%d  normal: %s   elite: %s" % [band[0] + 1, band[1] + 1, _kill_stats(n), _kill_stats(e)])
-	for r in 2:
+	for r in Run.route.regions.size():
 		var pcts: Array = hit_log.filter(func(h: Dictionary) -> bool: return h.region == r).map(func(h: Dictionary) -> float: return h.pct)
 		if pcts.size():
 			pcts.sort()
