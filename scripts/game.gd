@@ -225,8 +225,8 @@ func _grant(reward: String) -> void:
 				_start_pick("gear", offers)
 				return
 		"anvil":
-			Run.ore += ANVIL_ORE
-			hud.log_line("[System] The smith left %d %ss by the anvil." % [ANVIL_ORE, Run.ORE_NAME], INFO)
+			Run.purse.ore += ANVIL_ORE
+			hud.log_line("[System] The smith left %d %ss by the anvil." % [ANVIL_ORE, Run.purse.ORE_NAME], INFO)
 			Audio.play_ambience("bgs_blacksmith.wav")
 			_open_anvil()
 			return
@@ -274,12 +274,12 @@ func _grant(reward: String) -> void:
 		"galder":
 			var g := Run.rng.randi_range(120, 220)
 			var o := Run.rng.randi_range(1, 2)
-			Run.galder += g
-			Run.ore += o
+			Run.purse.galder += g
+			Run.purse.ore += o
 			Audio.play("etc_money.wav")
-			hud.notice("+%d Galder  ·  +%d %s" % [g, o, Run.ORE_NAME])
+			hud.notice("+%d Galder  ·  +%d %s" % [g, o, Run.purse.ORE_NAME])
 		"shard":
-			Run.shards += 1
+			Run.purse.shards += 1
 			Audio.play("ui_unique_get.wav", -4.0)
 			hud.notice("Harkon Shard found")
 			hud.log_line("[System] A Harkon Shard hums faintly in your inventory.", Color("c9a4ff"))
@@ -401,12 +401,12 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 			for k: String in options:
 				if k == "":
 					shown.append({"title": "Leave the anvil", "tag": "", "cancel": true,
-						"text": "%d %ss and %d Galder left." % [Run.ore, Run.ORE_NAME, Run.galder]})
+						"text": "%d %ss and %d Galder left." % [Run.purse.ore, Run.purse.ORE_NAME, Run.purse.galder]})
 					continue
 				var g := Run.equipped(k)
 				var cost := g.refine_cost()
 				var text := "%d%% chance  ·  %d %s%s, %d Galder" % [roundi(Run.refine_chance(g) * 100), cost.ore,
-					Run.ORE_NAME, "s" if cost.ore != 1 else "", cost.galder]
+					Run.purse.ORE_NAME, "s" if cost.ore != 1 else "", cost.galder]
 				if g.refine >= 4:
 					text += "  ·  failing may lose a level"
 				shown.append({"title": "%s  →  +%d" % [g.title(), g.refine + 1], "tag": g.data.refine_stat,
@@ -417,7 +417,7 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 				if m == null:
 					shown.append({"title": "Leave the Compounder", "tag": "", "text": _materials_text(), "cancel": true})
 					continue
-				var have := Run.material_count(m)
+				var have := Run.purse.material_count(m)
 				shown.append({"title": m.display_name, "tag": "%d / %d" % [have, m.need], "icon": m.icon(),
 					"text": "Compounds %s into a free slot." % m.describe(),
 					"disabled": have < m.need or Run.compound_targets().is_empty()})
@@ -434,13 +434,13 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 		"shop":
 			for o: Dictionary in options:
 				if o.is_empty():
-					shown.append({"title": "Leave the shop", "tag": "", "text": "%d Galder left." % Run.galder, "cancel": true})
+					shown.append({"title": "Leave the shop", "tag": "", "text": "%d Galder left." % Run.purse.galder, "cancel": true})
 					continue
 				var entry := _shop_entry(o)
 				entry.tag = "%d G" % o.price
-				entry.disabled = Run.galder < o.price
+				entry.disabled = Run.purse.galder < o.price
 				shown.append(entry)
-			title = "Shop  ·  %d Galder" % Run.galder
+			title = "Shop  ·  %d Galder" % Run.purse.galder
 		"port":
 			var full := Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE
 			for g: GearItem in options:
@@ -610,7 +610,7 @@ func _on_picked(i: int) -> void:
 				_return_to = ""
 			else:
 				_shop.erase(o)
-				Run.galder -= o.price
+				Run.purse.galder -= o.price
 				Audio.play("etc_money.wav")
 				if _buy(o):
 					return
@@ -673,16 +673,16 @@ func _equip(g: GearItem, slot_key: String) -> void:
 
 
 func _scrap(g: GearItem) -> void:
-	Run.galder += SCRAP_GALDER
+	Run.purse.galder += SCRAP_GALDER
 	if g:
 		hud.log_line("[System] Scrapped %s for %d Galder." % [g.title(), SCRAP_GALDER], MUTED)
 
 
 func _open_compounder() -> void:
 	var mats: Array = []
-	for id: StringName in Run.materials:
-		var m: MaterialData = Run.material_info[id]
-		if Run.materials[id] >= m.need:
+	for id: StringName in Run.purse.materials:
+		var m: MaterialData = Run.purse.material_info[id]
+		if Run.purse.materials[id] >= m.need:
 			mats.append(m)
 	mats.sort_custom(func(a: MaterialData, b: MaterialData) -> bool: return a.display_name < b.display_name)
 	mats.append(null)
@@ -691,12 +691,12 @@ func _open_compounder() -> void:
 
 func _materials_text() -> String:
 	var parts: PackedStringArray = []
-	for id: StringName in Run.materials:
-		var m: MaterialData = Run.material_info[id]
-		if Run.materials[id] > 0 and Run.materials[id] < m.need:
-			parts.append("%s %d/%d" % [m.display_name, Run.materials[id], m.need])
+	for id: StringName in Run.purse.materials:
+		var m: MaterialData = Run.purse.material_info[id]
+		if Run.purse.materials[id] > 0 and Run.purse.materials[id] < m.need:
+			parts.append("%s %d/%d" % [m.display_name, Run.purse.materials[id], m.need])
 	if parts.is_empty():
-		return "Nothing else in your pack." if Run.materials.size() else "You carry no monster materials yet."
+		return "Nothing else in your pack." if Run.purse.materials.size() else "You carry no monster materials yet."
 	return "Not enough yet: " + ", ".join(parts)
 
 
@@ -711,7 +711,7 @@ func _shop_entry(o: Dictionary) -> Dictionary:
 		"gear":
 			return _gear_option(o.item)
 		"ore":
-			return {"title": "%d %ss" % [o.count, Run.ORE_NAME], "text": "For refining at anvils."}
+			return {"title": "%d %ss" % [o.count, Run.purse.ORE_NAME], "text": "For refining at anvils."}
 		"material":
 			var m: MaterialData = o.material
 			return {"title": "%d %s" % [o.count, m.display_name], "icon": m.icon(), "text": "Compounds %s." % m.describe()}
@@ -732,9 +732,9 @@ func _buy(o: Dictionary) -> bool:
 				return true
 			_equip(g, "")
 		"ore":
-			Run.ore += o.count
+			Run.purse.ore += o.count
 		"material":
-			Run.add_material(o.material, o.count)
+			Run.purse.add_material(o.material, o.count)
 		"potion":
 			Run.heal(int(Run.max_hp * o.heal))
 			Audio.play("eff_healing1.wav", -4.0)
@@ -757,13 +757,13 @@ func _dug(depth: int, misses: int) -> void:
 	var r := Run.dig_rewards(depth)
 	var found: PackedStringArray = []
 	if r.ore > 0:
-		Run.ore += r.ore
-		found.append("%d %s%s" % [r.ore, Run.ORE_NAME, "s" if r.ore > 1 else ""])
+		Run.purse.ore += r.ore
+		found.append("%d %s%s" % [r.ore, Run.purse.ORE_NAME, "s" if r.ore > 1 else ""])
 	if r.material:
-		Run.add_material(r.material, r.count)
+		Run.purse.add_material(r.material, r.count)
 		found.append("%d %s" % [r.count, r.material.display_name])
 	if r.shard > 0:
-		Run.shards += r.shard
+		Run.purse.shards += r.shard
 		found.append("a Harkon Shard")
 	hud.log_line("[System] Dug %d deep: %s." % [depth, ", ".join(found) if found.size() else "nothing but dirt"], INFO)
 	if found.size():
@@ -847,7 +847,7 @@ func _win() -> void:
 		return
 	phase = Phase.WON
 	Run.won = true
-	Run.shards += 2
+	Run.purse.shards += 2
 	Run.finish(true)
 	Audio.play("guild_battlewin.wav")
 	hud.log_line("[Notice] %s cleared. The Harkon Shards resonate." % Run.route.region.display_name, Color("e0b54d"))
@@ -870,7 +870,7 @@ func _finish_win() -> void:
 
 ## A region's boss (not the last) is down: a shard, then on to the next region.
 func _region_cleared() -> void:
-	Run.shards += 1
+	Run.purse.shards += 1
 	Audio.play("guild_battlewin.wav", -4.0)
 	var next: RoomPlan = Run.route.plan[Run.route.depth + 1]
 	hud.center("%s cleared\n%s ahead" % [Run.route.region.display_name, next.region.display_name], 2.0)
@@ -915,7 +915,7 @@ func _on_enemy_died(e: Enemy) -> void:
 	if e.rewards.galder > 0:
 		Audio.play("etc_money.wav", -10.0)
 	if drop.ore > 0:
-		hud.log_line("[System] Picked up %d %s%s." % [drop.ore, Run.ORE_NAME, "s" if drop.ore > 1 else ""], INFO)
+		hud.log_line("[System] Picked up %d %s%s." % [drop.ore, Run.purse.ORE_NAME, "s" if drop.ore > 1 else ""], INFO)
 	if not e.data.echo and Run.roll_card(e.data.id, e.is_elite, e.is_boss):
 		var card_name := "%s Card" % e.display_name.trim_prefix("Elite ")
 		if Profile.add_card(e.data.id):
@@ -927,7 +927,7 @@ func _on_enemy_died(e: Enemy) -> void:
 	if drop.material:
 		var m: MaterialData = drop.material
 		hud.log_line("[System] Picked up %s%s (%d / %d)." % ["%d " % drop.count if drop.count > 1 else "", m.display_name,
-			Run.material_count(m), m.need], INFO)
+			Run.purse.material_count(m), m.need], INFO)
 	if Run.level > before:
 		Audio.play("etc_levelup.wav", -2.0)
 		hud.notice("Level up! Lv %d  ·  invest in a type after the fight" % Run.level)

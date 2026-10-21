@@ -60,7 +60,7 @@ func charm_block(card: CardData, level: int, slot: int) -> String:
 	var own: String = card.behavior.cast_block(card, level, player) if card.behavior else ""
 	if own != "":
 		return own
-	if galder_cost(card, level) > 0 and Run.galder < galder_cost(card, level):
+	if galder_cost(card, level) > 0 and Run.purse.galder < galder_cost(card, level):
 		return "Not enough Galder"
 	return ""
 
@@ -97,7 +97,7 @@ func try_cast(slot: int) -> bool:
 	if not Run.spend_mp(cost):
 		Events.mp_short.emit()
 		return false
-	Run.spend_galder(galder_cost(card, level))
+	Run.purse.spend_galder(galder_cost(card, level))
 	for t in Run.talents():
 		t.on_cast(card, level, slot)  # Blood Testament: spells cost health too
 	var skill: Skill = card.behavior.new()

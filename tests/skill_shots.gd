@@ -72,7 +72,7 @@ func _shoot() -> void:
 		Run.form = &""
 		# The Charm line's conditions: Galder in the purse, the beast form a
 		# beast skill needs, full HP for Mass Destruction.
-		Run.galder = 999
+		Run.purse.galder = 999
 		Run.hp = Run.max_hp
 		if Run.card(id).form != &"":
 			var need: StringName = Run.card(id).form

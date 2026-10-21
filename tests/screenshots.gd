@@ -92,8 +92,8 @@ func _shoot() -> void:
 	await _snap("05_gear_pick")
 	game.hud.pick_panel.visible = false
 	get_tree().paused = false
-	Run.ore = 6
-	Run.galder = 500
+	Run.purse.ore = 6
+	Run.purse.galder = 500
 	game._open_anvil()
 	await _wait(0.3)
 	await _snap("06_anvil")
@@ -101,8 +101,8 @@ func _shoot() -> void:
 	get_tree().paused = false
 	for path in DirAccess.get_files_at("res://data/materials"):
 		var m: MaterialData = load("res://data/materials/" + path.trim_suffix(".remap"))
-		Run.material_info[m.id] = m
-		Run.materials[m.id] = m.need + 1
+		Run.purse.material_info[m.id] = m
+		Run.purse.materials[m.id] = m.need + 1
 	game._open_compounder()
 	await _wait(0.3)
 	await _snap("06b_compounder_full")

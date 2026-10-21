@@ -77,7 +77,7 @@ func refresh(player: Player) -> void:
 	mp.max_value = Run.max_mp
 	mp.value = Run.mp
 	%MpLabel.text = "MP %d / %d" % [Run.mp, Run.max_mp]
-	%GalderLabel.text = "%d Galder  ·  %d Bronze" % [Run.galder, Run.ore]
+	%GalderLabel.text = "%d Galder  ·  %d Bronze" % [Run.purse.galder, Run.purse.ore]
 	var owned: PackedStringArray = []
 	for id: StringName in Run.cards:
 		owned.append("%s %d" % [Run.card(id).display_name, Run.cards[id]])
@@ -317,7 +317,7 @@ func show_results(won: bool) -> void:
 		["Time", "%d:%04.1f" % [int(Run.time) / 60, fmod(Run.time, 60.0)]],
 		["Level", "%d  %s" % [Run.level, Run.job.display_name]],
 		["Monsters", str(Run.kills)],
-		["TM carried home", str(Run.tm)], ["Harkon Shards", str(Run.shards)], ["Galder", str(Run.galder)]]
+		["TM carried home", str(Run.purse.tm)], ["Harkon Shards", str(Run.purse.shards)], ["Galder", str(Run.purse.galder)]]
 	var t := "[table=2]"
 	for r: Array in rows:
 		t += "[cell][color=#9fb2c0]%s[/color]     [/cell][cell]%s[/cell]" % r

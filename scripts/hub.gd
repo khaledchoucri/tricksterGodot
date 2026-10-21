@@ -454,7 +454,7 @@ func _compound_menu(npc: Npc) -> void:
 		var mats: Array[MaterialData] = []
 		var options: Array = []
 		for id: String in Profile.materials:
-			var m := Run.material_by_id(StringName(id))
+			var m := Run.purse.material_by_id(StringName(id))
 			if m == null or Profile.materials[id] <= 0:
 				continue
 			mats.append(m)

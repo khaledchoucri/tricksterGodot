@@ -9,6 +9,9 @@ signal leveled_up(new_level: int)
 ## The run's route (Run.route): the regions it crosses, the planned rooms and how deep you are.
 var route := RunRoute.new()
 
+## What the run carries (Run.purse): Galder, ore, TM, shards and monster materials.
+var purse := RunPurse.new()
+
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
 	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
@@ -33,7 +36,6 @@ const EQUIP_SLOTS: Array[String] = ["weapon", "hat", "shield", "innerwear", "acc
 ## Echoes of other classes that can haunt elite rooms after the first clear.
 const ECHO_PATHS: Array[String] = ["res://data/echoes/echo_bard.tres", "res://data/echoes/echo_explorer.tres",
 	"res://data/echoes/echo_entertainer.tres"]
-const ORE_NAME := "Bronze Fragment"
 ## Offsets that soften stat ratios (a stat twice the starting value is not
 ## twice the effect).
 const AP_SOFT := 40.0
@@ -70,17 +72,10 @@ var cards: Dictionary = {}  # StringName card id -> level
 var loadout: Array[StringName] = [&"", &"", &""]
 ## EQUIP_SLOTS key -> GearItem.
 var equipment: Dictionary = {}
-var ore := 0
 ## The sky-blue rune's borrowed skill (slot 4, key F) and its level.
 var rune: CardData
 var rune_level := 0
 var echoes: Array[EnemyData] = []
-## Monster materials carried: MaterialData id -> count, and the data by id.
-var materials: Dictionary = {}
-var material_info: Dictionary = {}
-var galder := 0
-var tm := 0
-var shards := 0
 var kills := 0
 var time := 0.0
 var won := false
@@ -293,13 +288,13 @@ func new_run(with_seed := -1) -> void:
 	loadout = [&"", &"", &""]
 	jobs.clear()
 	equipment = {"weapon": GearItem.make(cls.start_weapon)}
-	ore = 0
+	purse.ore = 0
 	rune = null
 	rune_level = 0
-	materials = {}
-	galder = 0
-	tm = 0
-	shards = 0
+	purse.materials = {}
+	purse.galder = 0
+	purse.tm = 0
+	purse.shards = 0
 	kills = 0
 	time = 0.0
 	won = false
@@ -462,16 +457,16 @@ func try_revive() -> bool:
 func finish(p_won: bool) -> void:
 	var reached := route.depth + (1 if p_won else 0)
 	var heat := ServerSettings.heat()
-	tm += int(tm * heat * ServerSettings.TM_PER_HEAT)
+	purse.tm += int(purse.tm * heat * ServerSettings.TM_PER_HEAT)
 	var bounty := 0
 	if p_won and heat > Profile.best_heat:
 		bounty = heat - maxi(Profile.best_heat, 0)
-		shards += bounty
+		purse.shards += bounty
 		Profile.best_heat = heat
-	last_result = {"won": p_won, "depth": reached, "tm": tm, "shards": shards, "heat": heat, "bounty": bounty}
-	Profile.bank_run(p_won, reached, tm, shards, String(job.id))
+	last_result = {"won": p_won, "depth": reached, "tm": purse.tm, "shards": purse.shards, "heat": heat, "bounty": bounty}
+	Profile.bank_run(p_won, reached, purse.tm, purse.shards, String(job.id))
 	if system_on(&"warehouse"):
-		last_result.kept = Profile.bank_leftovers(p_won, galder, ore, materials)
+		last_result.kept = Profile.bank_leftovers(p_won, purse.galder, purse.ore, purse.materials)
 
 
 # ---------------------------------------------------------------- monster curve
@@ -1218,15 +1213,6 @@ func dig_rewards(depth_reached: int) -> Dictionary:
 	return out
 
 
-## Every material the run can drop, by id (for city crafting).
-func material_by_id(id: StringName) -> MaterialData:
-	for r in route.regions:
-		for e in r.enemies:
-			if e.material and e.material.id == id:
-				return e.material
-	return null
-
-
 ## Whether an equipped legend has this effect.
 func legend_on(effect: StringName) -> bool:
 	for g: GearItem in equipment.values():
@@ -1291,15 +1277,15 @@ func refine_chance(g: GearItem) -> float:
 
 func can_afford_refine(g: GearItem) -> bool:
 	var cost := g.refine_cost()
-	return g.can_refine() and ore >= cost.ore and galder >= cost.galder
+	return g.can_refine() and purse.ore >= cost.ore and purse.galder >= cost.galder
 
 
 ## One refine attempt: "success", "fail" or "drop" (failed from +4 or more
 ## and lost a level). Pays the cost either way.
 func try_refine(g: GearItem, roll := -1.0) -> String:
 	var cost := g.refine_cost()
-	ore -= cost.ore
-	galder -= cost.galder
+	purse.ore -= cost.ore
+	purse.galder -= cost.galder
 	if roll < 0.0:
 		roll = rng.randf()
 	var result := "fail"
@@ -1393,15 +1379,6 @@ func _attack_stat(key: String, ref: bool) -> float:
 		"LOST":
 			return 0.0 if ref else float(maxi(max_hp - hp, 0))
 	return float(_ref.get(key, 0)) if ref else float(stat(key))
-
-
-## Galder skills spend the run's Galder (Galder Thrower's 100 is 20 here: a
-## fifth of the original's prices). False, and nothing spent, when short.
-func spend_galder(amount: int) -> bool:
-	if galder < amount:
-		return false
-	galder -= amount
-	return true
 
 
 func in_bunker(now: float) -> bool:
@@ -1568,14 +1545,14 @@ func take_damage(amount: int) -> void:
 func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := false, boss := false,
 		mat: MaterialData = null, mat_chance := 0.0) -> Dictionary:
 	kills += 1
-	tm += tm_amount
-	galder += int(galder_amount * (1.0 + stat("LK") / 100.0) * mod_factor("galder%"))
+	purse.tm += tm_amount
+	purse.galder += int(galder_amount * (1.0 + stat("LK") / 100.0) * mod_factor("galder%"))
 	var found := 0
 	if boss:
 		found = 3
 	elif elite or rng.randf() < (0.12 + stat("DA") / 400.0) * ServerSettings.drop_mult():
 		found = 1
-	ore += found
+	purse.ore += found
 	var count := 0
 	if mat and system_on(&"compounding"):
 		if boss:
@@ -1584,7 +1561,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 			count = 2
 		elif rng.randf() < (mat_chance + stat("DA") / 200.0 + mod("material_drop")) * ServerSettings.drop_mult():
 			count = 1
-		add_material(mat, count)
+		purse.add_material(mat, count)
 	if mod("kill_mp") > 0.0:
 		gain_mp(int(mod("kill_mp")))
 	gain_exp(exp_amount)
@@ -1592,26 +1569,6 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 
 
 # ---------------------------------------------------------------- materials and compounding
-
-func add_material(mat: MaterialData, count: int) -> void:
-	if count <= 0:
-		return
-	material_info[mat.id] = mat
-	materials[mat.id] = materials.get(mat.id, 0) + count
-
-
-func material_count(mat: MaterialData) -> int:
-	return materials.get(mat.id, 0)
-
-
-## Materials carried with enough for one compound.
-func compoundable_materials() -> Array[MaterialData]:
-	var out: Array[MaterialData] = []
-	for id: StringName in materials:
-		var m: MaterialData = material_info[id]
-		if materials[id] >= m.need:
-			out.append(m)
-	return out
 
 
 ## Equipped items with a free compound slot (slot keys).
@@ -1625,7 +1582,7 @@ func compound_targets() -> Array[String]:
 
 
 func compound(g: GearItem, mat: MaterialData) -> Dictionary:
-	materials[mat.id] -= mat.need
+	purse.materials[mat.id] -= mat.need
 	var c := g.compound(mat, clampf(stat("DA") / 60.0 * (1.0 + mod("compound%") / 100.0), 0.0, 1.0))
 	stats_changed()
 	return c

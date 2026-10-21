@@ -248,7 +248,7 @@ func _power_attacks() -> void:
 		var hp0 := target2.hp
 		Run.take_rune(c)
 		Run.mp = Run.max_mp
-		Run.galder = 500
+		Run.purse.galder = 500
 		player.skills.slot_ready_at[3] = 0.0
 		player.invulnerable_until = player.now() + 5.0
 		player.aim = dir2
@@ -346,12 +346,12 @@ func _core_rewards() -> void:
 	check(Run.equipment.values().has(found), "picking the gear equips %s" % found.title())
 	check(game.hud.pick_panel.visible and game._pick_kind == "anvil", "an Anvil reward opens the anvil")
 	var weapon: GearItem = Run.equipped("weapon")
-	Run.galder = 1000
-	var ore_before: int = Run.ore
+	Run.purse.galder = 1000
+	var ore_before: int = Run.purse.ore
 	var cost: Dictionary = weapon.refine_cost()
 	game.hud._on_pick(0)
 	await wait(1.0)
-	check(game._pick_kind == "anvil" and Run.ore == ore_before - cost.ore,
+	check(game._pick_kind == "anvil" and Run.purse.ore == ore_before - cost.ore,
 		"refining at the anvil spends ore and returns to it (%s)" % weapon.title())
 	game.hud._on_pick(game._pick_options.size() - 1)
 	await wait(0.2)
@@ -475,11 +475,11 @@ func _balance() -> void:
 ## The worst-case pick lists fit on screen and can be left.
 func _ui_audit() -> void:
 	var Run := run_state()
-	var saved_mats: Dictionary = Run.materials.duplicate()
+	var saved_mats: Dictionary = Run.purse.materials.duplicate()
 	for path in DirAccess.get_files_at("res://data/materials"):
 		var m: MaterialData = load("res://data/materials/" + path.trim_suffix(".remap"))
-		Run.material_info[m.id] = m
-		Run.materials[m.id] = m.need + 2
+		Run.purse.material_info[m.id] = m
+		Run.purse.materials[m.id] = m.need + 2
 	game._open_compounder()
 	await wait(0.3)
 	var all_ok := true
@@ -495,7 +495,7 @@ func _ui_audit() -> void:
 	check(not game.hud.pick_panel.visible or game._pick_kind != "compound_mat", "Esc leaves the Compounder")
 	game.get_tree().paused = false
 	game.hud.pick_panel.visible = false
-	Run.materials = saved_mats
+	Run.purse.materials = saved_mats
 	var many: Array = []
 	for i in 20:
 		many.append({"title": "Option %d" % i, "text": "A long description that has to wrap onto a second line inside the pick panel without running under the icon or off the edge."})
@@ -548,7 +548,7 @@ func _end_of_run() -> void:
 	await wait(2.6)
 	check(game.hud.results_panel.visible and game.phase == game.Phase.DEAD, "dying shows the rollback results")
 	var P := profile()
-	check(P.stats.runs == 1 and P.stats.deaths == 1 and P.tm == Run.tm, "the rollback banks the run (%d TM)" % P.tm)
+	check(P.stats.runs == 1 and P.stats.deaths == 1 and P.tm == Run.purse.tm, "the rollback banks the run (%d TM)" % P.tm)
 
 	# Megalopolis: people, the gate, conversations and restorations.
 	Engine.time_scale = 1.0
@@ -705,8 +705,8 @@ func _systems(Run: Node) -> void:
 
 	var sword := GearItem.make(_item("wood_sword"))
 	Run.equip(sword)
-	Run.ore = 50
-	Run.galder = 5000
+	Run.purse.ore = 50
+	Run.purse.galder = 5000
 	var before: int = Run.stat("AP")
 	check(Run.try_refine(sword, 0.0) == "success" and sword.refine == 1 and Run.stat("AP") > before
 		and sword.title() == "Wood Sword +1", "refining succeeds and raises AP (%d -> %d)" % [before, Run.stat("AP")])
@@ -717,7 +717,7 @@ func _systems(Run: Node) -> void:
 			dropped = sword.refine == 4
 			break
 	check(dropped, "a failed refine from +5 can drop a level")
-	check(not Run.can_afford_refine(sword) or Run.ore > 0, "refining costs Bronze Fragments and Galder")
+	check(not Run.can_afford_refine(sword) or Run.purse.ore > 0, "refining costs Bronze Fragments and Galder")
 
 	Run.route.depth = 0
 	var early: Array = Run.gear_offers(30)
@@ -774,21 +774,21 @@ func _systems(Run: Node) -> void:
 	var penguin: EnemyData = Run.route.region.enemy(&"blue_penguin")
 	var ice: MaterialData = penguin.material
 	var drop: Dictionary = Run.add_kill(0, 0, 0, true, false, ice, 0.0)
-	check(drop.material == ice and Run.material_count(ice) == 2, "an elite Blue Penguin drops 2 Cool Ice")
-	Run.add_material(ice, 2)
+	check(drop.material == ice and Run.purse.material_count(ice) == 2, "an elite Blue Penguin drops 2 Cool Ice")
+	Run.purse.add_material(ice, 2)
 	var blade := GearItem.make(_item("wood_sword"))
 	Run.equip(blade)
-	check(Run.compoundable_materials().has(ice) and Run.compound_targets().has("weapon"),
+	check(Run.purse.compoundable_materials().has(ice) and Run.compound_targets().has("weapon"),
 		"4 Cool Ice can be compounded into the Wood Sword's slot")
 	var c: Dictionary = Run.compound(blade, ice)
-	check(c.stat == "Water" and c.value >= ice.min_value and c.value <= ice.max_value and Run.material_count(ice) == 0
+	check(c.stat == "Water" and c.value >= ice.min_value and c.value <= ice.max_value and Run.purse.material_count(ice) == 0
 		and blade.free_slots() == 0, "compounding uses 4 Cool Ice and rolls Water attack %d" % c.value)
 	check(Run.element_attack().get("Water", 0) == c.value, "the sword's Water attack counts toward elemental damage")
 	var hard: MaterialData = Run.route.region.enemy(&"bustshell").material
 	var helm := GearItem.make(_item("candy_hat"))
 	Run.equip(helm)
 	var dp: int = Run.stat("DP")
-	Run.add_material(hard, hard.need)
+	Run.purse.add_material(hard, hard.need)
 	var hc: Dictionary = Run.compound(helm, hard)
 	check(Run.stat("DP") == dp + hc.value, "Hard Scales compounded into a hat add DP (+%d)" % hc.value)
 	var shop: Array[Dictionary] = Run.shop_offers()
@@ -823,8 +823,8 @@ func _systems(Run: Node) -> void:
 	check(carried.stats().AP > synced_ap and carried.sync_factor() == 1.0, "deeper rooms lift the sync (AP %d -> %d)"
 		% [synced_ap, carried.stats().AP])
 	Run.route.depth = 0
-	Run.ore = 20
-	Run.galder = 5000
+	Run.purse.ore = 20
+	Run.purse.galder = 5000
 	Run.try_refine(carried, 0.0)
 	check(Run.unsaved_changes().size() == 1, "refining the heirloom is unsaved until a Port")
 	Run.new_run()
@@ -942,13 +942,13 @@ func _systems(Run: Node) -> void:
 	Run.new_run()
 	Run.revives = 1
 	check(not Run.try_revive(), "Hardcore Server allows no revives")
-	Run.tm = 1000
-	Run.shards = 0
+	Run.purse.tm = 1000
+	Run.purse.shards = 0
 	Run.finish(true)
 	check(Run.last_result.tm == 1700 and Run.last_result.bounty == 7 and Profile.best_heat == 7,
 		"clearing at Heat 7 banks +70% TM and a 7-shard bounty")
 	Run.new_run()
-	Run.tm = 1000
+	Run.purse.tm = 1000
 	Run.finish(true)
 	check(Run.last_result.bounty == 0, "the bounty is paid once per Heat level")
 	Profile.server_settings = {}
@@ -1812,13 +1812,13 @@ func charm_line() -> void:
 	# Galder: spent from the run's purse; short of it, no cast.
 	Run.cards[&"galder_thrower"] = 1
 	Run.loadout[0] = &"galder_thrower"
-	Run.galder = 5
+	Run.purse.galder = 5
 	p.skills.slot_ready_at[0] = 0.0
 	check(not p.skills.try_cast(0), "Galder Thrower needs its Galder")
-	Run.galder = 100
+	Run.purse.galder = 100
 	Run.mp = Run.max_mp
 	p.skills.slot_ready_at[0] = 0.0
-	check(p.skills.try_cast(0) and Run.galder == 80, "Galder Thrower spends 20 Galder (100 -> %d)" % Run.galder)
+	check(p.skills.try_cast(0) and Run.purse.galder == 80, "Galder Thrower spends 20 Galder (100 -> %d)" % Run.purse.galder)
 	await wait(0.5)
 
 	# Every Charm skill does its job on a dummy.
@@ -1855,7 +1855,7 @@ func charm_line() -> void:
 			Run.stats_changed()
 		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp
-		Run.galder = 500
+		Run.purse.galder = 500
 		p.skills.slot_ready_at[0] = 0.0
 		p.invulnerable_until = p.now() + 9.0
 		var hp_before := Run.hp

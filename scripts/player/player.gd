@@ -464,13 +464,13 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	if not debuffs.is_empty():
 		effects.debuffs = debuffs
 	if Run.legend_on(&"pharaohs_gold") and Run.rng.randf() < 0.2:
-		Run.galder += 4
+		Run.purse.galder += 4
 		Events.text_shown.emit(e.global_position + Vector2(0, -60), "+4 G", Color(1.0, 0.85, 0.35))
 	if crit:
 		Audio.play("etc_critical.wav", -6.0)
 		if Run.has_trait(&"lucky_strikes") and Run.rng.randf() < 0.3:
-			Run.ore += 1
-			Events.loot_found.emit("+1 " + Run.ORE_NAME)
+			Run.purse.ore += 1
+			Events.loot_found.emit("+1 " + Run.purse.ORE_NAME)
 	var origin := global_position if from == Vector2.INF else from
 	e.take_hit(amount, Combat.ground(e.global_position - origin).normalized(), knockback, heavy, effects)
 	_element_fx(e, el)

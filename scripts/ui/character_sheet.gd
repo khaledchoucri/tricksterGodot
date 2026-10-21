@@ -41,8 +41,8 @@ func _header_text() -> String:
 	return "[font_size=18]%s  ·  %s[/font_size]   Lv %d
 [color=#9fb2c0]HP %d / %d   MP %d / %d
 %d Galder   %d %ss[/color]" % [
-		Run.cls.display_name, Run.job.display_name, Run.level, Run.hp, Run.max_hp, Run.mp, Run.max_mp, Run.galder,
-		Run.ore, Run.ORE_NAME]
+		Run.cls.display_name, Run.job.display_name, Run.level, Run.hp, Run.max_hp, Run.mp, Run.max_mp, Run.purse.galder,
+		Run.purse.ore, Run.purse.ORE_NAME]
 
 
 func _types_text(types: Array) -> String:
@@ -103,11 +103,11 @@ func _gear_text() -> String:
 		lines.append("[color=#9fb2c0]Elemental attack[/color]  " + "  ".join(parts))
 	var kinds := 0
 	var ready: PackedStringArray = []
-	for id: StringName in Run.materials:
-		if Run.materials[id] > 0:
+	for id: StringName in Run.purse.materials:
+		if Run.purse.materials[id] > 0:
 			kinds += 1
-			var m: MaterialData = Run.material_info[id]
-			if Run.materials[id] >= m.need:
+			var m: MaterialData = Run.purse.material_info[id]
+			if Run.purse.materials[id] >= m.need:
 				ready.append(m.display_name)
 	if kinds:
 		var shown := ", ".join(ready.slice(0, 3)) + (" +%d more" % (ready.size() - 3) if ready.size() > 3 else "")

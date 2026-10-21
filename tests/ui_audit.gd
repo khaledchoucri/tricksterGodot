@@ -276,12 +276,12 @@ func _audit_game() -> void:
 				Run.equip(g, k)
 				break
 	Run.level = 99
-	Run.galder = 999999
-	Run.ore = 999
+	Run.purse.galder = 999999
+	Run.purse.ore = 999
 	for f in DirAccess.get_files_at("res://data/materials"):
 		var m: MaterialData = load("res://data/materials/" + f.trim_suffix(".remap"))
-		Run.material_info[m.id] = m
-		Run.materials[m.id] = 99
+		Run.purse.material_info[m.id] = m
+		Run.purse.materials[m.id] = 99
 	Run.stats_changed()
 	game.player.refresh_gear()
 	await _wait(0.5)
@@ -300,7 +300,7 @@ func _audit_game() -> void:
 	}
 	game._pending_skill = Run.card_pool()[0]
 	game._pending_gear = items[0]
-	game._pending_mat = Run.material_info.values()[0]
+	game._pending_mat = Run.purse.material_info.values()[0]
 	for kind: String in picks:
 		await _pick(game, kind, picks[kind])
 	game._open_anvil()

@@ -148,7 +148,7 @@ func _one_run(index: int) -> void:
 	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.route.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
-		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate(),
+		"ore": Run.purse.ore, "galder": Run.purse.galder, "around": killers, "materials": Run.purse.materials.duplicate(),
 		"rune": Run.rune.display_name if Run.rune else "", "casts": _casts.duplicate(), "refused": _refused.duplicate(),
 		"loadout": Run.loadout.duplicate()}
 	results.append(r)
@@ -379,7 +379,7 @@ func _choose() -> void:
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
 				var m: MaterialData = opts[i]
-				if Run.material_count(m) >= m.need and not Run.compound_targets().is_empty():
+				if Run.purse.material_count(m) >= m.need and not Run.compound_targets().is_empty():
 					pick = i
 					break
 		"compound_target":
@@ -397,9 +397,9 @@ func _choose() -> void:
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
 				var o: Dictionary = opts[i]
-				if Run.galder < o.price:
+				if Run.purse.galder < o.price:
 					continue
-				if (o.kind == "potion" and Run.hp < Run.max_hp * 0.6) or (o.kind == "gear" and _gear_gain(o.item) > 5.0) 						or (o.kind == "ore" and Run.galder > 400):
+				if (o.kind == "potion" and Run.hp < Run.max_hp * 0.6) or (o.kind == "gear" and _gear_gain(o.item) > 5.0) 						or (o.kind == "ore" and Run.purse.galder > 400):
 					pick = i
 					break
 		"anvil":
@@ -459,7 +459,7 @@ func _city_craft() -> void:
 			break
 		print("   city refine %s: %s" % [g.title(), Run.city_refine(h)])
 	for id: String in Profile.materials.keys():
-		var m := Run.material_by_id(StringName(id))
+		var m := Run.purse.material_by_id(StringName(id))
 		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
 		if m and g.free_slots() > 0 and int(Profile.materials[id]) >= m.need:
 			var c := Run.city_compound(h, m)
