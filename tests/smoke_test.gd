@@ -8,8 +8,8 @@ extends Node
 ## shared code still run the full suite (CLAUDE.md, section 5).
 
 ## The sections, in the order they run.
-const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "balance", "ui", "boss", "systems",
-	"lint"]
+const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "talents", "balance", "ui", "boss",
+	"systems", "lint"]
 ## Card id literals allowed in shared code (scripts/ outside skills/ and tools/): CLAUDE.md,
 ## section 2. Lower it as hooks move into card data; it may never rise.
 const CARD_ID_LITERALS_MAX := 0
@@ -109,6 +109,8 @@ func _run() -> void:
 	if _on("charm"):
 		# The Charm line: Cat and Raccoon, the beast forms, every Charm skill.
 		await charm_line()
+	if _on("talents"):
+		await talent_hooks()
 	if _on("balance"):
 		_balance()
 	if _on("ui"):
@@ -1481,6 +1483,94 @@ func sense_line() -> void:
 
 ## Elemental attack compounds (the server's 0x59c4a0) and their hit effects
 ## (the client's 0x5c69d0), and no shield beside a gun.
+## Every Talent hook does its job (Guard's block is checked in the Power line).
+func talent_hooks() -> void:
+	var p: Player = game.player
+	var saved: String = Profile.class_id
+	Profile.class_id = "sheep"
+	Run.new_run()
+	p.refresh_gear()
+	var foe := await _dummy(p, 60.0)
+	p.invulnerable_until = 0.0
+
+	# tick and absorb: Shield of Heaven's barrier fills, then takes a hit first.
+	Run.cards[&"shield_of_heaven"] = 1
+	p._tick_talents(0.016)
+	var barrier := roundi(Run.stat("MA") * Run.card(&"shield_of_heaven").value_at(1) / 100.0)
+	check(barrier > 0 and Run.barrier == barrier, "Shield of Heaven's barrier fills to its share of MA (%d)" % Run.barrier)
+	var hp := Run.hp
+	p.take_hit(1, Vector2.LEFT, 0.0, false, 9999)
+	check(Run.hp == hp and Run.barrier < barrier, "the barrier takes a hit before your HP (%d left)" % Run.barrier)
+	Run.cards.erase(&"shield_of_heaven")
+	Run.barrier = 0
+
+	# tick: Oath of Light heals every 10 s.
+	Run.cards[&"oath_of_light"] = 1
+	Run.hp = Run.max_hp / 2
+	hp = Run.hp
+	for _i in 11:
+		p._tick_talents(1.0)
+	check(Run.hp > hp, "Oath of Light heals every 10 s (%d -> %d)" % [hp, Run.hp])
+	Run.cards.erase(&"oath_of_light")
+
+	# tick: Berserker's rage costs HP while a monster is around.
+	Run.cards[&"berserker"] = 1
+	Run.hp = Run.max_hp
+	hp = Run.hp
+	for _i in 3:
+		p._tick_talents(1.0)
+	check(Run.hp < hp, "Berserker drains HP in a fight (%d -> %d)" % [hp, Run.hp])
+	Run.cards.erase(&"berserker")
+
+	# retaliate: Dark Barrier turns a physical hit back, Mana Reflector a magic one.
+	for id: StringName in [&"dark_barrier", &"mana_reflector"]:
+		Run.cards[id] = 5
+		var before := foe.hp
+		for t in Run.talents():
+			t.retaliate(p, foe, 200, id == &"mana_reflector")
+		check(foe.hp < before, "%s strikes back at the attacker (%d -> %d)" % [id, before, foe.hp])
+		Run.cards.erase(id)
+
+	# revive: Revival brings you back with its share of max HP, then waits its cooldown.
+	Run.cards[&"revival"] = 1
+	Run.revival_ready_at = 0.0
+	Run.hp = 0
+	var back := Run.try_revive()
+	check(back and Run.hp == maxi(1, roundi(Run.max_hp * Run.card(&"revival").value_at(1) / 100.0))
+		and Run.revival_ready_at > Events.time, "Revival brings you back from a fatal blow (%d HP)" % Run.hp)
+	Run.cards.erase(&"revival")
+	Run.hp = Run.max_hp
+
+	# on_cast: Blood Testament makes a spell cost HP.
+	Run.cards[&"blood_testament"] = 1
+	var spell: CardData = Run.all_cards().filter(func(c: CardData) -> bool: return c.is_skill() and c.cast_at(1) > 0.0)[0]
+	hp = Run.hp
+	for t in Run.talents():
+		t.on_cast(spell, 1, 0)
+	check(Run.hp < hp, "Blood Testament: casting %s costs HP (%d -> %d)" % [spell.id, hp, Run.hp])
+	Run.cards.erase(&"blood_testament")
+	Run.hp = Run.max_hp
+
+	# adjust: Desperate Rally raises your damage low on HP; Sharp Sense the power shot.
+	var full := Run.attack_mult()
+	Run.cards[&"desperate_rally"] = 3
+	Run.hp = 1
+	check(Run.attack_mult() > full, "Desperate Rally hits harder near death (x%.2f -> x%.2f)" % [full, Run.attack_mult()])
+	Run.cards.erase(&"desperate_rally")
+	Run.hp = Run.max_hp
+	Run.cards[&"sharp_sense"] = 1
+	var keen: CardData = Run.card(&"keen_sense")
+	var want := (100.0 + keen.value_at(Run.MAX_CARD_LEVEL)) * (1.0 + Run.card(&"sharp_sense").value_at(1) / 100.0) - 100.0
+	check(is_equal_approx(Run.power_shot_bonus(), want), "Sharp Sense builds on a mastered Keen Sense (+%.0f%%)" % Run.power_shot_bonus())
+	Run.cards.erase(&"sharp_sense")
+
+	_remove(foe)
+	Profile.class_id = saved
+	Run.new_run()
+	p.refresh_gear()
+	await wait(0.3)
+
+
 func elements_and_shields() -> void:
 	var p: Player = game.player
 	var saved: String = Profile.class_id

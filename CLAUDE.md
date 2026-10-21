@@ -74,7 +74,7 @@ if card.has_tag(&"galder"): ...
 
 - **Every behaviour change has a check** in the smoke test section for its class or system. Run just that
   section while working (`tests/run_smoke.sh charm`, `tests/run_smoke.sh lion ui`; sections: core, power,
-  magic, sense, elements, charm, balance, ui, boss, systems, lint). Each section passes on its own. Changes to
+  magic, sense, elements, charm, talents, balance, ui, boss, systems, lint). Each section passes on its own. Changes to
   shared code, and every commit, run the full suite (`tests/run_smoke.sh`). It runs at a fixed 60 fps and a
   fixed seed (`-- seed=N` to change it), so the full suite takes under a minute and a result repeats exactly.
 - **Test like a player.** Use input actions and real button presses, the real window size and the game clock.
@@ -103,9 +103,6 @@ Pay these down when you're working near them, and remove each line when it's fix
 
 - `run_state.gd` is about 1,700 lines and does too much: stats, cards and offers, the economy, gear, the room
   plan and formulas. Split it into modules behind `Run`.
-- 49 card id literals in shared code (the `lint` smoke section counts them and won't let the number rise):
-  conditional and behavioural talents (Guard, Shield of Heaven, Oath of Light, Revival, Desperate Rally,
-  the reflectors, Sword Mastery, the reload talents, Beast's Instinct). They move to talent hooks (phase 3).
 - Enemy attack patterns are five consts in `Enemy.KINDS`.
 - 35 literal `res://original_assets/` paths in 23 scripts.
 - `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and
