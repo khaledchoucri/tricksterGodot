@@ -315,7 +315,7 @@ func _audit_game() -> void:
 	game._open_port()
 	await _check_pick(game, "run_pick_port")
 	Profile.restorations["drill_shop"] = 1
-	game.hud.drill.start(Run.drill(), 0.0)
+	game.hud.drill.start(Run.purse.drill(), 0.0)
 	await audit("run_drill")
 	game.hud.drill.visible = false
 	game.hud.show_results(true)

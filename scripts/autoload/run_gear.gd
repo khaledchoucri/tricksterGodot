@@ -75,7 +75,7 @@ func can_city_refine(g: GearItem) -> bool:
 ## Marx refines stored item `index` with banked Galder and ore: "success",
 ## "fail" or "drop". Saves the item.
 func city_refine(index: int, roll := -1.0) -> String:
-	var g := GearItem.from_dict(Profile.warehouse[index], Run.item_by_id)
+	var g := GearItem.from_dict(Profile.warehouse[index], item_by_id)
 	var cost := city_refine_cost(g)
 	Profile.ore -= cost.ore
 	Profile.galder -= cost.galder
@@ -92,7 +92,7 @@ func city_refine(index: int, roll := -1.0) -> String:
 
 ## Paul compounds a banked material into stored item `index`. Returns the compound.
 func city_compound(index: int, mat: MaterialData) -> Dictionary:
-	var g := GearItem.from_dict(Profile.warehouse[index], Run.item_by_id)
+	var g := GearItem.from_dict(Profile.warehouse[index], item_by_id)
 	Profile.materials[String(mat.id)] = int(Profile.materials.get(String(mat.id), 0)) - mat.need
 	var c := g.compound(mat)
 	Profile.update_item(index, g.to_dict())
@@ -144,7 +144,7 @@ func can_use(it: ItemData) -> bool:
 func gear_offers(n: int) -> Array[GearItem]:
 	var pool: Array[ItemData] = []
 	var top := 1 + 3 * Run.route.depth
-	for it in Run.items:
+	for it in items:
 		if it.level <= top and it.level >= top - 24 and not it.legend and it != Run.cls.start_weapon and can_use(it):
 			pool.append(it)
 	Run.shuffle(pool)
@@ -235,3 +235,22 @@ func shop_offers() -> Array[Dictionary]:
 		out.append({"kind": "material", "material": m, "count": m.need, "price": int(70 * m.need * cut)})
 	out.append({"kind": "potion", "heal": 0.4, "price": int(160 * cut)})
 	return out
+
+
+const ITEMS_DIR := "res://data/items/"
+var items: Array[ItemData] = []
+
+
+func load_items() -> void:
+	items.clear()
+	for f in DirAccess.get_files_at(ITEMS_DIR):
+		f = f.trim_suffix(".remap")
+		if f.ends_with(".tres"):
+			items.append(load(ITEMS_DIR + f))
+
+
+func item_by_id(id: StringName) -> ItemData:
+	for it in items:
+		if it.id == id:
+			return it
+	return null

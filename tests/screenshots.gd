@@ -113,7 +113,7 @@ func _shoot() -> void:
 	await _snap("07_job_change")
 	game.hud.pick_panel.visible = false
 	Profile.restorations["drill_shop"] = 1
-	game.hud.drill.start(Run.drill(), 0.02)
+	game.hud.drill.start(Run.purse.drill(), 0.02)
 	await _wait(0.7)
 	game.hud.drill._strike()
 	await _wait(0.4)
@@ -131,7 +131,7 @@ func _shoot_hub() -> void:
 	Run.new_run()
 	var sword := GearItem.make(load("res://data/items/wood_sword.tres"))
 	sword.refine = 4
-	Run.save_point(sword)
+	Run.city.save_point(sword)
 	var hub = load("res://scenes/hub.tscn").instantiate()
 	add_child(hub)
 	await _wait(1.5)

@@ -5,7 +5,6 @@ extends RefCounted
 
 ## The refining ore's name (the original's Bronze Fragment).
 const ORE_NAME := "Bronze Fragment"
-
 ## Galder: spent on skills that cost it, the shop and the city's smiths.
 var galder := 0
 ## Refining ore (Bronze Fragments).
@@ -56,3 +55,79 @@ func material_by_id(id: StringName) -> MaterialData:
 			if e.material and e.material.id == id:
 				return e.material
 	return null
+
+
+## Whether an Echo joins this elite room (after the first clear).
+func echo_here() -> EnemyData:
+	if not Run.route.current_room().elite or int(Profile.stats.get("clears", 0)) < 1 or Run.rng.randf() > 0.45:
+		return null
+	return Run.echoes[Run.rng.randi() % Run.echoes.size()]
+
+
+## Monster card drop for a kill (rare; elites and bosses more often).
+func roll_card(enemy_id: StringName, elite: bool, boss: bool) -> bool:
+	if not Run.city.system_on(&"cards"):
+		return false
+	var chance := 0.5 if boss else (0.15 if elite else 0.02 + Run.stat("DA") / 1000.0)
+	return Run.rng.randf() < chance
+
+
+## The drill carried (the first one once the Drill Shop is restored).
+func drill() -> DrillData:
+	if Run.hub == null or Run.hub.drills.is_empty() or not Run.city.system_on(&"drilling"):
+		return null
+	for d in Run.hub.drills:
+		if String(d.id) == Profile.drill and String(d.id) in Profile.drills:
+			return d
+	return Run.hub.drills[0]
+
+
+## What a dig to `depth` brings up: ore, then the region's materials, then
+## gear, then a Harkon Shard.
+func dig_rewards(depth_reached: int) -> Dictionary:
+	var out := {"ore": 0, "material": null, "count": 0, "gear": null, "shard": 0}
+	if depth_reached >= 5:
+		out.ore = 1 + depth_reached / 10
+	if depth_reached >= 15:
+		var mats: Array[MaterialData] = []
+		for e in Run.route.region.enemies:
+			if e.material and not e.is_boss:
+				mats.append(e.material)
+		if not mats.is_empty():
+			out.material = mats[Run.rng.randi() % mats.size()]
+			out.count = 2 + depth_reached / 20
+	if depth_reached >= 40:
+		var offers := Run.gear.gear_offers(1)
+		if not offers.is_empty():
+			out.gear = offers[0]
+	if depth_reached >= 70:
+		out.shard = 1
+	return out
+
+
+## Rewards for a kill. Returns what dropped: {"ore": n, "material":
+## MaterialData or null, "count": n}.
+func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := false, boss := false,
+		mat: MaterialData = null, mat_chance := 0.0) -> Dictionary:
+	Run.kills += 1
+	tm += tm_amount
+	galder += int(galder_amount * (1.0 + Run.stat("LK") / 100.0) * Run.mod_factor("galder%"))
+	var found := 0
+	if boss:
+		found = 3
+	elif elite or Run.rng.randf() < (0.12 + Run.stat("DA") / 400.0) * ServerSettings.drop_mult():
+		found = 1
+	ore += found
+	var count := 0
+	if mat and Run.city.system_on(&"compounding"):
+		if boss:
+			count = 3
+		elif elite:
+			count = 2
+		elif Run.rng.randf() < (mat_chance + Run.stat("DA") / 200.0 + Run.mod("material_drop")) * ServerSettings.drop_mult():
+			count = 1
+		add_material(mat, count)
+	if Run.mod("kill_mp") > 0.0:
+		Run.gain_mp(int(Run.mod("kill_mp")))
+	Run.gain_exp(exp_amount)
+	return {"ore": found, "material": mat if count > 0 else null, "count": count}

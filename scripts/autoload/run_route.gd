@@ -4,12 +4,13 @@ extends RefCounted
 
 ## Regions a run passes through, in order; the last one's boss ends it.
 const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
-
 var regions: Array[RegionData] = []
+
 ## The region of the room the run is in.
 var region: RegionData:
 	get:
 		return plan[depth].region if depth < plan.size() else regions[0]
+
 ## Rooms cleared so far: the index of the current room in `plan`.
 var depth := 0
 ## Every room of the run, region by region, each region ending in its boss.
@@ -44,3 +45,15 @@ func region_index() -> int:
 ## Whether the current room's boss ends the run (the last region's).
 func final_boss() -> bool:
 	return current_room().boss and region == regions[regions.size() - 1]
+
+
+## An enemy from any region (or an Echo).
+func enemy(id: StringName) -> EnemyData:
+	for r in regions:
+		var e := r.enemy(id)
+		if e:
+			return e
+	for e in Run.echoes:
+		if e.id == id:
+			return e
+	return null

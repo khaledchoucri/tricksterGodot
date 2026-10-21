@@ -354,7 +354,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 				break
 			var pick: EnemyData = options[Run.rng.randi() % options.size()]
 			# A featured monster (its den) fills about half of each wave.
-			var featured := Run.enemy(Run.route.current_room().feature) if Run.route.current_room().feature != &"" else null
+			var featured := Run.route.enemy(Run.route.current_room().feature) if Run.route.current_room().feature != &"" else null
 			if featured and featured in options and Run.rng.randf() < 0.5:
 				pick = featured
 			if pick.kind == "shot":
@@ -367,7 +367,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 		if ServerSettings.pk_mode() and depth >= 1 and not wave_list.is_empty():
 			wave_list[0].elite = true
 		out.append(wave_list)
-	var echo := Run.echo_here() if elite else null
+	var echo := Run.purse.echo_here() if elite else null
 	if echo:
 		out[out.size() - 1].append({"id": echo.id, "elite": false})
 	if elite:
@@ -407,7 +407,7 @@ func spawn_with_warning(id: StringName, at: Vector2, delay: float, elite := fals
 
 
 func spawn(id: StringName, at: Vector2, elite := false) -> Enemy:
-	var enemy_data := Run.enemy(id)
+	var enemy_data := Run.route.enemy(id)
 	var scene: PackedScene = enemy_data.scene if enemy_data.scene else (BOSS_SCENE if enemy_data.is_boss else ENEMY_SCENE)
 	var e: Enemy = scene.instantiate()
 	e.configure(enemy_data, Run.formulas.monster_stats(enemy_data), elite)
@@ -469,7 +469,7 @@ func open_doors(rewards: Array[String], features: Array[StringName] = []) -> voi
 		d.reward = rewards[i]
 		if i < features.size() and features[i] != &"":
 			d.feature = features[i]
-			d.feature_name = Run.formulas.monster_name(Run.enemy(features[i]))
+			d.feature_name = Run.formulas.monster_name(Run.route.enemy(features[i]))
 		d.position = spots[i]
 		world.add_child(d)
 		doors.append(d)

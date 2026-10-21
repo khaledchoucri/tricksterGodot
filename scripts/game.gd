@@ -16,7 +16,7 @@ const CAMERA_MARGIN := 60
 const ROOM_MP := 40
 ## The next card pick is a level-up's skill training (for its title).
 var _skill_training := false
-## Rewards that need a city system: reward -> Run.system_on() id.
+## Rewards that need a city system: reward -> Run.city.system_on() id.
 const REWARD_SYSTEMS := {"gear": &"smithing", "anvil": &"smithing", "shop": &"smithing", "compound": &"compounding",
 	"dig": &"drilling"}
 ## Misses at a Dig Site that wake an ambush.
@@ -97,7 +97,7 @@ func _load_room() -> void:
 		room = null
 		player = null
 	var plan := Run.route.current_room()
-	Run.sync_heirlooms()
+	Run.city.sync_heirlooms()
 	room = Room.new()
 	add_child(room)
 	if not room.build(plan.data):
@@ -107,7 +107,7 @@ func _load_room() -> void:
 	room.cleared.connect(_on_room_cleared)
 	room.door_entered.connect(_on_door_entered)
 	_spawn_player(room.entry)
-	Run.gain_mp(ROOM_MP + Run.room_mp_bonus())
+	Run.gain_mp(ROOM_MP + Run.city.room_mp_bonus())
 	if Run.mod("room_heal%") > 0.0:
 		Run.heal(int(Run.max_hp * (Run.mod("room_heal%") / 100.0)))
 	Audio.play_music(Run.route.region.boss_music if plan.boss else Run.route.region.field_music)
@@ -173,9 +173,9 @@ func _on_room_cleared() -> void:
 	if Run.job_change_due():
 		_steps.append("job")
 	_steps.append(reward_here)
-	if Run.route.current_room().elite and Run.system_on(&"smithing"):
+	if Run.route.current_room().elite and Run.city.system_on(&"smithing"):
 		_steps.append("gear")
-	if (Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss) and Run.system_on(&"warehouse"):
+	if (Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss) and Run.city.system_on(&"warehouse"):
 		_steps.append("port")
 	_next_step()
 
@@ -244,7 +244,7 @@ func _grant(reward: String) -> void:
 			_open_port()
 			return
 		"dig":
-			var d := Run.drill()
+			var d := Run.purse.drill()
 			if d:
 				Audio.play_ambience("")
 				hud.drill.start(d, Run.stat("DA") / 400.0)
@@ -296,7 +296,7 @@ func _open_doors() -> void:
 		var pool := REWARD_POOL.filter(func(r: String) -> bool:
 			if r == "heal" and ServerSettings.hardcore():
 				return false
-			return not REWARD_SYSTEMS.has(r) or Run.system_on(REWARD_SYSTEMS[r]))
+			return not REWARD_SYSTEMS.has(r) or Run.city.system_on(REWARD_SYSTEMS[r]))
 		Run.shuffle(pool)
 		rewards.append(pool[0])
 		for r in pool:
@@ -618,7 +618,7 @@ func _on_picked(i: int) -> void:
 				return
 		"port":
 			var g: GearItem = _pick_options[i]
-			Run.save_point(g)
+			Run.city.save_point(g)
 			Audio.play("ui_unique_get.wav", -4.0)
 			if g:
 				hud.notice("%s sent home" % g.title())
@@ -754,7 +754,7 @@ func _open_port() -> void:
 
 ## Hands out what the dig brought up, or wakes an ambush.
 func _dug(depth: int, misses: int) -> void:
-	var r := Run.dig_rewards(depth)
+	var r := Run.purse.dig_rewards(depth)
 	var found: PackedStringArray = []
 	if r.ore > 0:
 		Run.purse.ore += r.ore
@@ -830,8 +830,8 @@ func _refine(g: GearItem) -> void:
 
 func _on_player_died() -> void:
 	phase = Phase.DEAD
-	var lost := Run.unsaved_changes()
-	Run.finish(false)
+	var lost := Run.city.unsaved_changes()
+	Run.city.finish(false)
 	Audio.play("shchr002.wav")
 	await get_tree().create_timer(1.2).timeout
 	hud.log_line("[System] Connection lost.", Color("f07a62"))
@@ -848,7 +848,7 @@ func _win() -> void:
 	phase = Phase.WON
 	Run.won = true
 	Run.purse.shards += 2
-	Run.finish(true)
+	Run.city.finish(true)
 	Audio.play("guild_battlewin.wav")
 	hud.log_line("[Notice] %s cleared. The Harkon Shards resonate." % Run.route.region.display_name, Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout
@@ -862,7 +862,7 @@ func _win() -> void:
 
 
 func _finish_win() -> void:
-	if Run.system_on(&"warehouse"):
+	if Run.city.system_on(&"warehouse"):
 		_open_port()
 	else:
 		_show_win_results()
@@ -910,13 +910,13 @@ func _on_enemy_spawned(e: Enemy) -> void:
 func _on_enemy_died(e: Enemy) -> void:
 	Audio.play("sdmon103.wav" if e.is_boss else "etc_mon_death.wav", -4.0)
 	var before := Run.level
-	var drop := Run.add_kill(e.rewards.exp, e.rewards.tm, e.rewards.galder, e.is_elite, e.is_boss,
+	var drop := Run.purse.add_kill(e.rewards.exp, e.rewards.tm, e.rewards.galder, e.is_elite, e.is_boss,
 		e.data.material, e.data.material_chance)
 	if e.rewards.galder > 0:
 		Audio.play("etc_money.wav", -10.0)
 	if drop.ore > 0:
 		hud.log_line("[System] Picked up %d %s%s." % [drop.ore, Run.purse.ORE_NAME, "s" if drop.ore > 1 else ""], INFO)
-	if not e.data.echo and Run.roll_card(e.data.id, e.is_elite, e.is_boss):
+	if not e.data.echo and Run.purse.roll_card(e.data.id, e.is_elite, e.is_boss):
 		var card_name := "%s Card" % e.display_name.trim_prefix("Elite ")
 		if Profile.add_card(e.data.id):
 			Audio.play("ui_card.wav")
@@ -936,7 +936,7 @@ func _on_enemy_died(e: Enemy) -> void:
 		hud.log_line("[System] The %s fades. A sky-blue rune is left behind." % e.display_name, Color("8fd8ff"))
 	if e.is_boss:
 		hud.hide_boss()
-		if e.data.drop_item and Run.system_on(&"smithing") and Run.rng.randf() < e.data.drop_chance:
+		if e.data.drop_item and Run.city.system_on(&"smithing") and Run.rng.randf() < e.data.drop_chance:
 			_legend = GearItem.roll(e.data.drop_item, clampf(Run.stat("DA") / 60.0, 0.0, 1.0))
 			Audio.play("ui_unique_get.wav")
 			hud.log_line("[Notice] %s dropped the legendary %s!" % [e.display_name, _legend.title()], Color("e0b54d"))

@@ -1,7 +1,7 @@
 extends Skill
 ## The Charm line's self skills:
 ##  (Evolution and Metamorphosis are talents here: Run.deck.add_card makes them
-##  the form, with its stat changes in Run._form_stats.)
+##  the form, with its stat changes in Run._form_stats().)
 ##  - Beast's Instinct (4305): in Evolution, the beast's full power for its
 ##    Seconds, with no skills and an MP drain.
 ##  - Flux Capacitor (4208): burns a share of max HP into MP.

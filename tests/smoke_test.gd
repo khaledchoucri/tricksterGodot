@@ -577,7 +577,7 @@ func _end_of_run() -> void:
 	var hall: RestorationData = Run.hub.restorations.filter(func(r: RestorationData) -> bool: return r.id == &"training_hall")[0]
 	check(P.buy(hall) and P.level(hall.id) == 1 and P.tm == 10000 - hall.tm_cost(1), "restoring the Training Hall spends TM")
 	Run.new_run()
-	check(Run.max_hp == Run.stat("HP") and Run._bonus_hp == 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
+	check(Run.max_hp == Run.stat("HP") and Run.bonus_hp == 15, "restorations apply to the next run (max HP %d)" % Run.max_hp)
 	var reach: float = Combat.ground(hub.room.nearest_reachable(Run.hub.gate_position) - hub.gate.global_position).length()
 	check(reach < 1.0, "the expedition gate stands on reachable ground")
 	hub.queue_free()
@@ -803,7 +803,7 @@ func _systems(Run: Node) -> void:
 	Run.new_run()
 	var penguin: EnemyData = Run.route.region.enemy(&"blue_penguin")
 	var ice: MaterialData = penguin.material
-	var drop: Dictionary = Run.add_kill(0, 0, 0, true, false, ice, 0.0)
+	var drop: Dictionary = Run.purse.add_kill(0, 0, 0, true, false, ice, 0.0)
 	check(drop.material == ice and Run.purse.material_count(ice) == 2, "an elite Blue Penguin drops 2 Cool Ice")
 	Run.purse.add_material(ice, 2)
 	var blade := GearItem.make(_item("wood_sword"))
@@ -841,7 +841,7 @@ func _systems(Run: Node) -> void:
 	var heir := GearItem.make(_item("wood_sword"))
 	heir.refine = 5
 	Run.gear.equip(heir)
-	check(Run.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == 0, "a Portable Port sends the sword home")
+	check(Run.city.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == 0, "a Portable Port sends the sword home")
 	Profile.set_heirloom(0)
 	Run.new_run()
 	var carried: GearItem = Run.gear.equipped("weapon")
@@ -849,18 +849,18 @@ func _systems(Run: Node) -> void:
 		and carried.sync_factor() < 1.0, "the heirloom comes back level-synced: %s" % carried.title())
 	var synced_ap: int = carried.stats().AP
 	Run.route.depth = 3
-	Run.sync_heirlooms()
+	Run.city.sync_heirlooms()
 	check(carried.stats().AP > synced_ap and carried.sync_factor() == 1.0, "deeper rooms lift the sync (AP %d -> %d)"
 		% [synced_ap, carried.stats().AP])
 	Run.route.depth = 0
 	Run.purse.ore = 20
 	Run.purse.galder = 5000
 	Run.gear.try_refine(carried, 0.0)
-	check(Run.unsaved_changes().size() == 1, "refining the heirloom is unsaved until a Port")
+	check(Run.city.unsaved_changes().size() == 1, "refining the heirloom is unsaved until a Port")
 	Run.new_run()
 	check(Run.gear.equipped("weapon").refine == 5, "dying without saving rolls the heirloom back to +5")
 	Run.gear.try_refine(Run.gear.equipped("weapon"), 0.0)
-	Run.save_point()
+	Run.city.save_point()
 	Run.new_run()
 	check(Run.gear.equipped("weapon").refine == 6, "saving at a Port keeps the +6")
 	var kept: Dictionary = Profile.bank_leftovers(false, 101, 5, {&"cool_ice": 3})
@@ -870,17 +870,17 @@ func _systems(Run: Node) -> void:
 	check(Profile.galder == 150 and Profile.materials.cool_ice == 5, "a clear banks all of them")
 	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()
-	check(not Run.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")
+	check(not Run.city.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")
 	Run.route.depth = Run.route.region.job_change_depth
 	check(not Run.job_change_due(), "without the Job Hall the trial room changes nothing")
 	_restore_all(Run)
-	check(Run.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
+	check(Run.city.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
 
 	# Monster cards and the wardrobe.
 	Profile.restorations["card_house"] = 1
 	var boss_cards := 0
 	for _i in 40:
-		boss_cards += 1 if Run.roll_card(&"golden_mole", false, true) else 0
+		boss_cards += 1 if Run.purse.roll_card(&"golden_mole", false, true) else 0
 	check(boss_cards > 8 and boss_cards < 32, "bosses drop their cards half the time (%d / 40)" % boss_cards)
 	var shore: CardSetData = Run.hub.card_sets.filter(func(s: CardSetData) -> bool: return s.id == &"shore_critters")[0]
 	for m in shore.monsters:
@@ -900,11 +900,11 @@ func _systems(Run: Node) -> void:
 	Run.route.depth = Run.route.regions[0].elite_depths[0]
 	var echo_seen := false
 	for _i in 40:
-		echo_seen = echo_seen or Run.echo_here() != null
+		echo_seen = echo_seen or Run.purse.echo_here() != null
 	check(not echo_seen or int(Profile.stats.get("clears", 0)) >= 1, "no Echoes before the first clear")
 	Profile.stats["clears"] = max(1, int(Profile.stats.get("clears", 0)))
 	for _i in 40:
-		echo_seen = echo_seen or Run.echo_here() != null
+		echo_seen = echo_seen or Run.purse.echo_here() != null
 	check(echo_seen, "after a clear, Echoes haunt elite rooms")
 	Run.new_run()
 
@@ -926,19 +926,19 @@ func _systems(Run: Node) -> void:
 
 	# Drilling.
 	Profile.restorations["drill_shop"] = 1
-	var drill: DrillData = Run.drill()
+	var drill: DrillData = Run.purse.drill()
 	check(drill != null and drill.id == &"basic_drill", "the Drill Shop gives a Basic Drill")
-	var shallow: Dictionary = Run.dig_rewards(10)
-	var deep: Dictionary = Run.dig_rewards(80)
+	var shallow: Dictionary = Run.purse.dig_rewards(10)
+	var deep: Dictionary = Run.purse.dig_rewards(80)
 	check(shallow.ore > 0 and shallow.material == null and deep.material != null and deep.shard == 1,
 		"deeper digs bring up materials and Harkon Shards")
 
 	# The custom Trickster.
-	check(not Run.trickster_unlocked(), "the Trickster is locked at first")
+	check(not Run.city.trickster_unlocked(), "the Trickster is locked at first")
 	Profile.stats["clears_gladiator"] = 1
 	Profile.stats["clears_champion"] = 1
 	Profile.stats["runes_echo_bard"] = 1
-	check(Run.trickster_unlocked(), "a 3rd-job clear with Buffalo and with Bunny unlocks the Trickster")
+	check(Run.city.trickster_unlocked(), "a 3rd-job clear with Buffalo and with Bunny unlocks the Trickster")
 	Profile.custom = {"kit": "fists", "graph": "Magic / Sense", "trees": ["knight", "bard_tree"]}
 	Profile.class_id = "trickster"
 	Run.new_run()
@@ -974,12 +974,12 @@ func _systems(Run: Node) -> void:
 	check(not Run.try_revive(), "Hardcore Server allows no revives")
 	Run.purse.tm = 1000
 	Run.purse.shards = 0
-	Run.finish(true)
+	Run.city.finish(true)
 	check(Run.last_result.tm == 1700 and Run.last_result.bounty == 7 and Profile.best_heat == 7,
 		"clearing at Heat 7 banks +70% TM and a 7-shard bounty")
 	Run.new_run()
 	Run.purse.tm = 1000
-	Run.finish(true)
+	Run.city.finish(true)
 	check(Run.last_result.bounty == 0, "the bounty is paid once per Heat level")
 	Profile.server_settings = {}
 	Run.new_run()

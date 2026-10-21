@@ -445,22 +445,22 @@ func _score(g: GearItem) -> float:
 ## Between runs, invest banked leftovers in the heirloom and in skill
 ## mastery, as a player would.
 func _city_craft() -> void:
-	if Run.system_on(&"mastery"):
+	if Run.city.system_on(&"mastery"):
 		for c in Run.deck.all_cards():
 			if c.master_material and Run.deck.can_master(c):
 				Run.deck.master_card(c)
 				print("   mastered %s (cap %d)" % [c.display_name, Run.deck.card_cap(c.id)])
 	var h := Profile.heirloom
-	if h < 0 or not Run.system_on(&"warehouse"):
+	if h < 0 or not Run.city.system_on(&"warehouse"):
 		return
 	for _i in 6:
-		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
+		var g := GearItem.from_dict(Profile.warehouse[h], Run.gear.item_by_id)
 		if not Run.gear.can_city_refine(g) or g.refine_chance() < 0.45:
 			break
 		print("   city refine %s: %s" % [g.title(), Run.gear.city_refine(h)])
 	for id: String in Profile.materials.keys():
 		var m := Run.purse.material_by_id(StringName(id))
-		var g := GearItem.from_dict(Profile.warehouse[h], Run.item_by_id)
+		var g := GearItem.from_dict(Profile.warehouse[h], Run.gear.item_by_id)
 		if m and g.free_slots() > 0 and int(Profile.materials[id]) >= m.need:
 			var c := Run.gear.city_compound(h, m)
 			print("   city compound %s into %s: %s +%d" % [m.display_name, g.title(), c.stat, c.value])
@@ -473,7 +473,7 @@ func _restore_city() -> void:
 		while Profile.can_buy(r):
 			Profile.buy(r)
 			print("   restored %s (%d TM, %d shards left)" % [r.display_name, Profile.tm, Profile.shards])
-	if not Run.system_on(&"cards"):
+	if not Run.city.system_on(&"cards"):
 		return
 	for s in Run.hub.card_sets:
 		if s.complete() and not s.claimed():
@@ -499,13 +499,13 @@ func _choose_heirloom() -> void:
 	var best := -1
 	var best_score := 0.0
 	for i in Profile.warehouse.size():
-		var g := GearItem.from_dict(Profile.warehouse[i], Run.item_by_id)
+		var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
 		if g and g.data.slot == ItemData.Slot.WEAPON and _score(g) > best_score:
 			best_score = _score(g)
 			best = i
 	Profile.set_heirloom(best)
 	if best >= 0:
-		print("   carrying %s next" % GearItem.from_dict(Profile.warehouse[best], Run.item_by_id).title())
+		print("   carrying %s next" % GearItem.from_dict(Profile.warehouse[best], Run.gear.item_by_id).title())
 
 
 # ---------------------------------------------------------------- report

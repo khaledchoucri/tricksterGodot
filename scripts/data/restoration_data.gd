@@ -13,7 +13,7 @@ extends Resource
 @export var per_level := 1.0
 @export_enum("max_hp", "room_mp", "revive", "second_skill", "system") var effect := "max_hp"
 ## For "system": which system it switches on (smithing, jobs, compounding,
-## warehouse), checked through Run.system_on().
+## warehouse), checked through Run.city.system_on().
 @export var system: StringName
 ## Cost of each level: index 0 is level 1.
 @export var tm_costs: Array[int] = []

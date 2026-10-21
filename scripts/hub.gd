@@ -118,7 +118,7 @@ func _physics_process(_delta: float) -> void:
 			talk(nearest)
 			return
 	if gate.ready_to_enter() and Combat.ground(player.global_position - gate.global_position).length() < GATE_RANGE:
-		if Run.classes.filter(func(c: ClassData) -> bool: return c.unlocked()).size() > 1 or Run.trickster_unlocked():
+		if Run.classes.filter(func(c: ClassData) -> bool: return c.unlocked()).size() > 1 or Run.city.trickster_unlocked():
 			_choose_character()
 		else:
 			_depart()
@@ -227,7 +227,7 @@ func _warehouse_menu(npc: Npc) -> void:
 		var items: Array[GearItem] = []
 		var options: Array = []
 		for i in Profile.warehouse.size():
-			var g := GearItem.from_dict(Profile.warehouse[i], Run.item_by_id)
+			var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
 			items.append(g)
 			if g == null:
 				options.append({"title": "(unknown item)", "text": "", "disabled": true})
@@ -264,7 +264,7 @@ func _warehouse_menu(npc: Npc) -> void:
 func _stored_items() -> Array[GearItem]:
 	var out: Array[GearItem] = []
 	for d in Profile.warehouse:
-		out.append(GearItem.from_dict(d, Run.item_by_id))
+		out.append(GearItem.from_dict(d, Run.gear.item_by_id))
 	return out
 
 
@@ -328,7 +328,7 @@ func _album(npc: Npc, sets: bool) -> void:
 			var missing: PackedStringArray = []
 			for m in s.monsters:
 				if int(Profile.cards.get(String(m), 0)) == 0:
-					missing.append(Run.formulas.monster_name(Run.enemy(m)))
+					missing.append(Run.formulas.monster_name(Run.route.enemy(m)))
 			options.append({"title": "%s set  →  %s" % [s.display_name, s.reward.display_name], "tag": tag,
 				"icon": s.reward.icon(), "text": s.reward.describe() + ("\nMissing: " + ", ".join(missing) if missing.size() else ""),
 				"disabled": s.claimed() or not done})
@@ -435,7 +435,7 @@ func _forge_menu(npc: Npc) -> void:
 			return
 		Audio.play("ui_refine_proceed.wav")
 		var result := Run.gear.city_refine(pick)
-		var g := GearItem.from_dict(Profile.warehouse[pick], Run.item_by_id)
+		var g := GearItem.from_dict(Profile.warehouse[pick], Run.gear.item_by_id)
 		match result:
 			"success":
 				Audio.play("ui_refine_success.wav")
@@ -521,9 +521,9 @@ func _choose_character() -> void:
 		"tag": "Playing" if Profile.class_id == "trickster" else "",
 		"text": ("Your own class: %s kit, %s, trees: %s." % [Profile.custom.get("kit", ""), Profile.custom.get("graph", ""),
 			", ".join(Profile.custom.get("trees", []))]) if made else
-			("The server's class data has started to bleed together. Build a class of your own." if Run.trickster_unlocked()
+			("The server's class data has started to bleed together. Build a class of your own." if Run.city.trickster_unlocked()
 			else "Locked. Reach a 3rd job and clear a run with both Buffalo and Bunny."),
-		"disabled": not Run.trickster_unlocked()})
+		"disabled": not Run.city.trickster_unlocked()})
 	if made:
 		options.append({"title": "Remake the Trickster", "tag": "", "text": "Choose a new kit, graph and trees."})
 	options.append({"title": "Not yet", "cancel": true, "tag": "", "text": "Stay in the city."})
@@ -561,11 +561,11 @@ func _create_trickster() -> bool:
 		{"title": "Cancel", "cancel": true, "tag": "", "text": ""}])
 	if k < 0 or k >= kits.size():
 		return false
-	var graphs: Array = Run.TRICKSTER_GRAPHS.keys()
+	var graphs: Array = Run.city.TRICKSTER_GRAPHS.keys()
 	var g_opts: Array = []
 	for name: String in graphs:
 		var parts: PackedStringArray = []
-		var gr: Dictionary = Run.TRICKSTER_GRAPHS[name]
+		var gr: Dictionary = Run.city.TRICKSTER_GRAPHS[name]
 		for t: String in Stats.TYPE_ORDER:
 			parts.append("%s %d%%" % [Stats.TYPES[t].name, roundi(float(gr[t]) * 100)])
 		g_opts.append({"title": name, "tag": "", "text": "Grows: " + "  ·  ".join(parts)})
@@ -573,7 +573,7 @@ func _create_trickster() -> bool:
 	var g := await dialogue.choose(line, g_opts)
 	if g < 0 or g >= graphs.size():
 		return false
-	var trees := Run.trickster_trees()
+	var trees := Run.city.trickster_trees()
 	var chosen: Array = []
 	for round_i in 2:
 		var t_opts: Array = []

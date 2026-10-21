@@ -19,5 +19,6 @@ done
 set --
 [ -n "$sections" ] && set -- "$@" "only=${sections#,}"
 [ -n "$classes" ] && set -- "$@" "class=${classes#,}"
-if [ $# -eq 0 ]; then exec "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn; fi
-exec "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn -- "$@"
+# A script that fails to load can leave the test waiting forever: give up after 10 minutes.
+if [ $# -eq 0 ]; then exec timeout 600 "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn; fi
+exec timeout 600 "$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn -- "$@"
