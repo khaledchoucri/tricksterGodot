@@ -116,6 +116,8 @@ ACTORS = {
     'louis': ('data/npc/npc017.nri', '', None),
     'marky': ('data/npc/npc180.nri', '', None),
 }
+# Interface art from data/UI_nori: name -> NORI file (one bitmap each).
+UI_ART = {'equip_window': 'data/UI_nori/EquipUI.nri'}
 # Dialogue portraits: name -> NPC illustration
 PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003_illu.nri',
              'julio': 'data/npc/npc046_illu.nri', 'paul': 'data/npc/npc040_illu.nri', 'marx': 'data/npc/npc119_illu.nri',
@@ -318,6 +320,9 @@ def main():
     for name, rel in PORTRAITS.items():
         run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel),
             os.path.join(OUT, 'portraits', name + '.png'))
+    os.makedirs(os.path.join(OUT, 'ui'), exist_ok=True)
+    for name, rel in UI_ART.items():
+        run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel), os.path.join(OUT, 'ui', name + '.png'))
     os.makedirs(os.path.join(OUT, 'weapons'), exist_ok=True)
     for name, rel in WEAPONS.items():
         run(os.path.join(HERE, 'export_weapon.py'), os.path.join(client, rel),

@@ -51,6 +51,10 @@ func _shoot() -> void:
 		await _shoot_desert()
 		get_tree().quit()
 		return
+	if "sheet" in OS.get_cmdline_user_args():
+		await _shoot_sheet()
+		get_tree().quit()
+		return
 	if "rest" in OS.get_cmdline_user_args():
 		await _shoot_rest()
 		get_tree().quit()
@@ -168,6 +172,22 @@ func _shoot_hub() -> void:
 	hub.dialogue._chosen.emit(0)
 	await _wait(0.5)
 	await _snap("12_card_album")
+
+
+## The character sheet with its equipment window, opened with the character key, wearing a
+## few pieces so the slots show items.
+func _shoot_sheet() -> void:
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.5)
+	for id: String in ["candy_hat", "candy_shield", "might_ring", "golden_mole_vest"]:
+		Run.gear.equip(GearItem.roll(load("res://data/items/%s.tres" % id), 0.5))
+	game.player.dress()
+	_press("character")
+	await _wait(0.8)
+	await _snap("44_equipment_window")
+	_press("character")
+	await _wait(0.3)
 
 
 ## Each rest stop as a player meets it: arriving, walking up to Julio, pressing the talk

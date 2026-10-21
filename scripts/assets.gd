@@ -37,6 +37,11 @@ static func portrait(name: String) -> String:
 	return ROOT + "portraits/%s.png" % name
 
 
+## Interface art exported from the client's data/UI_nori (setup_assets.py UI_ART).
+static func ui(name: String) -> String:
+	return ROOT + "ui/%s.png" % name
+
+
 ## An exported held-weapon sprite (its folder and files share the name).
 static func weapon(name: String) -> String:
 	return ROOT + "weapons/%s" % name

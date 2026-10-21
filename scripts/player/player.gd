@@ -129,23 +129,28 @@ func refresh_gear() -> void:
 ## only where that character's pivot file places it (as in Trickster, where a
 ## job change leaves fashion behind); its stats apply regardless.
 func dress() -> void:
-	if sprite.actor_name != Run.actor():
-		var act := sprite.action if sprite.action != "" else "idle"
-		sprite.setup(Run.actor())
-		sprite.play_action(act, sprite.facing, 0.0, true)
+	dress_sprite(sprite)
+
+
+## Dresses `s` as the current character (the player, or the equipment window's preview).
+static func dress_sprite(s: ActorSprite) -> void:
+	if s.actor_name != Run.actor():
+		var act := s.action if s.action != "" else "idle"
+		s.setup(Run.actor())
+		s.play_action(act, s.facing, 0.0, true)
 	for slot: String in ["hat", "shield"]:
 		var g := Run.gear.equipped(slot)
-		sprite.wear(slot, g.data.worn_sprite() if g else "")
+		s.wear(slot, g.data.worn_sprite() if g else "")
 	# A carried gun is worn too: the pivots place it in the gun poses.
 	var held := Run.gear.equipped("weapon")
-	sprite.wear("gun", held.data.worn_sprite() if held and Run.gear.carries_gun() else "")
+	s.wear("gun", held.data.worn_sprite() if held and Run.gear.carries_gun() else "")
 	var fashion := {}
 	for w in Run.worn_pieces():
 		fashion[w.slot] = w.worn_sprite()
 	for slot: String in ["ear", "tail", "face", "head", "cape"]:
-		sprite.wear(slot, fashion.get(slot, ""))
+		s.wear(slot, fashion.get(slot, ""))
 	if fashion.get("head", "") != "":
-		sprite.wear("hat", "")  # fashion headwear is shown instead of the hat
+		s.wear("hat", "")  # fashion headwear is shown instead of the hat
 
 
 func combo_steps() -> Array[ComboStep]:

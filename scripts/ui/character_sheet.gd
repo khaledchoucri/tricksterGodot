@@ -1,12 +1,14 @@
 class_name CharacterSheet
 extends PanelContainer
 ## The character window (C / Tab): job and level, type points and the
-## traits they unlocked, all twelve stats by type, equipment and its load,
-## and skill cards. Opens over the game without pausing it.
+## traits they unlocked, all twelve stats by type, skill cards, and the
+## original's equipment window (EquipmentWindow) with the load below it.
+## Opens over the game without pausing it.
 
 @onready var _left: RichTextLabel = %Left
 @onready var _middle: RichTextLabel = %Middle
 @onready var _right: RichTextLabel = %Right
+@onready var _equipment: EquipmentWindow = %Equipment
 
 
 func _ready() -> void:
@@ -24,7 +26,7 @@ func toggle() -> void:
 func _fit() -> void:
 	var view := get_viewport().get_visible_rect().size
 	var w := minf(1060.0, view.x - 32.0)
-	var h := minf(530.0, view.y - 120.0)
+	var h := minf(640.0, view.y - 40.0)
 	custom_minimum_size = Vector2(w, h)
 	size = custom_minimum_size
 	position = ((view - size) / 2.0).round()
@@ -34,6 +36,7 @@ func refresh() -> void:
 	_left.text = _header_text() + "
 " + _types_text(["power", "magic"])
 	_middle.text = _types_text(["sense", "charm"]).trim_prefix("\n") + "\n\n" + _skills_text()
+	_equipment.refresh()
 	_right.text = _gear_text()
 
 
@@ -79,22 +82,8 @@ func _skills_text() -> String:
 func _gear_text() -> String:
 	var lines: PackedStringArray = []
 	var over := Run.gear.overweight()
-	lines.append("[font_size=18]Equipment[/font_size]   [color=#%s]Load %d / %d%s[/color]" % [
+	lines.append("[color=#%s]Load %d / %d%s[/color]" % [
 		"f07a62" if over else "9fb2c0", Run.gear.equip_load(), Run.gear.load_limit(), "  overweight" if over else ""])
-	for k in Run.gear.EQUIP_SLOTS:
-		var g := Run.gear.equipped(k)
-		var label: String = {"weapon": "Weapon", "hat": "Hat", "shield": "Shield", "innerwear": "Innerwear",
-			"acc1": "Accessory", "acc2": "Accessory"}[k]
-		if g:
-			lines.append("[color=#9fb2c0]%s[/color]  %s" % [label, g.title()])
-			lines.append("    [color=#a8d8da]%s[/color]" % g.summary())
-		else:
-			lines.append("[color=#5a6b7c]%s  empty[/color]" % label)
-	var worn: PackedStringArray = []
-	for w in Run.worn_pieces():
-		worn.append(w.display_name)
-	if worn.size():
-		lines.append("[color=#9fb2c0]Wardrobe[/color]  " + ", ".join(worn))
 	var el := Run.gear.element_attack()
 	if not el.is_empty():
 		var parts: PackedStringArray = []

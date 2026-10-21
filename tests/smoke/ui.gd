@@ -36,3 +36,23 @@ func run() -> void:
 		"a 20-option list scrolls and its Leave option stays pinned on screen (reachable %s, bottom %d)"
 		% [game.hud.pick_reachable(20), game.hud.pick_panel.get_global_rect().end.y])
 	game.hud.pick_panel.visible = false
+
+	# The character sheet's equipment window: the original's 13 slots and fashion grid, each
+	# naming what it holds, and the window fits on screen.
+	var hat := GearItem.roll(_item("candy_hat"), 0.0)
+	var old_hat: GearItem = Run.gear.equipped("hat")
+	Run.gear.equip(hat, "hat")
+	game.hud.sheet.toggle()
+	await wait(0.2)
+	var window: EquipmentWindow = game.hud.sheet.get_node("%Equipment")
+	var shown := window.shown()
+	check(shown.size() == 23 and shown["hat"].contains(hat.title()) and shown["pet"] == "Pet: empty"
+		and window.get_global_rect().end.y <= 720.0,
+		"the equipment window shows 13 slots and the fashion grid, the hat in its slot (%d cells, bottom %d)"
+		% [shown.size(), window.get_global_rect().end.y])
+	game.hud.sheet.toggle()
+	if old_hat:
+		Run.gear.equip(old_hat, "hat")
+	else:
+		Run.gear.equipment.erase("hat")
+	Run.stats_changed()
