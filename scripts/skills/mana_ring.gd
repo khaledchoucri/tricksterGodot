@@ -21,7 +21,7 @@ func start() -> void:
 	var foe := nearest_in_wedge(aim, reach, AIM_ARC)
 	var center := foe.global_position if foe else player.global_position + Combat.screen(aim) * reach
 	var radius := param("radius", 120.0) * BURST
-	var power := damage() + Run.card_value(&"mana_ring_booster") * Run.skill_mult(card)
+	var power := damage() + skill_mod("power") * Run.skill_mult(card)  # Mana Ring Booster
 	card.play("ap", -8.0)
 	var left := [3]
 	linger()  # the rings land after the cast is over

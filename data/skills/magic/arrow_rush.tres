@@ -14,3 +14,4 @@ requires = {&"mana_arrow": 3}
 table = {"value": [2.0, 3.0, 4.0, 5.0, 7.0, 7.0, 7.0, 7.0], "ratio": [61.0, 49.0, 46.0, 44.0, 45.0, 45.0, 45.0, 45.0]}
 effects = {"ap": ["eft_skl_m_007_sbg"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"mana_arrow.arrows": "value", "mana_arrow.extra_share": "ratio"})

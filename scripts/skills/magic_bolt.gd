@@ -21,9 +21,9 @@ func start() -> void:
 	var foe := nearest_in_wedge(aim, reach, AIM_ARC)
 	var arrows := 1
 	var extra_share := 1.0
-	if card.id == &"mana_arrow" and Run.card_level(&"arrow_rush") > 0:
-		arrows = int(Run.card_value(&"arrow_rush"))
-		extra_share = Run.card(&"arrow_rush").param("ratio", Run.card_level(&"arrow_rush")) / 100.0
+	if skill_mod("arrows") > 0.0:  # Arrow Rush
+		arrows = int(skill_mod("arrows"))
+		extra_share = skill_mod("extra_share") / 100.0
 	var others: Array[Enemy] = closest_in_circle(foe.global_position, 120.0, arrows) if foe else ([] as Array[Enemy])
 	for i in arrows:
 		var orb := MagicOrb.new()
@@ -60,9 +60,9 @@ func _mana_arrows() -> void:
 	var foe := nearest_in_wedge(aim, reach, AIM_ARC)
 	var arrows := 1
 	var extra_share := 1.0
-	if Run.card_level(&"arrow_rush") > 0:
-		arrows = int(Run.card_value(&"arrow_rush"))
-		extra_share = Run.card(&"arrow_rush").param("ratio", Run.card_level(&"arrow_rush")) / 100.0
+	if skill_mod("arrows") > 0.0:  # Arrow Rush
+		arrows = int(skill_mod("arrows"))
+		extra_share = skill_mod("extra_share") / 100.0
 	var others: Array[Enemy] = closest_in_circle(foe.global_position, 120.0, arrows) if foe else ([] as Array[Enemy])
 	var miss_at := player.global_position + Combat.screen(aim) * reach
 	var left := [arrows]

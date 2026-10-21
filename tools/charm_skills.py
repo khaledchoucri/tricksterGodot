@@ -63,7 +63,7 @@ SPEC = {
     '4010': dict(card='skunk_pouch', behavior='pouch_throw', kind='skill', value=lambda r: 0,
                  rows={'range': lambda r: r.get('Range', 80) + 40, 'radius': lambda r: 40, 'stun': 'Seconds'},
                  text='Toss a pouch of skunk stink: the enemy faints for {stun} s.'),
-    '4011': dict(card='titanium_wrist', value=lambda r: r['Comment'],
+    '4011': dict(card='titanium_wrist', mods={'power_blow.ratio': 'value'}, value=lambda r: r['Comment'],
                  text='Power Blow strikes with {v}% more of your AP.'),
     '4012': dict(card='final_blow', behavior='charm_strike', value=pct_hit, scaling='AP+0.1LOST',
                  rows={'range': 'Range'},
@@ -121,7 +121,7 @@ SPEC = {
                  scaling='HV', rows={'range': 'Range', 'galder': lambda r: 100},
                  text='Throw a wild handful of Galder (up to 1000, a fifth of it paid): {v} damage per Galder, '
                       'through any defence.'),
-    '4210': dict(card='lady_luck', value=lambda r: r['MaxCard'], rows={'min': 'MinCard'},
+    '4210': dict(card='lady_luck', mods={'one_pair.cards_min': 'min', 'one_pair.cards_max': 'value'}, value=lambda r: r['MaxCard'], rows={'min': 'MinCard'},
                  text='One Pair throws {min} to {v} cards, each adding to the damage.'),
     '4211': dict(card='mass_destruction', behavior='charm_burst', value=pct_hit, scaling='AP',
                  rows={'radius': 'Radius', 'targets': 'KillNum', 'hp_left': lambda r: r['HpRemainRatio'] * 100},

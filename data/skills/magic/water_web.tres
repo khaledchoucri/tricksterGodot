@@ -16,3 +16,4 @@ max_level = 1
 table = {"value": [30.0], "seconds": [30.0]}
 master_material = ExtResource("m_master")
 element = "Water"
+mods = Dictionary[String, String]({"drip_bomb.dx_down": "value", "drip_bomb.dx_seconds": "seconds"})

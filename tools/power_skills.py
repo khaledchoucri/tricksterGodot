@@ -46,7 +46,7 @@ SPEC = {
     '1011': dict(card='tornado_bomb', kind='skill', behavior='tornado_bomb', value=lambda r: r['Comment'] / 100.0 * NORMAL_HIT / 8,
                  text='A spinning fist sends out a tornado that cuts enemies for {v} damage several times a second.'),
     # ---- Boxer
-    '1101': dict(card='guard_break', value=lambda r: r['ApplyRatio'] * 100, rows={'seconds': 'Seconds'},
+    '1101': dict(card='guard_break', mods={'shockwave.guard_chance': 'value', 'shockwave.guard_seconds': 'seconds'}, value=lambda r: r['ApplyRatio'] * 100, rows={'seconds': 'Seconds'},
                  text='Shockwave has a {v}% chance to break an enemy\'s guard for {seconds} s: it can\'t evade and has no DP.'),
     '1102': dict(card='boxer_dash', kind='skill', behavior='boxer_dash', value=lambda r: NORMAL_HIT, rows={'range': 'Range'},
                  text='Step in front of the enemy you aim at (up to {range} away) before it can react, striking for {v} damage.'),
@@ -55,7 +55,7 @@ SPEC = {
     '1104': dict(card='quad_punch', kind='skill', behavior='quad_punch', value=lambda r: pct_hit(r) / 4,
                  text='Four blazing blows in a row, {v} damage each.'),
     '1105': dict(card='eagle_eye', mods={'AC%': 'value'}, value=lambda r: r['Comment'], text='+{v}% Accuracy (AC).'),
-    '1106': dict(card='counter_punch', value=pct_hit, rows={'chance': lambda r: 50},
+    '1106': dict(card='counter_punch', mods={'uppercut.counter_chance': 'chance', 'uppercut.counter_damage': 'value'}, value=pct_hit, rows={'chance': lambda r: 50},
                  text='While you Uppercut, a {chance}% chance of a counter blow for {v} more damage.'),
     '1107': dict(card='guard', name='Guard', value=lambda r: r['Count'], rows={'cooldown': 'CoolTime'},
                  text='Block up to {v} physical hits completely (not magic). A spent block returns after {cooldown} s.'),
@@ -66,7 +66,7 @@ SPEC = {
     '1110': dict(card='clinch_release', kind='skill', behavior='clinch_release', value=lambda r: 0,
                  text='Usable while staggered: shake off the hit, its knockback and anything holding you.'),
     # ---- Knight
-    '1201': dict(card='faint', value=lambda r: r['ApplyRatio'] * 100, rows={'seconds': 'Seconds'},
+    '1201': dict(card='faint', mods={'shockwave.stun_chance': 'value', 'shockwave.stun_seconds': 'seconds'}, value=lambda r: r['ApplyRatio'] * 100, rows={'seconds': 'Seconds'},
                  text='Shockwave has a {v}% chance to make an enemy faint for {seconds} s.'),
     '1202': dict(card='lacerator', kind='skill', behavior='lacerator', value=pct_hit,
                  text='A blade aura cuts in front of and behind you for {v} damage.'),

@@ -38,10 +38,8 @@ func start() -> void:
 			throws = int(param("count", 2))
 		&"one_pair":
 			var cards := 2
-			if Run.card_level(&"lady_luck") > 0:
-				var lady := Run.card(&"lady_luck")
-				var lvl := Run.card_level(&"lady_luck")
-				cards = Run.rng.randi_range(int(lady.param("min", lvl)), int(Run.card_value(&"lady_luck")))
+			if skill_mod("cards_max") > 0.0:  # Lady Luck deals more cards
+				cards = Run.rng.randi_range(int(skill_mod("cards_min")), int(skill_mod("cards_max")))
 			throws = cards
 			amount = amount / 2.0  # the pair's damage, a card's share each
 		&"furious_galder_throw":

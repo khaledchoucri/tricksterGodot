@@ -1031,6 +1031,11 @@ func held_cards() -> Array[CardData]:
 	return out
 
 
+## Whether any held card has `tag`.
+func holds_tag(tag: StringName) -> bool:
+	return held_cards().any(func(c: CardData) -> bool: return c.has_tag(tag))
+
+
 ## Every held source's amount for `key`, in the order mod() documents.
 func _mod_values(key: String) -> Array[float]:
 	assert(Mod.is_key(key), "not a Mod key: " + key)
@@ -1299,7 +1304,7 @@ func can_use(it: ItemData) -> bool:
 	if it.slot != ItemData.Slot.WEAPON:
 		return true
 	if it.family == "gun":
-		return card_level(&"gun_carrier") > 0
+		return holds_tag(&"carries_guns")
 	return not gunner
 
 
@@ -1448,12 +1453,7 @@ func in_bunker(now: float) -> bool:
 ## starts with it; Fox can learn it), as the client's "Gun_NotEquippable".
 func carries_gun() -> bool:
 	var w := equipped("weapon")
-	return w != null and w.data.family == "gun" and card_level(&"gun_carrier") > 0
-
-
-## Thrown-weapon skills Precise Pitch strengthens.
-const THROWN: Array[StringName] = [&"shuriken_master", &"fan_of_knives", &"chain_of_knives", &"rain_of_knives",
-	&"poison_assault"]
+	return w != null and w.data.family == "gun" and holds_tag(&"carries_guns")
 
 
 ## AP + DA against the starting character's: a gun hits harder with a better

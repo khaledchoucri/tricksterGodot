@@ -13,3 +13,4 @@ text = "Mana Ring hits {v} harder."
 requires = {&"mana_ring": 3}
 table = {"value": [5.6, 17.0, 34.0, 45.0, 73.0, 80.0, 88.0, 95.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"mana_ring.power": "value"})

@@ -31,6 +31,12 @@ var _effect_hit: Array[Enemy] = []  # enemies that have had this cast's hit effe
 
 
 ## Damage for this cast: the card's value at its level, with skill bonuses.
+## What held supplements add to this skill's `effect` (Mod.SKILL_EFFECTS), e.g.
+## Faint's stun chance on Shockwave.
+func skill_mod(effect: String) -> float:
+	return Run.mod("%s.%s" % [card.id, effect])
+
+
 func damage(scale := 1.0) -> float:
 	return card.value_at(level) * scale * Run.skill_mult(card)
 
@@ -134,29 +140,23 @@ func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}, fro
 	if not e in _effect_hit:
 		_effect_hit.append(e)
 		effect("ht", e.global_position, {"follow": e})
-	if card.element == "Dark" and Run.card_level(&"dark_commando") > 0:
+	if card.element == "Dark" and Run.mod("Dark.commando_damage") > 0.0:
 		_commando(e)
 
 
-## The original's support passives, each bound to one spell.
+## The original's support passives, each bound to one spell through its scoped mods
+## (Water Web's "drip_bomb.dx_down"): whatever this skill's supplements add.
 func _supplements(fx: Dictionary, amount: float) -> void:
 	var debuffs: Dictionary = fx.get("debuffs", {}).duplicate()
-	match card.id:
-		&"drip_bomb":  # Water Web: the target's DX goes down
-			if Run.card_level(&"water_web") > 0:
-				debuffs["dx"] = [Run.card_value(&"water_web"), Run.card(&"water_web").param("seconds", 1)]
-		&"electro_attack":  # Electroshock: immobilized for a moment
-			if Run.card_level(&"electroshock") > 0:
-				fx.stun = Run.card_value(&"electroshock")
-		&"hellfire":  # Wicked Flame: it keeps burning
-			var lvl := Run.card_level(&"wicked_flame")
-			if lvl > 0:
-				fx.burn = amount * Run.card_value(&"wicked_flame") / 100.0
-				fx.burn_for = Run.card(&"wicked_flame").param("seconds", lvl)
-		&"scythe":  # Fear: no attacking for a while
-			var lvl := Run.card_level(&"fear")
-			if lvl > 0 and Run.rng.randf() * 100.0 < Run.card(&"fear").param("chance", lvl):
-				debuffs["fear"] = [1.0, Run.card_value(&"fear")]
+	if skill_mod("dx_down") > 0.0:  # Water Web: the target's DX goes down
+		debuffs["dx"] = [skill_mod("dx_down"), skill_mod("dx_seconds")]
+	if skill_mod("stun") > 0.0:  # Electroshock: immobilized for a moment
+		fx.stun = skill_mod("stun")
+	if skill_mod("burn%") > 0.0:  # Wicked Flame: it keeps burning
+		fx.burn = amount * skill_mod("burn%") / 100.0
+		fx.burn_for = skill_mod("burn_seconds")
+	if skill_mod("fear_seconds") > 0.0 and Run.rng.randf() * 100.0 < skill_mod("fear_chance"):  # Fear: no attacking
+		debuffs["fear"] = [1.0, skill_mod("fear_seconds")]
 	if not debuffs.is_empty():
 		fx.debuffs = debuffs
 
@@ -165,8 +165,8 @@ func _supplements(fx: Dictionary, amount: float) -> void:
 func _commando(e: Enemy) -> void:
 	linger()
 	if await wait_for(0.25) and is_instance_valid(e) and e.is_hittable():
-		var c := Run.card(&"dark_commando")
-		player.deal_hit(e, Run.card_value(&"dark_commando") * Run.skill_mult(c), 1.0, 40.0, false, {"element": "Dark", "magic": true}, e.global_position)
+		# Dark Commando strikes as a spell of its own (MA, as every Dark spell).
+		player.deal_hit(e, Run.mod("Dark.commando_damage") * Run.skill_mult(card), 1.0, 40.0, false, {"element": "Dark", "magic": true}, e.global_position)
 		Sparks.burst(room, e.global_position + Vector2(0, -24), Color(0.5, 0.3, 0.7), 10, 120.0)
 	release()
 

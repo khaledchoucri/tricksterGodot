@@ -15,3 +15,4 @@ jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [35.0, 46.0, 64.0, 75.0, 104.0, 115.0, 125.0, 136.0], "chance": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]}
 effects = {"ht": ["eft_skl_p_106_ebg", "eft_skl_p_106_eps"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"uppercut.counter_chance": "chance", "uppercut.counter_damage": "value"})

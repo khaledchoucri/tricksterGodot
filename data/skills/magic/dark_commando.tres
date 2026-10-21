@@ -18,3 +18,4 @@ effects = {"ap": ["M_804_dark_ghost_ap"], "ht": ["M_804_dark_ghost_ht"]}
 master_material = ExtResource("m_master")
 element = "Dark"
 scaling = "MA"
+mods = Dictionary[String, String]({"Dark.commando_damage": "value"})

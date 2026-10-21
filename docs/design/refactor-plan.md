@@ -38,8 +38,10 @@ baseline is a bug in the refactor, not a tuning change.
 
 Each phase must pass its check before the next starts.
 
-**Status (2026-10-21):** phases 0 and 1 done. A seed replays a run exactly; 33 cards, the wardrobe, the numeric
-traits and job passives declare `mods`; the lint allows 122 card id literals in shared code. Next: phase 2.
+**Status (2026-10-21):** phases 0-2 done. A seed replays a run exactly. Cards, the wardrobe, numeric traits and
+job passives declare `mods`; card families are tags and fields; supplements are scoped mods
+(`"shockwave.stun_chance"`), so skill scripts name only their own cards. The lint allows 49 card id literals in
+shared code (from 122), all conditional talents for phase 3. Next: phase 3.
 
 | # | Phase | Check |
 |---|---|---|

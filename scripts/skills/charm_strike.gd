@@ -66,8 +66,8 @@ func update(t: float, _delta: float) -> void:
 	match card.id:
 		&"power_blow":
 			var ratio := param("ratio", 1.0)
-			if Run.card_level(&"titanium_wrist") > 0 and ratio > 0.0:
-				amount *= (ratio + Run.card_value(&"titanium_wrist") / 100.0) / ratio
+			if skill_mod("ratio") > 0.0 and ratio > 0.0:  # Titanium Wrist
+				amount *= (ratio + skill_mod("ratio") / 100.0) / ratio
 		&"volley_kick":
 			fx.stun = 0.7
 			knock = 40.0

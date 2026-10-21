@@ -17,3 +17,4 @@ table = {"value": [5.0]}
 effects = {"ap": ["eft_skl_m_113_1", "eft_skl_m_113_2", "eft_skl_m_113_sbg(2)"]}
 master_material = ExtResource("m_master")
 element = "Elec"
+mods = Dictionary[String, String]({"electro_attack.stun": "value"})

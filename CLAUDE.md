@@ -23,14 +23,16 @@ fixed in the same change or tracked in "Known debt" below.
 
 ## 2. Cards and monsters are data, code asks questions
 
-A card says what it does through its fields. Code asks about effects, not about specific cards:
+A card says what it does through its fields: `mods` (numbers, summed by `Run.mod()`; see
+`scripts/data/mod.gd` for every key), `tags`, `form`, `inflicts`. Code asks about effects, not about
+specific cards:
 
 ```gdscript
 # no
 s.DP *= 1.0 + (card_value(&"shield_all") + card_value(&"sturdy_shield")) / 100.0
 if card.id in GALDER_SKILLS: ...
 # yes
-s.DP *= 1.0 + Run.mod("DP%") / 100.0      # sums every held card's stat_mods
+s.DP *= 1.0 + Run.mod("DP%") / 100.0      # sums every held source's mods
 if card.has_tag(&"galder"): ...
 ```
 
@@ -101,12 +103,9 @@ Pay these down when you're working near them, and remove each line when it's fix
 
 - `run_state.gd` is about 1,700 lines and does too much: stats, cards and offers, the economy, gear, the room
   plan and formulas. Split it into modules behind `Run`.
-- 122 card id literals in shared code (the `lint` smoke section counts them and won't let the number rise):
-  conditional and behavioural hooks (Revival, Desperate Rally, Sword Mastery, the forms, the reload talents)
-  and the id lists below. Plain numbers already go through `mods` / `Run.mod()`; the rest move to tags
-  (phase 2) and talent hooks (phase 3).
-- Id lists in code: `FORM_NEEDED`, `GALDER_SKILLS`, `GUN_NEEDED`, `GUN_LOADED`, `GUN_GROWERS`, `THROWN`,
-  `BREAKERS`, `SHIELDS`, `BLESSINGS`.
+- 49 card id literals in shared code (the `lint` smoke section counts them and won't let the number rise):
+  conditional and behavioural talents (Guard, Shield of Heaven, Oath of Light, Revival, Desperate Rally,
+  the reflectors, Sword Mastery, the reload talents, Beast's Instinct). They move to talent hooks (phase 3).
 - Enemy attack patterns are five consts in `Enemy.KINDS`.
 - 35 literal `res://original_assets/` paths in 23 scripts.
 - `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and

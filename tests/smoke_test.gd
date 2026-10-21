@@ -12,7 +12,7 @@ const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", 
 	"lint"]
 ## Card id literals allowed in shared code (scripts/ outside skills/ and tools/): CLAUDE.md,
 ## section 2. Lower it as hooks move into card data; it may never rise.
-const CARD_ID_LITERALS_MAX := 59
+const CARD_ID_LITERALS_MAX := 49
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
@@ -605,6 +605,18 @@ func _lint() -> void:
 			worst.append("%s %d" % [path.get_file(), n])
 	check(total <= CARD_ID_LITERALS_MAX, "card id literals in shared code: %d (at most %d; %s)"
 		% [total, CARD_ID_LITERALS_MAX, ", ".join(worst)])
+	# A skill's behaviour script names only the cards it plays (supplements reach it as mods).
+	var own := {}
+	for c: CardData in Run.all_cards():
+		if c.behavior:
+			own[c.behavior.resource_path] = own.get(c.behavior.resource_path, []) + [String(c.id)]
+	var cross: PackedStringArray = []
+	for path in _scripts_under("res://scripts/skills"):
+		for m in literal.search_all(FileAccess.get_file_as_string(path)):
+			var id := m.get_string(1)
+			if ids.has(id) and not id in own.get(path, []) and not "%s %s" % [path.get_file(), id] in cross:
+				cross.append("%s %s" % [path.get_file(), id])
+	check(cross.is_empty(), "skill scripts name only their own cards%s" % ("" if cross.is_empty() else ": " + ", ".join(cross)))
 
 
 ## Every .gd file under `dir`, recursively.

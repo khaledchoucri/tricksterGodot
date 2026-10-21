@@ -13,3 +13,4 @@ text = "Power Blow strikes with {v}% more of your AP."
 requires = {&"power_blow": 3}
 table = {"value": [20.0, 30.0, 45.0, 55.0, 80.0, 88.0, 96.0, 104.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"power_blow.ratio": "value"})

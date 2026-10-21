@@ -17,3 +17,4 @@ table = {"value": [60.0], "seconds": [20.0]}
 sounds = {"ap": "snd_skl_p_006_sbg.wav"}
 effects = {"ht": ["eft_skl_p_201_eed", "eft_skl_p_201_eps"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"shockwave.guard_chance": "value", "shockwave.guard_seconds": "seconds"})

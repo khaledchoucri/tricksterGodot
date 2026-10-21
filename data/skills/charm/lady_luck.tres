@@ -14,3 +14,4 @@ requires = {&"one_pair": 1}
 jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])
 table = {"value": [2.0, 2.0, 3.0, 4.0, 6.0, 6.0, 6.0, 6.0], "min": [2.0, 2.0, 2.0, 2.0, 4.0, 4.0, 4.0, 4.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"one_pair.cards_min": "min", "one_pair.cards_max": "value"})

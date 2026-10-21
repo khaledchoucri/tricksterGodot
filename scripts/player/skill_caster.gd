@@ -100,7 +100,7 @@ func try_cast(slot: int) -> bool:
 		return false
 	var cost := 0 if slot == BASIC else cost_of(card, level)
 	# Any other skill pulls you out of hiding (its strikes end it themselves).
-	if not card.id in [&"hide", &"sudden_attack", &"poison_assault"]:
+	if not card.has_tag(&"stealth"):
 		Run.hidden = false
 	if not Run.spend_mp(cost):
 		Events.mp_short.emit()

@@ -29,9 +29,9 @@ func update(t: float, _delta: float) -> void:
 			Sparks.burst(room, _target.global_position + Vector2(0, -24), COLOR, 14, 170.0)
 			feedback(0.08, 5.0)
 	if once(t, 0.32, "counter") and is_instance_valid(_target) and _target.is_hittable():
-		var lvl := Run.card_level(&"counter_punch")
-		if lvl > 0 and Run.rng.randf() * 100.0 < Run.card(&"counter_punch").param("chance", lvl):
-			player.deal_hit(_target, Run.card_value(&"counter_punch") * Run.skill_mult(Run.card(&"counter_punch")),
+		# Counter Punch: a second blow by its chance (AP, as Uppercut).
+		if skill_mod("counter_damage") > 0.0 and Run.rng.randf() * 100.0 < skill_mod("counter_chance"):
+			player.deal_hit(_target, skill_mod("counter_damage") * Run.skill_mult(card),
 				1.0, 120.0, true, {}, player.global_position)
 			Events.text_shown.emit(_target.global_position + Vector2(0, -70), "Counter", COLOR)
 			Audio.play("dmg_normal_d.wav", -3.0)

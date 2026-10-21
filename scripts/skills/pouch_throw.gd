@@ -33,8 +33,8 @@ func start() -> void:
 
 
 func _burst(spot: Vector2, radius: float, amount: float) -> void:
-	var poison := Run.card_value(&"poison_pouch")
-	var seconds := Run.card(&"poison_pouch").param("seconds", Run.card_level(&"poison_pouch")) if poison > 0.0 else 0.0
+	var poison := Run.mod("pouch.poison")  # Poison Pouch, on every pouch
+	var seconds := Run.mod("pouch.poison_seconds") if poison > 0.0 else 0.0
 	effect("ht", spot)
 	var stun := param("stun", 0.0)
 	if stun > 0.0:

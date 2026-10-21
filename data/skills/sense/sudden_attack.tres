@@ -18,4 +18,5 @@ sounds = {"hi": "snd_s_402_ht.wav"}
 effects = {"ht": ["S_402_sudden attack_hit"]}
 master_material = ExtResource("m_master")
 scaling = "DA"
+tags = Array[StringName]([&"stealth"])
 behavior = ExtResource("2_b")

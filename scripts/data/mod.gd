@@ -41,8 +41,19 @@ const FLAT: Array[String] = ["gun_AP", "crit_damage", "evade", "material_drop", 
 const ELEMENTS: Array[String] = ["Fire", "Water", "Wind", "Earth", "Elec", "Light", "Dark"]
 
 
+## What a supplement adds to one skill (or a family: "pouch", an element), keyed
+## "<skill id>.<effect>": Faint's "shockwave.stun_chance". The skill's own script reads it
+## with Skill.skill_mod(effect), so no skill names another card.
+const SKILL_EFFECTS: Array[String] = ["stun_chance", "stun_seconds", "guard_chance", "guard_seconds",
+	"counter_chance", "counter_damage", "ratio", "cards_min", "cards_max", "arrows", "extra_share", "power",
+	"poison", "poison_seconds", "commando_damage", "dx_down", "dx_seconds", "stun", "burn%", "burn_seconds",
+	"fear_chance", "fear_seconds"]
+
+
 ## Whether `key` is one of the keys above.
 static func is_key(key: String) -> bool:
+	if "." in key:
+		return key.get_slice(".", 1) in SKILL_EFFECTS
 	if key in STAT_PERCENT or key in STAT_FLAT or key in PERCENT or key in FLAT:
 		return true
 	if key.begins_with("resist:"):

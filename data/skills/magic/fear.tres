@@ -17,3 +17,4 @@ sounds = {"ke": "snd_skl_c_110_eps.wav"}
 effects = {"ke": ["M_802_fear_keep"]}
 master_material = ExtResource("m_master")
 element = "Dark"
+mods = Dictionary[String, String]({"scythe.fear_chance": "chance", "scythe.fear_seconds": "value"})

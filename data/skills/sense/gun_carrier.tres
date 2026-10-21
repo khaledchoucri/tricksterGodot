@@ -13,3 +13,4 @@ text = "You can carry guns. A loaded gun can't share your hands with a shield."
 max_level = 1
 table = {"value": [0.0]}
 master_material = ExtResource("m_master")
+tags = Array[StringName]([&"carries_guns"])
