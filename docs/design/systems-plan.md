@@ -16,6 +16,7 @@ Built:
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,
   written by `tools/gear_items.py` and `tools/gun_items.py`).
 - The warehouse, heirlooms with level sync, Ports and rollback.
+  (Being replaced by the loadout: see section 3, "The loadout".)
 - Megalopolis: 11 people, 12 restorations that switch systems on, and the story.
 - Server Settings (Heat), monster cards, card sets and the wardrobe, the Skill Master, Echoes and sky-blue
   runes, drilling, and the custom Trickster class.
@@ -164,28 +165,61 @@ these were collectible extras that came with small stats. In ours they are the
   except you wear several at once.
 - Fashion slots (body, pants, shoes…) come later and are cosmetic only.
 
-### Heirlooms: the long game
+### The loadout: the original's equipment window, planned before each run
 
-When you reach a save point, you may **send one run item home** to the
-warehouse, with its refines, compounds and rolls intact. At the start of a run
-you may equip one heirloom (more slots unlock later). Your heirloom keeps
-improving: refine it further in runs and save again.
+Decided with the user, 2026-10-21. It replaces heirlooms and level sync; the build order is at the end.
 
-That's Trickster's real endgame: a sword you've carried for 20 runs, now +9 with
-fire and crit compounds.
+**The window is the original's** (`data/UI_nori/EquipUI.nri` / `.ucf`): 13 slots around the character
+and a 10-slot fashion grid below it.
 
-**Level sync stops it trivialising the early game.** Refine levels on an heirloom
-are capped by region: +3 in Coral Beach, +6 in region 2, full power at the end.
-Level-locked dungeons are a familiar MMO rule. Your +9 sword still feels strong
-early on, and it comes into its own when it counts.
+| Slots | Original item types | Where the items come from |
+|---|---|---|
+| Weapon (guns included), Shield, Hat, Belt (innerwear), Necklace, Ring | 2, 8, 3, 4, 7 | drops, shops, crafting; kept in the warehouse |
+| Ears, Tail, Cape, Sprint | 17, 18, 34, 7/53 | the wardrobe: earned from card sets or bought, owned for good |
+| Bracer, Drill, Pet | 7/62, 3/6, 13 | drops and the city (the pet is the guardian companion) |
+| Fashion: head, face, hand item, top, coat, hands, socks, shoes, bottom, belt | 24, 25, 23, 19, 21, 26, 27, 5, 20, 22 | the wardrobe's look; no stats, as in the original |
 
-### Death is a rollback
+- Reading: the slot next to the drill is the bracer, read from its icon; check it in the client's equip code.
+- The same window is the in-run equipment menu: one screen shows everything you wear.
 
-Death ends the run, as in Hades. What happened since your last **save point**
-(a Portable Port at each region's end) rolls back: heirloom upgrades, the item
-you meant to send home, and banked materials. Anything you saved before that is
-safe. A refine attempt just before a boss is a real gamble, and it's the
-server's oldest meme.
+**A run is one chunk of three regions.** Chunk 1 is Coral Beach, Desert Beach and the Caballa Relics. Each
+region has ten rooms (nine and its boss), and a **rest stop** follows the first two bosses: 10 + 1 + 10 +
+1 + 10 = 32 rooms. Clearing a chunk opens the next (Seabed, Swamp...), which starts at the level the one
+before ends at. Monsters keep their original levels, so a chunk's gear is what makes the next one possible.
+
+**The rest stop** (after the 1st and 2nd region bosses; Hades's rest rooms) has no encounter. It has a story
+point, a free heal of 50% of max HP and MP, and the warehouse, where you can swap what you carry with what's
+stored.
+
+**Two of the original's own limits gate the loadout. There are no slot locks:**
+- **MinLevel.** You can carry a level-50 sword from room 1, but it goes on once you reach level 50. A strong
+  loadout speeds up the later rooms; it doesn't trivialise the first. Ten-room regions bring the levels
+  near the original's (the Relics monsters are level 53-71).
+- **Weight.** What you carry counts against your equip load (WT / 4, already in the game), so early on you
+  pick a few pieces, and you carry more as WT grows.
+
+**What you carry is at stake.** Deviation (user, 2026-10-21): the original's death costs EXP, not items.
+- Gear you take in or find, unless it's banked, drops in a **lost bag** in the room where you die.
+- A later run that reaches that room picks the bag up. Die before then and it's gone. There is one bag at a
+  time: a new death replaces it.
+- **Banking:** sending an item home at a Portable Port or a rest stop makes it safe.
+- Wardrobe pieces are never at stake.
+
+**The warehouse is the original's grid** (`WareHouseUI.ucf`): 8 x 3 = 24 items to start. Each upgrade
+adds a row of 8, up to 8 x 10 = 80, bought with Harkon Shards (or a boss currency). Storage space is
+what forces the choice of what to keep.
+
+**Balance target.** A first run on a fresh profile sends home 1-2 items at most and very rarely clears
+the chunk (under about 10% for the bots); a lucky, skilled run can. Measured with fresh-profile bots.
+
+**Build order:**
+1. Ten rooms per region (elites, the trial and the bands follow).
+2. Rest stops after the 1st and 2nd bosses: heal, story point, the warehouse.
+3. The equipment window with the 13 slots, then the new slot types' items.
+4. The loadout before a run and the MinLevel gate; heirlooms and level sync removed.
+5. The lost bag and banking.
+6. Warehouse rows and their price.
+7. Fresh-profile bots, and tuning to the balance target.
 
 ---
 
