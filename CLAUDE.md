@@ -110,7 +110,5 @@ if card.has_tag(&"galder"): ...
 
 Pay these down when you're working near them, and remove each line when it's fixed.
 
-- `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and
-  Bunny.
-- The `poison_assault` smoke check was flaky; the dummy-placement fix (2026-10-21) should have cured it.
-  Remove this line once it has stayed green for a week.
+- None. The refactor (docs/design/refactor-plan.md) cleared the list. Add a line here when you knowingly
+  leave something for later.

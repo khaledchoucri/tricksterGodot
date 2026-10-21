@@ -1,19 +1,21 @@
 # Last Login: game systems plan
 
-## Status (2026-10-17)
+## Status (2026-10-21, read from the code)
 
 Built:
-- 12 stats in 4 types with traits.
-- Two regions (Coral Beach, Desert Beach) with job changes 1st → 2nd → 3rd. Buffalo becomes a Gladiator or Mercenary; Bunny becomes a Champion or Duelist.
+- 12 stats in 4 types with traits at their thresholds.
+- Eight characters in four lines, each through 1st, 2nd and 3rd jobs (36 jobs): Buffalo and Bunny (Power),
+  Sheep and Dragon (Magic), Fox and Lion (Sense, with the gun cycle), Cat and Raccoon (Charm, with Galder skills
+  and the beast forms as permanent talents). Hybrid 3rd jobs unlock after a clear.
+- 229 skill and talent cards from the original tables. Upgrades replace their base, buffs are talents, and
+  supplements change their skill.
+- Two regions (Coral Beach, Desert Beach), seven rooms and a boss each, elites at the 3rd and 6th rooms, and the
+  job change after the 3rd. 16 monsters with five attack patterns, two bosses.
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops.
 - The warehouse, heirlooms with level sync, Ports and rollback.
-- City restorations that switch systems on.
-- Server Settings (Heat).
-- Monster cards, card sets and the six-slot wardrobe.
-- The Skill Master.
-- Echoes and sky-blue runes.
-- Drilling.
-- The custom Trickster class.
+- Megalopolis: 11 people, 12 restorations that switch systems on, and the story.
+- Server Settings (Heat), monster cards, card sets and the wardrobe, the Skill Master, Echoes and sky-blue
+  runes, drilling, and the custom Trickster class.
 
 Still to do:
 - Type skills, the original stat-locked skills.

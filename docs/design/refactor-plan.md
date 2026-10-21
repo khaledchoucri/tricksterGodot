@@ -38,13 +38,12 @@ baseline is a bug in the refactor, not a tuning change.
 
 Each phase must pass its check before the next starts.
 
-**Status (2026-10-21):** phases 0-4 done. A seed replays a run exactly. Cards, the wardrobe, numeric traits and
-job passives declare `mods`; card families are tags and fields; supplements are scoped mods; conditional talents are
-`Talent` scripts, each with a smoke check; shared code names no card. `Run` is the character (535 lines, from
-1,714) and six modules: route, deck, gear, purse, formulas, city. It stops short of the ~400 aimed at: the stats,
-`new_run()` and the mods are the character's, and splitting them further would only scatter them. Enemy attacks are `AttackPattern` resources
-(`data/attacks/`), every original asset path goes through `Assets`, and an untyped declaration
-is a compile error. Next: phase 8.
+**Status (2026-10-21): done.** Every phase passed its check: each step kept the smoke results, the probe and all 24
+seeded bot runs identical. A seed replays a run exactly; cards, the wardrobe, traits and passives say what they do
+as data (`mods`, tags, fields, `Talent` scripts) and shared code names no card; `Run` is the character and six
+modules; monster attacks are `AttackPattern` resources; asset paths go through `Assets`; untyped declarations are
+compile errors; the lint section and `tests/check_generated.sh` keep it that way. The full suite passes under
+seeds 1-6, and the Sense and Charm sections under seeds 1-21 (the checks that used to flake).
 
 | # | Phase | Check |
 |---|---|---|
