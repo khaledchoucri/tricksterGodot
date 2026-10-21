@@ -18,7 +18,6 @@ Built:
   runes, drilling, and the custom Trickster class.
 
 Still to do:
-- Type skills, the original stat-locked skills.
 - A guardian companion (pets).
 - Spell cards.
 - More regions.
@@ -74,9 +73,11 @@ and drilling.
 ### Thresholds change how you play
 
 Each type has thresholds at **3, 6 and 10** chosen points (the first slice;
-more later). Passing one either adds a **trait** that changes play, or puts
-that type's **type skills** into your offers (the original's Sense-only and
-Charm-only skills, later). Built in the first slice:
+more later). Passing one adds a **trait** that changes play. (An earlier draft
+also had type-locked skills, "the original's Sense-only and Charm-only skills";
+the original has none: all 282 skill cards are learned by job, and the few for
+every character are event fireworks, couple emotes and GM skills.) Built in the
+first slice:
 
 | | 3 | 6 | 10 |
 |---|---|---|---|
