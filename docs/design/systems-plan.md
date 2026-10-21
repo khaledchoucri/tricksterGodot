@@ -168,7 +168,8 @@ these were collectible extras that came with small stats. In ours they are the
 
 ### The loadout: the original's equipment window, planned before each run
 
-Decided with the user, 2026-10-21. It replaces heirlooms and level sync; the build order is at the end.
+Decided with the user, 2026-10-21 (progression revised the same day). It replaces heirlooms and level
+sync; the build order is at the end.
 
 **The window is the original's** (`data/UI_nori/EquipUI.nri` / `.ucf`): 13 slots around the character
 and a 10-slot fashion grid below it.
@@ -192,12 +193,29 @@ before ends at. Monsters keep their original levels, so a chunk's gear is what m
 point, a free heal of 50% of max HP and MP, and the warehouse, where you can swap what you carry with what's
 stored.
 
-**Two of the original's own limits gate the loadout. There are no slot locks:**
-- **MinLevel.** You can carry a level-50 sword from room 1, but it goes on once you reach level 50. A strong
-  loadout speeds up the later rooms; it doesn't trivialise the first. Ten-room regions bring the levels
-  near the original's (the Relics monsters are level 53-71).
-- **Weight.** What you carry counts against your equip load (WT / 4, already in the game), so early on you
-  pick a few pieces, and you carry more as WT grows.
+**Progression: the world's item level.** Decided with the user, 2026-10-21. The loadout has no gates (no
+MinLevel, no weight, no level sync): you wear what you've kept from room 1, and runs get easier as the
+collection grows. The challenge comes from the world rising to meet it.
+- **Each region has an item-level band** (`RegionData.gear_levels`, first room to boss: Coral Beach 1-22,
+  Desert Beach 25-46, the Relics 49-70).
+- **Heat raises every band** (Ours: about 3 item levels per point; Server Settings reach 18 Heat). The
+  original's higher ladders fill it: the item tables go past level 120, and the Relics' own drop tables
+  (Old Sabre, Dao, Kaldo, Guardian Shield, level 110 and up) become the Relics' rewards at high Heat.
+- **Monsters rise with Heat at the same pace** (Server Load and Packet Loss scale their HP and damage
+  linearly), tuned so a loadout earned at one Heat faces the next as a climb, not a wall or a walk.
+- So your best gear is about what the hardest Heat you've beaten drops. A lower Heat is a stroll (the power
+  is felt), the next one is a challenge, and its later regions drop gear above your loadout, so finds
+  keep mattering inside a run.
+
+**Three layers of progression:**
+1. **A run** (minutes): level 1 to about 54, the job changes, the deck and the run's finds. It resets.
+2. **Between runs** (hours): the loadout, the starting skill (Master Louis), refining and compounding
+   stored gear in the city, the wardrobe, the warehouse's size, and the lost bag.
+3. **The world** (the long arc): Heat raises stakes and rewards within a chunk; chunks add places; the
+   city's restorations and people grow around it.
+
+**Weight.** Worn gear no longer counts against an equip load. Open: WT needs a new job (in the original
+it's how much you can carry, which could become how many finds or materials a run can haul).
 
 **What you carry is at stake.** Deviation (user, 2026-10-21): the original's death costs EXP, not items.
 - Gear you take in or find, unless it's banked, drops in a **lost bag** in the room where you die.
@@ -210,17 +228,20 @@ stored.
 adds a row of 8, up to 8 x 10 = 80, bought with Harkon Shards (or a boss currency). Storage space is
 what forces the choice of what to keep.
 
-**Balance target.** A first run on a fresh profile sends home 1-2 items at most and very rarely clears
-the chunk (under about 10% for the bots); a lucky, skilled run can. Measured with fresh-profile bots.
+**Balance targets** (measured by bots):
+- Fresh profile, Heat 0: at most 1-2 items sent home, and the chunk cleared under about 10% of the time.
+- A loadout earned at Heat N clears Heat N+1 at a similar, modest rate.
+- A lower Heat than your loadout clears quickly.
 
 **Build order:**
 1. Ten rooms per region (elites, the trial and the bands follow). Done.
 2. Rest stops after the 1st and 2nd bosses: heal, story point, the warehouse. Done.
-3. The equipment window with the 13 slots, then the new slot types' items.
-4. The loadout before a run and the MinLevel gate; heirlooms and level sync removed.
-5. The lost bag and banking.
-6. Warehouse rows and their price.
-7. Fresh-profile bots, and tuning to the balance target.
+3. The equipment window with the 13 slots (done), then the new slot types' items.
+4. Heat raises the gear bands; the original's higher item ladders fill them.
+5. The loadout before a run; worn gear stops counting against the load; heirlooms and level sync removed.
+6. The lost bag and banking.
+7. Warehouse rows and their price.
+8. Bots for the three targets, and tuning Heat's monster scaling to them.
 
 ---
 
