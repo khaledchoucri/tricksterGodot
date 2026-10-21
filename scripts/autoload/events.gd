@@ -23,6 +23,8 @@ signal damage_shown(world_pos: Vector2, amount: int, color: Color, big: bool)
 signal text_shown(world_pos: Vector2, text: String, color: Color)
 ## Something was picked up mid-fight (Bronze Fragments from Lucky Strikes).
 signal loot_found(text: String)
+## A pickup didn't fit under the carrying limit (WT): `left` of `item` stayed behind.
+signal too_heavy(item: String, left: int)
 
 signal enemy_spawned(enemy: Enemy)
 signal enemy_died(enemy: Enemy)

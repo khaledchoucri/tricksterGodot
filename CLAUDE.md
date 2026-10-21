@@ -110,7 +110,5 @@ if card.has_tag(&"galder"): ...
 
 Pay these down when you're working near them, and remove each line when it's fixed.
 
-- The WT stat has no effect since worn gear stopped counting against a load (2026-10-21), so Sense's WT
-  gain and WT gear (Pocket Pouch) do nothing: give WT a new job (see systems-plan, "Weight").
 - `scripts/game.gd` is 989 lines (the lint allows 700): split its reward flow, the room flow and the pick
   menus into their own scripts, then take it off the lint's `LONG_ALLOWED`.

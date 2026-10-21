@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"nemeth_towel"
 display_name = "Nemeth Hair Towel"
 item_id = 10092
+weight = 21
 stat = "MA"
 min_value = 4
 max_value = 10

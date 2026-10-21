@@ -83,6 +83,21 @@ func run(Run: Node) -> void:
 	Run.gear.equip(GearItem.make(_item("bamboo_sword")))
 	Run.gear.equip(GearItem.make(_item("clam_shield")))
 	check(Run.formulas.speed_mult() == 1.0, "heavy gear doesn't slow you: worn gear counts against no load")
+	# WT is how much you carry: materials and ore weigh their original Weight.
+	var ore_before: int = Run.purse.ore
+	var mats_before: Dictionary = Run.purse.materials.duplicate()
+	Run.purse.ore = 0
+	Run.purse.materials = {}
+	var limit: int = Run.purse.carry_limit()
+	var taken: int = Run.purse.add_ore(limit)
+	var marble: MaterialData = load("res://data/materials/crystal_marble.tres")
+	var more: int = Run.purse.add_material(marble, 1)
+	check(taken == limit / 2 and more == 0 and Run.purse.carried_weight() <= limit,
+		"WT %d carries %d Bronze Fragments (weight 2), and a Crystal Marble (27) no longer fits" % [limit, taken])
+	Run.gear.equip(GearItem.make(_item("pocket_pouch")), "acc1")
+	check(Run.purse.add_material(marble, 1) == 1, "a Pocket Pouch (+200 WT) makes room for it")
+	Run.purse.ore = ore_before
+	Run.purse.materials = mats_before
 
 	var sword := GearItem.make(_item("wood_sword"))
 	Run.gear.equip(sword)

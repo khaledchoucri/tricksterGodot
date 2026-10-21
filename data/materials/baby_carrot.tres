@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"baby_carrot"
 display_name = "Baby Carrot"
 item_id = 11908
+weight = 10
 stat = "HP"
 min_value = 40
 max_value = 100

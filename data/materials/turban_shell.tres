@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"turban_shell"
 display_name = "Turban Shell"
 item_id = 10405
+weight = 4
 stat = "HP"
 min_value = 80
 max_value = 180

@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"ginseng_root"
 display_name = "Ginseng Root"
 item_id = 10412
+weight = 19
 stat = "HP"
 min_value = 120
 max_value = 260

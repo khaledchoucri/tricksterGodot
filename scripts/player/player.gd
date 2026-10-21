@@ -472,8 +472,8 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	if crit:
 		Audio.play("etc_critical.wav", -6.0)
 		if Run.has_trait(&"lucky_strikes") and Run.rng.randf() < 0.3:
-			Run.purse.ore += 1
-			Events.loot_found.emit("+1 " + Run.purse.ORE_NAME)
+			if Run.purse.add_ore(1) > 0:
+				Events.loot_found.emit("+1 " + Run.purse.ORE_NAME)
 	var origin := global_position if from == Vector2.INF else from
 	e.take_hit(amount, Combat.ground(e.global_position - origin).normalized(), knockback, heavy, effects)
 	_element_fx(e, el)

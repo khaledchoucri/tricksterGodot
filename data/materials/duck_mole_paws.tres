@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"duck_mole_paws"
 display_name = "Duck Mole's Paws"
 item_id = 10233
+weight = 5
 stat = "HV"
 min_value = 2
 max_value = 5

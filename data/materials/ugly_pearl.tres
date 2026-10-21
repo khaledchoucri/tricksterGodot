@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"ugly_pearl"
 display_name = "Ugly Pearl"
 item_id = 10447
+weight = 1
 stat = "Light"
 min_value = 5
 max_value = 25

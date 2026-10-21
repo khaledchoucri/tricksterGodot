@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"twinkle_star"
 display_name = "Twinkle Star"
 item_id = 10246
+weight = 1
 stat = "DA"
 min_value = 1
 max_value = 3

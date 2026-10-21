@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"hard_scales"
 display_name = "Hard Scales"
 item_id = 10009
+weight = 12
 stat = "DP"
 min_value = 8
 max_value = 20

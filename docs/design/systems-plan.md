@@ -213,8 +213,9 @@ collection grows. The challenge comes from the world rising to meet it.
 3. **The world** (the long arc): Heat raises stakes and rewards within a chunk; chunks add places; the
    city's restorations and people grow around it.
 
-**Weight.** Worn gear no longer counts against an equip load. Open: WT needs a new job (in the original
-it's how much you can carry, which could become how many finds or materials a run can haul).
+**Weight.** Worn gear no longer counts against an equip load. WT is how much a run carries (decided with
+the user, 2026-10-21), as the original's MaxWT: monster materials and Bronze Fragments weigh their original
+Weight, and what doesn't fit is left behind.
 
 **What you carry is at stake.** Deviation (user, 2026-10-21): the original's death costs EXP, not items.
 - Gear you take in or find, unless it's banked, drops in a **lost bag** in the room where you die.

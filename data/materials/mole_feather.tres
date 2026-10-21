@@ -7,6 +7,7 @@ script = ExtResource("1_s")
 id = &"mole_feather"
 display_name = "Golden Mole Feather"
 item_id = 10431
+weight = 2
 stat = "HV"
 min_value = 2
 max_value = 5

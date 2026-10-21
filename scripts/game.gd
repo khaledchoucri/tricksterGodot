@@ -61,6 +61,9 @@ func _ready() -> void:
 	Events.damage_shown.connect(_on_damage_shown)
 	Events.text_shown.connect(func(at: Vector2, text: String, color: Color) -> void: _float_label(at, text, color, false))
 	Events.loot_found.connect(func(text: String) -> void: hud.log_line("[System] " + text, INFO))
+	Events.too_heavy.connect(func(item: String, left: int) -> void:
+		hud.log_line("[System] Too heavy to carry: %d %s left behind (%d / %d)." % [left, item,
+			Run.purse.carried_weight(), Run.purse.carry_limit()], Color("f07a62")))
 	Events.enemy_spawned.connect(_on_enemy_spawned)
 	Events.enemy_died.connect(_on_enemy_died)
 	Events.boss_health_changed.connect(func(e: Enemy) -> void: hud.show_boss(e.display_name, e.hp, e.max_hp))
@@ -242,7 +245,7 @@ func _grant(reward: String) -> void:
 				_start_pick("gear", offers)
 				return
 		"anvil":
-			Run.purse.ore += ANVIL_ORE
+			Run.purse.add_ore(ANVIL_ORE)
 			hud.log_line("[System] The smith left %d %ss by the anvil." % [ANVIL_ORE, Run.purse.ORE_NAME], INFO)
 			Audio.play_ambience("bgs_blacksmith.wav")
 			_open_anvil()
@@ -292,7 +295,7 @@ func _grant(reward: String) -> void:
 			var g := Run.rng.randi_range(120, 220)
 			var o := Run.rng.randi_range(1, 2)
 			Run.purse.galder += g
-			Run.purse.ore += o
+			Run.purse.add_ore(o)
 			Audio.play("etc_money.wav")
 			hud.notice("+%d Galder  ·  +%d %s" % [g, o, Run.purse.ORE_NAME])
 		"shard":
@@ -748,7 +751,7 @@ func _buy(o: Dictionary) -> bool:
 				return true
 			_equip(g, "")
 		"ore":
-			Run.purse.ore += o.count
+			Run.purse.add_ore(o.count)
 		"material":
 			Run.purse.add_material(o.material, o.count)
 		"potion":
@@ -773,7 +776,7 @@ func _dug(depth: int, misses: int) -> void:
 	var r := Run.purse.dig_rewards(depth)
 	var found: PackedStringArray = []
 	if r.ore > 0:
-		Run.purse.ore += r.ore
+		Run.purse.add_ore(r.ore)
 		found.append("%d %s%s" % [r.ore, Run.purse.ORE_NAME, "s" if r.ore > 1 else ""])
 	if r.material:
 		Run.purse.add_material(r.material, r.count)

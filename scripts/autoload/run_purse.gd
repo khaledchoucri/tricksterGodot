@@ -5,6 +5,8 @@ extends RefCounted
 
 ## The refining ore's name (the original's Bronze Fragment).
 const ORE_NAME := "Bronze Fragment"
+## A Bronze Fragment's weight (ItemParam 11254, Weight 2).
+const ORE_WEIGHT := 2
 ## Galder: spent on skills that cost it, the shop and the city's smiths.
 var galder := 0
 ## Refining ore (Bronze Fragments).
@@ -27,11 +29,48 @@ func spend_galder(amount: int) -> bool:
 	return true
 
 
-func add_material(mat: MaterialData, count: int) -> void:
+## What the materials and ore you carry weigh (their original Weight).
+func carried_weight() -> int:
+	var total := ore * ORE_WEIGHT
+	for id: StringName in materials:
+		var m: MaterialData = material_info.get(id, material_by_id(id))
+		total += int(materials[id]) * (m.weight if m else 1)
+	return total
+
+
+## How much you can carry: WT, the original's MaxWT. Decided with the user (2026-10-21): this is
+## WT's job, since worn gear counts against no load.
+func carry_limit() -> int:
+	return Run.stat("WT")
+
+
+## How many of something weighing `each` still fit.
+func _fits(count: int, each: int) -> int:
+	return clampi((carry_limit() - carried_weight()) / maxi(1, each), 0, count)
+
+
+## Picks up `count` of a material, as many as fit; the rest is left behind (Events.too_heavy).
+## Returns how many were taken.
+func add_material(mat: MaterialData, count: int) -> int:
 	if count <= 0:
-		return
+		return 0
 	material_info[mat.id] = mat
-	materials[mat.id] = materials.get(mat.id, 0) + count
+	var n := _fits(count, mat.weight)
+	materials[mat.id] = materials.get(mat.id, 0) + n
+	if n < count:
+		Events.too_heavy.emit(mat.display_name, count - n)
+	return n
+
+
+## Picks up `count` Bronze Fragments, as many as fit. Returns how many were taken.
+func add_ore(count: int) -> int:
+	if count <= 0:
+		return 0
+	var n := _fits(count, ORE_WEIGHT)
+	ore += n
+	if n < count:
+		Events.too_heavy.emit(ORE_NAME, count - n)
+	return n
 
 
 func material_count(mat: MaterialData) -> int:
@@ -117,7 +156,7 @@ func add_kill(exp_amount: int, tm_amount: int, galder_amount: int, elite := fals
 		found = 3
 	elif elite or Run.rng.randf() < (0.12 + Run.stat("DA") / 400.0) * ServerSettings.drop_mult():
 		found = 1
-	ore += found
+	add_ore(found)
 	var count := 0
 	if mat and Run.city.system_on(&"compounding"):
 		if boss:

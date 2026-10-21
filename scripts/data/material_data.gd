@@ -12,6 +12,8 @@ const ELEMENTS: Array[String] = ["Fire", "Water", "Wind", "Earth", "Elec", "Ligh
 @export var display_name := ""
 ## Row ID in the ItemParam tables (icon).
 @export var item_id := 0
+## The original's Weight (ItemParam): what one weighs against how much you can carry (WT).
+@export var weight := 1
 ## A Stats key (AP, DP...) or an element from ELEMENTS (elemental attack).
 @export var stat := "HP"
 @export var min_value := 1

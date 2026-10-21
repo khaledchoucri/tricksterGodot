@@ -81,6 +81,9 @@ func _skills_text() -> String:
 
 func _gear_text() -> String:
 	var lines: PackedStringArray = []
+	var full := Run.purse.carried_weight() >= Run.purse.carry_limit()
+	lines.append("[color=#%s]Carrying %d / %d (WT)[/color]" % ["f07a62" if full else "9fb2c0",
+		Run.purse.carried_weight(), Run.purse.carry_limit()])
 	var el := Run.gear.element_attack()
 	if not el.is_empty():
 		var parts: PackedStringArray = []
