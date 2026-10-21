@@ -17,3 +17,5 @@ extends Resource
 ## Drills Driller Marky sells (the first comes free with the Drill Shop).
 @export var drills: Array[DrillData] = []
 @export var ambience := ""
+## The custom Trickster's starting skill (its job's starter).
+@export var trickster_starter: CardData

@@ -31,6 +31,12 @@ var _effect_hit: Array[Enemy] = []  # enemies that have had this cast's hit effe
 
 
 ## Damage for this cast: the card's value at its level, with skill bonuses.
+## Why `card` can't be cast now ("" when it can): a skill's own condition, checked by the
+## caster before the cast (Mass Destruction's HP, Four of a Kind's four enemies).
+static func cast_block(_card: CardData, _level: int, _player: Player) -> String:
+	return ""
+
+
 ## What held supplements add to this skill's `effect` (Mod.SKILL_EFFECTS), e.g.
 ## Faint's stun chance on Shockwave.
 func skill_mod(effect: String) -> float:

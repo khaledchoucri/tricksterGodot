@@ -57,17 +57,9 @@ func charm_block(card: CardData, level: int, slot: int) -> String:
 		return "No skills in Beast's Instinct"
 	if slot != BASIC and Run.form_block(card.id) != "":
 		return Run.form_block(card.id)
-	match card.id:
-		&"mass_destruction":
-			if Run.hp < Run.max_hp * 0.8:
-				return "Needs 80% HP"
-		&"four_of_a_kind":
-			var n := 0
-			for e in player.room.enemies:
-				if e.is_hittable() and Combat.in_circle(player.global_position, e.global_position, card.param("radius", level, 160.0), e.body_radius):
-					n += 1
-			if n < 4:
-				return "Needs four enemies"
+	var own: String = card.behavior.cast_block(card, level, player) if card.behavior else ""
+	if own != "":
+		return own
 	if galder_cost(card, level) > 0 and Run.galder < galder_cost(card, level):
 		return "Not enough Galder"
 	return ""

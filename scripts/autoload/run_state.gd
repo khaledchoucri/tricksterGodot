@@ -257,7 +257,7 @@ func build_trickster() -> ClassData:
 	j.id = &"trickster"
 	j.display_name = "Trickster"
 	j.tier = 3
-	j.starter = card(&"shockwave")
+	j.starter = hub.trickster_starter
 	j.passive = &"data_bleed"
 	j.passive_name = "Data Bleed"
 	j.passive_text = "Skill card rewards offer one more choice."

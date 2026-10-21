@@ -12,7 +12,7 @@ const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", 
 	"lint"]
 ## Card id literals allowed in shared code (scripts/ outside skills/ and tools/): CLAUDE.md,
 ## section 2. Lower it as hooks move into card data; it may never rise.
-const CARD_ID_LITERALS_MAX := 3
+const CARD_ID_LITERALS_MAX := 0
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}

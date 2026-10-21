@@ -23,6 +23,21 @@ const BAD_HAND := 0.2
 const BAD_SHARE := 0.25
 
 
+static func cast_block(card: CardData, level: int, player: Player) -> String:
+	match card.id:
+		&"mass_destruction":
+			if Run.hp < Run.max_hp * 0.8:
+				return "Needs 80% HP"
+		&"four_of_a_kind":
+			var n := 0
+			for e in player.room.enemies:
+				if e.is_hittable() and Combat.in_circle(player.global_position, e.global_position, card.param("radius", level, 160.0), e.body_radius):
+					n += 1
+			if n < 4:
+				return "Needs four enemies"
+	return ""
+
+
 func _init() -> void:
 	duration = 0.45
 	anim = "cast"
