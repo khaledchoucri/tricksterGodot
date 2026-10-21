@@ -24,11 +24,19 @@ var build := "mixed"
 var heat := 0
 ## god=1: the bot is healed every frame, to measure the whole curve.
 var god := false
+## fresh=1: every run starts from a fresh profile (a first run of the game each time).
+var fresh := false
+## climb=1: after each clear the next run plays at one more point of Heat, as a player climbs.
+var climb := false
 ## tag=x: separate profile file, so several bots can run at once.
 var tag := ""
 var city := "earn"
 ## seed=N: run i uses the run seed N + i; below 0, every run is random.
 var seed_base := -1
+## The class chosen before the profile is set up (kept for fresh=1 profiles).
+var _chosen_class := ""
+## Between runs: the city, crafting and the loadout (tests/playtest_city.gd).
+var city_play := PlaytestCity.new(self)
 ## The bot's own choices (doors, picks, dodges), seeded with the run so a seed replays it.
 var bot_rng := RandomNumberGenerator.new()
 ## class=trickster: its two trees (e.g. trees=knight+bard_tree).
@@ -59,6 +67,10 @@ func _ready() -> void:
 			build = kv[1]
 		elif kv.size() == 2 and kv[0] == "heat":
 			heat = int(kv[1])
+		elif kv.size() == 2 and kv[0] == "fresh":
+			fresh = kv[1] == "1"
+		elif kv.size() == 2 and kv[0] == "climb":
+			climb = kv[1] == "1"
 		elif kv.size() == 2 and kv[0] == "city":
 			city = kv[1]
 		elif kv.size() == 2 and kv[0] == "class":
@@ -87,7 +99,15 @@ func _ready() -> void:
 		if _hp_seen > Run.hp and Run.max_hp > 0:
 			hit_log.append({"region": Run.route.region_index(), "pct": 100.0 * (_hp_seen - Run.hp) / Run.max_hp})
 		_hp_seen = Run.hp)
-	var chosen := Profile.class_id
+	_chosen_class = Profile.class_id
+	_setup_profile()
+	_play.call_deferred()
+
+
+
+## A new profile for the bot: its class, the city (earned or full) and the Heat it plays at.
+func _setup_profile() -> void:
+	var chosen := _chosen_class
 	Profile.use_path("user://playtest_profile%s.json" % tag, true)
 	Profile.class_id = chosen
 	if chosen != "buffalo":
@@ -100,7 +120,13 @@ func _ready() -> void:
 		for r: RestorationData in Run.hub.restorations:
 			Profile.restorations[String(r.id)] = r.max_level
 		Profile.stats["clears"] = 1  # a veteran city: Echoes can appear
-	var left := heat
+	_apply_heat(heat)
+
+
+## Raises Server Settings, in order, until `target` points of Heat are on.
+func _apply_heat(target: int) -> void:
+	Profile.server_settings = {}
+	var left := target
 	while left > 0:
 		var raised := false
 		for id: String in ServerSettings.ORDER:
@@ -112,7 +138,6 @@ func _ready() -> void:
 		if not raised:
 			break
 	print("Heat %d: %s" % [ServerSettings.heat(), Profile.server_settings])
-	_play.call_deferred()
 
 
 func _play() -> void:
@@ -123,6 +148,10 @@ func _play() -> void:
 
 
 func _one_run(index: int) -> void:
+	if fresh and index > 0:
+		_setup_profile()
+	var heat_here := ServerSettings.heat()
+	var shelves_before := Profile.warehouse.size()
 	_room_log.clear()
 	_last_depth = -1
 	_casts = {}
@@ -163,7 +192,9 @@ func _one_run(index: int) -> void:
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.deck.cards.duplicate(), "rooms": _room_log.duplicate(),
 		"ore": Run.purse.ore, "galder": Run.purse.galder, "around": killers, "materials": Run.purse.materials.duplicate(),
 		"rune": Run.deck.rune.display_name if Run.deck.rune else "", "casts": _casts.duplicate(), "refused": _refused.duplicate(),
-		"loadout": Run.deck.loadout.duplicate()}
+		"loadout": Run.deck.loadout.duplicate(), "heat": heat_here,
+		"home": Profile.warehouse.size() - shelves_before, "shelves": Profile.warehouse.size(),
+		"bag": Profile.lost_bag.get("items", []).size()}
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
@@ -171,9 +202,12 @@ func _one_run(index: int) -> void:
 		print("   last HP losses: %s" % "; ".join(drops))
 		if t >= RUN_LIMIT:
 			print("   (stopped at the %d s run limit: not a death)" % int(RUN_LIMIT))
-	_choose_loadout()
-	_restore_city()
-	_city_craft()
+	if climb and r.won:
+		heat = mini(heat + 1, 18)
+		_apply_heat(heat)
+	city_play.choose_loadout()
+	city_play.restore_city()
+	city_play.city_craft()
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	game.queue_free()
@@ -429,11 +463,13 @@ func _choose() -> void:
 			pick = 0
 		"port":
 			pick = opts.size() - 1
-			var best_score := 0.0
-			for i in opts.size() - 1:
-				if _score(opts[i]) > best_score:
-					best_score = _score(opts[i])
-					pick = i
+			if game.phase == game.Phase.WON:
+				var best_score := 0.0
+				for i in opts.size() - 1:
+					var g: GearItem = opts[i]
+					if g.stored < 0 and _score(g) > best_score:
+						best_score = _score(g)
+						pick = i
 		"shop":
 			pick = opts.size() - 1
 			for i in opts.size() - 1:
@@ -486,89 +522,6 @@ func _score(g: GearItem) -> float:
 	return s.get("AP", 0) * 1.0 + s.get("DP", 0) * 0.8 + s.get("HP", 0) * 0.15 + s.get("MD", 0) * 0.3 \
 		+ s.get("LK", 0) * 2.0 + s.get("DA", 0) * 1.5 + s.get("AC", 0) * 0.5 + s.get("HV", 0) * 2.0 \
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
-
-
-## Between runs, invest banked leftovers in the worn stored gear and in a starting
-## skill, as a player would: the bot masters the first skill it can start
-## with as far as it can, and carries it.
-func _city_craft() -> void:
-	if Run.city.system_on(&"mastery"):
-		for c in Run.deck.all_cards():
-			if not Run.deck.can_start_with(c):
-				continue
-			while Run.deck.can_master(c):
-				Run.deck.master_card(c)
-				print("   mastered %s (starts at Lv %d)" % [c.display_name, Run.deck.start_level(c.id)])
-			if Run.deck.start_level(c.id) > 0:
-				Profile.start_skills[String(Run.cls.id)] = String(c.id)
-				break
-	if not Run.city.system_on(&"warehouse"):
-		return
-	for h: int in Profile.loadout.values():
-		_invest(h)
-
-
-## Refines and compounds a worn stored item in the city while the odds are fair.
-func _invest(h: int) -> void:
-	for _i in 6:
-		var g := GearItem.from_dict(Profile.warehouse[h], Run.gear.item_by_id)
-		if not Run.gear.can_city_refine(g) or g.refine_chance() < 0.45:
-			break
-		print("   city refine %s: %s" % [g.title(), Run.gear.city_refine(h)])
-	for id: String in Profile.materials.keys():
-		var m := Run.purse.material_by_id(StringName(id))
-		var g := GearItem.from_dict(Profile.warehouse[h], Run.gear.item_by_id)
-		if m and g.free_slots() > 0 and int(Profile.materials[id]) >= m.need:
-			var c := Run.gear.city_compound(h, m)
-			print("   city compound %s into %s: %s +%d" % [m.display_name, g.title(), c.stat, c.value])
-
-
-## Between runs, buy whatever the city can afford, in the guide's order,
-## then claim card sets and buy wardrobe pieces (worn if the slot is free).
-func _restore_city() -> void:
-	for r: RestorationData in Run.hub.restorations:
-		while Profile.can_buy(r):
-			Profile.buy(r)
-			print("   restored %s (%d TM, %d shards left)" % [r.display_name, Profile.tm, Profile.shards])
-	if not Run.city.system_on(&"cards"):
-		return
-	for s in Run.hub.card_sets:
-		if s.complete() and not s.claimed():
-			Profile.set_flag("set_" + String(s.id))
-			_take(s.reward, "claimed")
-	for w in Run.hub.wardrobe:
-		if w.price_tm > 0 and not Profile.owns(w.id) and Profile.tm >= w.price_tm and Profile.shards >= w.price_shards:
-			Profile.tm -= w.price_tm
-			Profile.shards -= w.price_shards
-			_take(w, "bought")
-	print("   cards %d, wardrobe %s" % [Profile.cards.size(), Profile.worn])
-
-
-func _take(w: WardrobeData, how: String) -> void:
-	Profile.give_wardrobe(w.id)
-	if not Profile.worn.has(w.slot):
-		Profile.wear(w.slot, w.id)
-	print("   %s %s" % [how, w.display_name])
-
-
-## Between runs, wear the best stored item for each slot (as a player would).
-func _choose_loadout() -> void:
-	var order: Array[int] = []
-	for i in Profile.warehouse.size():
-		var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
-		if g and Run.gear.can_use(g.data):
-			order.append(i)
-	var score := func(i: int) -> float: return _score(GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id))
-	order.sort_custom(func(a: int, b: int) -> bool: return score.call(a) > score.call(b))
-	Profile.loadout = {}
-	for i in order:
-		var g := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
-		for k in Run.gear.slot_keys_for(g.data):
-			if not Profile.loadout.has(k):
-				Profile.loadout[k] = i
-				print("   wearing %s next" % g.title())
-				break
-	Profile.save()
 
 
 # ---------------------------------------------------------------- report
@@ -625,8 +578,9 @@ func _report() -> void:
 	for r in results:
 		clears += 1 if r.won else 0
 		depth += r.depth
-		print("run %d  %s  room %d  Lv %d %s  %.0fs  kills %d  types %s  seed %d" % [r.run, "CLEAR" if r.won else "died ",
-			r.depth, r.level, r.job, r.time, r.kills, r.types, r.seed])
+		print("run %d  %s  room %d  Lv %d %s  %.0fs  kills %d  types %s  seed %d  heat %d  home %+d  shelves %d  bag %d" % [
+			r.run, "CLEAR" if r.won else "died ", r.depth, r.level, r.job, r.time, r.kills, r.types, r.seed, r.heat, r.home,
+			r.shelves, r.bag])
 		print("   gear: %s" % ", ".join(r.gear))
 		if not r.won:
 			print("   died near: %s" % ", ".join(r.around))
