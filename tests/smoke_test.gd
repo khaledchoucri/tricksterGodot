@@ -163,9 +163,9 @@ func _power_attacks() -> void:
 	var room: Room = game.room
 	var player: Player = game.player
 	# Every Power-line attack casts and damages a monster in front of Buffalo.
-	check(Run.loadout[0] == Run.cls.start_job.starter.id, "the run starts with %s in slot 1" % Run.cls.start_job.starter.id)
+	check(Run.deck.loadout[0] == Run.cls.start_job.starter.id, "the run starts with %s in slot 1" % Run.cls.start_job.starter.id)
 	var skill_ids: Array[StringName] = []
-	for card in Run.all_cards():
+	for card in Run.deck.all_cards():
 		if card.is_skill() and card.resource_path.begins_with("res://data/skills/power/") 				and not card.id in [&"clinch_release", &"chakra_balance"]:
 			skill_ids.append(card.id)
 	check(skill_ids.size() == 23, "the Power line has 25 attacks (23 that deal damage): %d" % skill_ids.size())
@@ -198,8 +198,8 @@ func _power_attacks() -> void:
 		dummy.max_hp = 99999
 		dummy.hp = 99999
 		var before := dummy.hp
-		Run.cards[id] = 1
-		Run.loadout[0] = id
+		Run.deck.cards[id] = 1
+		Run.deck.loadout[0] = id
 		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp
 		player.skills.slot_ready_at[0] = 0.0
@@ -246,7 +246,7 @@ func _power_attacks() -> void:
 			if target2.is_hittable():
 				break
 		var hp0 := target2.hp
-		Run.take_rune(c)
+		Run.deck.take_rune(c)
 		Run.mp = Run.max_mp
 		Run.purse.galder = 500
 		player.skills.slot_ready_at[3] = 0.0
@@ -262,17 +262,17 @@ func _power_attacks() -> void:
 		if target2.is_hittable():
 			target2.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.3)
-	Run.rune = null
+	Run.deck.rune = null
 	player.invulnerable_until = 0.0
-	Run.cards = {Run.cls.start_job.starter.id: 1}
-	Run.loadout.assign([Run.cls.start_job.starter.id, &"piercing_wave", &"shockwave"])
-	Run.cards[&"piercing_wave"] = 2
-	Run.cards[&"shockwave"] = 1
-	Run.add_card(&"tornado_bomb", 1)
-	check(Run.loadout[1] == &"tornado_bomb" and Run.card_level(&"piercing_wave") == 0,
+	Run.deck.cards = {Run.cls.start_job.starter.id: 1}
+	Run.deck.loadout.assign([Run.cls.start_job.starter.id, &"piercing_wave", &"shockwave"])
+	Run.deck.cards[&"piercing_wave"] = 2
+	Run.deck.cards[&"shockwave"] = 1
+	Run.deck.add_card(&"tornado_bomb", 1)
+	check(Run.deck.loadout[1] == &"tornado_bomb" and Run.deck.card_level(&"piercing_wave") == 0,
 		"a new skill can replace a slotted one")
-	Run.loadout.assign([Run.cls.start_job.starter.id, &"", &""])
-	Run.cards = {Run.cls.start_job.starter.id: 1}
+	Run.deck.loadout.assign([Run.cls.start_job.starter.id, &"", &""])
+	Run.deck.cards = {Run.cls.start_job.starter.id: 1}
 	Run.pending_levels = 0  # the dummies' EXP shouldn't queue level-ups for the checks below
 	Run.xp = 0
 
@@ -337,7 +337,7 @@ func _core_rewards() -> void:
 	var card_id: StringName = game._pick_options[0].id
 	game._steps.append_array(["gear", "anvil"])
 	game.hud._on_pick(0)
-	check(Run.card_level(card_id) == 1, "picking adds %s at level 1" % card_id)
+	check(Run.deck.card_level(card_id) == 1, "picking adds %s at level 1" % card_id)
 	await wait(0.2)
 	check(game.hud.pick_panel.visible and game._pick_kind == "gear", "an Equipment reward offers gear")
 	var found: GearItem = game._pick_options[0]
@@ -372,12 +372,12 @@ func _core_rewards() -> void:
 	game.hud._on_pick(0)
 	await wait(0.4)
 	var trained: CardData = game._pick_options[0] if game._pick_kind == "card" else null
-	var trained_lv: int = Run.card_level(trained.id) if trained else 0
+	var trained_lv: int = Run.deck.card_level(trained.id) if trained else 0
 	check(game.hud.pick_panel.visible and trained and trained_lv > 0, "a level-up also trains a skill you have")
 	if trained:
 		game.hud._on_pick(0)
 		await wait(0.4)
-		check(Run.card_level(trained.id) == trained_lv + 1, "training raises %s to Lv %d" % [trained.display_name, Run.card_level(trained.id)])
+		check(Run.deck.card_level(trained.id) == trained_lv + 1, "training raises %s to Lv %d" % [trained.display_name, Run.deck.card_level(trained.id)])
 	check(room.doors.size() == 2, "two exit doors open (%d)" % room.doors.size())
 
 	# Walk through a door into the next room.
@@ -441,24 +441,24 @@ func _balance() -> void:
 	check(outliers.is_empty(), "every monster's HP comes from its original level%s" % ("" if outliers.is_empty() else ": " + ", ".join(outliers)))
 	Profile.class_id = "dragon"
 	Run.new_run()
-	var arrow: CardData = Run.card(&"mana_arrow")
+	var arrow: CardData = Run.deck.card(&"mana_arrow")
 	var before: float = Run.skill_mult(arrow)
 	Run._stats["MA"] = Run.stat("MA") * 2
 	check(is_equal_approx(Run.skill_mult(arrow), before * 2.0), "twice the MA is twice Mana Arrow's damage (x%.2f -> x%.2f)" % [before, Run.skill_mult(arrow)])
 	var always := true
 	for i in 20:
-		always = always and Run.card(&"mana_arrow") in Run.card_offers(3, true)
-	Run.cards[&"mana_arrow"] = 3
+		always = always and Run.deck.card(&"mana_arrow") in Run.deck.card_offers(3, true)
+	Run.deck.cards[&"mana_arrow"] = 3
 	for i in 20:
-		always = always and Run.card(&"arrow_rush") in Run.card_offers(3, false)
+		always = always and Run.deck.card(&"arrow_rush") in Run.deck.card_offers(3, false)
 	for i in 20:
-		always = always and Run.card(&"arrow_rush") in Run.card_offers(3, true)
+		always = always and Run.deck.card(&"arrow_rush") in Run.deck.card_offers(3, true)
 	check(always, "Dragon is always offered Mana Arrow's level-ups, and Arrow Rush (new cards and training) once Mana Arrow is Lv 3")
 	# The two basics: Mana Arrow wins on one or two targets, Mana Ring from three,
 	# at every stage (the basic and its supplement at the same level).
-	var ring: CardData = Run.card(&"mana_ring")
-	var rush: CardData = Run.card(&"arrow_rush")
-	var boost: CardData = Run.card(&"mana_ring_booster")
+	var ring: CardData = Run.deck.card(&"mana_ring")
+	var rush: CardData = Run.deck.card(&"arrow_rush")
+	var boost: CardData = Run.deck.card(&"mana_ring_booster")
 	var basics_ok := true
 	var basics := PackedStringArray()
 	for lv in range(1, 6):
@@ -531,8 +531,8 @@ func _end_of_run() -> void:
 	# the field's end effect used to wait on a freed player and error.
 	check(Enemy.projectile_scene().instantiate() is Projectile, "monster shots load (Tutankhamen's curse once got an empty scene)")
 	var caster: Player = game.player
-	Run.cards[&"undines_garden"] = 1
-	Run.loadout[0] = &"undines_garden"
+	Run.deck.cards[&"undines_garden"] = 1
+	Run.deck.loadout[0] = &"undines_garden"
 	Run.mp = Run.max_mp
 	caster.skills.slot_ready_at[0] = 0.0
 	caster.enter(Player.State.MOVE)
@@ -591,7 +591,7 @@ func _item(id: String) -> ItemData:
 ## Code rules the smoke test enforces (CLAUDE.md, sections 2 and 5).
 func _lint() -> void:
 	var ids := {}
-	for c: CardData in Run.all_cards():
+	for c: CardData in Run.deck.all_cards():
 		ids[String(c.id)] = true
 	var literal := RegEx.create_from_string('&"([a-z0-9_]+)"')
 	var total := 0
@@ -609,7 +609,7 @@ func _lint() -> void:
 		% [total, CARD_ID_LITERALS_MAX, ", ".join(worst)])
 	# A skill's behaviour script names only the cards it plays (supplements reach it as mods).
 	var own := {}
-	for c: CardData in Run.all_cards():
+	for c: CardData in Run.deck.all_cards():
 		if c.behavior:
 			own[c.behavior.resource_path] = own.get(c.behavior.resource_path, []) + [String(c.id)]
 	var cross: PackedStringArray = []
@@ -669,7 +669,7 @@ func _systems(Run: Node) -> void:
 	for s in [42, 42, 43]:
 		Run.new_run(s)
 		var rooms: Array = Run.route.plan.map(func(r) -> String: return String(r.data.id) + ("*" if r.elite else ""))
-		var offers: Array = Run.card_offers(3, false).map(func(c: CardData) -> String: return String(c.id))
+		var offers: Array = Run.deck.card_offers(3, false).map(func(c: CardData) -> String: return String(c.id))
 		var gear: Array = Run.gear.gear_offers(3).map(func(g: GearItem) -> String: return g.title() + str(g.stats))
 		replays.append("%s | %s | %s" % [", ".join(rooms), ", ".join(offers), ", ".join(gear)])
 	check(replays[0] == replays[1] and replays[0] != replays[2] and Run.run_seed == 43,
@@ -679,7 +679,7 @@ func _systems(Run: Node) -> void:
 	# Cards declare their stat mods; Run.mod() sums the held ones.
 	var bad_keys: PackedStringArray = []
 	var modded := 0
-	for c: CardData in Run.all_cards():
+	for c: CardData in Run.deck.all_cards():
 		modded += 1 if not c.mods.is_empty() else 0
 		for key: String in c.mods:
 			if not Mod.is_key(key):
@@ -687,12 +687,12 @@ func _systems(Run: Node) -> void:
 	check(bad_keys.is_empty() and modded >= 17, "every card's mods use known keys (%d cards with mods)%s"
 		% [modded, "" if bad_keys.is_empty() else ": " + ", ".join(bad_keys)])
 	var ap0: int = Run.stat("AP")
-	var heart: CardData = Run.card(&"pumping_heart")
-	Run.cards[&"pumping_heart"] = 3
+	var heart: CardData = Run.deck.card(&"pumping_heart")
+	Run.deck.cards[&"pumping_heart"] = 3
 	Run.stats_changed()
 	check(is_equal_approx(Run.mod("AP%"), heart.value_at(3)) and Run.stat("AP") == floori(ap0 * (1.0 + heart.value_at(3) / 100.0)),
 		"a held AP%% card raises AP by its value (+%s%%: %d -> %d)" % [heart.value_at(3), ap0, Run.stat("AP")])
-	Run.cards.erase(&"pumping_heart")
+	Run.deck.cards.erase(&"pumping_heart")
 	Run.stats_changed()
 	# Wardrobe quirks are mods too; two pieces that each speed you up compound.
 	var worn_before: Dictionary = Profile.worn.duplicate()
@@ -764,12 +764,12 @@ func _systems(Run: Node) -> void:
 	Run.new_run()
 	var offered_smash := false
 	for _i in 40:
-		for c: CardData in Run.card_offers(3, false):
+		for c: CardData in Run.deck.card_offers(3, false):
 			offered_smash = offered_smash or c.id == &"upper_smash"
 	check(not offered_smash, "Upper Smash waits for Bull's Eye Lv 3 (the original's 10 of 11)")
-	Run.cards[&"bulls_eye"] = 3
+	Run.deck.cards[&"bulls_eye"] = 3
 	for _i in 40:
-		for c: CardData in Run.card_offers(3, false):
+		for c: CardData in Run.deck.card_offers(3, false):
 			offered_smash = offered_smash or c.id == &"upper_smash"
 	check(offered_smash, "Bull's Eye Lv 3 opens Upper Smash")
 
@@ -778,7 +778,7 @@ func _systems(Run: Node) -> void:
 	var sword_mult: float = Run.attack_mult()
 	var knight: JobData = Run.job.next_jobs[0]
 	Run.start_job(knight)
-	var knight_only: bool = Run.card_offers(3, false, knight).all(func(c: CardData) -> bool: return c in knight.cards)
+	var knight_only: bool = Run.deck.card_offers(3, false, knight).all(func(c: CardData) -> bool: return c in knight.cards)
 	check(Run.job.id == &"knight" and knight_only, "advancing to Knight opens the Knight tree")
 	var third: Array = Run.job.next_jobs.map(func(j: JobData) -> String: return String(j.id))
 	check(third == ["gladiator", "mercenary"] and Run.job.next_jobs[0].unlocked() and not Run.job.next_jobs[1].unlocked(),
@@ -915,7 +915,7 @@ func _systems(Run: Node) -> void:
 	Profile.class_id = "bunny"
 	Run.new_run()
 	check(Run.cls.id == &"bunny" and Run.job.id == &"schoolgirl" and Run.job.next_jobs[0].id == &"boxer"
-		and Run.card_level(&"shockwave") == 1, "Bunny starts as a Schoolgirl with Shockwave, headed for Boxer")
+		and Run.deck.card_level(&"shockwave") == 1, "Bunny starts as a Schoolgirl with Shockwave, headed for Boxer")
 	var boxer: JobData = Run.job.next_jobs[0]
 	Run.start_job(boxer)
 	var champ_or_duel: Array = boxer.next_jobs.map(func(j: JobData) -> String: return String(j.id))
@@ -942,7 +942,7 @@ func _systems(Run: Node) -> void:
 	Profile.custom = {"kit": "fists", "graph": "Magic / Sense", "trees": ["knight", "bard_tree"]}
 	Profile.class_id = "trickster"
 	Run.new_run()
-	var pool_ids: Array = Run.card_pool().map(func(c: CardData) -> String: return String(c.id))
+	var pool_ids: Array = Run.deck.card_pool().map(func(c: CardData) -> String: return String(c.id))
 	check(Run.cls.id == &"trickster" and not Run.cls.armed and "lacerator" in pool_ids and "drip_bomb" in pool_ids
 		and "shockwave" in pool_ids and Run.has_passive(&"data_bleed"),
 		"a fists Trickster with Knight and Bard trees offers Lacerator, Drip Bomb and the Fighter tree")
@@ -954,14 +954,14 @@ func _systems(Run: Node) -> void:
 	Run.new_run()
 
 	# Master Louis raises card caps.
-	var wave: CardData = Run.card(&"shockwave")
+	var wave: CardData = Run.deck.card(&"shockwave")
 	Profile.materials[String(wave.master_material.id)] = 6
 	Profile.galder = 600
-	check(Run.can_master(wave) and Run.card_cap(&"shockwave") == 5, "6 Hard Scales and 500 G can master Shockwave")
-	Run.master_card(wave)
-	Run.cards[&"shockwave"] = 5
-	Run.add_card(&"shockwave")
-	check(Run.card_cap(&"shockwave") == 6 and Run.card_level(&"shockwave") == 6, "a mastered Shockwave reaches Lv 6")
+	check(Run.deck.can_master(wave) and Run.deck.card_cap(&"shockwave") == 5, "6 Hard Scales and 500 G can master Shockwave")
+	Run.deck.master_card(wave)
+	Run.deck.cards[&"shockwave"] = 5
+	Run.deck.add_card(&"shockwave")
+	check(Run.deck.card_cap(&"shockwave") == 6 and Run.deck.card_level(&"shockwave") == 6, "a mastered Shockwave reaches Lv 6")
 	Profile.mastery = {}
 	Run.new_run()
 
@@ -1014,38 +1014,38 @@ func skill_rules() -> void:
 	# Advanced forms are offered only with their base skill and replace it.
 	Run.new_run()
 	Run.start_job(load("res://data/jobs/knight.tres"))
-	var tempest: CardData = Run.card(&"tempest_strike")
-	check(tempest.upgrades == &"lacerator" and not Run.can_learn(tempest), "Tempest Strike needs Lacerator in hand")
-	Run.add_card(&"lacerator")
-	Run.cards[&"lacerator"] = 3
-	check(Run.can_learn(tempest) and Run.can_learn(Run.card(&"tidal_slash")), "Lacerator Lv 3 opens Tempest Strike and Tidal Slash")
-	var at := Run.loadout.find(&"lacerator")
-	Run.add_card(&"tempest_strike")
-	check(Run.loadout[at] == &"tempest_strike" and Run.card_level(&"lacerator") == 0 and Run.card_level(&"tempest_strike") == 3,
+	var tempest: CardData = Run.deck.card(&"tempest_strike")
+	check(tempest.upgrades == &"lacerator" and not Run.deck.can_learn(tempest), "Tempest Strike needs Lacerator in hand")
+	Run.deck.add_card(&"lacerator")
+	Run.deck.cards[&"lacerator"] = 3
+	check(Run.deck.can_learn(tempest) and Run.deck.can_learn(Run.deck.card(&"tidal_slash")), "Lacerator Lv 3 opens Tempest Strike and Tidal Slash")
+	var at := Run.deck.loadout.find(&"lacerator")
+	Run.deck.add_card(&"tempest_strike")
+	check(Run.deck.loadout[at] == &"tempest_strike" and Run.deck.card_level(&"lacerator") == 0 and Run.deck.card_level(&"tempest_strike") == 3,
 		"Tempest Strike takes Lacerator's slot and level, replacing it")
-	check(not Run.can_learn(Run.card(&"tidal_slash")), "with Lacerator gone, Tidal Slash is no longer offered")
-	Run.cards[&"tempest_strike"] = 2
+	check(not Run.deck.can_learn(Run.deck.card(&"tidal_slash")), "with Lacerator gone, Tidal Slash is no longer offered")
+	Run.deck.cards[&"tempest_strike"] = 2
 	var gale_offered := false
 	for _i in 30:
-		for c: CardData in Run.card_offers(3, false, load("res://data/jobs/gladiator.tres")):
+		for c: CardData in Run.deck.card_offers(3, false, load("res://data/jobs/gladiator.tres")):
 			gale_offered = gale_offered or c.id == &"gale_strike"
 	check(not gale_offered, "Gale Strike isn't offered before Tempest Strike Lv 3")
-	Run.cards[&"tempest_strike"] = 3
+	Run.deck.cards[&"tempest_strike"] = 3
 	Run.start_job(load("res://data/jobs/gladiator.tres"))
-	check(Run.can_learn(Run.card(&"gale_strike")), "Tempest Strike Lv 3 opens Gale Strike for the Gladiator")
-	Run.add_card(&"piercing_wave")
-	Run.cards[&"piercing_wave"] = 3
-	Run.add_card(&"earthquake_blade")
-	check(Run.card_level(&"piercing_wave") == 0 and Run.known_level(&"piercing_wave") == 3
-		and Run.requirements_met(Run.card(&"lightning_strike")),
+	check(Run.deck.can_learn(Run.deck.card(&"gale_strike")), "Tempest Strike Lv 3 opens Gale Strike for the Gladiator")
+	Run.deck.add_card(&"piercing_wave")
+	Run.deck.cards[&"piercing_wave"] = 3
+	Run.deck.add_card(&"earthquake_blade")
+	check(Run.deck.card_level(&"piercing_wave") == 0 and Run.deck.known_level(&"piercing_wave") == 3
+		and Run.deck.requirements_met(Run.deck.card(&"lightning_strike")),
 		"Earthquake Blade replaces Piercing Wave and still opens Lightning Strike")
-	check(Run.card_cap(&"guard_break") == 1 and not Run.can_master(Run.card(&"guard_break")),
+	check(Run.deck.card_cap(&"guard_break") == 1 and not Run.deck.can_master(Run.deck.card(&"guard_break")),
 		"Guard Break stays at Lv 1, as in the original")
 
 	# Talents with the original effects.
 	Run.new_run()
 	var ap: int = Run.stat("AP")
-	Run.add_card(&"pumping_heart")
+	Run.deck.add_card(&"pumping_heart")
 	check(Run.stat("AP") > ap, "Pumping Heart raises AP (%d -> %d)" % [ap, Run.stat("AP")])
 	var target: Enemy = game.room.spawn("torobbie", p.global_position + Vector2(50, 0))
 	target.max_hp = 99999
@@ -1056,13 +1056,13 @@ func skill_rules() -> void:
 		await wait(0.1)
 	var acc: int = target.accuracy()
 	var defense: float = target.defense_mult()
-	Run.add_card(&"shockvibe")
-	Run.add_card(&"armor_breaker")
-	Run.add_card(&"suffocate")
+	Run.deck.add_card(&"shockvibe")
+	Run.deck.add_card(&"armor_breaker")
+	Run.deck.add_card(&"suffocate")
 	p.deal_hit(target, 10.0, 1.0, 0.0, false)
 	check(target.accuracy() < acc or acc == 0, "Shockvibe lowers a hit monster's accuracy (%d -> %d)" % [acc, target.accuracy()])
 	check(target.defense_mult() >= defense and not target.can_hide(), "Armor Breaker lowers its DP; Suffocate keeps it from hiding")
-	Run.add_card(&"guard")
+	Run.deck.add_card(&"guard")
 	p._tick_talents(0.016)
 	hp = Run.hp
 	p.invulnerable_until = 0.0
@@ -1071,8 +1071,8 @@ func skill_rules() -> void:
 	p.invulnerable_until = 0.0
 	p.take_hit(20, Vector2.LEFT, 0.0, true, 9999)
 	check(Run.hp < hp, "Guard doesn't block magic")
-	Run.add_card(&"clinch_release")
-	Run.loadout[1] = &"clinch_release"
+	Run.deck.add_card(&"clinch_release")
+	Run.deck.loadout[1] = &"clinch_release"
 	p.invulnerable_until = 0.0
 	p.take_hit(5, Vector2.LEFT, 300.0, false, 9999)
 	p.skills.slot_ready_at[1] = 0.0
@@ -1156,8 +1156,8 @@ func magic_line() -> void:
 	Profile.class_id = "sheep"
 	Run.new_run()
 	p.refresh_gear()
-	check(Run.cls.id == &"sheep" and Run.job.id == &"librarian" and Run.card_level(&"mana_ring") == 1
-		and not &"mana_ring" in Run.loadout and p.sprite.actor_name == "sheep",
+	check(Run.cls.id == &"sheep" and Run.job.id == &"librarian" and Run.deck.card_level(&"mana_ring") == 1
+		and not &"mana_ring" in Run.deck.loadout and p.sprite.actor_name == "sheep",
 		"Sheep starts as a Librarian with Mana Ring as her basic attack, not in a slot")
 	var target := await _dummy(p, 90.0)
 	var mp := Run.mp
@@ -1167,7 +1167,7 @@ func magic_line() -> void:
 	check(target.hp < hp and Run.mp >= mp, "left click casts Mana Ring at no MP (%d -> %d, MP %d -> %d)" % [hp, target.hp, mp, Run.mp])
 	var never := true
 	for _i in 60:
-		for c: CardData in Run.card_offers(3, false):
+		for c: CardData in Run.deck.card_offers(3, false):
 			never = never and not c.id in [&"mana_arrow", &"arrow_rush"]
 	check(never, "Sheep is never offered Mana Arrow or Arrow Rush")
 
@@ -1179,13 +1179,13 @@ func magic_line() -> void:
 	# Casting: half the original Delay, locked in place, only a dash gets out.
 	Run.start_job(load("res://data/jobs/bard.tres"))
 	p.refresh_gear()
-	Run.cards[&"seal_of_water"] = 1
-	Run.add_card(&"drip_bomb")
-	var slot := Run.loadout.find(&"drip_bomb")
+	Run.deck.cards[&"seal_of_water"] = 1
+	Run.deck.add_card(&"drip_bomb")
+	var slot := Run.deck.loadout.find(&"drip_bomb")
 	Run.mp = Run.max_mp
 	p.skills.slot_ready_at[slot] = 0.0
 	var at := p.global_position
-	var bomb := Run.card(&"drip_bomb")
+	var bomb := Run.deck.card(&"drip_bomb")
 	check(is_equal_approx(bomb.cast_at(1), 0.5), "Drip Bomb casts in 0.5 s (the original's 1.0, halved)")
 	p.skills.try_cast(slot)
 	Input.action_press("move_right")
@@ -1203,20 +1203,20 @@ func magic_line() -> void:
 	await wait(0.5)
 
 	# Seals shut out two elements; job lists decide who learns what.
-	check(not Run.can_learn(Run.card(&"seal_of_fire")) and not Run.can_learn(Run.card(&"seal_of_earth"))
-		and Run.can_learn(Run.card(&"seal_of_thunder")), "Seal of Water closes the Fire and Earth seals")
-	check(not Run.can_learn(Run.card(&"whirlwind_blaze")), "without Seal of Fire, fire magic isn't offered")
-	Run.cards[&"seal_of_thunder"] = 1
-	Run.cards[&"electro_attack"] = 3
-	check(not Run.requirements_met(Run.card(&"tesla_field")), "Sheep's Tesla Field waits for Mana Ring Lv 3")
-	Run.cards[&"mana_ring"] = 3
-	check(Run.requirements_met(Run.card(&"tesla_field")), "Mana Ring Lv 3 stands in for Mana Arrow in Sheep's Tesla Field")
+	check(not Run.deck.can_learn(Run.deck.card(&"seal_of_fire")) and not Run.deck.can_learn(Run.deck.card(&"seal_of_earth"))
+		and Run.deck.can_learn(Run.deck.card(&"seal_of_thunder")), "Seal of Water closes the Fire and Earth seals")
+	check(not Run.deck.can_learn(Run.deck.card(&"whirlwind_blaze")), "without Seal of Fire, fire magic isn't offered")
+	Run.deck.cards[&"seal_of_thunder"] = 1
+	Run.deck.cards[&"electro_attack"] = 3
+	check(not Run.deck.requirements_met(Run.deck.card(&"tesla_field")), "Sheep's Tesla Field waits for Mana Ring Lv 3")
+	Run.deck.cards[&"mana_ring"] = 3
+	check(Run.deck.requirements_met(Run.deck.card(&"tesla_field")), "Mana Ring Lv 3 stands in for Mana Arrow in Sheep's Tesla Field")
 	Run.start_job(load("res://data/jobs/witch.tres"))
-	check(Run.can_learn(Run.card(&"dark_pact")) and Run.can_learn(Run.card(&"light_pact")), "a Witch can learn Magician skills")
-	Run.cards[&"water_shield"] = 2
+	check(Run.deck.can_learn(Run.deck.card(&"dark_pact")) and Run.deck.can_learn(Run.deck.card(&"light_pact")), "a Witch can learn Magician skills")
+	Run.deck.cards[&"water_shield"] = 2
 	Run.start_job(load("res://data/jobs/soul_master.tres"))
-	Run.add_card(&"undines_blessing")
-	check(Run.card_level(&"water_shield") == 0 and Run.card_level(&"undines_blessing") == 2 and Run.resist("Water") > 0.0,
+	Run.deck.add_card(&"undines_blessing")
+	check(Run.deck.card_level(&"water_shield") == 0 and Run.deck.card_level(&"undines_blessing") == 2 and Run.resist("Water") > 0.0,
 		"Undine's Blessing replaces the Water Shield and keeps its resistance (%d%%)" % Run.resist("Water"))
 	_remove(target)
 
@@ -1224,22 +1224,22 @@ func magic_line() -> void:
 	Profile.class_id = "dragon"
 	Run.new_run()
 	p.refresh_gear()
-	check(Run.cls.id == &"dragon" and Run.job.id == &"shaman" and Run.card_level(&"mana_arrow") == 1,
+	check(Run.cls.id == &"dragon" and Run.job.id == &"shaman" and Run.deck.card_level(&"mana_arrow") == 1,
 		"Dragon starts as a Shaman with Mana Arrow")
 	never = true
 	for _i in 60:
-		for c: CardData in Run.card_offers(3, false):
+		for c: CardData in Run.deck.card_offers(3, false):
 			never = never and not c.id in [&"mana_ring", &"mana_ring_booster"]
 	check(never, "Dragon is never offered Mana Ring or Mana Ring Booster")
 	Run.start_job(load("res://data/jobs/magician.tres"))
-	Run.cards[&"mana_arrow"] = 3
-	Run.cards[&"light_pact"] = 1
-	check(Run.requirements_met(Run.card(&"light_wave")), "Mana Arrow stands in for Mana Ring in Dragon's Light Wave")
-	Run.cards.erase(&"light_pact")
+	Run.deck.cards[&"mana_arrow"] = 3
+	Run.deck.cards[&"light_pact"] = 1
+	check(Run.deck.requirements_met(Run.deck.card(&"light_wave")), "Mana Arrow stands in for Mana Ring in Dragon's Light Wave")
+	Run.deck.cards.erase(&"light_pact")
 	Run.start_job(load("res://data/jobs/priest.tres"))
-	check(not Run.can_learn(Run.card(&"dark_pact")) and Run.can_learn(Run.card(&"light_pact")), "a Priest can't learn dark magic")
+	check(not Run.deck.can_learn(Run.deck.card(&"dark_pact")) and Run.deck.can_learn(Run.deck.card(&"light_pact")), "a Priest can't learn dark magic")
 	Run.start_job(load("res://data/jobs/wizard.tres"))
-	check(Run.can_learn(Run.card(&"seal_of_fire")), "a Wizard can learn Bard skills")
+	check(Run.deck.can_learn(Run.deck.card(&"seal_of_fire")), "a Wizard can learn Bard skills")
 
 	# Element resistance now applies to spells.
 	var foe := await _dummy(p, 60.0)
@@ -1254,7 +1254,7 @@ func magic_line() -> void:
 
 	# Every Magic spell does its job on a dummy.
 	var spells: Array[CardData] = []
-	for c in Run.all_cards():
+	for c in Run.deck.all_cards():
 		if c.is_skill() and c.resource_path.begins_with("res://data/skills/magic/") and not c.id in [&"basic_healing", &"med_cure"]:
 			spells.append(c)
 	check(spells.size() == 50, "the Magic line has 50 spells in play: %d" % spells.size())
@@ -1264,8 +1264,8 @@ func magic_line() -> void:
 		var dummy := await _dummy(p, 45.0 if near else 90.0)
 		dummy.elements = {}
 		var before := dummy.hp
-		Run.cards[c.id] = 1
-		Run.loadout[0] = c.id
+		Run.deck.cards[c.id] = 1
+		Run.deck.loadout[0] = c.id
 		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp / 2
 		var hp0 := Run.hp
@@ -1294,7 +1294,7 @@ func magic_line() -> void:
 			did = dummy.hp < before
 			how = "%d -> %d" % [before, dummy.hp]
 		check(cast and did, "%s casts and works (%s)%s" % [c.id, how, "" if did else _why(cast, dummy, p)])
-		Run.cards.erase(c.id)
+		Run.deck.cards.erase(c.id)
 		_remove(dummy)
 		await wait(0.3)
 	p.invulnerable_until = 0.0
@@ -1313,7 +1313,7 @@ func sense_line() -> void:
 	Profile.class_id = "fox"
 	Run.new_run()
 	p.refresh_gear()
-	check(Run.cls.id == &"fox" and Run.job.id == &"archeologist" and Run.card_level(&"shuriken_master") == 1
+	check(Run.cls.id == &"fox" and Run.job.id == &"archeologist" and Run.deck.card_level(&"shuriken_master") == 1
 		and p.sprite.actor_name == "fox", "Fox starts as an Archeologist with Shuriken Master as her basic attack")
 	var target := await _dummy(p, 90.0)
 	var mp := Run.mp
@@ -1329,15 +1329,15 @@ func sense_line() -> void:
 	p.refresh_gear()
 	p.velocity = Vector2.ZERO
 	var gun := p.gun
-	check(Run.cls.id == &"lion" and Run.job.id == &"engineer" and Run.card_level(&"gun_carrier") > 0
+	check(Run.cls.id == &"lion" and Run.job.id == &"engineer" and Run.deck.card_level(&"gun_carrier") > 0
 		and Run.gear.carries_gun() and gun.has_gun(), "Lion starts as an Engineer carrying a gun (Gun Carrier)")
-	check(Run.card_level(&"quick_reload") > 0 and Run.card_level(&"overcharge") == 0 and not gun.charges(),
+	check(Run.deck.card_level(&"quick_reload") > 0 and Run.deck.card_level(&"overcharge") == 0 and not gun.charges(),
 		"Lion starts with Quick Reload; the power gauge waits for Overcharge")
 	check(gun.range() > 300.0, "the gun outranges the spells (%d)" % gun.range())
 	var basic_hit := Run.GUN_SHOT * Run.gun_shot_mult()
 	var weakest := INF
 	for id: StringName in [&"power_shot", &"double_shot", &"butt_plate", &"shooting_spree", &"berserk"]:
-		var c := Run.card(id)
+		var c := Run.deck.card(id)
 		var per_hit := c.value_at(1) * Run.skill_mult(c) / maxf(c.param("count", 1, 1.0), 1.0)
 		weakest = minf(weakest, per_hit)
 	check(weakest > basic_hit, "every gun skill outhits a basic shot (weakest %d vs %d)" % [weakest, basic_hit])
@@ -1363,32 +1363,32 @@ func sense_line() -> void:
 	gun.progress = 100.0
 	gun.interrupt(true)
 	check(gun.progress == 0.0, "a hit resets the reload")
-	Run.cards[&"invincible_reload"] = 1
+	Run.deck.cards[&"invincible_reload"] = 1
 	gun.progress = 100.0
 	gun.interrupt(true)
 	check(gun.progress == 100.0, "Invincible Reload keeps the reload through a hit")
-	Run.cards.erase(&"invincible_reload")
+	Run.deck.cards.erase(&"invincible_reload")
 	await wait(0.5)
-	Run.cards.erase(&"quick_reload")  # Lion's starter: walking keeps the reload
+	Run.deck.cards.erase(&"quick_reload")  # Lion's starter: walking keeps the reload
 	p.enter(Player.State.MOVE)
 	gun.progress = 100.0
 	Input.action_press("move_right")
 	await wait(0.3)
 	var moved := gun.progress
 	Input.action_release("move_right")
-	Run.cards[&"quick_reload"] = 1
+	Run.deck.cards[&"quick_reload"] = 1
 	gun.progress = 100.0
 	Input.action_press("move_right")
 	await wait(0.3)
 	Input.action_release("move_right")
 	check(moved < 50.0 and gun.progress > 100.0,
 		"walking resets the reload (%.0f), not with Quick Reload (%.0f)" % [moved, gun.progress])
-	Run.cards[&"speedloader"] = 5
+	Run.deck.cards[&"speedloader"] = 5
 	check(gun.reload_time() < reload, "Speedloader shortens the reload (%.2f -> %.2f s)" % [reload, gun.reload_time()])
-	check(is_equal_approx(gun.reload_time(), reload / (1.0 + Run.card_value(&"speedloader") / 100.0)),
+	check(is_equal_approx(gun.reload_time(), reload / (1.0 + Run.deck.card_value(&"speedloader") / 100.0)),
 		"Speedloader raises the fill rate as the client does (2 - Ratio/100)")
-	Run.cards.erase(&"speedloader")
-	check(Run._grows_basic(Run.card(&"quick_reload")) and Run._grows_basic(Run.card(&"invincible_reload")),
+	Run.deck.cards.erase(&"speedloader")
+	check(Run.deck.grows_basic(Run.deck.card(&"quick_reload")) and Run.deck.grows_basic(Run.deck.card(&"invincible_reload")),
 		"a gunner is always offered Quick Reload and Invincible Reload once learnable")
 	var ac0 := Run.gun_stat_mult()
 	Run.type_points["power"] += 5  # +10 AC
@@ -1401,22 +1401,22 @@ func sense_line() -> void:
 	gun.state = GunCycle.State.LOADED
 	gun.power = float(gun.gun.zone) + 5.0
 	check(gun.fire() and not gun.last_power, "without Overcharge there is no power shot")
-	Run.cards[&"overcharge"] = 1
+	Run.deck.cards[&"overcharge"] = 1
 	gun.state = GunCycle.State.LOADED
 	gun.power = float(gun.gun.zone) + 5.0
 	check(gun.fire() and gun.last_power, "with Overcharge, a shot fired above PowStartPoint is overcharged")
-	Run.cards.erase(&"overcharge")
+	Run.deck.cards.erase(&"overcharge")
 	# A gun skill fires without a load and leaves the reload alone.
 	gun.progress = 60.0
-	Run.cards[&"power_shot"] = 1
-	Run.loadout[0] = &"power_shot"
+	Run.deck.cards[&"power_shot"] = 1
+	Run.deck.loadout[0] = &"power_shot"
 	Run.mp = Run.max_mp
 	p.skills.slot_ready_at[0] = 0.0
 	var fired := p.skills.try_cast(0)
 	await wait(0.4)
 	check(fired and gun.state == GunCycle.State.RELOADING and gun.progress >= 60.0,
 		"Power Shot fires mid-reload and doesn't reset it (%.0f)" % gun.progress)
-	Run.cards.erase(&"power_shot")
+	Run.deck.cards.erase(&"power_shot")
 	_remove(target)
 
 	# A wall stops a shot.
@@ -1449,7 +1449,7 @@ func sense_line() -> void:
 
 	# Every Sense skill does its job on a dummy.
 	var skills: Array[CardData] = []
-	for c in Run.all_cards():
+	for c in Run.deck.all_cards():
 		if c.is_skill() and c.resource_path.begins_with("res://data/skills/sense/") and c.id != &"gun_shot" \
 				and not c.id in [&"stone_shower"]:
 			skills.append(c)
@@ -1458,8 +1458,8 @@ func sense_line() -> void:
 		var dummy := await _dummy(p, 60.0 if kind == "close_strike.gd" else 90.0)
 		dummy.elements = {}
 		var before := dummy.hp
-		Run.cards[c.id] = 1
-		Run.loadout[0] = c.id
+		Run.deck.cards[c.id] = 1
+		Run.deck.loadout[0] = c.id
 		Run.mp = Run.max_mp
 		Run.hidden = c.id in [&"sudden_attack", &"poison_assault"]
 		gun.state = GunCycle.State.LOADED
@@ -1491,7 +1491,7 @@ func sense_line() -> void:
 				did = dummy.hp < before
 				how = "%d -> %d" % [before, dummy.hp]
 		check(cast and did, "%s casts and works (%s)%s" % [c.id, how, "" if did else _why(cast, dummy, p)])
-		Run.cards.erase(c.id)
+		Run.deck.cards.erase(c.id)
 		Run.hidden = false
 		Run.bunker_until = 0.0
 		_remove(dummy)
@@ -1502,7 +1502,7 @@ func sense_line() -> void:
 	var hunter_lord: JobData = load("res://data/jobs/hunter_lord.tres")
 	var cyber: JobData = load("res://data/jobs/cyber_hunter.tres")
 	check(not hunter_lord.unlocked() and not cyber.unlocked(), "Hunter Lord and Cyber Hunter start locked")
-	check(Run.card(&"power_shot") in hunter_lord.cards and Run.card(&"fan_of_knives") in cyber.cards,
+	check(Run.deck.card(&"power_shot") in hunter_lord.cards and Run.deck.card(&"fan_of_knives") in cyber.cards,
 		"a Hunter Lord learns Inventor skills and a Cyber Hunter Explorer skills")
 
 	Profile.class_id = saved
@@ -1524,75 +1524,75 @@ func talent_hooks() -> void:
 	p.invulnerable_until = 0.0
 
 	# tick and absorb: Shield of Heaven's barrier fills, then takes a hit first.
-	Run.cards[&"shield_of_heaven"] = 1
+	Run.deck.cards[&"shield_of_heaven"] = 1
 	p._tick_talents(0.016)
-	var barrier := roundi(Run.stat("MA") * Run.card(&"shield_of_heaven").value_at(1) / 100.0)
+	var barrier := roundi(Run.stat("MA") * Run.deck.card(&"shield_of_heaven").value_at(1) / 100.0)
 	check(barrier > 0 and Run.barrier == barrier, "Shield of Heaven's barrier fills to its share of MA (%d)" % Run.barrier)
 	var hp := Run.hp
 	p.take_hit(1, Vector2.LEFT, 0.0, false, 9999)
 	check(Run.hp == hp and Run.barrier < barrier, "the barrier takes a hit before your HP (%d left)" % Run.barrier)
-	Run.cards.erase(&"shield_of_heaven")
+	Run.deck.cards.erase(&"shield_of_heaven")
 	Run.barrier = 0
 
 	# tick: Oath of Light heals every 10 s.
-	Run.cards[&"oath_of_light"] = 1
+	Run.deck.cards[&"oath_of_light"] = 1
 	Run.hp = Run.max_hp / 2
 	hp = Run.hp
 	for _i in 11:
 		p._tick_talents(1.0)
 	check(Run.hp > hp, "Oath of Light heals every 10 s (%d -> %d)" % [hp, Run.hp])
-	Run.cards.erase(&"oath_of_light")
+	Run.deck.cards.erase(&"oath_of_light")
 
 	# tick: Berserker's rage costs HP while a monster is around.
-	Run.cards[&"berserker"] = 1
+	Run.deck.cards[&"berserker"] = 1
 	Run.hp = Run.max_hp
 	hp = Run.hp
 	for _i in 3:
 		p._tick_talents(1.0)
 	check(Run.hp < hp, "Berserker drains HP in a fight (%d -> %d)" % [hp, Run.hp])
-	Run.cards.erase(&"berserker")
+	Run.deck.cards.erase(&"berserker")
 
 	# retaliate: Dark Barrier turns a physical hit back, Mana Reflector a magic one.
 	for id: StringName in [&"dark_barrier", &"mana_reflector"]:
-		Run.cards[id] = 5
+		Run.deck.cards[id] = 5
 		var before := foe.hp
-		for t in Run.talents():
+		for t in Run.deck.talents():
 			t.retaliate(p, foe, 200, id == &"mana_reflector")
 		check(foe.hp < before, "%s strikes back at the attacker (%d -> %d)" % [id, before, foe.hp])
-		Run.cards.erase(id)
+		Run.deck.cards.erase(id)
 
 	# revive: Revival brings you back with its share of max HP, then waits its cooldown.
-	Run.cards[&"revival"] = 1
+	Run.deck.cards[&"revival"] = 1
 	Run.revival_ready_at = 0.0
 	Run.hp = 0
 	var back := Run.try_revive()
-	check(back and Run.hp == maxi(1, roundi(Run.max_hp * Run.card(&"revival").value_at(1) / 100.0))
+	check(back and Run.hp == maxi(1, roundi(Run.max_hp * Run.deck.card(&"revival").value_at(1) / 100.0))
 		and Run.revival_ready_at > Events.time, "Revival brings you back from a fatal blow (%d HP)" % Run.hp)
-	Run.cards.erase(&"revival")
+	Run.deck.cards.erase(&"revival")
 	Run.hp = Run.max_hp
 
 	# on_cast: Blood Testament makes a spell cost HP.
-	Run.cards[&"blood_testament"] = 1
-	var spell: CardData = Run.all_cards().filter(func(c: CardData) -> bool: return c.is_skill() and c.cast_at(1) > 0.0)[0]
+	Run.deck.cards[&"blood_testament"] = 1
+	var spell: CardData = Run.deck.all_cards().filter(func(c: CardData) -> bool: return c.is_skill() and c.cast_at(1) > 0.0)[0]
 	hp = Run.hp
-	for t in Run.talents():
+	for t in Run.deck.talents():
 		t.on_cast(spell, 1, 0)
 	check(Run.hp < hp, "Blood Testament: casting %s costs HP (%d -> %d)" % [spell.id, hp, Run.hp])
-	Run.cards.erase(&"blood_testament")
+	Run.deck.cards.erase(&"blood_testament")
 	Run.hp = Run.max_hp
 
 	# adjust: Desperate Rally raises your damage low on HP; Sharp Sense the power shot.
 	var full := Run.attack_mult()
-	Run.cards[&"desperate_rally"] = 3
+	Run.deck.cards[&"desperate_rally"] = 3
 	Run.hp = 1
 	check(Run.attack_mult() > full, "Desperate Rally hits harder near death (x%.2f -> x%.2f)" % [full, Run.attack_mult()])
-	Run.cards.erase(&"desperate_rally")
+	Run.deck.cards.erase(&"desperate_rally")
 	Run.hp = Run.max_hp
-	Run.cards[&"sharp_sense"] = 1
-	var keen: CardData = Run.card(&"keen_sense")
-	var want := (100.0 + keen.value_at(Run.MAX_CARD_LEVEL)) * (1.0 + Run.card(&"sharp_sense").value_at(1) / 100.0) - 100.0
+	Run.deck.cards[&"sharp_sense"] = 1
+	var keen: CardData = Run.deck.card(&"keen_sense")
+	var want := (100.0 + keen.value_at(Run.deck.MAX_CARD_LEVEL)) * (1.0 + Run.deck.card(&"sharp_sense").value_at(1) / 100.0) - 100.0
 	check(is_equal_approx(Run.power_shot_bonus(), want), "Sharp Sense builds on a mastered Keen Sense (+%.0f%%)" % Run.power_shot_bonus())
-	Run.cards.erase(&"sharp_sense")
+	Run.deck.cards.erase(&"sharp_sense")
 
 	_remove(foe)
 	Profile.class_id = saved
@@ -1665,7 +1665,7 @@ func elements_and_shields() -> void:
 	check(not offered_shield, "a gunner is never offered a shield")
 	Profile.class_id = "fox"
 	Run.new_run()
-	Run.cards[&"gun_carrier"] = 1
+	Run.deck.cards[&"gun_carrier"] = 1
 	var shield := GearItem.roll(load("res://data/items/wood_buckler.tres"), 0.0)
 	Run.gear.equip(shield)
 	check(Run.gear.equipped("shield") == shield, "Fox wears a shield with a sword")
@@ -1693,7 +1693,7 @@ func charm_line() -> void:
 	Profile.class_id = "cat"
 	Run.new_run()
 	p.refresh_gear()
-	check(Run.cls.id == &"cat" and Run.job.id == &"model" and Run.card_level(&"power_blow") == 1
+	check(Run.cls.id == &"cat" and Run.job.id == &"model" and Run.deck.card_level(&"power_blow") == 1
 		and p.sprite.actor_name == "cat" and Run.cls.basic_skill == null,
 		"Cat starts as a Model with Power Blow, fighting with her weapon's combo")
 
@@ -1702,9 +1702,9 @@ func charm_line() -> void:
 	# HP you've lost.
 	check(is_equal_approx(Run.attack_power("AP+16HV"), Run.stat("AP") + 16.0 * Run.stat("HV")),
 		"Run.attack_power reads the server's expression (AP + 16 HV = %d)" % Run.attack_power("AP+16HV"))
-	var kick := Run.card(&"volley_kick")
-	var blow := Run.card(&"power_blow")
-	var final := Run.card(&"final_blow")
+	var kick := Run.deck.card(&"volley_kick")
+	var blow := Run.deck.card(&"power_blow")
+	var final := Run.deck.card(&"final_blow")
 	var kick0 := Run.skill_mult(kick)
 	var blow0 := Run.skill_mult(blow)
 	check(is_equal_approx(kick0, 1.0) and is_equal_approx(blow0, 1.0), "at level 1 the multipliers start at 1")
@@ -1719,24 +1719,24 @@ func charm_line() -> void:
 	Run.hp = Run.max_hp / 2
 	check(Run.skill_mult(final) > fb0, "Final Blow hits harder the more HP you've lost (x%.2f -> x%.2f)" % [fb0, Run.skill_mult(final)])
 	Run.hp = Run.max_hp
-	check(Run.skill_mult(Run.card(&"wild_nail")) == Run.attack_power("16HV") / Run.attack_power("16HV", true),
+	check(Run.skill_mult(Run.deck.card(&"wild_nail")) == Run.attack_power("16HV") / Run.attack_power("16HV", true),
 		"Wild Nail is HV alone")
 
 	# Evolution is a talent: learned, Cat is the beast (trs001) for good, with
 	# no MP drain; only Evolution's skills work, and only they are offered.
 	# Beast's Instinct is timed on top of it, and Evolution outlasts it.
-	check(not Run.card(&"evolution").is_skill(), "Evolution is a talent")
-	check(not Run.requirements_met(Run.card(&"beast_claw")) and not Run.requirements_met(Run.card(&"fatal_wound")),
+	check(not Run.deck.card(&"evolution").is_skill(), "Evolution is a talent")
+	check(not Run.deck.requirements_met(Run.deck.card(&"beast_claw")) and not Run.deck.requirements_met(Run.deck.card(&"fatal_wound")),
 		"Evolution's skills aren't offered before it")
 	var ap0 := Run.stat("AP")
 	var dp0 := Run.stat("DP")
-	Run.add_card(&"evolution")
+	Run.deck.add_card(&"evolution")
 	p.become_beast()
 	check(Run.form == &"evolution" and p.sprite.actor_name == "beast_evolution" and Run.stat("AP") > ap0
 		and Run.stat("DP") < dp0, "Evolution turns Cat into the beast (trs001): AP %d -> %d, DP %d -> %d" % [ap0,
 		Run.stat("AP"), dp0, Run.stat("DP")])
 	check(p.combo == Player.BEAST_COMBO and not p.weapon.visible, "the beast fights with its claws, no weapon")
-	check(Run.requirements_met(Run.card(&"beast_claw")) and Run.requirements_met(Run.card(&"fatal_wound")),
+	check(Run.deck.requirements_met(Run.deck.card(&"beast_claw")) and Run.deck.requirements_met(Run.deck.card(&"fatal_wound")),
 		"with it, Beast Claw and Fatal Wound open up")
 	Run.mp = Run.max_mp / 2
 	var mp1 := Run.mp
@@ -1744,8 +1744,8 @@ func charm_line() -> void:
 	check(Run.form == &"evolution" and Run.mp >= mp1, "Evolution never drains MP or ends (MP %d -> %d)" % [mp1, Run.mp])
 	Run.mp = Run.max_mp
 	for id: StringName in [&"volley_kick", &"beast_claw", &"wild_nail"]:
-		Run.cards[id] = 1
-	Run.loadout = [&"volley_kick", &"beast_claw", &"wild_nail"] as Array[StringName]
+		Run.deck.cards[id] = 1
+	Run.deck.loadout = [&"volley_kick", &"beast_claw", &"wild_nail"] as Array[StringName]
 	for i in 3:
 		p.skills.slot_ready_at[i] = 0.0
 	check(not p.skills.try_cast(0) and Run.form_block(&"volley_kick") == "Not in Evolution",
@@ -1759,15 +1759,15 @@ func charm_line() -> void:
 	Run.job = ent
 	var offered_e: Array[StringName] = []
 	for i in 20:
-		for c in Run.card_offers(3, false):
+		for c in Run.deck.card_offers(3, false):
 			if c.is_skill():
 				offered_e.append(c.id)
 	var stray_e := offered_e.filter(func(id: StringName) -> bool: return not Run.form_allows(id))
 	check(stray_e.is_empty(), "Evolution is only offered skills it can use: %s" % [offered_e if stray_e.is_empty() else stray_e])
 	Run.jobs.erase(ent)
 	Run.job = job_e
-	Run.cards[&"beasts_instinct"] = 1
-	Run.loadout[0] = &"beasts_instinct"
+	Run.deck.cards[&"beasts_instinct"] = 1
+	Run.deck.loadout[0] = &"beasts_instinct"
 	Run.mp = Run.max_mp
 	p.skills.slot_ready_at[0] = 0.0
 	check(p.skills.try_cast(0), "Beast's Instinct casts in Evolution")
@@ -1781,8 +1781,8 @@ func charm_line() -> void:
 	await wait(0.2)
 	check(not Run.instinct and Run.form == &"evolution" and Run.stat("AP") < ap_i, "when it ends, Evolution stays")
 	for id: StringName in [&"evolution", &"volley_kick", &"beast_claw", &"wild_nail", &"beasts_instinct"]:
-		Run.cards.erase(id)
-	Run.loadout = [&"", &"", &""] as Array[StringName]
+		Run.deck.cards.erase(id)
+	Run.deck.loadout = [&"", &"", &""] as Array[StringName]
 	Run.form = &""
 	Run.stats_changed()
 	p.refresh_gear()
@@ -1790,28 +1790,28 @@ func charm_line() -> void:
 
 	# Metamorphosis is a talent: learned, you're the beast for good, with no
 	# MP drain; only beast skills work, and only they are offered.
-	var meta := Run.card(&"metamorphosis")
+	var meta := Run.deck.card(&"metamorphosis")
 	check(not meta.is_skill(), "Metamorphosis is a talent")
-	check(not Run.requirements_met(Run.card(&"wild_nail")) and not Run.requirements_met(Run.card(&"card_soldier")),
+	check(not Run.deck.requirements_met(Run.deck.card(&"wild_nail")) and not Run.deck.requirements_met(Run.deck.card(&"card_soldier")),
 		"Metamorphosis's skills aren't offered before it")
 	ap0 = Run.stat("AP")
 	dp0 = Run.stat("DP")
-	Run.add_card(&"metamorphosis")
+	Run.deck.add_card(&"metamorphosis")
 	p.become_beast()
 	check(Run.form == &"metamorphosis" and p.sprite.actor_name == "beast_metamorphosis" and Run.stat("DP") > dp0
 		and Run.stat("AP") < ap0, "Metamorphosis turns you into the beast (trs002): DP %d -> %d, AP %d -> %d" % [dp0,
 		Run.stat("DP"), ap0, Run.stat("AP")])
-	check(Run.requirements_met(Run.card(&"wild_nail")) and Run.requirements_met(Run.card(&"heavy_hit"))
-		and Run.requirements_met(Run.card(&"card_soldier")), "with it, Wild Nail, Heavy Hit and Card Soldier open up")
+	check(Run.deck.requirements_met(Run.deck.card(&"wild_nail")) and Run.deck.requirements_met(Run.deck.card(&"heavy_hit"))
+		and Run.deck.requirements_met(Run.deck.card(&"card_soldier")), "with it, Wild Nail, Heavy Hit and Card Soldier open up")
 	Run.mp = Run.max_mp / 2
 	mp1 = Run.mp
 	await wait(1.2)
 	check(Run.form == &"metamorphosis" and Run.mp >= mp1, "it never drains MP or ends (MP %d -> %d)" % [mp1, Run.mp])
 	Run.mp = Run.max_mp
-	Run.cards[&"card_strike"] = 1
-	Run.cards[&"wild_nail"] = 1
-	Run.loadout[0] = &"card_strike"
-	Run.loadout[1] = &"wild_nail"
+	Run.deck.cards[&"card_strike"] = 1
+	Run.deck.cards[&"wild_nail"] = 1
+	Run.deck.loadout[0] = &"card_strike"
+	Run.deck.loadout[1] = &"wild_nail"
 	p.skills.slot_ready_at[0] = 0.0
 	p.skills.slot_ready_at[1] = 0.0
 	check(not p.skills.try_cast(0) and Run.form_block(&"card_strike") != "", "Card Strike doesn't work in Metamorphosis")
@@ -1823,25 +1823,25 @@ func charm_line() -> void:
 	Run.job = cm
 	var offered: Array[StringName] = []
 	for i in 20:
-		for c in Run.card_offers(3, false):
+		for c in Run.deck.card_offers(3, false):
 			if c.is_skill():
 				offered.append(c.id)
 	var stray := offered.filter(func(id: StringName) -> bool: return not Run.form_allows(id))
-	check(stray.is_empty() and &"wild_nail" in Run.card_pool().map(func(c: CardData) -> StringName: return c.id),
+	check(stray.is_empty() and &"wild_nail" in Run.deck.card_pool().map(func(c: CardData) -> StringName: return c.id),
 		"a beast is only offered skills it can use: %s" % [offered if stray.is_empty() else stray])
 	Run.jobs.erase(cm)
 	Run.job = job0
 	for id: StringName in [&"metamorphosis", &"card_strike", &"wild_nail"]:
-		Run.cards.erase(id)
-	Run.loadout[0] = &""
-	Run.loadout[1] = &""
+		Run.deck.cards.erase(id)
+	Run.deck.loadout[0] = &""
+	Run.deck.loadout[1] = &""
 	Run.form = &""
 	Run.stats_changed()
 	p.refresh_gear()
 
 	# Galder: spent from the run's purse; short of it, no cast.
-	Run.cards[&"galder_thrower"] = 1
-	Run.loadout[0] = &"galder_thrower"
+	Run.deck.cards[&"galder_thrower"] = 1
+	Run.deck.loadout[0] = &"galder_thrower"
 	Run.purse.galder = 5
 	p.skills.slot_ready_at[0] = 0.0
 	check(not p.skills.try_cast(0), "Galder Thrower needs its Galder")
@@ -1853,7 +1853,7 @@ func charm_line() -> void:
 
 	# Every Charm skill does its job on a dummy.
 	var skills: Array[CardData] = []
-	for c in Run.all_cards():
+	for c in Run.deck.all_cards():
 		if c.is_skill() and c.resource_path.begins_with("res://data/skills/charm/"):
 			skills.append(c)
 	check(skills.size() == 27, "the Charm line has 27 active skills: %d" % skills.size())
@@ -1874,14 +1874,14 @@ func charm_line() -> void:
 		var before := dummy.hp
 		p.end_instinct()
 		Run.form = &""  # the forms don't end on their own
-		Run.cards.erase(&"metamorphosis")
-		Run.cards.erase(&"evolution")
-		Run.cards[c.id] = 1
-		Run.loadout[0] = c.id
+		Run.deck.cards.erase(&"metamorphosis")
+		Run.deck.cards.erase(&"evolution")
+		Run.deck.cards[c.id] = 1
+		Run.deck.loadout[0] = c.id
 		if c.form != &"":
 			var need: StringName = c.form
 			Run.form = need if need != &"beast" else &"metamorphosis"
-			Run.cards[Run.form] = 1
+			Run.deck.cards[Run.form] = 1
 			Run.stats_changed()
 		Run.mp = Run.max_mp
 		Run.hp = Run.max_hp
@@ -1918,21 +1918,21 @@ func charm_line() -> void:
 		check(cast and did, "%s casts and works (%s)%s" % [c.id, how, "" if did else _why(cast, dummy, p)])
 		p.end_instinct()
 		Run.form = &""
-		Run.cards.erase(c.id)
+		Run.deck.cards.erase(c.id)
 		for e2 in extra:
 			_remove(e2)
 		_remove(dummy)
 		await wait(0.3)
 	p.invulnerable_until = 0.0
-	check(Run.card(&"galder_barrage") in (load("res://data/echoes/echo_entertainer.tres") as EnemyData).runes,
+	check(Run.deck.card(&"galder_barrage") in (load("res://data/echoes/echo_entertainer.tres") as EnemyData).runes,
 		"the Echo of an Entertainer lends the Charm line's own Galder Barrage")
 
 	# Hybrids.
 	var diva: JobData = load("res://data/jobs/diva.tres")
 	var duke: JobData = load("res://data/jobs/duke.tres")
 	check(not diva.unlocked() and not duke.unlocked(), "Diva and Duke start locked")
-	check(Run.card(&"card_strike") in diva.cards and Run.card(&"volley_kick") in duke.cards
-		and not Run.card(&"evolution") in duke.cards and not Run.card(&"metamorphosis") in diva.cards,
+	check(Run.deck.card(&"card_strike") in diva.cards and Run.deck.card(&"volley_kick") in duke.cards
+		and not Run.deck.card(&"evolution") in duke.cards and not Run.deck.card(&"metamorphosis") in diva.cards,
 		"a Diva learns Card Master skills and a Duke Entertainer skills, but not the other's beast")
 
 	Profile.class_id = saved

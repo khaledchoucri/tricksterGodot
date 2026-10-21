@@ -79,8 +79,8 @@ func refresh(player: Player) -> void:
 	%MpLabel.text = "MP %d / %d" % [Run.mp, Run.max_mp]
 	%GalderLabel.text = "%d Galder  ·  %d Bronze" % [Run.purse.galder, Run.purse.ore]
 	var owned: PackedStringArray = []
-	for id: StringName in Run.cards:
-		owned.append("%s %d" % [Run.card(id).display_name, Run.cards[id]])
+	for id: StringName in Run.deck.cards:
+		owned.append("%s %d" % [Run.deck.card(id).display_name, Run.deck.cards[id]])
 	%CardsLabel.text = _pack(owned, %CardsLabel)
 	_refresh_slots(player)
 	if sheet.visible:
@@ -99,14 +99,14 @@ func _main_type() -> String:
 
 
 func _refresh_slots(player: Player) -> void:
-	_slots[3].visible = Run.rune != null
+	_slots[3].visible = Run.deck.rune != null
 	for i in _slots.size():
-		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
+		var id: StringName = Run.deck.loadout[i] if i < Run.deck.loadout.size() else (Run.deck.rune.id if Run.deck.rune else &"")
 		if id == &"":
 			_slots[i].clear()
 			continue
-		var card := Run.card(id)
-		var level := Run.card_level(id)
+		var card := Run.deck.card(id)
+		var level := Run.deck.card_level(id)
 		var left := 0.0
 		if is_instance_valid(player):
 			left = maxf(0.0, player.skills.slot_ready_at[i] - player.now())
@@ -307,8 +307,8 @@ func show_results(won: bool) -> void:
 	title.text = "%s cleared" % Run.route.region.display_name if won else "Rollback"
 	title.add_theme_color_override("font_color", Color("e0b54d") if won else Color("f07a62"))
 	var cards: PackedStringArray = []
-	for id: StringName in Run.cards:
-		cards.append("%s Lv %d" % [Run.card(id).display_name, Run.cards[id]])
+	for id: StringName in Run.deck.cards:
+		cards.append("%s Lv %d" % [Run.deck.card(id).display_name, Run.deck.cards[id]])
 	var gear: PackedStringArray = []
 	for k in Run.gear.EQUIP_SLOTS:
 		if Run.gear.equipped(k):

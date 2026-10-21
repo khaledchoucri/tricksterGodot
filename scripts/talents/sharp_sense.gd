@@ -8,6 +8,6 @@ extends Talent
 func adjust(what: StringName, amount: float) -> float:
 	if what != &"power_shot%":
 		return amount
-	var keen: CardData = Run.card(card.requires.keys()[0]) if not card.requires.is_empty() else null
-	var top: float = keen.value_at(Run.MAX_CARD_LEVEL) if keen else 0.0
+	var keen: CardData = Run.deck.card(card.requires.keys()[0]) if not card.requires.is_empty() else null
+	var top: float = keen.value_at(Run.deck.MAX_CARD_LEVEL) if keen else 0.0
 	return (100.0 + top) * (1.0 + value() / 100.0) - 100.0

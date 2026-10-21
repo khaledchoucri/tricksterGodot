@@ -53,7 +53,7 @@ func range() -> float:
 
 ## Whether the loaded gun charges a power gauge (Overcharge).
 func charges() -> bool:
-	return Run.holds_tag(&"power_gauge")
+	return Run.deck.holds_tag(&"power_gauge")
 
 
 ## A reload's length in seconds, as Speedloader leaves it.
@@ -96,7 +96,7 @@ func fire() -> bool:
 func interrupt(by_hit: bool) -> void:
 	if state != State.RELOADING:
 		return
-	if by_hit and Run.holds_tag(&"reload_through_hits"):
+	if by_hit and Run.deck.holds_tag(&"reload_through_hits"):
 		return
 	progress = 0.0
 	changed.emit()
@@ -115,7 +115,7 @@ func _physics_process(delta: float) -> void:
 	if state == State.RELOADING:
 		# Moving resets the reload unless Quick Reload (the client's rule).
 		if player.velocity.length() > 5.0 and player.state == Player.State.MOVE \
-				and not Run.holds_tag(&"reload_while_moving"):
+				and not Run.deck.holds_tag(&"reload_while_moving"):
 			progress = 0.0
 		else:
 			progress += ms * float(gun.get("speed", 100)) / 600.0 / Run.reload_mult()

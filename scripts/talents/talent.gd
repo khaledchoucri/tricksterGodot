@@ -2,8 +2,8 @@ class_name Talent
 extends RefCounted
 ## A talent's own behaviour, for what its numbers (its `mods`) can't say: a barrier that
 ## refills, a block, a heal over time, a second life. A card's `talent` points at a
-## subclass; Run keeps one per held card for the run (Run.talents()) and the player and Run
-## call these hooks on each, in skill-id order. Every hook does nothing by default.
+## subclass; Run.deck keeps one per held card for the run (Run.deck.talents()) and the player
+## and Run call these hooks on each, in skill-id order. Every hook does nothing by default.
 
 ## The card this talent plays.
 var card: CardData
@@ -11,7 +11,7 @@ var card: CardData
 
 ## The card's level now.
 func level() -> int:
-	return Run.card_level(card.id)
+	return Run.deck.card_level(card.id)
 
 
 ## The card's value at its level.

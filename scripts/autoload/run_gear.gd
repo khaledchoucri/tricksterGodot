@@ -137,7 +137,7 @@ func can_use(it: ItemData) -> bool:
 	if it.slot != ItemData.Slot.WEAPON:
 		return true
 	if it.family == "gun":
-		return Run.holds_tag(&"carries_guns")
+		return Run.deck.holds_tag(&"carries_guns")
 	return not gunner
 
 
@@ -189,7 +189,7 @@ func try_refine(g: GearItem, roll := -1.0) -> String:
 ## starts with it; Fox can learn it), as the client's "Gun_NotEquippable".
 func carries_gun() -> bool:
 	var w := equipped("weapon")
-	return w != null and w.data.family == "gun" and Run.holds_tag(&"carries_guns")
+	return w != null and w.data.family == "gun" and Run.deck.holds_tag(&"carries_guns")
 
 
 ## Equipped items with a free compound slot (slot keys).

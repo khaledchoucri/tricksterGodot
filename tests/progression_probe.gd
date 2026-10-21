@@ -18,7 +18,7 @@ func _ready() -> void:
 		if charm:
 			stat = "HV"
 			main = "charm"
-		var c: CardData = Run.cls.basic_skill if Run.cls.basic_skill else Run.card(basic)
+		var c: CardData = Run.cls.basic_skill if Run.cls.basic_skill else Run.deck.card(basic)
 		print("== %s (%s, %s)" % [cls, basic, stat])
 		for room in [0, 2, 4, 6, 7, 8, 10, 12, 15]:
 			var lv := 1 + int(room * 1.5)
@@ -28,7 +28,7 @@ func _ready() -> void:
 				Run.apply_type(main)
 				Run.pending_levels -= 1
 			var skill_lv := mini(1 + room / 3, 5)
-			Run.cards[basic] = skill_lv
+			Run.deck.cards[basic] = skill_lv
 			var r: RegionData = Run.route.regions[0 if room < 8 else 1]
 			var d: int = room if room < 8 else room - 8
 			var dmg := c.value_at(skill_lv) * (Run.gun_shot_mult() if basic == &"gun_shot" else Run.skill_mult(c))

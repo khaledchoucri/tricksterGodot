@@ -261,14 +261,14 @@ func _audit_game() -> void:
 	if is_instance_valid(game.player):
 		game.player.invulnerable_until = game.player.now() + 9999.0
 	# Every card at its cap, a full loadout, the rune, the longest gear.
-	for c: CardData in Run.card_pool():
-		Run.cards[c.id] = Run.card_cap(c.id) if Run.has_method("card_cap") else 5
+	for c: CardData in Run.deck.card_pool():
+		Run.deck.cards[c.id] = Run.deck.card_cap(c.id) if Run.has_method("card_cap") else 5
 	var skills: Array[StringName] = []
-	for c: CardData in Run.card_pool():
+	for c: CardData in Run.deck.card_pool():
 		if c.is_skill() and skills.size() < 3:
 			skills.append(c.id)
-	Run.loadout = skills
-	Run.take_rune(Run.echoes[0].runes[0])
+	Run.deck.loadout = skills
+	Run.deck.take_rune(Run.echoes[0].runes[0])
 	var items := _longest_items(60)
 	for k in Run.gear.EQUIP_SLOTS:
 		for g in items:
@@ -290,7 +290,7 @@ func _audit_game() -> void:
 	await audit("run_character_sheet")
 	game.hud.sheet.toggle()
 	var picks := {
-		"card": Run.card_pool().slice(0, 4),
+		"card": Run.deck.card_pool().slice(0, 4),
 		"replace": [0, 1, 2, -1],
 		"type": Stats.TYPE_ORDER.duplicate(),
 		"job": Run.job.next_jobs.duplicate() if Run.job.next_jobs.size() else [Run.job],
@@ -298,7 +298,7 @@ func _audit_game() -> void:
 		"gear_slot": ["acc1", "acc2", ""],
 		"rune": Run.echoes[0].runes + [null],
 	}
-	game._pending_skill = Run.card_pool()[0]
+	game._pending_skill = Run.deck.card_pool()[0]
 	game._pending_gear = items[0]
 	game._pending_mat = Run.purse.material_info.values()[0]
 	for kind: String in picks:

@@ -196,9 +196,9 @@ func _grant(reward: String) -> void:
 	match reward:
 		"card", "upgrade":
 			var n := 3 + int(Run.mod("card_choices"))
-			var opts := Run.card_offers(n, reward == "upgrade")
+			var opts := Run.deck.card_offers(n, reward == "upgrade")
 			if opts.is_empty():
-				opts = Run.card_offers(n, reward != "upgrade")
+				opts = Run.deck.card_offers(n, reward != "upgrade")
 			if not opts.is_empty():
 				_start_pick("card", opts)
 				return
@@ -208,13 +208,13 @@ func _grant(reward: String) -> void:
 		"skill_level":
 			# Trickster levels skills with the TM points play earns; here each
 			# character level also trains one skill you have.
-			var opts := Run.card_offers(3, true)
+			var opts := Run.deck.card_offers(3, true)
 			if not opts.is_empty():
 				_skill_training = true
 				_start_pick("card", opts)
 				return
 		"job_skill":
-			var opts := Run.card_offers(3, false, Run.job)
+			var opts := Run.deck.card_offers(3, false, Run.job)
 			if not opts.is_empty():
 				_start_pick("card", opts)
 				return
@@ -338,15 +338,15 @@ func _start_pick(kind: String, options: Array) -> void:
 	match kind:
 		"card":
 			for card: CardData in options:
-				var lvl := Run.card_level(card.id)
+				var lvl := Run.deck.card_level(card.id)
 				var tag := ("New skill" if card.is_skill() else "New talent") if lvl == 0 else "Lv %d → %d" % [lvl, lvl + 1]
 				var text := card.describe(lvl + 1)
 				if lvl == 0 and card.upgrades != &"":
-					var base := Run.card(card.upgrades)
-					text = card.describe(mini(Run.card_level(base.id), Run.card_cap(card.id)))
+					var base := Run.deck.card(card.upgrades)
+					text = card.describe(mini(Run.deck.card_level(base.id), Run.deck.card_cap(card.id)))
 					tag = "Upgrade"
 					text += "
-Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
+Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base.id)]
 				if lvl == 0 and card.form_actor != "":
 					text += _beast_warning(card.id)
 				shown.append({"title": card.display_name, "tag": tag, "text": text})
@@ -358,12 +358,12 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
 				if slot < 0:
 					shown.append({"title": "Keep my skills", "tag": "", "text": "Skip %s." % _pending_skill.display_name, "cancel": true})
 				else:
-					var old := Run.card(Run.loadout[slot])
+					var old := Run.deck.card(Run.deck.loadout[slot])
 					var tag := "[%s]" % Hud.SLOT_KEYS[slot]
 					if not Run.form_allows(old.id):
-						tag += "  unusable in %s" % Run.card(Run.form).display_name
+						tag += "  unusable in %s" % Run.deck.card(Run.form).display_name
 					shown.append({"title": "Replace %s" % old.display_name, "tag": tag,
-						"text": "%s takes this slot (Lv %d is lost)." % [_pending_skill.display_name, Run.card_level(old.id)]})
+						"text": "%s takes this slot (Lv %d is lost)." % [_pending_skill.display_name, Run.deck.card_level(old.id)]})
 			title = "Skill slots are full"
 		"type":
 			for t: String in options:
@@ -457,11 +457,11 @@ Kept in the Megalopolis warehouse, refines and compounds included."),
 		"rune":
 			for c: CardData in options:
 				if c == null:
-					shown.append({"title": "Keep %s" % (Run.rune.display_name if Run.rune else "nothing"), "tag": "", "cancel": true,
+					shown.append({"title": "Keep %s" % (Run.deck.rune.display_name if Run.deck.rune else "nothing"), "tag": "", "cancel": true,
 						"text": "Leave the rune where it fell."})
 					continue
 				shown.append({"title": c.display_name, "tag": "Rune · Lv %d · [F]" % (1 + 2 * Run.route.region_index()),
-					"text": c.describe(1 + 2 * Run.route.region_index()) + ("\nReplaces %s." % Run.rune.display_name if Run.rune else "")})
+					"text": c.describe(1 + 2 * Run.route.region_index()) + ("\nReplaces %s." % Run.deck.rune.display_name if Run.deck.rune else "")})
 			title = "A sky-blue rune  ·  borrow a skill"
 	hud.show_pick(title, shown)
 	get_tree().paused = true
@@ -512,9 +512,9 @@ func _gear_option(g: GearItem) -> Dictionary:
 ## A beast form's offer names the slotted skills it would shut off.
 func _beast_warning(form: StringName) -> String:
 	var lost: Array[String] = []
-	for id: StringName in Run.loadout:
+	for id: StringName in Run.deck.loadout:
 		if id != &"" and not Run.form_allows(id, form):
-			lost.append(Run.card(id).display_name)
+			lost.append(Run.deck.card(id).display_name)
 	if lost.is_empty():
 		return "
 You can't turn back."
@@ -528,19 +528,19 @@ func _on_picked(i: int) -> void:
 	match _pick_kind:
 		"card":
 			var card: CardData = _pick_options[i]
-			if card.is_skill() and Run.card_level(card.id) == 0 and card.upgrades == &"" and Run.free_slot() < 0:
+			if card.is_skill() and Run.deck.card_level(card.id) == 0 and card.upgrades == &"" and Run.deck.free_slot() < 0:
 				_pending_skill = card
 				_start_pick("replace", [0, 1, 2, -1])
 				return
 			var was_beast := Run.form != &""
-			Run.add_card(card.id)
-			hud.log_line("[System] %s learned (Lv %d)." % [card.display_name, Run.card_level(card.id)], INFO)
+			Run.deck.add_card(card.id)
+			hud.log_line("[System] %s learned (Lv %d)." % [card.display_name, Run.deck.card_level(card.id)], INFO)
 			if Run.form != &"" and not was_beast:
 				player.become_beast()
 		"replace":
 			var slot: int = _pick_options[i]
 			if slot >= 0:
-				Run.add_card(_pending_skill.id, slot)
+				Run.deck.add_card(_pending_skill.id, slot)
 				hud.log_line("[System] %s learned." % _pending_skill.display_name, INFO)
 			_pending_skill = null
 		"type":
@@ -630,7 +630,7 @@ func _on_picked(i: int) -> void:
 		"rune":
 			var c: CardData = _pick_options[i]
 			if c:
-				Run.take_rune(c)
+				Run.deck.take_rune(c)
 				Audio.play("ui_unique_get.wav", -4.0)
 				hud.log_line("[System] The rune teaches you %s. Press F to cast it." % c.display_name, Color("8fd8ff"))
 		"anvil":

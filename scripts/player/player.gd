@@ -278,7 +278,7 @@ func start_instinct(seconds: float) -> void:
 ## A form just learned (Run.form): the body changes for good.
 func become_beast() -> void:
 	refresh_gear()
-	var c := Run.card(Run.form)
+	var c := Run.deck.card(Run.form)
 	if c.sounds.has("ap"):
 		Audio.play(c.sounds.ap)
 	for name: String in c.effects.get("ap", []):
@@ -343,7 +343,7 @@ func _tick_talents(delta: float) -> void:
 			var amount := maxi(1, roundi(Run.max_hp * float(_regen.share)))
 			Run.heal(amount)
 			Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(0.5, 1.0, 0.6), false)
-	for t in Run.talents():
+	for t in Run.deck.talents():
 		t.tick(self, delta)  # Guard, Shield of Heaven, Oath of Light, Berserker...
 
 
@@ -374,11 +374,11 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 	if not is_instance_valid(attacker) or not attacker.is_hittable():
 		return
-	for t in Run.talents():
+	for t in Run.deck.talents():
 		t.retaliate(self, attacker, amount, magic)  # Mana Reflector, Dark Barrier
-	for c in Run.held_cards():
+	for c in Run.deck.held_cards():
 		if c.has_tag(&"retaliate"):
-			deal_hit(attacker, Run.card_value(c.id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
+			deal_hit(attacker, Run.deck.card_value(c.id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
 			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 
@@ -584,7 +584,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 			Events.text_shown.emit(global_position + Vector2(0, -70), "Perfect dodge", Color(1.0, 0.9, 0.5))
 			Ring.spawn(room.ground_fx, global_position, 40.0, 0.3, Color(1.0, 0.9, 0.5, 0.9))
 		return
-	for t in Run.talents():
+	for t in Run.deck.talents():
 		if t.guard(self, magic):  # Guard blocks physical hits outright
 			return
 	if Run.rng.randf() < Run.evade_chance(accuracy):
@@ -605,7 +605,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 			Events.text_shown.emit(global_position + Vector2(0, -70), "Bunker broken", Color(0.9, 0.8, 0.6))
 		invulnerable_until = now() + 0.25
 		return
-	for t in Run.talents():
+	for t in Run.deck.talents():
 		amount = t.absorb(self, amount)  # Shield of Heaven takes the blow first
 	if amount <= 0:
 		invulnerable_until = now() + 0.25

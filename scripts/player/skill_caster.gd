@@ -1,6 +1,6 @@
 class_name SkillCaster
 extends Node
-## Casts the active skills in the player's three slots (Run.loadout): checks
+## Casts the active skills in the player's three slots (Run.deck.loadout): checks
 ## cooldowns and MP, creates the Skill from its card, and runs it while the
 ## player is in the SKILL state. Mages also cast their basic spell (Run.cls
 ## basic_skill) here, from the attack button, at no MP.
@@ -10,7 +10,7 @@ extends Node
 ## dropped; only a dash gets out, which cancels the spell and refunds its MP.
 
 ## Input actions for skill slots 1-3.
-## Slot 4 holds the sky-blue rune's borrowed skill (Run.rune).
+## Slot 4 holds the sky-blue rune's borrowed skill (Run.deck.rune).
 const SLOT_ACTIONS: Array[String] = ["skill", "skill_2", "skill_3", "skill_4"]
 ## Slot index used for the basic spell.
 const BASIC := 4
@@ -31,11 +31,11 @@ func card_in(slot: int) -> CardData:
 	var id: StringName = &""
 	if slot == BASIC:
 		return Run.cls.basic_skill if Run.cls else null
-	if slot < Run.loadout.size():
-		id = Run.loadout[slot]
-	elif Run.rune:
-		id = Run.rune.id
-	return Run.card(id) if id != &"" else null
+	if slot < Run.deck.loadout.size():
+		id = Run.deck.loadout[slot]
+	elif Run.deck.rune:
+		id = Run.deck.rune.id
+	return Run.deck.card(id) if id != &"" else null
 
 
 ## MP a cast of `card` at `level` costs (Bolster Ballad saves some).
@@ -85,7 +85,7 @@ func try_cast(slot: int) -> bool:
 		return false
 	if slot == BASIC and Run.in_bunker(player.now()):
 		return false
-	var level := maxi(Run.card_level(card.id), 1)
+	var level := maxi(Run.deck.card_level(card.id), 1)
 	var blocked := charm_block(card, level, slot)
 	if blocked != "":
 		Events.text_shown.emit(player.global_position + Vector2(0, -70), blocked, Color(1.0, 0.7, 0.5))
@@ -98,7 +98,7 @@ func try_cast(slot: int) -> bool:
 		Events.mp_short.emit()
 		return false
 	Run.purse.spend_galder(galder_cost(card, level))
-	for t in Run.talents():
+	for t in Run.deck.talents():
 		t.on_cast(card, level, slot)  # Blood Testament: spells cost health too
 	var skill: Skill = card.behavior.new()
 	skill.card = card

@@ -54,8 +54,8 @@ func _go() -> void:
 	await get_tree().create_timer(0.08).timeout
 	await _snap("dash")
 	await get_tree().create_timer(0.6).timeout
-	Run.cards[&"power_shot"] = 1
-	Run.loadout[0] = &"power_shot"
+	Run.deck.cards[&"power_shot"] = 1
+	Run.deck.loadout[0] = &"power_shot"
 	Run.mp = Run.max_mp
 	p.skills.slot_ready_at[0] = 0.0
 	p.skills.try_cast(0)

@@ -181,6 +181,6 @@ func _shoot_desert() -> void:
 		if depth == Run.route.regions[0].run_length + 1:
 			for i in Run.echoes.size():
 				game.room.spawn(Run.echoes[i].id, game.player.global_position + Vector2(-120 + 120 * i, -60))
-			Run.take_rune(Run.echoes[0].runes[0])
+			Run.deck.take_rune(Run.echoes[0].runes[0])
 			await _wait(1.0)
 			await _snap("21_echoes")

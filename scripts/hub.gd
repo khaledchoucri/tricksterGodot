@@ -394,24 +394,24 @@ func _mastery_menu(npc: Npc) -> void:
 	while true:
 		var cards: Array[CardData] = []
 		var options: Array = []
-		for c in Run.all_cards():
+		for c in Run.deck.all_cards():
 			if c.master_material == null:
 				continue
 			cards.append(c)
 			var lvl := int(Profile.mastery.get(String(c.id), 0))
-			var maxed := lvl >= Run.MAX_MASTERY
-			var cost := Run.mastery_cost(c)
+			var maxed := lvl >= Run.deck.MAX_MASTERY
+			var cost := Run.deck.mastery_cost(c)
 			var have := int(Profile.materials.get(String(cost.material.id), 0))
-			options.append({"title": "%s  ·  cap Lv %d%s" % [c.display_name, Run.card_cap(c.id), "" if maxed else " → %d" % (Run.card_cap(c.id) + 1)],
+			options.append({"title": "%s  ·  cap Lv %d%s" % [c.display_name, Run.deck.card_cap(c.id), "" if maxed else " → %d" % (Run.deck.card_cap(c.id) + 1)],
 				"tag": "Mastered" if maxed else "%d %s (%d)  ·  %d G" % [cost.count, cost.material.display_name, have, cost.galder],
-				"icon": cost.material.icon(), "text": c.describe(Run.card_cap(c.id)), "disabled": not Run.can_master(c)})
+				"icon": cost.material.icon(), "text": c.describe(Run.deck.card_cap(c.id)), "disabled": not Run.deck.can_master(c)})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder banked." % Profile.galder})
 		var pick := await dialogue.choose(_line(String(npc.data.id), "Which technique do you want to take further?"), options)
 		if pick < 0 or pick >= cards.size():
 			return
-		Run.master_card(cards[pick])
+		Run.deck.master_card(cards[pick])
 		Audio.play("ui_unique_get.wav", -4.0)
-		hud.log_line("[System] %s can now reach Lv %d." % [cards[pick].display_name, Run.card_cap(cards[pick].id)], Color("e0b54d"))
+		hud.log_line("[System] %s can now reach Lv %d." % [cards[pick].display_name, Run.deck.card_cap(cards[pick].id)], Color("e0b54d"))
 
 
 ## Marx refines stored items with banked Galder and Bronze Fragments.

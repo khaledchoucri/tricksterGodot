@@ -67,9 +67,9 @@ func _types_text(types: Array) -> String:
 func _skills_text() -> String:
 	var lines: PackedStringArray = []
 	lines.append("[font_size=18]Skills[/font_size]")
-	for id: StringName in Run.cards:
-		var card := Run.card(id)
-		lines.append("  %s  Lv %d%s" % [card.display_name, Run.cards[id], "" if card.is_skill() else "  [color=#9fb2c0](talent)[/color]"])
+	for id: StringName in Run.deck.cards:
+		var card := Run.deck.card(id)
+		lines.append("  %s  Lv %d%s" % [card.display_name, Run.deck.cards[id], "" if card.is_skill() else "  [color=#9fb2c0](talent)[/color]"])
 	for j in Run.jobs:
 		if j.passive != &"":
 			lines.append("  [color=#e0b54d]%s[/color]  [color=#9fb2c0]%s[/color]" % [j.passive_name, j.passive_text])

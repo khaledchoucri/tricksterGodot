@@ -147,10 +147,10 @@ func _one_run(index: int) -> void:
 			gear.append(Run.gear.equipped(k).title())
 	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.route.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
-		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
+		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.deck.cards.duplicate(), "rooms": _room_log.duplicate(),
 		"ore": Run.purse.ore, "galder": Run.purse.galder, "around": killers, "materials": Run.purse.materials.duplicate(),
-		"rune": Run.rune.display_name if Run.rune else "", "casts": _casts.duplicate(), "refused": _refused.duplicate(),
-		"loadout": Run.loadout.duplicate()}
+		"rune": Run.deck.rune.display_name if Run.deck.rune else "", "casts": _casts.duplicate(), "refused": _refused.duplicate(),
+		"loadout": Run.deck.loadout.duplicate()}
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
@@ -250,11 +250,11 @@ func _fight(player: Player, delta: float) -> void:
 				return
 	# Skills when they're ready and something is close.
 	for i in SkillCaster.SLOT_ACTIONS.size():
-		var id: StringName = Run.loadout[i] if i < Run.loadout.size() else (Run.rune.id if Run.rune else &"")
+		var id: StringName = Run.deck.loadout[i] if i < Run.deck.loadout.size() else (Run.deck.rune.id if Run.deck.rune else &"")
 		if id == &"clinch_release" or (id == &"chakra_balance" and Run.hp > Run.max_hp * 0.6):
 			continue  # Clinch Release is for staggers; Chakra Balance for when hurt
 		if id != &"" and best < (200.0 if Run.cls.basic_skill else 140.0) and player.now() >= player.skills.slot_ready_at[i] \
-				and Run.mp >= Run.card(id).mp_at(Run.card_level(id)):
+				and Run.mp >= Run.deck.card(id).mp_at(Run.deck.card_level(id)):
 			player.buffer_action(SkillCaster.SLOT_ACTIONS[i])
 			_release()
 			return
@@ -348,10 +348,10 @@ func _choose() -> void:
 		"card":
 			pick = bot_rng.randi() % opts.size()
 			for i in opts.size():
-				if opts[i].is_skill() and Run.free_slot() >= 0:
+				if opts[i].is_skill() and Run.deck.free_slot() >= 0:
 					pick = i
 			for i in opts.size():
-				if Run._grows_basic(opts[i]):
+				if Run.deck.grows_basic(opts[i]):
 					pick = i  # a mage grows its main weapon first
 		"replace":
 			# Make room for the new job's skills by dropping the lowest-level one.
@@ -359,7 +359,7 @@ func _choose() -> void:
 			if game._pending_skill in Run.job.cards:
 				var low := 99
 				for i in opts.size() - 1:
-					var lvl := Run.card_level(Run.loadout[opts[i]])
+					var lvl := Run.deck.card_level(Run.deck.loadout[opts[i]])
 					if lvl < low:
 						low = lvl
 						pick = i
@@ -446,10 +446,10 @@ func _score(g: GearItem) -> float:
 ## mastery, as a player would.
 func _city_craft() -> void:
 	if Run.system_on(&"mastery"):
-		for c in Run.all_cards():
-			if c.master_material and Run.can_master(c):
-				Run.master_card(c)
-				print("   mastered %s (cap %d)" % [c.display_name, Run.card_cap(c.id)])
+		for c in Run.deck.all_cards():
+			if c.master_material and Run.deck.can_master(c):
+				Run.deck.master_card(c)
+				print("   mastered %s (cap %d)" % [c.display_name, Run.deck.card_cap(c.id)])
 	var h := Profile.heirloom
 	if h < 0 or not Run.system_on(&"warehouse"):
 		return
@@ -581,16 +581,16 @@ func _report() -> void:
 ## when it's out of reach, and cast the basic spell in between.
 func _kite(player: Player, target: Enemy, best: float, delta: float) -> void:
 	var room: Room = game.room
-	var reach := Run.cls.basic_skill.param("range", maxi(Run.card_level(Run.cls.basic_skill.id), 1)) * 0.85
+	var reach := Run.cls.basic_skill.param("range", maxi(Run.deck.card_level(Run.cls.basic_skill.id), 1)) * 0.85
 	var gunner := player.gun.has_gun()
 	if gunner:
 		reach = player.gun.range() * 0.85
 		# Without Quick Reload the gun reloads only standing still (the
 		# client's rule): such a gunner stands its ground through the reload.
-		if not player.gun.loaded() and best <= reach and Run.card_level(&"quick_reload") <= 0:
+		if not player.gun.loaded() and best <= reach and Run.deck.card_level(&"quick_reload") <= 0:
 			_release()
 			return
-	if best < 95.0 and not (gunner and Run.card_level(&"quick_reload") <= 0):
+	if best < 95.0 and not (gunner and Run.deck.card_level(&"quick_reload") <= 0):
 		var away := (player.global_position - target.global_position).normalized()
 		for turn: float in [0.0, 0.7, -0.7, 1.4, -1.4]:
 			var dir := away.rotated(turn)

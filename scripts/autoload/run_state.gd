@@ -15,6 +15,9 @@ var purse := RunPurse.new()
 ## Your gear (Run.gear): what's equipped, refining and compounding it, its weight, guns and the shop.
 var gear := RunGear.new()
 
+## Your cards (Run.deck): every card the game knows, the ones you hold, offers and talents.
+var deck := RunDeck.new()
+
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
 	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
@@ -22,10 +25,6 @@ const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://da
 	"res://data/classes/cat.tres", "res://data/classes/raccoon.tres"]
 const ITEMS_DIR := "res://data/items/"
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
-const MAX_CARD_LEVEL := 5
-## Master Louis raises a card's cap this many times at most.
-const MAX_MASTERY := 3
-const SLOTS := 3
 ## Guard (1107): blocks left, and when the next spent one returns.
 var guard_blocks := 0
 var guard_back_at := 0.0
@@ -68,12 +67,6 @@ var job: JobData
 var jobs: Array[JobData] = []
 ## Type points the player chose (count toward traits).
 var type_points := {"power": 0, "magic": 0, "sense": 0, "charm": 0}
-var cards: Dictionary = {}  # StringName card id -> level
-## Skill card ids in slots 1-3 (RMB, Q, E); &"" is an empty slot.
-var loadout: Array[StringName] = [&"", &"", &""]
-## The sky-blue rune's borrowed skill (slot 4, key F) and its level.
-var rune: CardData
-var rune_level := 0
 var echoes: Array[EnemyData] = []
 var kills := 0
 var time := 0.0
@@ -115,42 +108,19 @@ func _ready() -> void:
 	for p in CLASS_PATHS:
 		classes.append(load(p))
 	cls = classes[0]
-	_index_cards()
+	deck.index_cards()
 	_load_items()
 	for p in ECHO_PATHS:
 		var e: EnemyData = load(p)
 		echoes.append(e)
 		for c in e.runes:
-			_cards[c.id] = c
+			deck.registry[c.id] = c
 	if FileAccess.file_exists(MONSTERS_PATH):
 		monster_data = JSON.parse_string(FileAccess.get_file_as_string(MONSTERS_PATH))
-	for c: CardData in _cards.values():
+	for c: CardData in deck.registry.values():
 		for key: String in c.mods:
 			if not Mod.is_key(key):
 				push_error("%s: unknown mod key %s (see scripts/data/mod.gd)" % [c.resource_path, key])
-
-
-var _cards: Dictionary = {}  # card id -> CardData, from every region and job
-
-
-func _index_cards() -> void:
-	for r in route.regions:
-		for c in r.cards:
-			_cards[c.id] = c
-	var jobs_left: Array[JobData] = []
-	for c in classes:
-		jobs_left.append(c.start_job)
-	while not jobs_left.is_empty():
-		var j: JobData = jobs_left.pop_back()
-		for c in j.cards:
-			_cards[c.id] = c
-		if j.starter:
-			_cards[j.starter.id] = j.starter
-		jobs_left.append_array(j.next_jobs)
-
-
-func card(id: StringName) -> CardData:
-	return _cards.get(id)
 
 
 ## An enemy from any region (or an Echo).
@@ -203,7 +173,7 @@ func trickster_trees() -> Array[JobData]:
 		var j: JobData = load(p)
 		out.append(j)
 		for c in j.cards:
-			_cards[c.id] = c
+			deck.registry[c.id] = c
 	return out
 
 
@@ -273,7 +243,7 @@ func new_run(with_seed := -1) -> void:
 	run_seed = with_seed if with_seed >= 0 else next_seed if next_seed >= 0 else randi()  # the global RNG picks a seed
 	next_seed = -1
 	rng.seed = run_seed
-	_talents.clear()
+	deck.clear_talents()
 	hidden = false
 	hidden_until = 0.0
 	bunker_until = 0.0
@@ -283,13 +253,13 @@ func new_run(with_seed := -1) -> void:
 	level = 1
 	xp = 0
 	type_points = {"power": 0, "magic": 0, "sense": 0, "charm": 0}
-	cards = {}
-	loadout = [&"", &"", &""]
+	deck.cards = {}
+	deck.loadout = [&"", &"", &""]
 	jobs.clear()
 	gear.equipment = {"weapon": GearItem.make(cls.start_weapon)}
 	purse.ore = 0
-	rune = null
-	rune_level = 0
+	deck.rune = null
+	deck.rune_level = 0
 	purse.materials = {}
 	purse.galder = 0
 	purse.tm = 0
@@ -317,8 +287,8 @@ func new_run(with_seed := -1) -> void:
 	_stats.clear()
 	start_job(cls.start_job)
 	for id in cls.start_cards:
-		if card_level(id) == 0:
-			add_card(id)
+		if deck.card_level(id) == 0:
+			deck.add_card(id)
 	_carry_heirloom()
 	_apply_restorations()
 	stats_changed()
@@ -404,11 +374,11 @@ func _apply_restorations() -> void:
 				revives += lvl
 			"second_skill":
 				var pool: Array[StringName] = []
-				for c in card_pool():
-					if c.is_skill() and can_learn(c):
+				for c in deck.card_pool():
+					if c.is_skill() and deck.can_learn(c):
 						pool.append(c.id)
 				if pool.size() > 0:
-					add_card(pool[rng.randi() % pool.size()])
+					deck.add_card(pool[rng.randi() % pool.size()])
 
 
 ## Whether a city restoration has switched a system on (smithing, jobs,
@@ -437,7 +407,7 @@ func room_mp_bonus() -> int:
 func try_revive() -> bool:
 	if ServerSettings.hardcore():
 		return false
-	for t in talents():
+	for t in deck.talents():
 		if t.revive():  # Revival: light brings you back, on its own cooldown
 			return true
 	if revives > 0:
@@ -574,16 +544,6 @@ func echo_here() -> EnemyData:
 	return echoes[rng.randi() % echoes.size()]
 
 
-## Takes a sky-blue rune: its skill goes in slot 4, stronger in later regions.
-func take_rune(c: CardData) -> void:
-	rune = c
-	rune_level = 1 + 2 * route.region_index()
-	for e in echoes:
-		if c in e.runes:
-			Profile.stats["runes_" + String(e.id)] = int(Profile.stats.get("runes_" + String(e.id), 0)) + 1
-			Profile.save()
-
-
 # ---------------------------------------------------------------- stats
 
 ## A stat's total: class base, automatic growth along the class's type
@@ -627,9 +587,9 @@ func _compute_stats() -> void:
 func _form_stats(s: Dictionary) -> void:
 	if form == &"":
 		return
-	var shape := card(form)
+	var shape := deck.card(form)
 	var c := _form_rows()
-	var lvl := maxi(card_level(c.id), 1)
+	var lvl := maxi(deck.card_level(c.id), 1)
 	var gain := c.value_at(lvl) / 100.0
 	var loss := c.param("loss", lvl) / 100.0
 	for k: String in shape.form_gains:
@@ -642,10 +602,10 @@ func _form_stats(s: Dictionary) -> void:
 ## Instinct sharpens Evolution), else the form card itself.
 func _form_rows() -> CardData:
 	if instinct:
-		for c in held_cards():
+		for c in deck.held_cards():
 			if c.has_tag(&"instinct") and c.form == form:
 				return c
-	return card(form)
+	return deck.card(form)
 
 
 ## Attack speed in a beast form: the table's DX change, 8% a point (the
@@ -654,7 +614,7 @@ func form_speed_mult() -> float:
 	if form == &"":
 		return 1.0
 	var c := _form_rows()
-	var dx := c.param("dx", maxi(card_level(c.id), 1))
+	var dx := c.param("dx", maxi(deck.card_level(c.id), 1))
 	return maxf(0.5, 1.0 + 0.08 * dx)
 
 
@@ -735,8 +695,8 @@ func start_job(j: JobData) -> void:
 	jobs.append(j)
 	if jobs.size() > 1:
 		pending_levels += int(mod("job_change_points"))  # the Job Cloak's free type point
-	if j.starter and card_level(j.starter.id) == 0:
-		add_card(j.starter.id)
+	if j.starter and deck.card_level(j.starter.id) == 0:
+		deck.add_card(j.starter.id)
 	stats_changed()
 
 
@@ -747,7 +707,7 @@ func start_job(j: JobData) -> void:
 func form_allows(id: StringName, as_form := form) -> bool:
 	if as_form == &"":
 		return true
-	var need: StringName = card(id).form if card(id) else &""
+	var need: StringName = deck.card(id).form if deck.card(id) else &""
 	return need == &"beast" or (need != &"" and need == as_form)
 
 
@@ -755,8 +715,8 @@ func form_allows(id: StringName, as_form := form) -> bool:
 ## a beast skill outside its form, or another skill in a beast.
 func form_block(id: StringName) -> String:
 	if not form_allows(id):
-		return "Not in %s" % card(form).display_name
-	var need: StringName = card(id).form if card(id) else &""
+		return "Not in %s" % deck.card(form).display_name
+	var need: StringName = deck.card(id).form if deck.card(id) else &""
 	if need != &"" and (form == &"" or (need != &"beast" and form != need)):
 		return "Beast form only"
 	return ""
@@ -764,7 +724,7 @@ func form_block(id: StringName) -> String:
 
 func actor() -> String:
 	if form != &"":
-		return card(form).form_actor  # the client's ESAWildMutation loads trs001, ESAWildChange trs002
+		return deck.card(form).form_actor  # the client's ESAWildMutation loads trs001, ESAWildChange trs002
 	for i in range(jobs.size() - 1, -1, -1):
 		if jobs[i].actor != "":
 			return jobs[i].actor
@@ -786,148 +746,6 @@ func has_passive(id: StringName) -> bool:
 		if j.passive == id:
 			return true
 	return false
-
-
-## Cards the jobs taken so far can offer.
-func card_pool() -> Array[CardData]:
-	var out: Array[CardData] = []
-	for j in jobs:
-		for c in j.cards:
-			if not c in out:
-				out.append(c)
-	return out
-
-
-## Prerequisites count a skill as known at its level while you have it, or
-## an advanced form of it (Tempest Strike still counts as Lacerator).
-func requirements_met(card: CardData) -> bool:
-	for id: StringName in card.requires:
-		# A class can stand its own basic spell in for another (Sheep's Mana
-		# Ring where the original asks for Mana Arrow).
-		var need: StringName = cls.swap_requires.get(id, id) if cls else id
-		if known_level(need) < int(card.requires[id]):
-			return false
-	return true
-
-
-## A card's level, or that of the advanced form that replaced it.
-func known_level(id: StringName) -> int:
-	if card_level(id) > 0:
-		return card_level(id)
-	for owned: StringName in cards:
-		var c := card(owned)
-		var base := c.upgrades if c else &""
-		while base != &"":
-			if base == id:
-				return cards[owned]
-			base = card(base).upgrades if card(base) else &""
-	return 0
-
-
-## Whether a card can be offered as new: not known, prerequisites met, and
-## for an advanced form, its base skill is in hand.
-func can_learn(c: CardData) -> bool:
-	if card_level(c.id) > 0 or not requirements_met(c):
-		return false
-	if cls and c.id in cls.excluded_cards:
-		return false
-	# A beast is offered only the skills it can use.
-	if c.is_skill() and not form_allows(c.id):
-		return false
-	if not c.jobs.is_empty() and job and job.id != &"trickster" and not job.id in c.jobs:
-		return false
-	for other: StringName in c.excludes:
-		if card_level(other) > 0:
-			return false
-	return c.upgrades == &"" or card_level(c.upgrades) > 0
-
-
-## Learns a card or raises its level. A new skill goes in the first free
-## slot, or in `slot` when given (replacing what was there). An advanced form
-## replaces its base skill: it takes the base's slot and level, and the base
-## is forgotten (in Trickster both are kept, the new one from Lv 1; with a
-## single slot to fill here, a Lv 1 upgrade would be a step down).
-func add_card(id: StringName, slot := -1) -> void:
-	var is_new := card_level(id) == 0
-	var c := card(id)
-	if is_new and c.upgrades != &"" and card_level(c.upgrades) > 0:
-		var at := loadout.find(c.upgrades)
-		var base_level := card_level(c.upgrades)
-		cards.erase(c.upgrades)
-		cards[id] = mini(base_level, card_cap(id))
-		if at >= 0:
-			loadout[at] = id
-		stats_changed()
-		return
-	cards[id] = mini(card_level(id) + 1, card_cap(id))
-	if c.form_actor != "":
-		form = id
-		instinct = false
-	stats_changed()
-	if not is_new or not c.is_skill() or is_basic(id):
-		return
-	if slot < 0:
-		slot = loadout.find(&"")
-	if slot >= 0:
-		var old := loadout[slot]
-		if old != &"":
-			cards.erase(old)
-		loadout[slot] = id
-
-
-## Whether a card is the class's basic spell (cast from the attack button,
-## never put in a slot).
-func is_basic(id: StringName) -> bool:
-	return cls != null and cls.basic_skill != null and cls.basic_skill.id == id
-
-
-func free_slot() -> int:
-	return loadout.find(&"")
-
-
-## A card's level cap: 5 (or the original's cap when lower), plus its
-## master levels.
-func card_cap(id: StringName) -> int:
-	var c := card(id)
-	if c and c.max_level > 0:
-		return c.max_level
-	return MAX_CARD_LEVEL + int(Profile.mastery.get(String(id), 0))
-
-
-## What the next master level of a card costs: materials and Galder.
-func mastery_cost(c: CardData) -> Dictionary:
-	var lvl := int(Profile.mastery.get(String(c.id), 0)) + 1
-	return {"material": c.master_material, "count": 6 * lvl, "galder": 500 * lvl}
-
-
-func can_master(c: CardData) -> bool:
-	if c.master_material == null or c.max_level > 0 or int(Profile.mastery.get(String(c.id), 0)) >= MAX_MASTERY:
-		return false
-	var cost := mastery_cost(c)
-	return int(Profile.materials.get(String(cost.material.id), 0)) >= cost.count and Profile.galder >= cost.galder
-
-
-func master_card(c: CardData) -> void:
-	var cost := mastery_cost(c)
-	Profile.materials[String(cost.material.id)] = int(Profile.materials.get(String(cost.material.id), 0)) - cost.count
-	Profile.galder -= cost.galder
-	Profile.mastery[String(c.id)] = int(Profile.mastery.get(String(c.id), 0)) + 1
-	Profile.save()
-
-
-## Every card in the game (for the Skill Master's list).
-func all_cards() -> Array[CardData]:
-	var out: Array[CardData] = []
-	for c: CardData in _cards.values():
-		out.append(c)
-	out.sort_custom(func(a: CardData, b: CardData) -> bool: return a.display_name < b.display_name)
-	return out
-
-
-func card_level(id: StringName) -> int:
-	if rune and id == rune.id:
-		return rune_level
-	return cards.get(id, 0)
 
 
 ## The sum of `key` (a Mod key) over everything held: cards at their level, then job
@@ -952,55 +770,20 @@ func mod_factor(key: String, cut := false, start := 1.0) -> float:
 ## upgrades, at its own level (a Blessing keeps its Shield's resistance).
 func _card_mod(c: CardData, key: String, level: int) -> float:
 	if c.mods[key] == "base":
-		return card(c.upgrades).value_at(level)
+		return deck.card(c.upgrades).value_at(level)
 	return c.mod_at(key, level)
-
-
-## The cards held now (a borrowed rune too), in skill-id order: the order the original's
-## tables list them, so effects that stack apply in a fixed order.
-func held_cards() -> Array[CardData]:
-	var out: Array[CardData] = []
-	for id: StringName in cards:
-		if card_level(id) > 0 and card(id):
-			out.append(card(id))
-	if rune and not cards.has(rune.id):
-		out.append(rune)
-	out.sort_custom(func(a: CardData, b: CardData) -> bool: return a.skill_id < b.skill_id)
-	return out
-
-
-## The held talents' behaviours (Talent), one per card for the run, in skill-id order.
-func talents() -> Array[Talent]:
-	var out: Array[Talent] = []
-	for c in held_cards():
-		if c.talent == null:
-			continue
-		if not _talents.has(c.id):
-			var t: Talent = c.talent.new()
-			t.card = c
-			_talents[c.id] = t
-		out.append(_talents[c.id])
-	return out
-
-
-var _talents: Dictionary = {}  # card id -> Talent, for this run
-
-
-## Whether any held card has `tag`.
-func holds_tag(tag: StringName) -> bool:
-	return held_cards().any(func(c: CardData) -> bool: return c.has_tag(tag))
 
 
 ## Every held source's amount for `key`, in the order mod() documents.
 func _mod_values(key: String) -> Array[float]:
 	assert(Mod.is_key(key), "not a Mod key: " + key)
 	var out: Array[float] = []
-	for id: StringName in cards:
-		var c := card(id)
+	for id: StringName in deck.cards:
+		var c := deck.card(id)
 		if c and c.mods.has(key):
-			out.append(_card_mod(c, key, card_level(id)))
-	if rune and not cards.has(rune.id) and rune.mods.has(key):
-		out.append(_card_mod(rune, key, rune_level))
+			out.append(_card_mod(c, key, deck.card_level(id)))
+	if deck.rune and not deck.cards.has(deck.rune.id) and deck.rune.mods.has(key):
+		out.append(_card_mod(deck.rune, key, deck.rune_level))
 	for j in jobs:
 		if j.passive_mods.has(key):
 			out.append(j.passive_mods[key])
@@ -1013,58 +796,6 @@ func _mod_values(key: String) -> Array[float]:
 		if w.mods.has(key):
 			out.append(w.mods[key])
 	return out
-
-
-func card_value(id: StringName) -> float:
-	var c := card(id)
-	return c.value_at(card_level(id)) if c else 0.0
-
-
-## Up to `n` card offers from the current jobs' trees (or only `from_job`'s):
-## new cards whose prerequisites are met, or upgrades of owned ones when
-## `upgrade` is true. New-card offers lean on skills: at least two of three
-## while there are skills left to learn.
-func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardData]:
-	var skills: Array[CardData] = []
-	var talents: Array[CardData] = []
-	for c in (from_job.cards if from_job else card_pool()):
-		var lvl := card_level(c.id)
-		# Training can also teach what grows the basic spell (Arrow Rush).
-		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or ((not upgrade or _grows_basic(c)) and can_learn(c)):
-			(skills if c.is_skill() else talents).append(c)
-	shuffle(skills)
-	shuffle(talents)
-	var out: Array[CardData] = []
-	# A mage's basic spell is its main weapon: its level-ups and the cards that
-	# grow it (Arrow Rush, Mana Ring Booster) are always among the offers.
-	for c: CardData in skills + talents:
-		if out.size() < n and _grows_basic(c):
-			out.append(c)
-			skills.erase(c)
-			talents.erase(c)
-	if upgrade:
-		var rest := skills + talents
-		shuffle(rest)
-		out.append_array(rest.slice(0, n - out.size()))
-		shuffle(out)
-		return out
-	var want_skills := mini(skills.size(), maxi(n - 1 - out.size(), 0) if talents.size() > 0 else n - out.size())
-	out.append_array(skills.slice(0, want_skills))
-	out.append_array(talents.slice(0, n - out.size()))
-	out.append_array(skills.slice(want_skills, want_skills + n - out.size()))
-	shuffle(out)
-	return out
-
-
-## The class's basic spell, or a talent that improves it.
-func _grows_basic(c: CardData) -> bool:
-	if cls == null or cls.basic_skill == null:
-		return false
-	# The gun's own talents grow a gunner's basic shot, so they're offered like the cards
-	# that build on a basic skill.
-	if cls.basic_skill.has_tag(&"gun") and c.has_tag(&"grows_gun"):
-		return true
-	return c.id == cls.basic_skill.id or (not c.is_skill() and c.requires.has(cls.basic_skill.id))
 
 
 # ---------------------------------------------------------------- equipment
@@ -1128,7 +859,7 @@ func dig_rewards(depth_reached: int) -> Dictionary:
 ## lower HP gets, up to double at 0).
 func _berserk_mult() -> float:
 	var m := 1.0 + mod("damage%") / 100.0
-	for t in talents():
+	for t in deck.talents():
 		m = t.adjust(&"damage", m)
 	return m
 
@@ -1248,7 +979,7 @@ func gun_shot_mult() -> float:
 ## Extra power-shot damage, %: Keen Sense's mod, or what Sharp Sense makes of it.
 func power_shot_bonus() -> float:
 	var b := mod("power_shot%")
-	for t in talents():
+	for t in deck.talents():
 		b = t.adjust(&"power_shot%", b)
 	return b
 
@@ -1294,10 +1025,10 @@ func dash_cooldown_mult() -> float:
 ## Entrancing Wink's silence (no magic) for their value in seconds.
 func hit_debuffs() -> Dictionary:
 	var out := {}
-	for c in held_cards():
+	for c in deck.held_cards():
 		if c.inflicts == "":
 			continue
-		var lvl := card_level(c.id)
+		var lvl := deck.card_level(c.id)
 		out[c.inflicts] = [c.value_at(lvl), c.param("seconds", lvl)] if c.table.has("seconds") else [1.0, c.value_at(lvl)]
 	return out
 

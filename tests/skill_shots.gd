@@ -41,7 +41,7 @@ func _shoot() -> void:
 	await _wait(1.6)
 	var line := "magic" if Run.cls.basic_skill else "charm" if Run.cls.id in [&"cat", &"raccoon"] else "power"
 	var ids: Array[StringName] = []
-	for c in Run.all_cards():
+	for c in Run.deck.all_cards():
 		if c.is_skill() and c.resource_path.begins_with("res://data/skills/%s/" % line):
 			ids.append(c.id)
 	var home: Vector2 = game.room.random_spot(Vector2.ZERO, 0.0)
@@ -66,32 +66,32 @@ func _shoot() -> void:
 				dummies[k].max_hp = 99999
 				dummies[k].hp = 99999
 				dummies[k].global_position = home + [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)][k]
-		Run.cards[id] = 3
-		Run.loadout[0] = id
+		Run.deck.cards[id] = 3
+		Run.deck.loadout[0] = id
 		p.end_instinct()
 		Run.form = &""
 		# The Charm line's conditions: Galder in the purse, the beast form a
 		# beast skill needs, full HP for Mass Destruction.
 		Run.purse.galder = 999
 		Run.hp = Run.max_hp
-		if Run.card(id).form != &"":
-			var need: StringName = Run.card(id).form
+		if Run.deck.card(id).form != &"":
+			var need: StringName = Run.deck.card(id).form
 			need = need if need != &"beast" else &"metamorphosis"
-			Run.cards[need] = 3
-			Run.add_card(need)
+			Run.deck.cards[need] = 3
+			Run.deck.add_card(need)
 			p.become_beast()
 			await _wait(0.3)
 		Run.mp = Run.max_mp
 		p.skills.slot_ready_at[0] = 0.0
 		p.skills.try_cast(0)
-		var cast_time := Run.card(id).cast_at(3)
+		var cast_time := Run.deck.card(id).cast_at(3)
 		if i == 0 and cast_time > 0.0:
 			await _wait(cast_time * 0.6)
 			await _snap("00_casting")
 			await _wait(cast_time * 0.4)
 		else:
 			await _wait(cast_time)
-		if Run.is_basic(id):
+		if Run.deck.is_basic(id):
 			await _wait(0.06)
 			await _snap("%02d_%s_flight" % [i, id])  # the projectile on its way
 			await _wait(0.14)
@@ -101,12 +101,12 @@ func _shoot() -> void:
 		await _wait(1.0)
 	# A pick offering an upgrade.
 	if line == "magic":
-		Run.cards = {&"water_shield": 3, Run.cls.basic_skill.id: 1}
-		game._start_pick("card", [Run.card(&"undines_blessing"), Run.card(&"seal_of_fire"), Run.card(&"mist_of_mana")])
+		Run.deck.cards = {&"water_shield": 3, Run.cls.basic_skill.id: 1}
+		game._start_pick("card", [Run.deck.card(&"undines_blessing"), Run.deck.card(&"seal_of_fire"), Run.deck.card(&"mist_of_mana")])
 	else:
-		Run.cards = {&"lacerator": 3}
-		Run.loadout.assign([&"lacerator", &"", &""])
-		game._start_pick("card", [Run.card(&"tempest_strike"), Run.card(&"tidal_slash"), Run.card(&"pumping_heart")])
+		Run.deck.cards = {&"lacerator": 3}
+		Run.deck.loadout.assign([&"lacerator", &"", &""])
+		game._start_pick("card", [Run.deck.card(&"tempest_strike"), Run.deck.card(&"tidal_slash"), Run.deck.card(&"pumping_heart")])
 	await _wait(0.3)
 	await _snap("90_upgrade_pick")
 	get_tree().quit()

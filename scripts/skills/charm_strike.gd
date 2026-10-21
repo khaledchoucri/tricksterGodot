@@ -98,7 +98,7 @@ func _strike(amount: float, knock: float, fx: Dictionary, up := false) -> void:
 ## 2 Hit Combo's hits grow with the skill they come from: x (0.2 x its
 ## original level + 1), against level 1's 1.2.
 func _two_hit(id: StringName) -> float:
-	var lvl := Run.card_level(id)
+	var lvl := Run.deck.card_level(id)
 	if lvl <= 0:
 		return 1.0
 	return (0.2 * LEVELS[mini(lvl, LEVELS.size()) - 1] + 1.0) / 1.2
