@@ -10,7 +10,8 @@ fixed in the same change or tracked in "Known debt" below.
 |---|---|---|
 | `data/**/*.tres` (Resources) | numbers, names, prerequisites, tags, effects | logic |
 | `tools/*.py` generators | turning the original tables into `data/` | hand-tuned one-offs; put an override in the generator's SPEC |
-| `scripts/autoload/run_state.gd` (`Run`) | the run's state, behind a small public interface | new feature logic (that goes in a module, see 2) |
+| `scripts/autoload/run_state.gd` (`Run`) | the character: class, job, level, HP/MP, form, stats, traits, mods | anything a module owns |
+| `scripts/autoload/run_*.gd` (`Run.route`, `.deck`, `.gear`, `.purse`, `.formulas`, `.city`) | the rest of the run, one concern each | forwarding functions on `Run`: callers name the module |
 | `scripts/autoload/profile.gd` | what persists between runs | run-only state |
 | `scripts/autoload/events.gd` | the signal bus and game clock | state |
 | `scripts/skills/*.gd` | what one skill *does* when cast | stat bonuses or another card's rules |
@@ -104,8 +105,6 @@ if card.has_tag(&"galder"): ...
 
 Pay these down when you're working near them, and remove each line when it's fixed.
 
-- `run_state.gd` is about 1,700 lines and does too much: stats, cards and offers, the economy, gear, the room
-  plan and formulas. Split it into modules behind `Run`.
 - Enemy attack patterns are five consts in `Enemy.KINDS`.
 - 35 literal `res://original_assets/` paths in 23 scripts.
 - `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and

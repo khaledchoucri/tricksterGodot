@@ -1,28 +1,17 @@
 extends Node
-## Everything that belongs to the current run (autoloaded as `Run`): the
-## class and its current job, levels and type points, the twelve stats they
-## produce with gear, skill cards, equipment and run materials. A rollback
-## (death) or a cleared run resets it; the Profile banks what carries over.
+## The current run (autoloaded as `Run`): the character (class, job, level, HP and MP, form,
+## type points, the twelve stats and the mods that shape them) and the modules that hold the
+## rest. A rollback (death) or a cleared run resets it; the Profile banks what carries over.
+##
+## The modules (callers name them: Run.deck.card_level(id), never a forwarding function):
+##  - route: the regions, the room plan and how deep you are
+##  - deck: every card the game knows and the ones you hold, the loadout, offers, talents
+##  - gear: equipment, refining, compounding, weight, guns, the shop and the item list
+##  - purse: Galder, ore, TM, shards, materials, and what kills and digs bring
+##  - formulas: your damage, defence, speed and crits, and the monster curve
+##  - city: what the run takes from Megalopolis and gives back
 
 signal leveled_up(new_level: int)
-
-## The run's route (Run.route): the regions it crosses, the planned rooms and how deep you are.
-var route := RunRoute.new()
-
-## What the run carries (Run.purse): Galder, ore, TM, shards and monster materials.
-var purse := RunPurse.new()
-
-## Your gear (Run.gear): what's equipped, refining and compounding it, its weight, guns and the shop.
-var gear := RunGear.new()
-
-## Your cards (Run.deck): every card the game knows, the ones you hold, offers and talents.
-var deck := RunDeck.new()
-
-## The run's numbers (Run.formulas): your damage, defence, speed, guns and crits against the
-var formulas := RunFormulas.new()
-
-## What a run takes from Megalopolis and gives back (Run.city): the restorations' systems and
-var city := RunCity.new()
 
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
@@ -30,6 +19,17 @@ const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://da
 	"res://data/classes/fox.tres", "res://data/classes/lion.tres",
 	"res://data/classes/cat.tres", "res://data/classes/raccoon.tres"]
 const MONSTERS_PATH := "res://original_assets/data/monsters.json"
+## Echoes of other classes that can haunt elite rooms after the first clear.
+const ECHO_PATHS: Array[String] = ["res://data/echoes/echo_bard.tres", "res://data/echoes/echo_explorer.tres",
+	"res://data/echoes/echo_entertainer.tres"]
+
+var route := RunRoute.new()
+var deck := RunDeck.new()
+var gear := RunGear.new()
+var purse := RunPurse.new()
+var formulas := RunFormulas.new()
+var city := RunCity.new()
+
 ## Guard (1107): blocks left, and when the next spent one returns.
 var guard_blocks := 0
 var guard_back_at := 0.0
@@ -38,10 +38,6 @@ var barrier := 0
 var barrier_back_at := 0.0
 ## Revival (2221): when it can bring you back again.
 var revival_ready_at := 0.0
-## Echoes of other classes that can haunt elite rooms after the first clear.
-const ECHO_PATHS: Array[String] = ["res://data/echoes/echo_bard.tres", "res://data/echoes/echo_explorer.tres",
-	"res://data/echoes/echo_entertainer.tres"]
-
 var hub: HubData
 var cls: ClassData
 var classes: Array[ClassData] = []

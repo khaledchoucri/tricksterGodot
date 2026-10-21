@@ -38,10 +38,11 @@ baseline is a bug in the refactor, not a tuning change.
 
 Each phase must pass its check before the next starts.
 
-**Status (2026-10-21):** phases 0-3 done. A seed replays a run exactly. Cards, the wardrobe, numeric traits and
-job passives declare `mods`; card families are tags and fields; supplements are scoped mods; the conditional
-talents are `Talent` scripts with hooks (`scripts/talents/`), each with a smoke check. Shared code names no card
-(the lint ceiling is 0, from 122). Next: phase 4.
+**Status (2026-10-21):** phases 0-4 done. A seed replays a run exactly. Cards, the wardrobe, numeric traits and
+job passives declare `mods`; card families are tags and fields; supplements are scoped mods; conditional talents are
+`Talent` scripts, each with a smoke check; shared code names no card. `Run` is the character (535 lines, from
+1,714) and six modules: route, deck, gear, purse, formulas, city. It stops short of the ~400 aimed at: the stats,
+`new_run()` and the mods are the character's, and splitting them further would only scatter them. Next: phase 5.
 
 | # | Phase | Check |
 |---|---|---|
