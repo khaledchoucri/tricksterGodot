@@ -36,6 +36,30 @@ LADDER = [
     ('7016', 4, ''), ('7019', 4, ''), ('7028', 4, ''),   # Might Ring, Precision Necklace, Wise Ring (50)
     ('7041', 4, ''), ('7044', 4, ''), ('7047', 4, ''),   # Vitality Ring, Guard-well Necklace, Dodge-all Necklace (50)
 ]
+# The original's ordinary lines above level 65 (ItemParamEx2, one every 15 levels), each as its plain
+# make and its two-slot make: Katana, Dao, Sabre, Shotel; Flat Sword, Kaldo, Kukri, Main-Gauche; Stone
+# Rod, Rune Staff, Battle Rod, Silver Rod; Iron, Brim and Buckler Cap, Nasal Helm; Felt Hood, Beret,
+# Hunting Cap, Turban; Square, Guardian, Knight and Crest Shield. They fill the gear bands Heat raises
+# (the Caballa Relics' own drop tables list the level-95 to 125 lines). Ours: the levels and makes kept.
+HIGH_LEVELS = (80, 95, 110, 125)
+# Item id // 1000 -> (our slot, weapon family).
+HIGH_LINES = {600: (0, 'sword'), 601: (0, 'sword'), 603: (0, 'hammer'), 620: (1, ''), 630: (1, ''), 640: (2, '')}
+# Variant makes outside the ordinary four (Old, plain, Strong/Sharp/Moon, Edge/Sun/Focus/Wise/Aegis).
+VARIANTS = ('Requiem', 'Powerful', 'Gloom', 'Shadow', 'Chaos', 'Morph', 'Art ', 'Ult.')
+
+
+def high_ladder(rows):
+    """(id, slot, family) for each ordinary line's plain and two-slot makes at HIGH_LEVELS."""
+    out = []
+    for fam, (slot, family) in HIGH_LINES.items():
+        for lv in HIGH_LEVELS:
+            line = sorted((int(i), r) for i, r in rows.items() if int(i) // 1000 == fam and r.get('MinLevel') == lv
+                          and not any(v in r['Name'] for v in VARIANTS))
+            assert len(line) >= 4, (fam, lv, [r['Name'] for _, r in line])
+            out += [(str(line[1][0]), slot, family), (str(line[3][0]), slot, family)]
+    return out
+
+
 # The original's columns -> our stat keys.
 STATS = {'APPlus': 'AP', 'DPPlus': 'DP', 'MAPlus': 'MA', 'MDPlus': 'MD', 'ACPlus': 'AC', 'DXPlus': 'DX',
          'DAPlus': 'DA', 'LKPlus': 'LK', 'HVPlus': 'HV', 'MaxHPPlus': 'HP', 'MaxMPPlus': 'MP', 'MaxWTPlus': 'WT'}
@@ -61,7 +85,7 @@ def main():
     for t in ['ItemParamEx2', 'ItemParamEx', 'ItemParam2']:
         for r in load(t):
             rows.setdefault(str(r['ID']), r)
-    for i, slot, family in LADDER:
+    for i, slot, family in LADDER + high_ladder(rows):
         r = rows[i]
         stats = {ours: int(r[col]) for col, ours in STATS.items() if r.get(col)}
         ident = slug(r['Name'])

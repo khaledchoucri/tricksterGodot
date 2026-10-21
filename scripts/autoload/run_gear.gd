@@ -141,8 +141,18 @@ func can_use(it: ItemData) -> bool:
 	return not gunner
 
 
-## The item level offered in the current room: its region's gear levels, read along its rooms.
+## Ours: item levels every point of Heat adds to each region's gear band (Server Settings reach 18
+## Heat, so +54: the Relics then offer the original's level-110 lines, its own drop tables' items).
+const HEAT_ITEM_LEVELS := 3
+
+
+## The item level offered in the current room: its region's gear levels, read along its rooms,
+## raised by the Heat the run is played at.
 func gear_level() -> int:
+	return _band_level() + HEAT_ITEM_LEVELS * ServerSettings.heat()
+
+
+func _band_level() -> int:
 	var r := Run.route.region
 	var along := maxi(0, Run.route.local_depth())  # a rest stop counts as the region's first room
 	return r.gear_levels.x + roundi(float(r.gear_levels.y - r.gear_levels.x) * along / maxi(1, r.run_length))

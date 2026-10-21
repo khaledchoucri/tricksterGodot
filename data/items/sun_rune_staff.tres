@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sun_rune_staff"
+display_name = "Sun Rune Staff"
+item_id = 603051
+slot = 0
+family = "hammer"
+level = 95
+weight = 190
+stats = {
+"MA": 16,
+"LK": 11
+}
+compound_slots = 2
+refine_stat = "MA"

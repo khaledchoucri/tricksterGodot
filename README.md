@@ -28,7 +28,8 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   and compounding, monster dens and shops.
 - **Between runs:** a warehouse with heirlooms (level-synced, saved at Portable Ports), a death that rolls back
   what you didn't save, and wardrobe pieces from monster card sets. You also get drilling, a mastered starting
-  skill from Master Louis, and Heat (Server Settings).
+  skill from Master Louis, and Heat (Server Settings), which makes monsters tougher and raises the
+  item level of everything a run offers, up to the original's level-110 lines.
 - **Megalopolis:** eleven people and twelve restorations, each switching a system on inside your runs, and a
   short story told through their conversations.
 

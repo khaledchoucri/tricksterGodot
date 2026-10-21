@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"precise_titan_gun"
+display_name = "Precise Titan Gun"
+item_id = 610051
+slot = 0
+family = "gun"
+level = 95
+weight = 190
+stats = {
+"AP": 266
+}
+compound_slots = 2
+refine_stat = "AP"
+gun = {
+"speed": 110,
+"power": 180,
+"zone": 150,
+"range": 240
+}

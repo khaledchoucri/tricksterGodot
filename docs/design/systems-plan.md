@@ -237,7 +237,7 @@ what forces the choice of what to keep.
 1. Ten rooms per region (elites, the trial and the bands follow). Done.
 2. Rest stops after the 1st and 2nd bosses: heal, story point, the warehouse. Done.
 3. The equipment window with the 13 slots (done), then the new slot types' items.
-4. Heat raises the gear bands; the original's higher item ladders fill them.
+4. Heat raises the gear bands; the original's higher item ladders fill them. Done.
 5. The loadout before a run; worn gear stops counting against the load; heirlooms and level sync removed.
 6. The lost bag and banking.
 7. Warehouse rows and their price.

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"aegis_knight_shield"
+display_name = "Aegis Knight Shield"
+item_id = 640051
+slot = 2
+family = ""
+level = 110
+weight = 220
+stats = {
+"DP": 264,
+"MD": 176
+}
+compound_slots = 2
+refine_stat = "DP"

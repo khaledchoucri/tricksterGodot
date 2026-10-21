@@ -28,6 +28,11 @@ LADDER = [
     '3511',                                  # Rose Gun (40)
     '610025', '610026', '3503', '3504',      # Antique, Strong Antique, Gun Type 4, Drill Gun (50)
     '610033', '610034', '610035',            # Metal, Strong Metal, Precise Metal Gun (65): the Caballa Relics
+    # Strong and Precise makes of the higher lines, for the gear bands Heat raises:
+    '610042', '610043',                      # Sten Gun (80)
+    '610050', '610051',                      # Titan Gun (95)
+    '610058', '610059',                      # Milli-Gun (110)
+    '610066', '610067',                      # Blue Seal Gun (125)
 ]
 # Compound slots: one, two on the better make of a line.
 TWO_SLOTS = ('Strong ', 'Precise ', 'Drill ', 'Rose ', 'Chrome ')

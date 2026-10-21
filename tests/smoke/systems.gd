@@ -130,6 +130,18 @@ func run(Run: Node) -> void:
 		slots[g.data.slot] = true
 	check(slots.size() >= 4 and tier.any(func(g: GearItem) -> bool: return g.data.level >= 65),
 		"the Relics offer level 50-65 gear (%d of %d offers, %d slots)" % [tier.size(), relics_gear.size(), slots.size()])
+	# Heat raises every band: at the most Heat the Relics offer the original's level-110 lines.
+	var settings: Dictionary = Profile.server_settings.duplicate()
+	var base_level: int = Run.gear.gear_level()
+	for id: String in ServerSettings.ORDER:
+		Profile.server_settings[id] = int(ServerSettings.SETTINGS[id].max)
+	var hot_level: int = Run.gear.gear_level()
+	var hot_gear: Array = Run.gear.gear_offers(60)
+	check(hot_level == base_level + 3 * ServerSettings.heat() and hot_gear.any(func(g: GearItem) -> bool: return g.data.level >= 110),
+		"at Heat %d the Relics' last room offers item level %d, the original's level-110 lines (%s)"
+		% [ServerSettings.heat(), hot_level, ", ".join(hot_gear.filter(func(g: GearItem) -> bool: return g.data.level >= 110)
+			.slice(0, 3).map(func(g: GearItem) -> String: return g.data.display_name))])
+	Profile.server_settings = settings
 	Run.route.depth = 5
 	var rolls: Array = []
 	for _i in 60:

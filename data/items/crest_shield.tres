@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"crest_shield"
+display_name = "Crest Shield"
+item_id = 640057
+slot = 2
+family = ""
+level = 125
+weight = 250
+stats = {
+"DP": 200
+}
+compound_slots = 1
+refine_stat = "DP"

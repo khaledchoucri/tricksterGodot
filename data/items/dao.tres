@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dao"
+display_name = "Dao"
+item_id = 600049
+slot = 0
+family = "sword"
+level = 95
+weight = 190
+stats = {
+"AP": 190
+}
+compound_slots = 1
+refine_stat = "AP"

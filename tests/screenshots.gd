@@ -180,7 +180,7 @@ func _shoot_sheet() -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.5)
-	for id: String in ["candy_hat", "candy_shield", "might_ring", "golden_mole_vest"]:
+	for id: String in ["focus_buckler_cap", "aegis_knight_shield", "edge_sabre", "might_ring", "golden_mole_vest"]:
 		Run.gear.equip(GearItem.roll(load("res://data/items/%s.tres" % id), 0.5))
 	game.player.dress()
 	_press("character")

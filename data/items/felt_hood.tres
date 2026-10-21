@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"felt_hood"
+display_name = "Felt Hood"
+item_id = 630033
+slot = 1
+family = ""
+level = 80
+weight = 80
+stats = {
+"DP": 32,
+"MD": 42
+}
+compound_slots = 1
+refine_stat = "DP"

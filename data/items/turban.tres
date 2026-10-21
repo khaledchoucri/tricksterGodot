@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"turban"
+display_name = "Turban"
+item_id = 630057
+slot = 1
+family = ""
+level = 125
+weight = 125
+stats = {
+"DP": 50,
+"MD": 66
+}
+compound_slots = 1
+refine_stat = "DP"

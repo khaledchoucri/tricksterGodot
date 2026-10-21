@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"focus_buckler_cap"
+display_name = "Focus Buckler Cap"
+item_id = 620051
+slot = 1
+family = ""
+level = 110
+weight = 110
+stats = {
+"DP": 88,
+"MD": 66,
+"AC": 5,
+"HV": 5
+}
+compound_slots = 2
+refine_stat = "DP"
