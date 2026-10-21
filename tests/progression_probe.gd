@@ -3,7 +3,7 @@ extends Node
 ## using the game's own formulas: progression must show as falling numbers.
 ##   godot --headless res://tests/progression_probe.tscn
 func _ready() -> void:
-	for cls in ["dragon", "sheep", "buffalo", "fox", "lion", "cat", "raccoon"]:
+	for cls: String in ["dragon", "sheep", "buffalo", "fox", "lion", "cat", "raccoon"]:
 		Profile.class_id = cls
 		Run.new_run()
 		var basic: StringName = Run.cls.basic_skill.id if Run.cls.basic_skill else &"shockwave"
@@ -20,7 +20,7 @@ func _ready() -> void:
 			main = "charm"
 		var c: CardData = Run.cls.basic_skill if Run.cls.basic_skill else Run.deck.card(basic)
 		print("== %s (%s, %s)" % [cls, basic, stat])
-		for room in [0, 2, 4, 6, 7, 8, 10, 12, 15]:
+		for room: int in [0, 2, 4, 6, 7, 8, 10, 12, 15]:
 			var lv := 1 + int(room * 1.5)
 			while Run.level < lv:
 				Run.gain_exp(Run.exp_to_next())

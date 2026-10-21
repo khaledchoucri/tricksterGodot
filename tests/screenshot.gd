@@ -12,7 +12,7 @@ func _run() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:
 		out = args[0]
-	var game = load("res://scenes/game.tscn").instantiate()
+	var game: Game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	await get_tree().create_timer(4.2).timeout
 	var player: Player = game.player

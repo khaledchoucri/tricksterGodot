@@ -160,7 +160,7 @@ func choice_reachable(i: int) -> bool:
 ## Choices float over the city with no panel behind them; make their
 ## backgrounds nearly opaque so the world doesn't show through the text.
 func _solid(b: Button) -> void:
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+	for state: String in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var sb := b.get_theme_stylebox(state)
 		if sb is StyleBoxFlat:
 			var solid := (sb as StyleBoxFlat).duplicate() as StyleBoxFlat

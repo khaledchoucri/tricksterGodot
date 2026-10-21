@@ -1,3 +1,4 @@
+class_name Game
 extends Node2D
 ## Runs one expedition through the regions (Coral Beach, then Desert Beach):
 ## loads rooms cut from the original maps,
@@ -299,7 +300,7 @@ func _open_doors() -> void:
 			return not REWARD_SYSTEMS.has(r) or Run.city.system_on(REWARD_SYSTEMS[r]))
 		Run.shuffle(pool)
 		rewards.append(pool[0])
-		for r in pool:
+		for r: String in pool:
 			if r != pool[0]:
 				rewards.append(r)
 				break

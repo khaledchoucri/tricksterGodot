@@ -29,7 +29,7 @@ func _go() -> void:
 	add_child(game)
 	await get_tree().create_timer(3.0).timeout
 	p = game.player
-	for e in game.room.enemies:
+	for e: Enemy in game.room.enemies:
 		e.global_position = game.room.random_spot(p.global_position, 600.0)
 		e.apply_debuff("hold", 1.0, 999.0)
 	await get_tree().create_timer(0.3).timeout

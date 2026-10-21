@@ -5,7 +5,7 @@ extends Node
 ##   godot res://tests/skill_shots.tscn -- out=C:/some/folder [class=bunny|sheep|dragon|cat|raccoon]
 
 var out := "user://skill_shots"
-var game
+var game: Game
 
 
 func _ready() -> void:
@@ -36,7 +36,7 @@ func _shoot() -> void:
 	add_child(game)
 	await _wait(3.0)
 	var p: Player = game.player
-	for e in game.room.enemies:
+	for e: Enemy in game.room.enemies:
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	await _wait(1.6)
 	var line := "magic" if Run.cls.basic_skill else "charm" if Run.cls.id in [&"cat", &"raccoon"] else "power"
@@ -51,7 +51,7 @@ func _shoot() -> void:
 			home = spot
 			break
 	var dummies: Array[Enemy] = []
-	for off in [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)]:
+	for off: Vector2 in [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)]:
 		var e: Enemy = game.room.spawn(&"torobbie", home + off)
 		dummies.append(e)
 	await _wait(0.8)

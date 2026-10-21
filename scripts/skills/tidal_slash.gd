@@ -34,7 +34,7 @@ func update(t: float, _delta: float) -> void:
 				pool.append(e)
 	pool.sort_custom(func(a: Enemy, b: Enemy) -> bool:
 		return a.global_position.distance_squared_to(player.global_position) < b.global_position.distance_squared_to(player.global_position))
-	for e in pool.slice(0, int(param("targets", 5))):
+	for e: Enemy in pool.slice(0, int(param("targets", 5))):
 		hit(e, damage(), 230.0)
 		Sparks.burst(room, e.global_position + Vector2(0, -20), COLOR, 12, 150.0)
 	feedback(0.06 if pool.size() > 0 else 0.0, 5.0)

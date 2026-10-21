@@ -24,7 +24,7 @@ func _ready() -> void:
 
 
 func _go() -> void:
-	for cls_path in ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres"]:
+	for cls_path: String in ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres"]:
 		var cls: ClassData = load(cls_path)
 		var jobs: Array[JobData] = [cls.start_job]
 		for j in cls.start_job.next_jobs:

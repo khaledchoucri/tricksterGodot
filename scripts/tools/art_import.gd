@@ -253,7 +253,7 @@ func _write_sheet(out: String, actor: String, action: String, built: Dictionary,
 	for r in dir_list.size():
 		var d := dir_list[r]
 		var entries: Array = []
-		for c in frames[d].size():
+		for c: int in frames[d].size():
 			var f: Dictionary = frames[d][c]
 			var at: Vector2i = Vector2i(c * cell.x, r * cell.y) + anchor - f.feet
 			sheet.blend_rect(f.image, Rect2i(Vector2i.ZERO, f.image.get_size()), at)

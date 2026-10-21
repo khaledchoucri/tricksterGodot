@@ -79,7 +79,7 @@ func load_profile() -> void:
 	custom = {}
 	if not FileAccess.file_exists(path):
 		return
-	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if not data is Dictionary:
 		push_warning("Profile at %s is unreadable; starting fresh" % path)
 		return
@@ -155,7 +155,7 @@ func bank_leftovers(won: bool, run_galder: int, run_ore: int, run_materials: Dic
 	var kept := {"galder": int(run_galder * share), "ore": int(run_ore * share), "materials": 0}
 	galder += kept.galder
 	ore += kept.ore
-	for id in run_materials:
+	for id: StringName in run_materials:
 		var n := int(run_materials[id] * share)
 		if n > 0:
 			materials[String(id)] = int(materials.get(String(id), 0)) + n

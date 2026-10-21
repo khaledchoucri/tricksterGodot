@@ -65,7 +65,7 @@ func update(t: float, _delta: float) -> void:
 			_sort_near(foes, at)
 			Slash.spawn(room, at + Vector2(0, -20), {"radius": reach, "arc": arc, "dir": aim, "clockwise": true,
 				"sweep_time": 0.12, "life": 0.3, "width": 18.0, "color": COLOR})
-			for e in foes.slice(0, int(param("targets", 2))):
+			for e: Enemy in foes.slice(0, int(param("targets", 2))):
 				hit(e, damage(), 90.0, true)
 		&"sharp_scream":
 			_ring(at, param("radius", 140.0))

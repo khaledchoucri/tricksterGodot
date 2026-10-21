@@ -28,7 +28,7 @@ var seed_base := -1
 var bot_rng := RandomNumberGenerator.new()
 ## class=trickster: its two trees (e.g. trees=knight+bard_tree).
 var trees: PackedStringArray = ["knight", "bard_tree"]
-var game
+var game: Game
 var results: Array[Dictionary] = []
 
 var _room_log: Array[Dictionary] = []
@@ -88,7 +88,7 @@ func _ready() -> void:
 	if chosen != "buffalo":
 		Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))  # the slot is open
 	if chosen == "trickster":
-		for k in ["clears_gladiator", "clears_champion", "runes_echo_bard", "runes_echo_explorer", "runes_echo_entertainer"]:
+		for k: String in ["clears_gladiator", "clears_champion", "runes_echo_bard", "runes_echo_explorer", "runes_echo_entertainer"]:
 			Profile.stats[k] = 1
 		Profile.custom = {"kit": "sword", "graph": "Balanced", "trees": Array(trees)}
 	if city == "full":
@@ -138,7 +138,7 @@ func _one_run(index: int) -> void:
 	_end_room()
 	var killers: PackedStringArray = []
 	if is_instance_valid(game.room):
-		for e in game.room.enemies:
+		for e: Enemy in game.room.enemies:
 			if e.is_hittable():
 				killers.append(e.display_name)
 	var gear: PackedStringArray = []
@@ -190,14 +190,14 @@ func _tick(delta: float) -> void:
 			_room_t += delta
 			if _room_t > ROOM_LIMIT:
 				print("  stuck in room %d (%s); clearing it" % [Run.route.depth + 1, game.room.data.id])
-				for e in game.room.enemies:
+				for e: Enemy in game.room.enemies:
 					print("    %s state %d at %s reachable %s path %d  player at %s" % [e.data.id, e.state, e.global_position,
 						game.room.is_walkable(e.global_position), game.room.find_path(player.global_position, e.global_position).size(),
 						player.global_position])
 				print("    wave %d/%d alive %d pending %d" % [game.room.wave, game.room.waves.size(), game.room.alive, game.room.pending])
 				print("    player state %d t %.1f vel %s walkable %s vault %s mask %d input %s" % [player.state, player._t, player.velocity,
 					game.room.is_walkable(player.global_position), player._vaulting, player.collision_mask, player.move_input()])
-				for e in game.room.enemies.duplicate():
+				for e: Enemy in game.room.enemies.duplicate():
 					if e.is_hittable():
 						e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 				_room_t = 0.0
@@ -517,7 +517,7 @@ func _end_room() -> void:
 		"max_hp": Run.max_hp})
 	var mons: Array = kill_log.filter(func(k: Dictionary) -> bool: return k.depth == _last_depth and not k.elite)
 	var avg_hp := 0.0
-	for k in mons:
+	for k: Dictionary in mons:
 		avg_hp += k.max_hp / float(mons.size())
 	print("  room %2d  Lv %2d  AP %3d  atk x%.2f  maxHP %4d  DP %3d  dmg-taken x%.2f  mob HP %4.0f  hp lost %d" % [_last_depth + 1,
 		Run.level, Run.stat("AP"), Run.formulas.attack_mult(), Run.max_hp, Run.stat("DP"), Run.formulas.damage_taken_mult(), avg_hp, _room_hp - Run.hp])
@@ -526,7 +526,7 @@ func _end_room() -> void:
 ## Hits and seconds to kill, and how hard monsters hit, by depth band.
 func _feel_report() -> void:
 	print("---- combat feel ----")
-	for band in [[0, 3], [4, 7], [8, 11], [12, 16]]:
+	for band: Array in [[0, 3], [4, 7], [8, 11], [12, 16]]:
 		var n := []
 		var e := []
 		for k in kill_log:
@@ -569,7 +569,7 @@ func _report() -> void:
 		print("   cards: %s   rune %s   ore %d  galder %d" % [r.cards, r.rune, r.ore, r.galder])
 		print("   loadout %s  casts %s  refused %s" % [r.loadout, r.casts, r.refused])
 		var rooms: PackedStringArray = []
-		for room in r.rooms:
+		for room: Dictionary in r.rooms:
 			rooms.append("%d:%.0fs/-%d" % [room.room, room.time, room.hp_lost])
 		print("   rooms (time/hp lost): %s" % "  ".join(rooms))
 	print("clears %d / %d, average room reached %.1f, dig sites %d" % [clears, results.size(), depth / maxf(results.size(), 1), digs])

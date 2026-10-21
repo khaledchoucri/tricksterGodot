@@ -45,7 +45,7 @@ func _run() -> void:
 			DirAccess.make_dir_recursive_absolute(dir_path)
 			var frames: Array[Image] = []
 			var sockets: Array = []
-			for i in info.dirs[d].size():
+			for i: int in info.dirs[d].size():
 				var f: Dictionary = info.dirs[d][i]
 				var raw := sheet.get_region(Rect2i(int(f.col) * cell.x, int(f.row) * cell.y, cell.x, cell.y))
 				var guide := _guide(raw, anchor, scale)

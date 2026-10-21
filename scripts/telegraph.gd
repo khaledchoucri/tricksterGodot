@@ -24,7 +24,7 @@ static func make(p_shape: String, p_duration: float, opts := {}) -> Telegraph:
 	var t := Telegraph.new()
 	t.shape = p_shape
 	t.duration = maxf(p_duration, 0.01)
-	for k in opts:
+	for k: String in opts:
 		t.set(k, opts[k])
 	t.z_index = -1
 	return t

@@ -176,7 +176,7 @@ func _longest_items(n: int) -> Array[GearItem]:
 
 func _audit_hub() -> void:
 	Run.new_run()
-	var hub = load("res://scenes/hub.tscn").instantiate()
+	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	add_child(hub)
 	await _wait(1.5)
 	await audit("hub_city")
@@ -202,7 +202,7 @@ func _audit_hub() -> void:
 ## Talks to `npc`, follows `path` through its menus, audits the menu it
 ## lands on and backs out. Returns which options of that menu can be
 ## explored (enabled and not the exit).
-func _talk(hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
+func _talk(hub: Hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
 	var explorable: Array[bool] = []
 	hub.talking = false
 	hub.player.global_position = npc.global_position + Vector2(-40, 30)
@@ -236,14 +236,14 @@ func _talk(hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
 	return explorable
 
 
-func _choices_open(hub) -> void:
+func _choices_open(hub: Hub) -> void:
 	for _i in 100:
 		await _wait(0.05)
 		if hub.dialogue._scroll.visible:
 			return
 
 
-func _check_choices(hub, screen: String) -> void:
+func _check_choices(hub: Hub, screen: String) -> void:
 	var d: DialogueBox = hub.dialogue
 	await audit(screen)
 	for i in d._buttons.size():
@@ -255,7 +255,7 @@ func _check_choices(hub, screen: String) -> void:
 
 func _audit_game() -> void:
 	Profile.heirloom = -1
-	var game = load("res://scenes/game.tscn").instantiate()
+	var game: Game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.5)
 	if is_instance_valid(game.player):
@@ -326,14 +326,14 @@ func _audit_game() -> void:
 	game.queue_free()
 
 
-func _pick(game, kind: String, options: Array) -> void:
+func _pick(game: Game, kind: String, options: Array) -> void:
 	game._start_pick(kind, options)
 	await _check_pick(game, "run_pick_" + kind)
 
 
-func _check_pick(game, screen: String) -> void:
+func _check_pick(game: Game, screen: String) -> void:
 	await audit(screen)
-	for i in game._pick_options.size():
+	for i: int in game._pick_options.size():
 		if not game.hud.pick_reachable(i):
 			problems.append("%s: option %d of %d can't be reached" % [screen, i + 1, game._pick_options.size()])
 	game.hud.pick_panel.visible = false

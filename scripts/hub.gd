@@ -1,3 +1,4 @@
+class_name Hub
 extends Node2D
 ## Megalopolis, between runs (scenes/hub.tscn). Builds the square from the
 ## hub's RoomData, places its people and the expedition gate, runs
@@ -263,7 +264,7 @@ func _warehouse_menu(npc: Npc) -> void:
 
 func _stored_items() -> Array[GearItem]:
 	var out: Array[GearItem] = []
-	for d in Profile.warehouse:
+	for d: Dictionary in Profile.warehouse:
 		out.append(GearItem.from_dict(d, Run.gear.item_by_id))
 	return out
 
@@ -333,7 +334,7 @@ func _album(npc: Npc, sets: bool) -> void:
 				"icon": s.reward.icon(), "text": s.reward.describe() + ("\nMissing: " + ", ".join(missing) if missing.size() else ""),
 				"disabled": s.claimed() or not done})
 		var shop: Array[WardrobeData] = []
-		for w in ([] if sets else hub.wardrobe):
+		for w: WardrobeData in ([] if sets else hub.wardrobe):
 			if w.price_tm > 0 and not Profile.owns(w.id):
 				shop.append(w)
 				var price := "%d TM" % w.price_tm + (" + %d Shard%s" % [w.price_shards, "" if w.price_shards == 1 else "s"] if w.price_shards > 0 else "")

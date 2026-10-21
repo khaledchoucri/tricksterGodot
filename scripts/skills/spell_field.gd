@@ -38,7 +38,7 @@ func start() -> void:
 	var cap := int(param("targets", 99))
 	var lowers: String = LOWERS.get(card.id, "")
 	_field.on_tick = func(inside: Array[Enemy]) -> void:
-		for e in inside.slice(0, cap):
+		for e: Enemy in inside.slice(0, cap):
 			if lowers != "":
 				e.apply_debuff("resist_" + lowers, param("resist"), TICK + 0.1)
 				continue

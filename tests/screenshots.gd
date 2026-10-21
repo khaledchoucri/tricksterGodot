@@ -5,7 +5,7 @@ extends Node
 ##   godot res://tests/screenshots.tscn -- out=C:/some/folder
 
 var out := "user://screenshots"
-var game
+var game: Game
 
 
 func _ready() -> void:
@@ -39,7 +39,7 @@ func _shoot() -> void:
 		game = load("res://scenes/game.tscn").instantiate()
 		add_child(game)
 		await _wait(3.0)
-		for e in game.room.enemies:
+		for e: Enemy in game.room.enemies:
 			e.global_position = game.player.global_position + Vector2(50, 15)
 		game.player.aim = Vector2(1, 0.3).normalized()
 		game.player.attack.start(2)
@@ -62,7 +62,7 @@ func _shoot() -> void:
 		Run.apply_type("power")
 	Run.apply_type("sense")
 	player.refresh_gear()
-	for e in game.room.enemies:
+	for e: Enemy in game.room.enemies:
 		e.global_position = player.global_position + Vector2(60, 20)
 	player.aim = Vector2(1, 0.3).normalized()
 	Run.gear.equip(GearItem.make(load("res://data/items/marky_tricorn.tres")), "hat")
@@ -125,14 +125,14 @@ func _shoot_hub() -> void:
 	Profile.set_flag("met_cavalier")
 	for r: RestorationData in Run.hub.restorations:
 		Profile.restorations[String(r.id)] = r.max_level
-	for m in [&"torobbie", &"tottochi", &"little_cora", &"blue_penguin", &"fanta_slime"]:
+	for m: StringName in [&"torobbie", &"tottochi", &"little_cora", &"blue_penguin", &"fanta_slime"]:
 		Profile.add_card(m)
 	Profile.tm = 9000
 	Run.new_run()
 	var sword := GearItem.make(load("res://data/items/wood_sword.tres"))
 	sword.refine = 4
 	Run.city.save_point(sword)
-	var hub = load("res://scenes/hub.tscn").instantiate()
+	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	add_child(hub)
 	await _wait(1.5)
 	var julio: Npc = hub._npc(&"julio")
@@ -170,7 +170,7 @@ func _shoot_desert() -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.0)
-	for depth in [Run.route.regions[0].run_length + 1, Run.route.regions[0].run_length + 5, Run.route.plan.size() - 1]:
+	for depth: int in [Run.route.regions[0].run_length + 1, Run.route.regions[0].run_length + 5, Run.route.plan.size() - 1]:
 		Run.route.depth = depth
 		game._load_room()
 		await _wait(3.5)

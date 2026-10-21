@@ -82,7 +82,7 @@ func setup(p_actor: String, folder := Assets.ACTORS) -> bool:
 		var dirs: Dictionary = manifest.actions[act].dirs
 		available[act] = dirs.keys()
 		var total := 0.0
-		for f in dirs.values()[0]:
+		for f: Dictionary in dirs.values()[0]:
 			total += minf(f.ms, 400.0)  # long holds (death poses) are capped
 		lengths[act] = total / 1000.0
 		for d: String in dirs:

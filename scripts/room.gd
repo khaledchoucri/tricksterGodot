@@ -386,7 +386,7 @@ func _next_wave() -> void:
 		cleared.emit()
 		return
 	var from := player.global_position if is_instance_valid(player) else entry
-	for i in waves[wave].size():
+	for i: int in waves[wave].size():
 		var e: Dictionary = waves[wave][i]
 		spawn_with_warning(e.id, random_spot(from, 170.0), 0.15 * i, e.elite)
 
@@ -435,7 +435,7 @@ func _on_enemy_died(e: Enemy) -> void:
 	enemies.erase(e)
 	release_attack_token(e)
 	if e.is_boss:
-		for other in enemies.duplicate():
+		for other: Enemy in enemies.duplicate():
 			if other.is_hittable():
 				other.take_hit(9999, Vector2.DOWN, 0.0, true)
 	if alive <= 0 and pending <= 0 and not _cleared:

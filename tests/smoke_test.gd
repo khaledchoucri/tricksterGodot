@@ -22,7 +22,7 @@ var only: Array[String] = []
 ## The seed for the run's RNG and the test's own placement (seed=N).
 var test_seed := 1
 var failures := 0
-var game
+var game: Game
 
 
 func check(cond: bool, label: String) -> void:
@@ -67,14 +67,14 @@ func _on(section: String) -> bool:
 
 
 func enemies() -> Array:
-	return get_tree().get_nodes_in_group("enemies").filter(func(e): return e.is_hittable())
+	return get_tree().get_nodes_in_group("enemies").filter(func(e: Enemy) -> bool: return e.is_hittable())
 
 
 func clear_room() -> void:
 	for _i in 60:
 		if game.phase != game.Phase.FIGHT:
 			return
-		for e in enemies():
+		for e: Enemy in enemies():
 			e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 		await wait(0.5)
 
@@ -165,7 +165,7 @@ func _power_attacks() -> void:
 	# Every Power-line attack casts and damages a monster in front of Buffalo.
 	check(Run.deck.loadout[0] == Run.cls.start_job.starter.id, "the run starts with %s in slot 1" % Run.cls.start_job.starter.id)
 	var skill_ids: Array[StringName] = []
-	for card in Run.deck.all_cards():
+	for card: CardData in Run.deck.all_cards():
 		if card.is_skill() and card.resource_path.begins_with("res://data/skills/power/") 				and not card.id in [&"clinch_release", &"chakra_balance"]:
 			skill_ids.append(card.id)
 	check(skill_ids.size() == 23, "the Power line has 25 attacks (23 that deal damage): %d" % skill_ids.size())
@@ -285,7 +285,7 @@ func _core_rewards() -> void:
 	# Scenery in front of the player fades and the silhouette shows.
 	var behind := Vector2.INF
 	for prop in room.props:
-		for dy in [10.0, 20.0, 30.0]:
+		for dy: float in [10.0, 20.0, 30.0]:
 			var feet := prop.position - Vector2(0, dy)
 			if room.is_walkable(feet) and prop.hides(feet + Vector2(0, -26), feet.y):
 				behind = feet
@@ -390,7 +390,7 @@ func _core_rewards() -> void:
 
 	# Clione's shot travels and hurts the player.
 	await wait(1.0)
-	for e in enemies():
+	for e: Enemy in enemies():
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	var clione: Enemy = game.room.spawn("clione", game.room.random_spot(game.player.global_position, 150.0))
 	await wait(0.7)
@@ -410,7 +410,7 @@ func _core_rewards() -> void:
 	var hp_start: int = Run.hp
 	var saw_shot := false
 	for _f in 400:
-		if get_tree().get_nodes_in_group("projectiles").size() > 0 or game.room.world.get_children().any(func(n): return n is Projectile):
+		if get_tree().get_nodes_in_group("projectiles").size() > 0 or game.room.world.get_children().any(func(n: Node) -> bool: return n is Projectile):
 			saw_shot = true
 		await get_tree().physics_frame
 		if Run.hp < hp_start:
@@ -423,7 +423,7 @@ func _core_rewards() -> void:
 func _balance() -> void:
 	var Run := run_state()
 	var outliers: PackedStringArray = []
-	for ri in Run.route.regions.size():
+	for ri: int in Run.route.regions.size():
 		var r: RegionData = Run.route.regions[ri]
 		for e in r.enemies:
 			if e.echo or e.min_depth >= 99:
@@ -483,7 +483,7 @@ func _ui_audit() -> void:
 	game._open_compounder()
 	await wait(0.3)
 	var all_ok := true
-	for i in game._pick_options.size():
+	for i: int in game._pick_options.size():
 		all_ok = all_ok and game.hud.pick_reachable(i)
 	check(all_ok and game.hud.pick_panel.get_global_rect().size.y <= 720.0,
 		"a Compounder with %d materials fits on screen and every option is reachable" % (game._pick_options.size() - 1))
@@ -518,7 +518,7 @@ func _end_of_run() -> void:
 	game._load_room()
 	await wait(3.0)
 	var boss: Enemy = null
-	for e in enemies():
+	for e: Enemy in enemies():
 		if e.is_boss:
 			boss = e
 	check(boss != null and game.room.data.map == "map_dg11b", "boss room loads the Dark Cave with the Golden Mole")
@@ -558,7 +558,7 @@ func _end_of_run() -> void:
 	await wait(0.5)
 	check(lingered and held > 0 and Skill._lingering.is_empty(),
 		"a lingering field lets go when the run ends under it (%d lingering, then %d)" % [held, Skill._lingering.size()])
-	var hub = load("res://scenes/hub.tscn").instantiate()
+	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)
 	check(hub.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
@@ -687,9 +687,9 @@ func _systems(Run: Node) -> void:
 	_restore_all(Run)
 	# A seed replays a run: the same room plan, card offers and gear rolls.
 	var replays: Array[String] = []
-	for s in [42, 42, 43]:
+	for s: int in [42, 42, 43]:
 		Run.new_run(s)
-		var rooms: Array = Run.route.plan.map(func(r) -> String: return String(r.data.id) + ("*" if r.elite else ""))
+		var rooms: Array = Run.route.plan.map(func(r: RoomPlan) -> String: return String(r.data.id) + ("*" if r.elite else ""))
 		var offers: Array = Run.deck.card_offers(3, false).map(func(c: CardData) -> String: return String(c.id))
 		var gear: Array = Run.gear.gear_offers(3).map(func(g: GearItem) -> String: return g.title() + str(g.stats))
 		replays.append("%s | %s | %s" % [", ".join(rooms), ", ".join(offers), ", ".join(gear)])
@@ -847,12 +847,12 @@ func _systems(Run: Node) -> void:
 		"the shop sells gear and potions")
 	Run.route.depth = 4
 	Run.route.current_room().feature = &"blue_penguin"
-	var roller = load("res://scripts/room.gd").new()
+	var roller: Room = load("res://scripts/room.gd").new()
 	var penguins := 0
 	var total := 0
 	for _r in 6:
-		for w in roller._make_waves(4, false):
-			for e in w:
+		for w: Array in roller._make_waves(4, false):
+			for e: Dictionary in w:
 				total += 1
 				penguins += 1 if e.id == &"blue_penguin" else 0
 	check(penguins * 3 >= total, "a Blue Penguin den fills its waves with penguins (%d of %d)" % [penguins, total])
@@ -970,7 +970,7 @@ func _systems(Run: Node) -> void:
 	check(float(Run.cls.graph.magic) == 0.5, "its type graph is the Magic / Sense preset")
 	Profile.class_id = "buffalo"
 	Profile.custom = {}
-	for k in ["clears_gladiator", "clears_champion", "runes_echo_bard"]:
+	for k: String in ["clears_gladiator", "clears_champion", "runes_echo_bard"]:
 		Profile.stats.erase(k)
 	Run.new_run()
 
@@ -1014,7 +1014,7 @@ func _restore_all(Run: Node) -> void:
 
 func skill_rules() -> void:
 	var p: Player = game.player
-	for e in enemies():
+	for e: Enemy in enemies():
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	await wait(0.5)
 	p.global_position = game.room.random_spot(p.global_position, 0.0)
@@ -1125,7 +1125,7 @@ func _remove(e: Enemy) -> void:
 ## what else was in the room.
 func _why(cast: bool, e: Enemy, p: Player) -> String:
 	var others := 0
-	for o in game.room.enemies:
+	for o: Enemy in game.room.enemies:
 		if o != e and o.is_hittable():
 			others += 1
 	return " [cast %s, target %s at %.0f px, state %d, player state %d, %d other monsters]" % [cast,
@@ -1147,7 +1147,7 @@ func _dummy(p: Player, ahead: float) -> Enemy:
 	p.global_position = spot
 	p.enter(Player.State.MOVE)
 	p.aim = dir
-	for other in room.enemies.duplicate():
+	for other: Enemy in room.enemies.duplicate():
 		_remove(other)  # nothing else may take the hit
 	var at := spot + Combat.screen(dir) * ahead
 	var e: Enemy = room.spawn(&"torobbie", at)
@@ -1165,7 +1165,7 @@ func _dummy(p: Player, ahead: float) -> Enemy:
 
 func magic_line() -> void:
 	var p: Player = game.player
-	for e in enemies():
+	for e: Enemy in enemies():
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
 	await wait(0.5)
 	p.invulnerable_until = 0.0
@@ -1366,7 +1366,7 @@ func sense_line() -> void:
 	check(is_equal_approx(reload, 120.0 / 90.0), "the Old Ebony Gun reloads in 120000/GaugeSpeed ms (%.2f s)" % reload)
 	target = await _dummy(p, 120.0)
 	p.invulnerable_until = p.now() + 30.0  # a monster's hit would reset the reload
-	for e in game.room.enemies:
+	for e: Enemy in game.room.enemies:
 		if e != target:
 			e.apply_debuff("hold", 1.0, 30.0)
 	gun.equip(gun.gun)
@@ -1646,7 +1646,7 @@ func elements_and_shields() -> void:
 	p.deal_hit(target, 100.0, 1.0, 0.0, false, {"no_crit": true, "no_graze": true})
 	var with_el := hp - target.hp
 	var fx: Array[String] = []
-	for n in game.room.get_children():
+	for n: Node in game.room.get_children():
 		if n is Cake and (n as Cake).effect.begins_with("element_"):
 			fx.append((n as Cake).effect)
 	check(absf(float(with_el) / plain - 1.3) < 0.05, "Fire 20%% and Water 10%% add 30%% to the hit (%d -> %d)" % [plain, with_el])

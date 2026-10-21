@@ -60,8 +60,10 @@ if card.has_tag(&"galder"): ...
 
 ## 4. GDScript style
 
-- **Static types everywhere:** variables, parameters, returns, and typed arrays and dictionaries where Godot
-  allows. Use `:=` only when the type is obvious.
+- **Static types everywhere:** variables, parameters, returns, `for` variables, and typed arrays and
+  dictionaries where Godot allows. Use `:=` only when the type is obvious. An untyped declaration is a compile
+  error (`project.godot`: `untyped_declaration=2`); write `Variant` where a value really is dynamic (parsed
+  JSON).
 - **`##` doc comments** on every script, public function and constant: what it is for, and the source. Inline
   comments only explain why.
 - **Size.** A function is about 50 lines at most, a file about 600. Past that, split by responsibility.
@@ -88,8 +90,11 @@ if card.has_tag(&"galder"): ...
   after`, then `tests/baseline.sh compare before after`: smoke results, the probe and seeded bots for all
   eight characters must match.
 - **A flaky check is a bug.** Fix it, or skip it with a comment naming why and a debt entry.
-- **Lint checks** (in the smoke test) enforce sections 2 and 4: no card id literals in shared code, and
-  generated data matches its generator.
+- **Lint checks** (the smoke test's `lint` section) enforce sections 2 and 4: every script compiles; no card id
+  literals in shared code, and skill scripts name only their own cards; every `Run.<member>` a script names
+  exists; no literal original-asset path; every monster has an attack pattern its tune fits.
+  `tests/check_generated.sh` checks that generated data matches its generator (run it before committing a
+  generator or `data/` change).
 
 ## 6. Changes and commits
 

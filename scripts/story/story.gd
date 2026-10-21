@@ -8,7 +8,7 @@ var _npcs: Dictionary = {}
 
 
 func _init(path: String) -> void:
-	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if data is Dictionary:
 		_npcs = data.get("npcs", {})
 	else:
@@ -37,7 +37,7 @@ func _holds(conditions: Array) -> bool:
 
 
 func _check(cond: String) -> bool:
-	for op in [">=", "<"]:
+	for op: String in [">=", "<"]:
 		var i := cond.find(op)
 		if i > 0:
 			var value := int(Profile.stats.get(cond.substr(0, i), 0))

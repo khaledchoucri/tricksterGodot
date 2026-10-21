@@ -150,7 +150,7 @@ func gear_offers(n: int) -> Array[GearItem]:
 	Run.shuffle(pool)
 	var out: Array[GearItem] = []
 	var quality := clampf(Run.stat("DA") / 60.0, 0.0, 1.0)
-	for it in pool.slice(0, n):
+	for it: ItemData in pool.slice(0, n):
 		out.append(GearItem.roll(it, quality))
 	return out
 

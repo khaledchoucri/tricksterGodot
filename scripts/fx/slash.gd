@@ -17,7 +17,7 @@ var _t := 0.0
 
 static func spawn(parent: Node, at: Vector2, opts := {}) -> Slash:
 	var s := Slash.new()
-	for k in opts:
+	for k: String in opts:
 		s.set(k, opts[k])
 	s.z_index = 15
 	parent.add_child(s)

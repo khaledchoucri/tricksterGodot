@@ -255,7 +255,7 @@ func _compute_stats() -> void:
 		for k: String in gs:
 			s[k] = s.get(k, 0.0) + gs[k]
 	s.HP += bonus_hp
-	for w in ([] if _baseline else worn_pieces()):
+	for w: WardrobeData in ([] if _baseline else worn_pieces()):
 		for k: String in w.stats:
 			s[k] = s.get(k, 0.0) + w.stats[k]
 	# Buffs, always on (Trickster's are timed casts): every held card's stat mods.
