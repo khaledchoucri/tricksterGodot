@@ -881,7 +881,7 @@ func _region_cleared() -> void:
 func _region_boss_name() -> String:
 	for e in Run.route.region.enemies:
 		if e.is_boss:
-			return Run.monster_name(e)
+			return Run.formulas.monster_name(e)
 	return "Boss"
 
 

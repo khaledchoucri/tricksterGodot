@@ -35,7 +35,7 @@ func start(index: int) -> void:
 	var s := _steps()[index]
 	player.enter(Player.State.ATTACK)
 	swing_aim = player.aim  # each swing commits to the aim it started with
-	var speed := Run.attack_speed_mult()
+	var speed := Run.formulas.attack_speed_mult()
 	player.sprite.play_action(s.anim, Combat.screen(swing_aim), s.duration / speed, true, s.frame_range())
 	if s.slash:
 		var w := s.windows[0]
@@ -47,7 +47,7 @@ func start(index: int) -> void:
 func update(delta: float) -> void:
 	_t += delta
 	var s := _steps()[step]
-	var speed := Run.attack_speed_mult()
+	var speed := Run.formulas.attack_speed_mult()
 	var t := _t * speed  # swing time at normal speed
 	var lunge := s.lunge if t < s.windows[s.windows.size() - 1].y else 0.0
 	player.velocity = Combat.screen(swing_aim) * lunge + player.knock
@@ -85,7 +85,7 @@ func _apply(s: ComboStep) -> void:
 			if player.now() >= float(e.get_meta("hit_fx_at", -1.0)) + HIT_EFFECT_GAP:
 				e.set_meta("hit_fx_at", player.now())
 				Cake.play(player.room, HIT_EFFECTS[randi() % 2], e.global_position, {"follow": e})
-			Run.gain_mp(Run.mp_per_hit())
+			Run.gain_mp(Run.formulas.mp_per_hit())
 			landed = true
 	if landed:
 		Audio.play(HIT_SOUNDS[randi() % HIT_SOUNDS.size()], -4.0)
@@ -94,7 +94,7 @@ func _apply(s: ComboStep) -> void:
 
 
 func _mult(s: ComboStep) -> float:
-	var m := Run.attack_mult() * (1.0 + Run.mod("combo_damage%") / 100.0)
+	var m := Run.formulas.attack_mult() * (1.0 + Run.mod("combo_damage%") / 100.0)
 	if s.finisher:
 		m = Run.mod_factor("finisher_damage%", false, m)
 	return m

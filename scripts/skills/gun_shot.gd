@@ -31,7 +31,7 @@ func start() -> void:
 	if not gun.fire():
 		return
 	var reach := gun.range()
-	var dmg := card.value_at(level) * Run.gun_shot_mult()
+	var dmg := card.value_at(level) * Run.formulas.gun_shot_mult()
 	fire_line(self, assisted_aim(self, reach), reach, dmg, gun.last_power, {"no_crit": true})
 
 
@@ -94,7 +94,7 @@ static func fire_line(s: Skill, dir: Vector2, reach: float, amount: float, power
 	var f := fx.duplicate()
 	f.gun = true
 	if power:
-		amount *= POWER_MULT * (1.0 + Run.power_shot_bonus() / 100.0)
+		amount *= POWER_MULT * (1.0 + Run.formulas.power_shot_bonus() / 100.0)
 		f.power_shot = true  # shown as a critical; its power-shot factor is the whole bonus
 	for e in hit_list:
 		Cake.play(s.room, "gun_taget", e.global_position, {"follow": e})

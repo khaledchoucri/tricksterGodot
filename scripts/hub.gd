@@ -328,7 +328,7 @@ func _album(npc: Npc, sets: bool) -> void:
 			var missing: PackedStringArray = []
 			for m in s.monsters:
 				if int(Profile.cards.get(String(m), 0)) == 0:
-					missing.append(Run.monster_name(Run.enemy(m)))
+					missing.append(Run.formulas.monster_name(Run.enemy(m)))
 			options.append({"title": "%s set  →  %s" % [s.display_name, s.reward.display_name], "tag": tag,
 				"icon": s.reward.icon(), "text": s.reward.describe() + ("\nMissing: " + ", ".join(missing) if missing.size() else ""),
 				"disabled": s.claimed() or not done})

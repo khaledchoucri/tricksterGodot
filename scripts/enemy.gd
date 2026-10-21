@@ -99,7 +99,7 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	body_radius = data.body_radius
 	is_boss = data.is_boss
 	is_elite = elite
-	display_name = Run.monster_name(data) if data.display_name != "" or stats_row.is_empty() else stats_row.get("name", String(data.id).capitalize())
+	display_name = Run.formulas.monster_name(data) if data.display_name != "" or stats_row.is_empty() else stats_row.get("name", String(data.id).capitalize())
 	stats = Stats.from_monster(stats_row.get("stats", {}))
 	elements = stats_row.get("elements", {})
 	# Deeper rooms field tougher monsters.
@@ -107,13 +107,13 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 		max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * (1.0 + DEPTH_HP * Run.route.depth))
 		damage = roundi(Run.raw_hit(stats) * DAMAGE_MULT * (1.0 + 0.04 * Run.route.depth))
 	else:
-		# As tough as its original level makes it (Run.mob_hp), whatever the room.
-		max_hp = roundi(Run.mob_hp(stats, Run.route.region) * data.hp_mult)
-		damage = Run.mob_hit(stats, Run.route.region)
+		# As tough as its original level makes it (Run.formulas.mob_hp), whatever the room.
+		max_hp = roundi(Run.formulas.mob_hp(stats, Run.route.region) * data.hp_mult)
+		damage = Run.formulas.mob_hit(stats, Run.route.region)
 		if is_boss:
 			# A boss's original level is far above its region's (Tutankhamen is
 			# 71 among 18-33): it keeps its own HP, but wears the region's armour.
-			var norm: Dictionary = Run.region_norm(Run.route.region)
+			var norm: Dictionary = Run.formulas.region_norm(Run.route.region)
 			stats["DP"] = roundi(norm.DP)
 			stats["MD"] = roundi(norm.MD)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult

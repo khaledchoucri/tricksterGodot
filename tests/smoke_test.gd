@@ -428,23 +428,23 @@ func _balance() -> void:
 		for e in r.enemies:
 			if e.echo or e.min_depth >= 99:
 				continue
-			var st := Stats.from_monster(Run.monster_stats(e).get("stats", {}))
-			var hp: float = Run.mob_hp(st, r) * e.hp_mult
+			var st := Stats.from_monster(Run.formulas.monster_stats(e).get("stats", {}))
+			var hp: float = Run.formulas.mob_hp(st, r) * e.hp_mult
 			if e.is_boss:
 				# Basic hits from a par build at the region's end (about 210 a hit
 				# after Coral Beach, twice that after Desert Beach).
 				var hits: float = hp / (210.0 * (ri + 1))
 				if hits < 15.0 or hits > 120.0:
 					outliers.append("%s boss takes %.0f hits" % [e.id, hits])
-			elif float(Run.mob_hit(st, r)) > Run.region_norm(r).hit * Run.MAX_HIT_SPREAD * Run.MOB_HIT_SCALE * r.damage_scale + 1.0:
+			elif float(Run.formulas.mob_hit(st, r)) > Run.formulas.region_norm(r).hit * Run.formulas.MAX_HIT_SPREAD * Run.formulas.MOB_HIT_SCALE * r.damage_scale + 1.0:
 				outliers.append("%s hits too hard" % e.id)
 	check(outliers.is_empty(), "every monster's HP comes from its original level%s" % ("" if outliers.is_empty() else ": " + ", ".join(outliers)))
 	Profile.class_id = "dragon"
 	Run.new_run()
 	var arrow: CardData = Run.deck.card(&"mana_arrow")
-	var before: float = Run.skill_mult(arrow)
+	var before: float = Run.formulas.skill_mult(arrow)
 	Run._stats["MA"] = Run.stat("MA") * 2
-	check(is_equal_approx(Run.skill_mult(arrow), before * 2.0), "twice the MA is twice Mana Arrow's damage (x%.2f -> x%.2f)" % [before, Run.skill_mult(arrow)])
+	check(is_equal_approx(Run.formulas.skill_mult(arrow), before * 2.0), "twice the MA is twice Mana Arrow's damage (x%.2f -> x%.2f)" % [before, Run.formulas.skill_mult(arrow)])
 	var always := true
 	for i in 20:
 		always = always and Run.deck.card(&"mana_arrow") in Run.deck.card_offers(3, true)
@@ -700,7 +700,7 @@ func _systems(Run: Node) -> void:
 	Profile.give_wardrobe(&"newbie_sprint")
 	Profile.wear("ear", &"bunny_ears")
 	Profile.wear("speed", &"newbie_sprint")
-	var fast: float = Run.speed_mult() / (0.85 if Run.gear.overweight() else 1.0)
+	var fast: float = Run.formulas.speed_mult() / (0.85 if Run.gear.overweight() else 1.0)
 	check(Run.mod("move%") == 18.0 and is_equal_approx(fast, 1.08 * 1.1),
 		"Bunny's Ears and Newbie Sprint add their move%% and compound (x%.3f)" % fast)
 	Profile.worn = worn_before
@@ -717,18 +717,18 @@ func _systems(Run: Node) -> void:
 	check(Run.level == 2 and Run.max_hp > hp and Run.hp == Run.max_hp, "levelling grows HP along Buffalo's graph")
 
 	Run.new_run()
-	var mult: float = Run.attack_mult()
+	var mult: float = Run.formulas.attack_mult()
 	Run.gear.equip(GearItem.make(_item("wood_sword")))
-	check(Run.stat("AP") == Run.cls.base.AP + 20 and Run.attack_mult() > mult * 1.2,
-		"a Wood Sword raises AP and combo damage (x%.2f)" % (Run.attack_mult() / mult))
+	check(Run.stat("AP") == Run.cls.base.AP + 20 and Run.formulas.attack_mult() > mult * 1.2,
+		"a Wood Sword raises AP and combo damage (x%.2f)" % (Run.formulas.attack_mult() / mult))
 	Run.gear.equip(GearItem.make(_item("lucky_amulet")))
 	Run.gear.equip(GearItem.make(_item("topaz_ring")))
 	check(Run.gear.equipped("acc1").data.id == &"lucky_amulet" and Run.gear.equipped("acc2").data.id == &"topaz_ring",
 		"two accessories fill both accessory slots")
-	check(not Run.gear.overweight() and Run.speed_mult() == 1.0, "light gear stays under the load limit")
+	check(not Run.gear.overweight() and Run.formulas.speed_mult() == 1.0, "light gear stays under the load limit")
 	Run.gear.equip(GearItem.make(_item("bamboo_sword")))
 	Run.gear.equip(GearItem.make(_item("clam_shield")))
-	check(Run.gear.overweight() and Run.speed_mult() < 1.0, "heavy gear past WT / 4 (%d / %d) slows you" % [Run.gear.equip_load(), Run.gear.load_limit()])
+	check(Run.gear.overweight() and Run.formulas.speed_mult() < 1.0, "heavy gear past WT / 4 (%d / %d) slows you" % [Run.gear.equip_load(), Run.gear.load_limit()])
 	var pouch := GearItem.make(_item("pocket_pouch"))
 	Run.gear.equip(pouch, "acc1")
 	check(not Run.gear.overweight(), "a Pocket Pouch (+200 WT) carries the load")
@@ -775,7 +775,7 @@ func _systems(Run: Node) -> void:
 
 	Run.route.depth = Run.route.region.job_change_depth
 	check(Run.job_change_due() and Run.job.id == &"fighter", "the trial room brings the Fighter's job change")
-	var sword_mult: float = Run.attack_mult()
+	var sword_mult: float = Run.formulas.attack_mult()
 	var knight: JobData = Run.job.next_jobs[0]
 	Run.start_job(knight)
 	var knight_only: bool = Run.deck.card_offers(3, false, knight).all(func(c: CardData) -> bool: return c in knight.cards)
@@ -786,13 +786,13 @@ func _systems(Run: Node) -> void:
 	Profile.stats["clears_gladiator"] = 1
 	check(Run.job.next_jobs[1].unlocked(), "a Gladiator clear unlocks the Mercenary")
 	Profile.stats.erase("clears_gladiator")
-	check(Run.attack_mult() > sword_mult * 1.1, "Sword Mastery strengthens the sword combo")
+	check(Run.formulas.attack_mult() > sword_mult * 1.1, "Sword Mastery strengthens the sword combo")
 
 	Run.new_run()
-	var evade: float = Run.evade_chance(50)
+	var evade: float = Run.formulas.evade_chance(50)
 	for _i in 3:
 		Run.apply_type("charm")
-	check(Run.evade_chance(50) > evade + 0.08, "Charm raises evasion and unlocks Light Feet")
+	check(Run.formulas.evade_chance(50) > evade + 0.08, "Charm raises evasion and unlocks Light Feet")
 	for _i in 10:
 		Run.apply_type("magic")
 	Run.mp = 0
@@ -889,7 +889,7 @@ func _systems(Run: Node) -> void:
 	Profile.give_wardrobe(&"buffalo_horn")
 	Profile.wear("ear", &"buffalo_horn")
 	Run.new_run()
-	var mult_horn: float = Run.attack_mult()
+	var mult_horn: float = Run.formulas.attack_mult()
 	check(Run.mod("elite_damage%") == 10.0 and Run.stat("AP") == Run.cls.base.AP + 2 + 6 and mult_horn > 1.0,
 		"wearing Buffalo's Horn adds AP and its quirk")
 	Profile.wear("ear", &"")
@@ -1216,8 +1216,8 @@ func magic_line() -> void:
 	Run.deck.cards[&"water_shield"] = 2
 	Run.start_job(load("res://data/jobs/soul_master.tres"))
 	Run.deck.add_card(&"undines_blessing")
-	check(Run.deck.card_level(&"water_shield") == 0 and Run.deck.card_level(&"undines_blessing") == 2 and Run.resist("Water") > 0.0,
-		"Undine's Blessing replaces the Water Shield and keeps its resistance (%d%%)" % Run.resist("Water"))
+	check(Run.deck.card_level(&"water_shield") == 0 and Run.deck.card_level(&"undines_blessing") == 2 and Run.formulas.resist("Water") > 0.0,
+		"Undine's Blessing replaces the Water Shield and keeps its resistance (%d%%)" % Run.formulas.resist("Water"))
 	_remove(target)
 
 	# Dragon: Shaman, Mana Arrow, and the Priest can't learn dark magic.
@@ -1334,11 +1334,11 @@ func sense_line() -> void:
 	check(Run.deck.card_level(&"quick_reload") > 0 and Run.deck.card_level(&"overcharge") == 0 and not gun.charges(),
 		"Lion starts with Quick Reload; the power gauge waits for Overcharge")
 	check(gun.range() > 300.0, "the gun outranges the spells (%d)" % gun.range())
-	var basic_hit := Run.GUN_SHOT * Run.gun_shot_mult()
+	var basic_hit := Run.formulas.GUN_SHOT * Run.formulas.gun_shot_mult()
 	var weakest := INF
 	for id: StringName in [&"power_shot", &"double_shot", &"butt_plate", &"shooting_spree", &"berserk"]:
 		var c := Run.deck.card(id)
-		var per_hit := c.value_at(1) * Run.skill_mult(c) / maxf(c.param("count", 1, 1.0), 1.0)
+		var per_hit := c.value_at(1) * Run.formulas.skill_mult(c) / maxf(c.param("count", 1, 1.0), 1.0)
 		weakest = minf(weakest, per_hit)
 	check(weakest > basic_hit, "every gun skill outhits a basic shot (weakest %d vs %d)" % [weakest, basic_hit])
 	var reload := gun.reload_time()
@@ -1390,11 +1390,11 @@ func sense_line() -> void:
 	Run.deck.cards.erase(&"speedloader")
 	check(Run.deck.grows_basic(Run.deck.card(&"quick_reload")) and Run.deck.grows_basic(Run.deck.card(&"invincible_reload")),
 		"a gunner is always offered Quick Reload and Invincible Reload once learnable")
-	var ac0 := Run.gun_stat_mult()
+	var ac0 := Run.formulas.gun_stat_mult()
 	Run.type_points["power"] += 5  # +10 AC
 	Run.stats_changed()
-	check(is_equal_approx(Run.gun_stat_mult(), Run.gun_attack() / float(Run._ref["AC"])) and Run.gun_stat_mult() > ac0,
-		"gun damage scales with AC (the server's gun formula): x%.2f -> x%.2f" % [ac0, Run.gun_stat_mult()])
+	check(is_equal_approx(Run.formulas.gun_stat_mult(), Run.formulas.gun_attack() / float(Run.ref_stats["AC"])) and Run.formulas.gun_stat_mult() > ac0,
+		"gun damage scales with AC (the server's gun formula): x%.2f -> x%.2f" % [ac0, Run.formulas.gun_stat_mult()])
 	Run.type_points["power"] -= 5
 	Run.stats_changed()
 	# The power zone, with Overcharge.
@@ -1582,16 +1582,16 @@ func talent_hooks() -> void:
 	Run.hp = Run.max_hp
 
 	# adjust: Desperate Rally raises your damage low on HP; Sharp Sense the power shot.
-	var full := Run.attack_mult()
+	var full := Run.formulas.attack_mult()
 	Run.deck.cards[&"desperate_rally"] = 3
 	Run.hp = 1
-	check(Run.attack_mult() > full, "Desperate Rally hits harder near death (x%.2f -> x%.2f)" % [full, Run.attack_mult()])
+	check(Run.formulas.attack_mult() > full, "Desperate Rally hits harder near death (x%.2f -> x%.2f)" % [full, Run.formulas.attack_mult()])
 	Run.deck.cards.erase(&"desperate_rally")
 	Run.hp = Run.max_hp
 	Run.deck.cards[&"sharp_sense"] = 1
 	var keen: CardData = Run.deck.card(&"keen_sense")
 	var want := (100.0 + keen.value_at(Run.deck.MAX_CARD_LEVEL)) * (1.0 + Run.deck.card(&"sharp_sense").value_at(1) / 100.0) - 100.0
-	check(is_equal_approx(Run.power_shot_bonus(), want), "Sharp Sense builds on a mastered Keen Sense (+%.0f%%)" % Run.power_shot_bonus())
+	check(is_equal_approx(Run.formulas.power_shot_bonus(), want), "Sharp Sense builds on a mastered Keen Sense (+%.0f%%)" % Run.formulas.power_shot_bonus())
 	Run.deck.cards.erase(&"sharp_sense")
 
 	_remove(foe)
@@ -1700,26 +1700,26 @@ func charm_line() -> void:
 	# The server's attacks: Volley Kick is AP + 16 HV, so Charm points (HV)
 	# grow it far more than Power Blow (AP alone); Final Blow grows with the
 	# HP you've lost.
-	check(is_equal_approx(Run.attack_power("AP+16HV"), Run.stat("AP") + 16.0 * Run.stat("HV")),
-		"Run.attack_power reads the server's expression (AP + 16 HV = %d)" % Run.attack_power("AP+16HV"))
+	check(is_equal_approx(Run.formulas.attack_power("AP+16HV"), Run.stat("AP") + 16.0 * Run.stat("HV")),
+		"Run.formulas.attack_power reads the server's expression (AP + 16 HV = %d)" % Run.formulas.attack_power("AP+16HV"))
 	var kick := Run.deck.card(&"volley_kick")
 	var blow := Run.deck.card(&"power_blow")
 	var final := Run.deck.card(&"final_blow")
-	var kick0 := Run.skill_mult(kick)
-	var blow0 := Run.skill_mult(blow)
+	var kick0 := Run.formulas.skill_mult(kick)
+	var blow0 := Run.formulas.skill_mult(blow)
 	check(is_equal_approx(kick0, 1.0) and is_equal_approx(blow0, 1.0), "at level 1 the multipliers start at 1")
 	Run.type_points["charm"] += 5  # +10 HV
 	Run.stats_changed()
-	var kick1 := Run.skill_mult(kick)
-	check(kick1 > 1.5 and is_equal_approx(Run.skill_mult(blow), 1.0),
-		"Charm points grow Volley Kick (x%.2f) but not Power Blow (x%.2f)" % [kick1, Run.skill_mult(blow)])
+	var kick1 := Run.formulas.skill_mult(kick)
+	check(kick1 > 1.5 and is_equal_approx(Run.formulas.skill_mult(blow), 1.0),
+		"Charm points grow Volley Kick (x%.2f) but not Power Blow (x%.2f)" % [kick1, Run.formulas.skill_mult(blow)])
 	Run.type_points["charm"] -= 5
 	Run.stats_changed()
-	var fb0 := Run.skill_mult(final)
+	var fb0 := Run.formulas.skill_mult(final)
 	Run.hp = Run.max_hp / 2
-	check(Run.skill_mult(final) > fb0, "Final Blow hits harder the more HP you've lost (x%.2f -> x%.2f)" % [fb0, Run.skill_mult(final)])
+	check(Run.formulas.skill_mult(final) > fb0, "Final Blow hits harder the more HP you've lost (x%.2f -> x%.2f)" % [fb0, Run.formulas.skill_mult(final)])
 	Run.hp = Run.max_hp
-	check(Run.skill_mult(Run.deck.card(&"wild_nail")) == Run.attack_power("16HV") / Run.attack_power("16HV", true),
+	check(Run.formulas.skill_mult(Run.deck.card(&"wild_nail")) == Run.formulas.attack_power("16HV") / Run.formulas.attack_power("16HV", true),
 		"Wild Nail is HV alone")
 
 	# Evolution is a talent: learned, Cat is the beast (trs001) for good, with

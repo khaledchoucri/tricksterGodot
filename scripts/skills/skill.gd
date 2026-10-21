@@ -44,7 +44,7 @@ func skill_mod(effect: String) -> float:
 
 
 func damage(scale := 1.0) -> float:
-	return card.value_at(level) * scale * Run.skill_mult(card)
+	return card.value_at(level) * scale * Run.formulas.skill_mult(card)
 
 
 func start() -> void:
@@ -139,7 +139,7 @@ func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}, fro
 		fx.element = card.element
 	fx.magic = card.scaling == "MA"  # spells meet MD, weapon skills DP
 	fx.scaling = card.scaling  # defence weighs against the stat the skill uses
-	amount *= 1.0 + Run.element_boost(card.element) / 100.0
+	amount *= 1.0 + Run.formulas.element_boost(card.element) / 100.0
 	_supplements(fx, amount)
 	player.deal_hit(e, amount, 1.0, knockback, heavy, fx, player.global_position if from == Vector2.INF else from)
 	card.play("ht", -8.0)
@@ -172,7 +172,7 @@ func _commando(e: Enemy) -> void:
 	linger()
 	if await wait_for(0.25) and is_instance_valid(e) and e.is_hittable():
 		# Dark Commando strikes as a spell of its own (MA, as every Dark spell).
-		player.deal_hit(e, Run.mod("Dark.commando_damage") * Run.skill_mult(card), 1.0, 40.0, false, {"element": "Dark", "magic": true}, e.global_position)
+		player.deal_hit(e, Run.mod("Dark.commando_damage") * Run.formulas.skill_mult(card), 1.0, 40.0, false, {"element": "Dark", "magic": true}, e.global_position)
 		Sparks.burst(room, e.global_position + Vector2(0, -24), Color(0.5, 0.3, 0.7), 10, 120.0)
 	release()
 

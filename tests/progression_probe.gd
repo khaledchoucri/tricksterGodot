@@ -31,15 +31,15 @@ func _ready() -> void:
 			Run.deck.cards[basic] = skill_lv
 			var r: RegionData = Run.route.regions[0 if room < 8 else 1]
 			var d: int = room if room < 8 else room - 8
-			var dmg := c.value_at(skill_lv) * (Run.gun_shot_mult() if basic == &"gun_shot" else Run.skill_mult(c))
+			var dmg := c.value_at(skill_lv) * (Run.formulas.gun_shot_mult() if basic == &"gun_shot" else Run.formulas.skill_mult(c))
 			var line := ""
 			for e in r.enemies:
 				if e.is_boss or e.echo or e.min_depth > d:
 					continue
-				var s: Dictionary = Stats.from_monster(Run.monster_stats(e).get("stats", {}))
+				var s: Dictionary = Stats.from_monster(Run.formulas.monster_stats(e).get("stats", {}))
 				var def := float(s.get("MD" if stat == "MA" else "HV" if stat == "AC" else "DP", 0)) * (1.5 if stat == "AC" else 1.0)
-				var a := Run.gun_attack() if stat == "AC" else Run.attack_power(c.scaling) if charm else float(Run.stat(stat))
-				var hp := Run.mob_hp(s, r) * e.hp_mult
+				var a := Run.formulas.gun_attack() if stat == "AC" else Run.formulas.attack_power(c.scaling) if charm else float(Run.stat(stat))
+				var hp := Run.formulas.mob_hp(s, r) * e.hp_mult
 				line += " %s %.1f" % [String(e.id).left(6), hp / (dmg * a / (a + def))]
-			print("room %2d Lv %2d %s %3d x%.2f sk%d dmg %4d |%s" % [room, lv, stat, Run.stat(stat), Run.skill_mult(c), skill_lv, dmg, line])
+			print("room %2d Lv %2d %s %3d x%.2f sk%d dmg %4d |%s" % [room, lv, stat, Run.stat(stat), Run.formulas.skill_mult(c), skill_lv, dmg, line])
 	get_tree().quit()

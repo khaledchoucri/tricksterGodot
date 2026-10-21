@@ -520,7 +520,7 @@ func _end_room() -> void:
 	for k in mons:
 		avg_hp += k.max_hp / float(mons.size())
 	print("  room %2d  Lv %2d  AP %3d  atk x%.2f  maxHP %4d  DP %3d  dmg-taken x%.2f  mob HP %4.0f  hp lost %d" % [_last_depth + 1,
-		Run.level, Run.stat("AP"), Run.attack_mult(), Run.max_hp, Run.stat("DP"), Run.damage_taken_mult(), avg_hp, _room_hp - Run.hp])
+		Run.level, Run.stat("AP"), Run.formulas.attack_mult(), Run.max_hp, Run.stat("DP"), Run.formulas.damage_taken_mult(), avg_hp, _room_hp - Run.hp])
 
 
 ## Hits and seconds to kill, and how hard monsters hit, by depth band.

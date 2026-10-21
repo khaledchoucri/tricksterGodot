@@ -355,7 +355,7 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 	var magic: bool = fx.get("magic", false)
 	var scaling := String(fx.get("scaling", "MA" if magic else "AP"))
 	if scaling == "GUN" or (fx.get("gun", false) and scaling != "AP"):
-		return e.gun_defense_mult(Run.gun_attack())  # gun hits meet HV
+		return e.gun_defense_mult(Run.formulas.gun_attack())  # gun hits meet HV
 	var attack := float(Run.stat("AP"))
 	if scaling == "MA":
 		attack = float(Run.stat("MA"))
@@ -364,7 +364,7 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 	elif scaling == "HV":
 		attack = float(Run.stat("HV")) * 16.0  # Galder skills: HV at Volley Kick's weight
 	elif scaling.contains("+") or scaling.contains("HV") or scaling.contains("HP") or scaling.contains("LOST"):
-		attack = Run.attack_power(scaling)  # Charm skills: the server's own attack
+		attack = Run.formulas.attack_power(scaling)  # Charm skills: the server's own attack
 	# Raging Nail meets only part of the DP (the server's DisDefenceRatio).
 	return e.defense_mult(magic, attack, float(fx.get("dp_keep", 1.0)))
 
@@ -378,7 +378,7 @@ func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 		t.retaliate(self, attacker, amount, magic)  # Mana Reflector, Dark Barrier
 	for c in Run.deck.held_cards():
 		if c.has_tag(&"retaliate"):
-			deal_hit(attacker, Run.deck.card_value(c.id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
+			deal_hit(attacker, Run.deck.card_value(c.id) * Run.formulas.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
 			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 
@@ -401,10 +401,10 @@ func _state_move() -> void:
 	if try_actions():
 		return
 	var input := move_input() if not Run.in_bunker(now()) else Vector2.ZERO  # dug in: no moving
-	velocity = input * move_speed * Run.speed_mult() + knock
+	velocity = input * move_speed * Run.formulas.speed_mult() + knock
 	if input != Vector2.ZERO:
 		sprite.play_action("run", input)
-		sprite.speed_scale = 1.15 * Run.speed_mult()
+		sprite.speed_scale = 1.15 * Run.formulas.speed_mult()
 	elif gun.has_gun() and now() - gun.fired_at < GUN_READY_TIME and sprite.has_action("combat_stance_gun"):
 		sprite.play_action("combat_stance_gun", aim)  # gun up, ready for the next shot
 	else:
@@ -431,7 +431,7 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var power_shot: bool = fx.get("power_shot", false)
 	# The basic gun shot never rolls a critical: the server's gun formula
 	# (0x59b310) only misses, hits, or lands a power shot.
-	var crit: bool = power_shot or fx.get("force_crit", false) or (not fx.get("no_crit", false) and Run.rng.randf() < Run.crit_chance(e))
+	var crit: bool = power_shot or fx.get("force_crit", false) or (not fx.get("no_crit", false) and Run.rng.randf() < Run.formulas.crit_chance(e))
 	# Low accuracy against an evasive monster grazes for half damage, never misses.
 	var graze: bool = not crit and not fx.get("no_graze", false) and Run.rng.randf() < e.evade_chance(Run.stat("AC"))
 	# Elemental attack from compounds adds its % on top, less the monster's resistance.
@@ -459,7 +459,7 @@ func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool,
 	var effects := fx.duplicate()
 	effects.crit = crit
 	effects.graze = graze
-	var debuffs := Run.hit_debuffs()
+	var debuffs := Run.formulas.hit_debuffs()
 	debuffs.merge(effects.get("debuffs", {}), true)
 	if not debuffs.is_empty():
 		effects.debuffs = debuffs
@@ -514,7 +514,7 @@ func start_dash() -> void:
 	_vaulting = vault > 0.0
 	_dash_len = dash_time * (vault / dash_distance if _vaulting else reach / dash_distance)
 	set_collision_mask_value(1, not _vaulting)
-	dash_ready_at = now() + _dash_len + dash_cooldown * Run.dash_cooldown_mult()
+	dash_ready_at = now() + _dash_len + dash_cooldown * Run.formulas.dash_cooldown_mult()
 	_perfect_this_dash = false
 	invulnerable_until = maxf(invulnerable_until, now() + maxf(dash_invuln, _dash_len + 0.05))
 	set_phasing(true)  # pass through enemies, and don't shove them, while dashing
@@ -587,7 +587,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 	for t in Run.deck.talents():
 		if t.guard(self, magic):  # Guard blocks physical hits outright
 			return
-	if Run.rng.randf() < Run.evade_chance(accuracy):
+	if Run.rng.randf() < Run.formulas.evade_chance(accuracy):
 		invulnerable_until = now() + 0.25
 		Events.text_shown.emit(global_position + Vector2(0, -70), "Evade", Color(0.75, 0.95, 1.0))
 		Audio.play("etc_miss.wav", -8.0)
@@ -595,7 +595,7 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 	var element := attacker.attack_element() if is_instance_valid(attacker) else ""
 	if is_instance_valid(attacker):
 		amount = roundi(amount * (1.0 - attacker.debuff("ap") / 100.0))  # Rust
-	amount = maxi(1, roundi(amount * Run.damage_taken_mult(magic, element)))
+	amount = maxi(1, roundi(amount * Run.formulas.damage_taken_mult(magic, element)))
 	_retaliate(attacker, amount, magic)
 	if Run.in_bunker(now()):
 		Run.bunker_hp -= amount

@@ -410,7 +410,7 @@ func spawn(id: StringName, at: Vector2, elite := false) -> Enemy:
 	var enemy_data := Run.enemy(id)
 	var scene: PackedScene = enemy_data.scene if enemy_data.scene else (BOSS_SCENE if enemy_data.is_boss else ENEMY_SCENE)
 	var e: Enemy = scene.instantiate()
-	e.configure(enemy_data, Run.monster_stats(enemy_data), elite)
+	e.configure(enemy_data, Run.formulas.monster_stats(enemy_data), elite)
 	e.room = self
 	e.player = player
 	e.position = at
@@ -469,7 +469,7 @@ func open_doors(rewards: Array[String], features: Array[StringName] = []) -> voi
 		d.reward = rewards[i]
 		if i < features.size() and features[i] != &"":
 			d.feature = features[i]
-			d.feature_name = Run.monster_name(Run.enemy(features[i]))
+			d.feature_name = Run.formulas.monster_name(Run.enemy(features[i]))
 		d.position = spots[i]
 		world.add_child(d)
 		doors.append(d)

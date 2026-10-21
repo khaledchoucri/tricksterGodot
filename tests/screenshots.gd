@@ -77,7 +77,7 @@ func _shoot() -> void:
 	var last: int = player.combo_steps().size() - 1
 	player.attack.start(last)
 	var fin: ComboStep = player.combo_steps()[last]
-	await _wait(fin.windows[0].x / Run.attack_speed_mult() + 0.03)
+	await _wait(fin.windows[0].x / Run.formulas.attack_speed_mult() + 0.03)
 	await _snap("02_hammer_finisher")
 	game.hud.sheet.toggle()
 	await _wait(0.2)

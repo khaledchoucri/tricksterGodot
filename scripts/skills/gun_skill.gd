@@ -22,7 +22,7 @@ func start() -> void:
 	if card.id == &"shield_breaker":
 		# The breaching round hits as a gun shot plus its breach (Ratio 0.2+).
 		var fx := {"debuffs": {"gunbreak": [card.value_at(level), param("seconds", 5.0)]}}
-		var amount := Run.GUN_SHOT * (1.0 + card.value_at(level) / 100.0) * Run.gun_shot_mult()
+		var amount := Run.formulas.GUN_SHOT * (1.0 + card.value_at(level) / 100.0) * Run.formulas.gun_shot_mult()
 		GunShot.fire_line(self, dir, reach, amount, false, fx)
 		return
 	var shots := maxi(int(param("count", 1)), 1)

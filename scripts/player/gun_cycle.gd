@@ -58,7 +58,7 @@ func charges() -> bool:
 
 ## A reload's length in seconds, as Speedloader leaves it.
 func reload_time() -> float:
-	return 120.0 / maxf(float(gun.get("speed", 100)), 1.0) * Run.reload_mult()
+	return 120.0 / maxf(float(gun.get("speed", 100)), 1.0) * Run.formulas.reload_mult()
 
 
 func reload_ratio() -> float:
@@ -118,7 +118,7 @@ func _physics_process(delta: float) -> void:
 				and not Run.deck.holds_tag(&"reload_while_moving"):
 			progress = 0.0
 		else:
-			progress += ms * float(gun.get("speed", 100)) / 600.0 / Run.reload_mult()
+			progress += ms * float(gun.get("speed", 100)) / 600.0 / Run.formulas.reload_mult()
 		if progress >= FULL:
 			progress = FULL
 			state = State.LOADED

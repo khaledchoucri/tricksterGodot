@@ -114,7 +114,7 @@ func try_cast(slot: int) -> bool:
 	var cooldown := card.cooldown_at(cd_level)
 	if slot == BASIC and Run.cls.basic_cooldown > 0.0:
 		cooldown = Run.cls.basic_cooldown
-	slot_ready_at[slot] = player.now() + cooldown * Run.skill_cooldown_mult()
+	slot_ready_at[slot] = player.now() + cooldown * Run.formulas.skill_cooldown_mult()
 	player.enter(Player.State.SKILL)
 	player.set_meta("casts", int(player.get_meta("casts", 0)) + 1)  # Ghostly Whisper ends on a new cast
 	_skill = skill
