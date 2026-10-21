@@ -73,7 +73,8 @@ if card.has_tag(&"galder"): ...
 - **Every behaviour change has a check** in the smoke test section for its class or system. Run just that
   section while working (`tests/run_smoke.sh charm`, `tests/run_smoke.sh lion ui`; sections: core, power,
   magic, sense, elements, charm, balance, ui, boss, systems). Each section passes on its own. Changes to
-  shared code, and every commit, run the full suite.
+  shared code, and every commit, run the full suite (`tests/run_smoke.sh`). It runs at a fixed 60 fps and a
+  fixed seed (`-- seed=N` to change it), so the full suite takes under a minute and a result repeats exactly.
 - **Test like a player.** Use input actions and real button presses, the real window size and the game clock.
   Measure combat feel (hits to kill, time to kill) with `tests/progression_probe.tscn` and the bots
   (`tests/playtest.tscn`).

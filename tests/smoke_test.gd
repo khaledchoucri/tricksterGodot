@@ -2,7 +2,8 @@ extends Node
 ## Headless smoke test for a Coral Beach run.
 ## Run everything: godot --headless --path . res://tests/smoke_test.tscn
 ## Run some sections: add `-- only=charm,ui` (sections by name) or `-- class=cat,lion`
-## (the sections that test those characters); tests/run_smoke.sh wraps both.
+## (the sections that test those characters); tests/run_smoke.sh wraps both. `-- seed=N`
+## picks the seed every run and placement starts from (default 1, so results repeat).
 ## Each section sets up what it needs, so any subset passes on its own. Changes to
 ## shared code still run the full suite (CLAUDE.md, section 5).
 
@@ -14,6 +15,8 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 
 ## The sections picked on the command line; empty runs them all.
 var only: Array[String] = []
+## The seed for the run's RNG and the test's own placement (seed=N).
+var test_seed := 1
 var failures := 0
 var game
 
@@ -35,6 +38,9 @@ func run_state() -> Node:
 func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		var kv := arg.split("=")
+		if kv.size() == 2 and kv[0] == "seed" and kv[1].is_valid_int():
+			test_seed = int(kv[1])
+			continue
 		var names := kv[1].split(",", false) if kv.size() == 2 else PackedStringArray([arg])
 		for name in names:
 			if kv[0] == "only" and name in SECTIONS:
@@ -46,6 +52,8 @@ func _ready() -> void:
 				get_tree().quit(2)
 				return
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
+	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
+	Run.next_seed = test_seed
 	_run.call_deferred()
 
 

@@ -22,8 +22,8 @@ record() {
 	mkdir -p "$out/bots"
 	git rev-parse --short HEAD > "$out/commit.txt"
 	git status --short -- scripts tests data tools >> "$out/commit.txt"
-	"$G" --headless --path . res://tests/smoke_test.tscn > "$out/smoke.log" 2>&1
-	grep -E "^(PASS|FAIL|SKIP|OK|FAILED)" "$out/smoke.log" | sed -E 's/ \([^()]*\)//g' > "$out/smoke.txt"
+	"$G" --headless --fixed-fps 60 --path . res://tests/smoke_test.tscn > "$out/smoke.log" 2>&1
+	grep -E "^(PASS|FAIL|SKIP|OK|FAILED)" "$out/smoke.log" > "$out/smoke.txt"  # seeded: numbers included
 	"$G" --headless --path . res://tests/progression_probe.tscn > "$out/probe.log" 2>&1
 	grep -vE "^(Godot Engine|$)" "$out/probe.log" > "$out/probe.txt"
 	for pair in $CLASSES; do
