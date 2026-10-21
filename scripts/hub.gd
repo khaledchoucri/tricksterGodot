@@ -185,10 +185,10 @@ func _warehouse_menu(npc: Npc) -> void:
 				options.append({"title": "(unknown item)", "text": "", "disabled": true})
 				continue
 			options.append({"title": g.title(), "tag": "Carried" if Profile.heirloom == i else g.data.slot_name(),
-				"icon": g.data.icon(), "text": g.summary()})
+				"icon": g.data.icon(), "text": g.summary(), "submenu": "stored_item"})
 		options.append({"title": "Carry nothing", "tag": "", "text": "Head out with only the Rookie Sword."})
 		options.append({"title": "Wardrobe", "tag": "%d pieces" % Profile.wardrobe.size(),
-			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints."})
+			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints.", "submenu": "wardrobe"})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
 		var line := "Which one goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
 		var pick := await dialogue.choose(talker.line(String(npc.data.id), line), options)
@@ -234,7 +234,7 @@ func _wardrobe_menu(npc: Npc) -> void:
 		for slot: String in WardrobeData.SLOTS:
 			var w := _piece(Profile.worn.get(slot, ""))
 			options.append({"title": "%s: %s" % [WardrobeData.SLOT_NAMES[slot], w.display_name if w else "nothing"],
-				"tag": "", "icon": w.icon() if w else null, "text": w.describe() if w else "Empty."})
+				"tag": "", "icon": w.icon() if w else null, "text": w.describe() if w else "Empty.", "submenu": "wardrobe_slot"})
 		options.append({"title": "Done", "cancel": true, "tag": "", "text": ""})
 		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Dress up. It's still a game."), options)
 		if pick < 0 or pick >= WardrobeData.SLOTS.size():
@@ -260,8 +260,8 @@ func _wardrobe_menu(npc: Npc) -> void:
 func _cards_menu(npc: Npc) -> void:
 	while true:
 		var page := await dialogue.choose(talker.line(String(npc.data.id), "The album, or the shop?"), [
-			{"title": "The album", "tag": "%d cards" % Profile.cards.size(), "text": "Card sets and their rewards."},
-			{"title": "The shop", "tag": "%d TM" % Profile.tm, "text": "Wardrobe pieces for Time Marks and shards."},
+			{"title": "The album", "tag": "%d cards" % Profile.cards.size(), "text": "Card sets and their rewards.", "submenu": "album"},
+			{"title": "The shop", "tag": "%d TM" % Profile.tm, "text": "Wardrobe pieces for Time Marks and shards.", "submenu": "card_shop"},
 			{"title": "Leave", "cancel": true, "tag": "", "text": "Wear pieces through Keeper Julio's wardrobe."}])
 		if page == 0:
 			await _album(npc, true)
@@ -412,7 +412,7 @@ func _compound_menu(npc: Npc) -> void:
 			mats.append(m)
 			options.append({"title": m.display_name, "tag": "%d / %d" % [Profile.materials[id], m.need], "icon": m.icon(),
 				"text": "Compounds %s into a free slot of a stored item." % m.describe(),
-				"disabled": Profile.materials[id] < m.need})
+				"disabled": Profile.materials[id] < m.need, "submenu": "compound_target"})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "" if mats.size() else "No materials banked yet."})
 		var pick := await dialogue.choose(talker.line(String(npc.data.id), "What are we setting today?"), options)
 		if pick < 0 or pick >= mats.size():

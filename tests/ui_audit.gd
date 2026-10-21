@@ -200,8 +200,10 @@ func _audit_hub() -> void:
 
 
 ## Talks to `npc`, follows `path` through its menus, audits the menu it
-## lands on and backs out. Returns which options of that menu can be
-## explored (enabled and not the exit).
+## lands on and backs out. Returns which options of that menu to explore: for
+## each menu its options lead to, the first enabled one. An option that acts at
+## once (a purchase, a refine) is never picked, so the audit changes nothing, and
+## options opening the same menu (every stored item) are visited once.
 func _talk(hub: Hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
 	var explorable: Array[bool] = []
 	hub.talker.talking = false
@@ -228,8 +230,13 @@ func _talk(hub: Hub, npc: Npc, path: Array, screen: String) -> Array[bool]:
 		if not audited:
 			audited = true
 			await _check_choices(hub, screen)
+			var seen: Dictionary[String, bool] = {}
 			for i in d._buttons.size():
-				explorable.append(i != d._cancel and not d._buttons[i].disabled)
+				var menu := d.opens[i]
+				var go := i != d._cancel and not d._buttons[i].disabled and menu != "" and not seen.has(menu)
+				if go:
+					seen[menu] = true
+				explorable.append(go)
 		# Back out: the exit if there is one, else the last option.
 		d._chosen.emit(d._cancel if d._cancel >= 0 else d._buttons.size() - 1)
 	await _wait(0.3)

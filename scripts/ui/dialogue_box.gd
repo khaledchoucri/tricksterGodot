@@ -39,6 +39,11 @@ func play(lines: Array) -> void:
 	visible = false
 
 
+## For each option of the open choice, the menu it leads to (its "submenu" key), or "" if it
+## acts at once. Options opening the same menu share the name (every stored item opens the
+## same item menu), so the UI audit visits each menu once.
+var opens: Array[String] = []
+
 ## Shows a prompt with options ({"title", "tag", "text"}, optional "icon",
 ## "disabled", "cancel") and returns the index chosen. The cancel option
 ## (Leave, Back...) is pinned under the list and picked with Esc; keys 1-9
@@ -54,6 +59,7 @@ func choose(line: Dictionary, options: Array) -> int:
 			box.remove_child(c)
 			c.queue_free()
 	_buttons.clear()
+	opens.clear()
 	_cancel = -1
 	var key := 0
 	for i in options.size():
@@ -72,6 +78,7 @@ func choose(line: Dictionary, options: Array) -> int:
 		_solid(b)
 		b.pressed.connect(func() -> void: _chosen.emit(i))
 		_buttons.append(b)
+		opens.append(String(o.get("submenu", "")))
 	_footer.visible = _cancel >= 0
 	_scroll.offset_bottom = -252.0 if _footer.visible else -180.0
 	_scroll.visible = true
