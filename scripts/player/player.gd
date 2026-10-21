@@ -15,7 +15,6 @@ const BODY_RADIUS := 11.0
 const VAULT_HOP := 14.0
 ## Berserker's HP and MP loss per second while enemies are near (the
 ## original drains 20 of each during the rage).
-const BERSERK_DRAIN := 1.0
 ## Basic combo for each weapon family.
 const FAMILY_COMBOS := {
 	"sword": preload("res://data/combos/sword.tres"),
@@ -60,11 +59,9 @@ var _phasing := false
 var _vaulting := false
 var _dash_len := 0.2
 var _perfect_this_dash := false
-var _drain := 0.0  # Berserker's HP and MP loss, accumulated
 ## Chakra Balance's recovery: share of max HP per tick, tick length, end time.
 var _regen := {}
 var _mp_regen := 0.0  # mages' MP regeneration, accumulated
-var _oath := 0.0  # seconds toward the next Oath of Light recovery
 var _steps: Array[ComboStep] = []
 
 @onready var sprite: ActorSprite = $Sprite
@@ -338,18 +335,6 @@ func _tick_talents(delta: float) -> void:
 		if _mp_regen >= 1.0:
 			Run.gain_mp(int(_mp_regen))
 			_mp_regen -= int(_mp_regen)
-	var heaven := Run.card_level(&"shield_of_heaven")
-	if heaven > 0 and Run.barrier <= 0 and now() >= Run.barrier_back_at:
-		Run.barrier = roundi(Run.stat("MA") * Run.card_value(&"shield_of_heaven") / 100.0)
-	if Run.card_level(&"oath_of_light") > 0:
-		_oath += delta
-		if _oath >= 10.0:
-			_oath -= 10.0
-			var share := (Run.card_value(&"oath_of_light") + Run.card_value(&"sacred_oath")) / 100.0
-			var gain := maxi(1, roundi(Run.max_hp * share))
-			if Run.hp < Run.max_hp:
-				Run.heal(gain)
-				Events.damage_shown.emit(global_position + Vector2(0, -70), gain, Color(0.5, 1.0, 0.6), false)
 	if not _regen.is_empty():
 		if now() >= float(_regen.until):
 			_regen = {}
@@ -358,22 +343,8 @@ func _tick_talents(delta: float) -> void:
 			var amount := maxi(1, roundi(Run.max_hp * float(_regen.share)))
 			Run.heal(amount)
 			Events.damage_shown.emit(global_position + Vector2(0, -70), amount, Color(0.5, 1.0, 0.6), false)
-	var lvl := Run.card_level(&"guard")
-	if lvl > 0:
-		var most := int(Run.card_value(&"guard"))
-		if Run.guard_blocks >= most:
-			Run.guard_back_at = now() + Run.card(&"guard").param("cooldown", lvl)
-		elif now() >= Run.guard_back_at:
-			Run.guard_blocks += 1
-			Run.guard_back_at = now() + Run.card(&"guard").param("cooldown", lvl)
-	if Run.card_level(&"berserker") > 0 and room and room.live_enemies() > 0:
-		_drain += BERSERK_DRAIN * delta
-		if _drain >= 1.0:
-			var n := int(_drain)
-			_drain -= n
-			Run.mp = maxi(Run.mp - n, 0)
-			if Run.hp > n:
-				Run.take_damage(n)
+	for t in Run.talents():
+		t.tick(self, delta)  # Guard, Shield of Heaven, Oath of Light, Berserker...
 
 
 ## A monster's defence against this hit: MD against magic (spells scaling
@@ -403,17 +374,8 @@ func _defense(e: Enemy, fx: Dictionary) -> float:
 func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 	if not is_instance_valid(attacker) or not attacker.is_hittable():
 		return
-	# Mana Reflector turns its share of a magic hit back on the caster.
-	if magic and Run.card_level(&"mana_reflector") > 0:
-		var share := Run.card_value(&"mana_reflector") / 100.0
-		var reflected := amount * share / maxf(1.0 - share, 0.01)
-		if reflected >= 1.0:
-			attacker.take_hit(roundi(reflected), Combat.ground(attacker.global_position - global_position).normalized(), 0.0, false)
-	var lvl := Run.card_level(&"dark_barrier")
-	if lvl > 0 and not magic:
-		var back := amount * Run.card(&"dark_barrier").param("reflect", lvl) / 100.0
-		if back >= 1.0:
-			attacker.take_hit(roundi(back), Combat.ground(attacker.global_position - global_position).normalized(), 0.0, false)
+	for t in Run.talents():
+		t.retaliate(self, attacker, amount, magic)  # Mana Reflector, Dark Barrier
 	for c in Run.held_cards():
 		if c.has_tag(&"retaliate"):
 			deal_hit(attacker, Run.card_value(c.id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
@@ -622,14 +584,9 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 			Events.text_shown.emit(global_position + Vector2(0, -70), "Perfect dodge", Color(1.0, 0.9, 0.5))
 			Ring.spawn(room.ground_fx, global_position, 40.0, 0.3, Color(1.0, 0.9, 0.5, 0.9))
 		return
-	# Guard blocks physical hits outright, not magic.
-	if not magic and Run.guard_blocks > 0:
-		Run.guard_blocks -= 1
-		invulnerable_until = now() + 0.25
-		Events.text_shown.emit(global_position + Vector2(0, -70), "Guard", Color(0.85, 0.9, 1.0))
-		Audio.play("weapon003.wav", -6.0)
-		Ring.spawn(room.ground_fx, global_position, 30.0, 0.25, Color(0.85, 0.9, 1.0, 0.9))
-		return
+	for t in Run.talents():
+		if t.guard(self, magic):  # Guard blocks physical hits outright
+			return
 	if Run.rng.randf() < Run.evade_chance(accuracy):
 		invulnerable_until = now() + 0.25
 		Events.text_shown.emit(global_position + Vector2(0, -70), "Evade", Color(0.75, 0.95, 1.0))
@@ -648,18 +605,11 @@ func take_hit(amount: int, from_dir: Vector2, knockback: float, magic := false, 
 			Events.text_shown.emit(global_position + Vector2(0, -70), "Bunker broken", Color(0.9, 0.8, 0.6))
 		invulnerable_until = now() + 0.25
 		return
-	if Run.barrier > 0:
-		# Shield of Heaven takes the blow first.
-		var absorbed := mini(Run.barrier, amount)
-		Run.barrier -= absorbed
-		amount -= absorbed
-		Ring.spawn(room.ground_fx, global_position, 30.0, 0.25, Color(1.0, 0.95, 0.6, 0.9))
-		if Run.barrier <= 0:
-			Run.barrier_back_at = now() + Run.card(&"shield_of_heaven").param("cooldown", Run.card_level(&"shield_of_heaven"))
-			Events.text_shown.emit(global_position + Vector2(0, -70), "Barrier broken", Color(1.0, 0.95, 0.6))
-		if amount <= 0:
-			invulnerable_until = now() + 0.25
-			return
+	for t in Run.talents():
+		amount = t.absorb(self, amount)  # Shield of Heaven takes the blow first
+	if amount <= 0:
+		invulnerable_until = now() + 0.25
+		return
 	Run.take_damage(amount)
 	if is_instance_valid(gun):
 		gun.interrupt(true)  # a hit that lands resets the reload, unless Invincible Reload

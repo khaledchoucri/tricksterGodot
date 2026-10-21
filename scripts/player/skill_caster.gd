@@ -106,10 +106,8 @@ func try_cast(slot: int) -> bool:
 		Events.mp_short.emit()
 		return false
 	Run.spend_galder(galder_cost(card, level))
-	if card.cast_at(level) > 0.0 and Run.card_level(&"blood_testament") > 0 and slot != BASIC:
-		# Blood Testament: spells cost health too (never fatal).
-		var hp_cost := roundi(Run.max_hp * Run.card(&"blood_testament").param("hp", Run.card_level(&"blood_testament")) / 100.0)
-		Run.take_damage(mini(hp_cost, Run.hp - 1))
+	for t in Run.talents():
+		t.on_cast(card, level, slot)  # Blood Testament: spells cost health too
 	var skill: Skill = card.behavior.new()
 	skill.card = card
 	skill.level = level

@@ -262,6 +262,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
                ('Resource', f'res://data/materials/{MATERIALS[n % len(MATERIALS)]}.tres', 'm_master')]
         if behavior:
             ext.append(('Script', f'res://scripts/skills/{behavior}.gd', '2_b'))
+        talent = sp.get('talent')
+        if talent:
+            ext.append(('Script', f'res://scripts/talents/{talent}.gd', '3_t'))
         lines = [f'[gd_resource type="Resource" script_class="CardData" load_steps={len(ext) + 1} format=3]', '']
         for t, p, i in ext:
             lines.append(f'[ext_resource type="{t}" path="{p}" id="{i}"]')
@@ -316,6 +319,8 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
             lines.append('mods = Dictionary[String, String]({' + ', '.join(f'"{k}": "{v}"' for k, v in sp['mods'].items()) + '})')
         if behavior:
             lines.append('behavior = ExtResource("2_b")')
+        if talent:
+            lines.append('talent = ExtResource("3_t")')
         with open(os.path.join(out, sp['card'] + '.tres'), 'w', encoding='utf-8', newline='\n') as f:
             f.write('\n'.join(lines) + '\n')
     # Job card lists, in the order the original unlocks them (TM level).

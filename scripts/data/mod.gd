@@ -51,7 +51,7 @@ const ELEMENTS: Array[String] = ["Fire", "Water", "Wind", "Earth", "Elec", "Ligh
 const SKILL_EFFECTS: Array[String] = ["stun_chance", "stun_seconds", "guard_chance", "guard_seconds",
 	"counter_chance", "counter_damage", "ratio", "cards_min", "cards_max", "arrows", "extra_share", "power",
 	"poison", "poison_seconds", "commando_damage", "dx_down", "dx_seconds", "stun", "burn%", "burn_seconds",
-	"fear_chance", "fear_seconds"]
+	"fear_chance", "fear_seconds", "heal%"]
 
 
 ## Whether `key` is one of the keys above.

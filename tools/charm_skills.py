@@ -57,7 +57,7 @@ SPEC = {
     '4006': dict(card='magic_def_breaker', inflicts='md', value=lambda r: r['Comment'], rows={'seconds': 'Seconds'},
                  text='Your hits strip a monster\'s magic veil: {v}% less MD for {seconds} s.'),
     '4007': dict(card='sturdy_shield', mods={'DP%': 'value'}, value=lambda r: r['Comment'], text='A shield on threads circles you: +{v}% DP.'),
-    '4008': dict(card='mana_reflector', mods={'magic_damage_cut%': 'value'}, value=lambda r: r['Ratio'] * 100,
+    '4008': dict(card='mana_reflector', talent='mana_reflector', mods={'magic_damage_cut%': 'value'}, value=lambda r: r['Ratio'] * 100,
                  text='A barrier turns {v}% of each magic hit back on its caster, and you take that much less.'),
     '4009': dict(card='physical_training', mods={'HP': 'value'}, value=lambda r: r['HP'] / 10.0, text='+{v} max HP.'),
     '4010': dict(card='skunk_pouch', behavior='pouch_throw', kind='skill', value=lambda r: 0,

@@ -131,7 +131,7 @@ SPEC = {
     '3502': dict(card='revealing_eye', mods={'reveal_radius': 'value'}, value=lambda r: r['Radius'],
                  text='Hiding monsters within {v} can\'t escape your sight.'),
     '3503': dict(card='gun_overdrive', tags=['grows_gun'], mods={'gun_AP%': 'value'}, value=lambda r: r['Comment'] - 100, text='Your gun\'s Gun AP is {v}% higher.'),
-    '3504': dict(card='sharp_sense', tags=['grows_gun'], upgrades='3205', value=lambda r: r['Comment'] - 100,
+    '3504': dict(card='sharp_sense', talent='sharp_sense', tags=['grows_gun'], upgrades='3205', value=lambda r: r['Comment'] - 100,
                  text='Overcharged shots deal {v}% more damage on top of a mastered Keen Sense.'),
     '3505': dict(card='bunker', behavior='bunker', value=lambda r: r['Comment'], kind='skill',
                  rows={'seconds': 'Seconds'},

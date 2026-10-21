@@ -77,6 +77,8 @@ enum Kind { TALENT, SKILL }
 @export_enum("AP", "MA", "DA", "DP") var scaling := "AP"
 ## Script extending Skill that performs it.
 @export var behavior: Script
+## A Talent subclass for what the card does beyond its numbers (scripts/talents/).
+@export var talent: Script
 
 
 func has_tag(tag: StringName) -> bool:

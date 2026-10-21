@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/ugly_pearl.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/talents/guard.gd" id="3_t"]
 
 [resource]
 script = ExtResource("1_s")
@@ -16,3 +17,4 @@ table = {"value": [1.0, 1.0, 2.0, 3.0, 5.0, 5.0, 5.0, 5.0], "cooldown": [10.0, 1
 sounds = {"ap": "snd_p_207_ap.wav", "ke": "snd_p_207_ke.wav"}
 effects = {"ap": ["P_207_guard_apply"], "ke": ["P_207_guard_keep2"]}
 master_material = ExtResource("m_master")
+talent = ExtResource("3_t")

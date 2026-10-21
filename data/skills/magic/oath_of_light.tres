@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_master"]
+[ext_resource type="Script" path="res://scripts/talents/oath_of_light.gd" id="3_t"]
 
 [resource]
 script = ExtResource("1_s")
@@ -17,3 +18,5 @@ sounds = {"ap": "snd_M_320_ap.wav"}
 effects = {"ap": ["M_320_saint_promise_ap"]}
 master_material = ExtResource("m_master")
 element = "Light"
+mods = Dictionary[String, String]({"oath_of_light.heal%": "value"})
+talent = ExtResource("3_t")

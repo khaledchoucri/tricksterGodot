@@ -304,6 +304,7 @@ func new_run(with_seed := -1) -> void:
 	run_seed = with_seed if with_seed >= 0 else next_seed if next_seed >= 0 else randi()  # the global RNG picks a seed
 	next_seed = -1
 	rng.seed = run_seed
+	_talents.clear()
 	hidden = false
 	hidden_until = 0.0
 	bunker_until = 0.0
@@ -467,12 +468,9 @@ func room_mp_bonus() -> int:
 func try_revive() -> bool:
 	if ServerSettings.hardcore():
 		return false
-	# Revival (Priest line): light brings you back, on its own cooldown.
-	if card_level(&"revival") > 0 and Events.time >= revival_ready_at:
-		revival_ready_at = Events.time + card(&"revival").param("cooldown", 1)
-		hp = maxi(1, roundi(max_hp * card_value(&"revival") / 100.0))
-		Events.player_hp_changed.emit()
-		return true
+	for t in talents():
+		if t.revive():  # Revival: light brings you back, on its own cooldown
+			return true
 	if revives > 0:
 		revives -= 1
 	elif has_trait(&"second_wind") and not second_wind_used:
@@ -1030,6 +1028,23 @@ func held_cards() -> Array[CardData]:
 	return out
 
 
+## The held talents' behaviours (Talent), one per card for the run, in skill-id order.
+func talents() -> Array[Talent]:
+	var out: Array[Talent] = []
+	for c in held_cards():
+		if c.talent == null:
+			continue
+		if not _talents.has(c.id):
+			var t: Talent = c.talent.new()
+			t.card = c
+			_talents[c.id] = t
+		out.append(_talents[c.id])
+	return out
+
+
+var _talents: Dictionary = {}  # card id -> Talent, for this run
+
+
 ## Whether any held card has `tag`.
 func holds_tag(tag: StringName) -> bool:
 	return held_cards().any(func(c: CardData) -> bool: return c.has_tag(tag))
@@ -1357,10 +1372,8 @@ func try_refine(g: GearItem, roll := -1.0) -> String:
 ## lower HP gets, up to double at 0).
 func _berserk_mult() -> float:
 	var m := 1.0 + mod("damage%") / 100.0
-	var line := card(&"desperate_rally").param("hp", card_level(&"desperate_rally")) / 100.0 if card_level(&"desperate_rally") > 0 else 0.0
-	var frac := hp / float(maxi(max_hp, 1))
-	if line > 0.0 and frac < line:
-		m *= 1.0 + card_value(&"desperate_rally") / 100.0 * (1.0 + (line - frac) / line)
+	for t in talents():
+		m = t.adjust(&"damage", m)
 	return m
 
 
@@ -1492,15 +1505,12 @@ func gun_shot_mult() -> float:
 	return gun_stat_mult() * _berserk_mult()
 
 
-## Extra power-shot damage, %: Keen Sense, or Sharp Sense on top of a mastered
-## Keen Sense. The card text's "gun critical" is the power shot: the server's
-## ESASharpSense sets the factor its power-shot formula multiplies (+0x428).
+## Extra power-shot damage, %: Keen Sense's mod, or what Sharp Sense makes of it.
 func power_shot_bonus() -> float:
-	if card_level(&"sharp_sense") > 0:
-		var keen := card(&"keen_sense")
-		var top: float = keen.value_at(MAX_CARD_LEVEL) if keen else 0.0
-		return (100.0 + top) * (1.0 + card_value(&"sharp_sense") / 100.0) - 100.0
-	return mod("power_shot%")
+	var b := mod("power_shot%")
+	for t in talents():
+		b = t.adjust(&"power_shot%", b)
+	return b
 
 
 ## A reload's time against the gun's own. Speedloader sets the client's fill
