@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"sun_wood_rod"
+display_name = "Sun Wood Rod"
+item_id = 603035
+slot = 0
+family = "hammer"
+level = 65
+weight = 130
+stats = {
+"MA": 11,
+"LK": 8
+}
+compound_slots = 2
+refine_stat = "MA"

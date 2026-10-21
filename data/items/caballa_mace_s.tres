@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"caballa_mace_s"
+display_name = "Caballa Mace S"
+item_id = 40081
+slot = 0
+family = "hammer"
+level = 50
+weight = 100
+stats = {
+"AP": 150,
+"DA": 2
+}
+compound_slots = 2
+refine_stat = "AP"

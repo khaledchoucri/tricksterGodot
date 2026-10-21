@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"steel_helmet_50"
+display_name = "Steel Helmet"
+item_id = 620017
+slot = 1
+family = ""
+level = 50
+weight = 50
+stats = {
+"DP": 26,
+"MD": 20
+}
+compound_slots = 1
+refine_stat = "DP"

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"focus_steel_helmet"
+display_name = "Focus Steel Helmet"
+item_id = 620019
+slot = 1
+family = ""
+level = 50
+weight = 50
+stats = {
+"DP": 40,
+"MD": 30,
+"AC": 2,
+"HV": 2
+}
+compound_slots = 2
+refine_stat = "DP"

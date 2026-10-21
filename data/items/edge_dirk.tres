@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"edge_dirk"
+display_name = "Edge Dirk"
+item_id = 601035
+slot = 0
+family = "sword"
+level = 65
+weight = 130
+stats = {
+"AP": 130,
+"DA": 11
+}
+compound_slots = 2
+refine_stat = "AP"

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"edge_epoch_sword"
+display_name = "Edge Epoch Sword"
+item_id = 600035
+slot = 0
+family = "sword"
+level = 65
+weight = 130
+stats = {
+"AP": 182,
+"AC": 8
+}
+compound_slots = 2
+refine_stat = "AP"

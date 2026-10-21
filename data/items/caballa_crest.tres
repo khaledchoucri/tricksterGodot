@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"caballa_crest"
+display_name = "Caballa Crest"
+item_id = 44031
+slot = 1
+family = ""
+level = 50
+weight = 100
+stats = {
+"DP": 26,
+"MD": 20
+}
+compound_slots = 1
+refine_stat = "DP"

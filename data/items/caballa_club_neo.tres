@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"caballa_club_neo"
+display_name = "Caballa Club Neo"
+item_id = 40155
+slot = 0
+family = "hammer"
+level = 65
+weight = 97
+stats = {
+"AP": 160,
+"MA": 8,
+"DA": 6,
+"HV": 6
+}
+compound_slots = 2
+refine_stat = "AP"

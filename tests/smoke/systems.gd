@@ -110,6 +110,16 @@ func run(Run: Node) -> void:
 	var late: Array = Run.gear.gear_offers(30)
 	check(early.all(func(g: GearItem) -> bool: return g.data.level <= 1)
 		and late.any(func(g: GearItem) -> bool: return g.data.level >= 13), "deeper rooms drop higher-level gear")
+	# The Caballa Relics offer their own tier: the level-50 and level-65 lines, every slot.
+	Run.route.depth = Run.route.plan.size() - 2
+	var relics_gear: Array = Run.gear.gear_offers(60)
+	var tier := relics_gear.filter(func(g: GearItem) -> bool: return g.data.level >= 50)
+	var slots := {}
+	for g: GearItem in tier:
+		slots[g.data.slot] = true
+	check(slots.size() >= 4 and tier.any(func(g: GearItem) -> bool: return g.data.level >= 65),
+		"the Relics offer level 50-65 gear (%d of %d offers, %d slots)" % [tier.size(), relics_gear.size(), slots.size()])
+	Run.route.depth = 5
 	var rolls: Array = []
 	for _i in 60:
 		rolls.append(GearItem.roll(_item("wood_sword"), 1.0))

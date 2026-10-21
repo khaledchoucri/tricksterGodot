@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"golden_mole_vest"
+display_name = "Golden Mole Vest"
+item_id = 5028
+slot = 3
+family = ""
+level = 60
+weight = 10
+stats = {
+"DP": 60,
+"MD": 60,
+"LK": 3,
+"HP": 240,
+"MP": 120
+}
+compound_slots = 2
+refine_stat = ""

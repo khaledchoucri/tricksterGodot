@@ -27,6 +27,7 @@ LADDER = [
     '610017', '610018', '3502',              # Classic, Strong Classic, Gun Type 3 (35)
     '3511',                                  # Rose Gun (40)
     '610025', '610026', '3503', '3504',      # Antique, Strong Antique, Gun Type 4, Drill Gun (50)
+    '610033', '610034', '610035',            # Metal, Strong Metal, Precise Metal Gun (65): the Caballa Relics
 ]
 # Compound slots: one, two on the better make of a line.
 TWO_SLOTS = ('Strong ', 'Precise ', 'Drill ', 'Rose ', 'Chrome ')

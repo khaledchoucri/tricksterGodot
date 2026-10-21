@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"dodge_all_necklace"
+display_name = "Dodge-all Necklace"
+item_id = 7047
+slot = 4
+family = ""
+level = 50
+weight = 30
+stats = {
+"HV": 4,
+"HP": 240
+}
+compound_slots = 1
+refine_stat = ""
