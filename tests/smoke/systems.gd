@@ -329,16 +329,31 @@ func run(Run: Node) -> void:
 		Profile.stats.erase(k)
 	Run.new_run()
 
-	# Master Louis raises card caps.
-	var wave: CardData = Run.deck.card(&"shockwave")
-	Profile.materials[String(wave.master_material.id)] = 6
-	Profile.galder = 600
-	check(Run.deck.can_master(wave) and Run.deck.card_cap(&"shockwave") == 5, "6 Hard Scales and 500 G can master Shockwave")
-	Run.deck.master_card(wave)
-	Run.deck.cards[&"shockwave"] = 5
-	Run.deck.add_card(&"shockwave")
-	check(Run.deck.card_cap(&"shockwave") == 6 and Run.deck.card_level(&"shockwave") == 6, "a mastered Shockwave reaches Lv 6")
+	# Master Louis: a mastered skill starts the run, at its mastery level; caps stay at 5.
+	var start: CardData = null
+	for card: CardData in Run.deck.all_cards():
+		if Run.deck.can_start_with(card):
+			start = card
+			break
+	var startable: Array = Run.deck.all_cards().filter(func(card: CardData) -> bool: return Run.deck.can_start_with(card))
+	var own: Array[CardData] = Run.deck.card_pool()
+	check(start != null and startable.all(func(card: CardData) -> bool: return card in own)
+		and not Run.deck.can_start_with(Run.deck.card(&"shockwave")) and Run.deck.card_cap(&"shockwave") == 5,
+		"Buffalo's starting skills are cards of its own trees (%s), not Shockwave, which it has anyway"
+		% ", ".join(startable.map(func(card: CardData) -> String: return card.display_name)))
+	if start:
+		Profile.restorations["skill_shrine"] = 1
+		Profile.materials[String(start.master_material.id)] = 18
+		Profile.galder = 1500
+		Run.deck.master_card(start)
+		Run.deck.master_card(start)
+		Profile.start_skills[String(Run.cls.id)] = String(start.id)
+		Run.new_run()
+		check(Run.deck.card_level(start.id) == 2 and Run.deck.card_cap(start.id) == 5,
+			"a skill mastered twice starts the run at Lv 2 (%s Lv %d)" % [start.display_name, Run.deck.card_level(start.id)])
+		Profile.restorations.erase("skill_shrine")
 	Profile.mastery = {}
+	Profile.start_skills = {}
 	Run.new_run()
 
 	# Server Settings (Heat).

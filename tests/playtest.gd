@@ -479,14 +479,20 @@ func _score(g: GearItem) -> float:
 		+ s.get("MA", 0) * 2.0 + s.get("MP", 0) * 0.1 + s.get("WT", 0) * 0.03
 
 
-## Between runs, invest banked leftovers in the heirloom and in skill
-## mastery, as a player would.
+## Between runs, invest banked leftovers in the heirloom and in a starting
+## skill, as a player would: the bot masters the first skill it can start
+## with as far as it can, and carries it.
 func _city_craft() -> void:
 	if Run.city.system_on(&"mastery"):
 		for c in Run.deck.all_cards():
-			if c.master_material and Run.deck.can_master(c):
+			if not Run.deck.can_start_with(c):
+				continue
+			while Run.deck.can_master(c):
 				Run.deck.master_card(c)
-				print("   mastered %s (cap %d)" % [c.display_name, Run.deck.card_cap(c.id)])
+				print("   mastered %s (starts at Lv %d)" % [c.display_name, Run.deck.start_level(c.id)])
+			if Run.deck.start_level(c.id) > 0:
+				Profile.start_skills[String(Run.cls.id)] = String(c.id)
+				break
 	var h := Profile.heirloom
 	if h < 0 or not Run.city.system_on(&"warehouse"):
 		return

@@ -194,6 +194,7 @@ func new_run(with_seed := -1) -> void:
 	for id in cls.start_cards:
 		if deck.card_level(id) == 0:
 			deck.add_card(id)
+	deck.carry_start_skill()
 	city.carry_heirloom()
 	city.apply_restorations()
 	stats_changed()

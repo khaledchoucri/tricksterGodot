@@ -341,29 +341,62 @@ func _drill_menu(npc: Npc) -> void:
 		Profile.save()
 
 
-## Master Louis raises skill card caps with banked materials and Galder.
+## Master Louis: master a skill (monster materials and Galder) so this character can start
+## runs with it, each master level one level higher, and choose the one carried into runs.
 func _mastery_menu(npc: Npc) -> void:
+	var who := String(Run.cls.id)
 	while true:
 		var cards: Array[CardData] = []
 		var options: Array = []
 		for c in Run.deck.all_cards():
-			if c.master_material == null:
+			if not Run.deck.can_start_with(c):
 				continue
 			cards.append(c)
-			var lvl := int(Profile.mastery.get(String(c.id), 0))
-			var maxed := lvl >= Run.deck.MAX_MASTERY
-			var cost := Run.deck.mastery_cost(c)
-			var have := int(Profile.materials.get(String(cost.material.id), 0))
-			options.append({"title": "%s  ·  cap Lv %d%s" % [c.display_name, Run.deck.card_cap(c.id), "" if maxed else " → %d" % (Run.deck.card_cap(c.id) + 1)],
-				"tag": "Mastered" if maxed else "%d %s (%d)  ·  %d G" % [cost.count, cost.material.display_name, have, cost.galder],
-				"icon": cost.material.icon(), "text": c.describe(Run.deck.card_cap(c.id)), "disabled": not Run.deck.can_master(c)})
+			var lvl := Run.deck.start_level(c.id)
+			var carried := String(Profile.start_skills.get(who, "")) == String(c.id)
+			options.append({"title": "%s  ·  %s" % [c.display_name, "starts at Lv %d" % lvl if lvl else "not mastered"],
+				"tag": "Carried" if carried else ("Mastered" if lvl >= Run.deck.MAX_MASTERY else ""),
+				"icon": c.master_material.icon(), "text": c.describe(maxi(lvl, 1)),
+				"submenu": "start_skill"})
+		var carried_none := not Profile.start_skills.has(who)
+		options.append({"title": "Carry nothing", "tag": "Carried" if carried_none else "",
+			"text": "Start runs with %s's own skills only." % Run.cls.display_name})
 		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d Galder banked." % Profile.galder})
-		var pick := await dialogue.choose(talker.line(String(npc.data.id), "Which technique do you want to take further?"), options)
-		if pick < 0 or pick >= cards.size():
+		var pick := await dialogue.choose(talker.line(String(npc.data.id),
+			"Which technique do you want to walk out of the gate already knowing?"), options)
+		if pick == cards.size():
+			Profile.start_skills.erase(who)
+			Profile.save()
+			continue
+		if pick < 0 or pick > cards.size():
 			return
-		Run.deck.master_card(cards[pick])
+		await _start_skill_menu(npc, cards[pick])
+
+
+## One skill at Master Louis's: master it one level further, or carry it into runs.
+func _start_skill_menu(npc: Npc, c: CardData) -> void:
+	var who := String(Run.cls.id)
+	var lvl := Run.deck.start_level(c.id)
+	var maxed := lvl >= Run.deck.MAX_MASTERY
+	var cost := Run.deck.mastery_cost(c)
+	var have := int(Profile.materials.get(String(cost.material.id), 0))
+	var what := await dialogue.choose(talker.line(String(npc.data.id), "%s. What will it be?" % c.display_name), [
+		{"title": "Master it" if lvl == 0 else "Master it further", "icon": cost.material.icon(),
+			"tag": "Mastered" if maxed else "%d %s (%d)  ·  %d G" % [cost.count, cost.material.display_name, have, cost.galder],
+			"text": "Runs can start with it at Lv %d." % (lvl + 1) if not maxed else "It starts at Lv %d, as far as I can take it." % lvl,
+			"disabled": not Run.deck.can_master(c)},
+		{"title": "Carry it into runs", "tag": "Carried" if String(Profile.start_skills.get(who, "")) == String(c.id) else "",
+			"text": "Every run starts with it at Lv %d." % lvl if lvl else "Master it first.", "disabled": lvl == 0},
+		{"title": "Back", "cancel": true, "tag": "", "text": ""}])
+	if what == 0:
+		Run.deck.master_card(c)
 		Audio.play("ui_unique_get.wav", -4.0)
-		hud.log_line("[System] %s can now reach Lv %d." % [cards[pick].display_name, Run.deck.card_cap(cards[pick].id)], Color("e0b54d"))
+		hud.log_line("[System] %s can start a run at Lv %d." % [c.display_name, Run.deck.start_level(c.id)], Color("e0b54d"))
+	elif what == 1:
+		Profile.start_skills[who] = String(c.id)
+		Profile.save()
+		Audio.play("etc_item1.wav")
+		hud.log_line("[System] Runs start with %s." % c.display_name, Color("a8d8da"))
 
 
 ## Marx refines stored items with banked Galder and Bronze Fragments.

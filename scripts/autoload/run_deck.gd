@@ -4,7 +4,9 @@ extends RefCounted
 ## loadout, a borrowed rune, offers, learning, mastery and the held talents.
 
 const MAX_CARD_LEVEL := 5
-## Master Louis raises a card's cap this many times at most.
+## Master Louis masters a card this many times at most: a mastered card can start a run, at
+## its mastery level. Deviation (user, 2026-10-21): the original's Skill Master raised a
+## skill's level limit (LimitSkillMaster_*); here mastery is what you set out with.
 const MAX_MASTERY := 3
 const SLOTS := 3
 var cards: Dictionary = {}  # StringName card id -> level
@@ -144,13 +146,34 @@ func free_slot() -> int:
 	return loadout.find(&"")
 
 
-## A card's level cap: 5 (or the original's cap when lower), plus its
-## master levels.
+## A card's level cap: 5, or the original's cap when lower.
 func card_cap(id: StringName) -> int:
 	var c := card(id)
 	if c and c.max_level > 0:
 		return c.max_level
-	return MAX_CARD_LEVEL + int(Profile.mastery.get(String(id), 0))
+	return MAX_CARD_LEVEL
+
+
+## Whether this character could start a run with `c`: masterable, one of its own cards
+## (card_pool, as the offers use), and one the starting job could take in the first room
+## (Run.new_run() sets that state up).
+func can_start_with(c: CardData) -> bool:
+	return c.master_material != null and c.max_level == 0 and not is_basic(c.id) \
+		and not c.id in Run.cls.start_cards and c in card_pool() and can_learn(c)
+
+
+## The level a card starts the run at: its mastery level (0: not mastered).
+func start_level(id: StringName) -> int:
+	return int(Profile.mastery.get(String(id), 0))
+
+
+## Learns the character's chosen starting skill at its mastery level.
+func carry_start_skill() -> void:
+	var c := card(StringName(Profile.start_skills.get(String(Run.cls.id), "")))
+	if c == null or not Run.city.system_on(&"mastery") or start_level(c.id) <= 0 or not can_start_with(c):
+		return
+	for _i in start_level(c.id):
+		add_card(c.id)
 
 
 ## What the next master level of a card costs: materials and Galder.

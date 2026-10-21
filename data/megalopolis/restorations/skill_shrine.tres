@@ -6,7 +6,7 @@
 script = ExtResource("1_s")
 id = &"skill_shrine"
 display_name = "Skill Shrine"
-text = "Brings back Master Louis, who raises skill cards past Lv 5 with banked monster materials."
+text = "Brings back Master Louis, who masters a skill with banked monster materials so your runs start with it."
 max_level = 1
 per_level = 1.0
 effect = "system"

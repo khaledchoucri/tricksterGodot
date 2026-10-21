@@ -34,6 +34,8 @@ var wardrobe: Array = []
 var worn: Dictionary = {}
 ## Master levels per skill card (card id -> 0..3): each raises its cap by one.
 var mastery: Dictionary = {}
+## The mastered skill each character starts runs with (class id -> card id).
+var start_skills: Dictionary = {}
 ## The class played (ClassData id).
 var class_id := "buffalo"
 ## The custom Trickster: {"kit": sword/hammer/fists, "graph": preset name,
@@ -73,6 +75,7 @@ func load_profile() -> void:
 	wardrobe = []
 	worn = {}
 	mastery = {}
+	start_skills = {}
 	class_id = "buffalo"
 	drills = []
 	drill = ""
@@ -105,6 +108,7 @@ func load_profile() -> void:
 	worn = data.get("worn", {})
 	for k: String in data.get("mastery", {}):
 		mastery[k] = int(data.mastery[k])
+	start_skills = data.get("start_skills", {})
 	class_id = data.get("class_id", "buffalo")
 	drills = data.get("drills", [])
 	custom = data.get("custom", {})
@@ -120,7 +124,7 @@ func save() -> void:
 		"materials": materials, "stats": stats,
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "heirloom": heirloom,
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
-		"worn": worn, "mastery": mastery, "class_id": class_id, "drills": drills, "drill": drill,
+		"worn": worn, "mastery": mastery, "start_skills": start_skills, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
 
 

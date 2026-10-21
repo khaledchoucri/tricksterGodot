@@ -27,8 +27,8 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
 - **Twelve stats in four types**, with traits at their thresholds. There are six run-gear slots with refining
   and compounding, monster dens and shops.
 - **Between runs:** a warehouse with heirlooms (level-synced, saved at Portable Ports), a death that rolls back
-  what you didn't save, and wardrobe pieces from monster card sets. You also get drilling, card mastery, and
-  Heat (Server Settings).
+  what you didn't save, and wardrobe pieces from monster card sets. You also get drilling, a mastered starting
+  skill from Master Louis, and Heat (Server Settings).
 - **Megalopolis:** eleven people and twelve restorations, each switching a system on inside your runs, and a
   short story told through their conversations.
 

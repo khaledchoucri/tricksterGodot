@@ -263,7 +263,7 @@ Hades paces its unlocks and how the story already works.
 | Compounder's Stall | the Compounder | compound slots, monster materials, compound rooms, recipe compounding in the city |
 | Job Hall | the Job Master | job change at bosses; branch-unlock quests ("clear Coral Beach as Knight without dashing") |
 | Warehouse | the Warehouse Keeper | sending items home, heirlooms, appearance transfer |
-| Skill Shrine | the Skill Master | raising skill caps with monster materials (permanent hunting goals) |
+| Skill Shrine | the Skill Master | mastering a skill with monster materials to start runs with it, one level higher per mastery (permanent hunting goals) |
 | Card House | the Card Collector | monster cards, a bestiary, set rewards that grant wardrobe items |
 | Drill Shop | the Drill Merchant | dig sites, drill upgrades |
 | Guardian Shrine | the Guardian | a persistent companion with runes |
