@@ -104,16 +104,16 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	elements = stats_row.get("elements", {})
 	# Deeper rooms field tougher monsters.
 	if data.echo:
-		max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * (1.0 + DEPTH_HP * Run.depth))
-		damage = roundi(Run.raw_hit(stats) * DAMAGE_MULT * (1.0 + 0.04 * Run.depth))
+		max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * (1.0 + DEPTH_HP * Run.route.depth))
+		damage = roundi(Run.raw_hit(stats) * DAMAGE_MULT * (1.0 + 0.04 * Run.route.depth))
 	else:
 		# As tough as its original level makes it (Run.mob_hp), whatever the room.
-		max_hp = roundi(Run.mob_hp(stats, Run.region) * data.hp_mult)
-		damage = Run.mob_hit(stats, Run.region)
+		max_hp = roundi(Run.mob_hp(stats, Run.route.region) * data.hp_mult)
+		damage = Run.mob_hit(stats, Run.route.region)
 		if is_boss:
 			# A boss's original level is far above its region's (Tutankhamen is
 			# 71 among 18-33): it keeps its own HP, but wears the region's armour.
-			var norm: Dictionary = Run.region_norm(Run.region)
+			var norm: Dictionary = Run.region_norm(Run.route.region)
 			stats["DP"] = roundi(norm.DP)
 			stats["MD"] = roundi(norm.MD)
 	walk_speed = float(stats_row.get("walk_speed", 86.0)) * 0.8 * data.speed_mult
@@ -122,8 +122,8 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	idle_stay = Vector2(stay[0], stay[1])
 	var g: Array = stats_row.get("galder", [0, 20])
 	rewards = {"exp": int(float(stats_row.get("exp", 100)) * 0.6),
-		"tm": int(float(stats_row.get("tm", 30)) * Run.region.tm_scale),
-		"galder": int(Run.rng.randi_range(int(g[0]), int(g[1])) * Run.region.galder_scale) if Run.rng.randf() < 0.6 else 0}
+		"tm": int(float(stats_row.get("tm", 30)) * Run.route.region.tm_scale),
+		"galder": int(Run.rng.randi_range(int(g[0]), int(g[1])) * Run.route.region.galder_scale) if Run.rng.randf() < 0.6 else 0}
 	if elite:
 		display_name = "Elite " + display_name
 		max_hp = int(max_hp * 2.5)

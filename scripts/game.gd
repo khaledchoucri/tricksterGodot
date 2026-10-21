@@ -96,7 +96,7 @@ func _load_room() -> void:
 		room.queue_free()
 		room = null
 		player = null
-	var plan := Run.current_room()
+	var plan := Run.route.current_room()
 	Run.sync_heirlooms()
 	room = Room.new()
 	add_child(room)
@@ -110,10 +110,10 @@ func _load_room() -> void:
 	Run.gain_mp(ROOM_MP + Run.room_mp_bonus())
 	if Run.mod("room_heal%") > 0.0:
 		Run.heal(int(Run.max_hp * (Run.mod("room_heal%") / 100.0)))
-	Audio.play_music(Run.region.boss_music if plan.boss else Run.region.field_music)
-	Audio.play_ambience(Run.region.boss_ambience if plan.boss else Run.region.field_ambience)
+	Audio.play_music(Run.route.region.boss_music if plan.boss else Run.route.region.field_music)
+	Audio.play_ambience(Run.route.region.boss_ambience if plan.boss else Run.route.region.field_ambience)
 	var heat := ServerSettings.heat()
-	hud.set_room("%s  ·  %d / %d%s" % [plan.data.display_name, Run.depth + 1, Run.plan.size(),
+	hud.set_room("%s  ·  %d / %d%s" % [plan.data.display_name, Run.route.depth + 1, Run.route.plan.size(),
 		"  ·  Heat %d" % heat if heat > 0 else ""])
 	hud.hide_boss()
 	await hud.fade(0.0, 0.3)
@@ -121,7 +121,7 @@ func _load_room() -> void:
 		_boss_name = _region_boss_name()
 	var title := _region_boss_name() if plan.boss else plan.data.display_name
 	if plan.local_depth == 0 and not plan.boss:
-		title = "%s\n%s" % [Run.region.display_name, title]
+		title = "%s\n%s" % [Run.route.region.display_name, title]
 	if Run.job_change_due():
 		title += "\n%s's trial: clear it to change job" % Run.job.display_name
 	elif plan.elite:
@@ -130,7 +130,7 @@ func _load_room() -> void:
 	await get_tree().create_timer(0.9).timeout
 	if room and room.is_inside_tree():
 		phase = Phase.FIGHT
-		room.start_encounter(Run.local_depth(), plan.elite, plan.boss)
+		room.start_encounter(Run.route.local_depth(), plan.elite, plan.boss)
 
 
 func _spawn_player(at: Vector2) -> void:
@@ -151,7 +151,7 @@ func _on_room_cleared() -> void:
 		hud.log_line("[System] The Dig Site is quiet again.", Color("94a7b2"))
 		_next_step()
 		return
-	if Run.final_boss():
+	if Run.route.final_boss():
 		_win()
 		return
 	phase = Phase.REWARD
@@ -164,7 +164,7 @@ func _on_room_cleared() -> void:
 	if room != cleared_room:
 		return  # a different room loaded while we waited
 	_steps.clear()
-	if Run.current_room().boss:
+	if Run.route.current_room().boss:
 		_region_cleared()
 	if _legend:
 		_steps.append("legend")
@@ -173,9 +173,9 @@ func _on_room_cleared() -> void:
 	if Run.job_change_due():
 		_steps.append("job")
 	_steps.append(reward_here)
-	if Run.current_room().elite and Run.system_on(&"smithing"):
+	if Run.route.current_room().elite and Run.system_on(&"smithing"):
 		_steps.append("gear")
-	if (Run.local_depth() == Run.region.job_change_depth or Run.current_room().boss) and Run.system_on(&"warehouse"):
+	if (Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss) and Run.system_on(&"warehouse"):
 		_steps.append("port")
 	_next_step()
 
@@ -251,7 +251,7 @@ func _grant(reward: String) -> void:
 				get_tree().paused = true
 				var result: Array = await hud.drill.finished
 				get_tree().paused = false
-				Audio.play_ambience(Run.region.field_ambience)
+				Audio.play_ambience(Run.route.region.field_ambience)
 				_dug(result[0], result[1])
 				return
 		"rune":
@@ -289,7 +289,7 @@ func _grant(reward: String) -> void:
 func _open_doors() -> void:
 	phase = Phase.DOORS
 	var rewards: Array[String] = []
-	var next: Run.RoomPlan = Run.plan[mini(Run.depth + 1, Run.plan.size() - 1)]
+	var next: RoomPlan = Run.route.plan[mini(Run.route.depth + 1, Run.route.plan.size() - 1)]
 	if next.boss:
 		rewards = ["boss"]
 	else:
@@ -317,8 +317,8 @@ func _open_doors() -> void:
 
 func _on_door_entered(reward: String, feature: StringName) -> void:
 	Audio.play("etc_warp.wav")
-	Run.depth += 1
-	Run.current_room().feature = feature
+	Run.route.depth += 1
+	Run.route.current_room().feature = feature
 	reward_here = "card" if reward == "boss" else reward
 	await hud.fade(1.0, 0.25)
 	_load_room()
@@ -460,8 +460,8 @@ Kept in the Megalopolis warehouse, refines and compounds included."),
 					shown.append({"title": "Keep %s" % (Run.rune.display_name if Run.rune else "nothing"), "tag": "", "cancel": true,
 						"text": "Leave the rune where it fell."})
 					continue
-				shown.append({"title": c.display_name, "tag": "Rune · Lv %d · [F]" % (1 + 2 * Run.region_index()),
-					"text": c.describe(1 + 2 * Run.region_index()) + ("\nReplaces %s." % Run.rune.display_name if Run.rune else "")})
+				shown.append({"title": c.display_name, "tag": "Rune · Lv %d · [F]" % (1 + 2 * Run.route.region_index()),
+					"text": c.describe(1 + 2 * Run.route.region_index()) + ("\nReplaces %s." % Run.rune.display_name if Run.rune else "")})
 			title = "A sky-blue rune  ·  borrow a skill"
 	hud.show_pick(title, shown)
 	get_tree().paused = true
@@ -638,7 +638,7 @@ func _on_picked(i: int) -> void:
 			if k != "":
 				_refine(Run.equipped(k))
 				return
-			Audio.play_ambience(Run.region.field_ambience)
+			Audio.play_ambience(Run.route.region.field_ambience)
 	_resume()
 
 
@@ -786,7 +786,7 @@ func _start_ambush() -> void:
 	Events.shake_requested.emit(6.0)
 	hud.notice("You woke something up!")
 	hud.log_line("[System] The noise woke the monsters below!", Color("f07a62"))
-	var wave := room._make_waves(Run.local_depth(), true)
+	var wave := room._make_waves(Run.route.local_depth(), true)
 	room.waves = [wave[wave.size() - 1]]
 	room.wave = -1
 	room._cleared = false
@@ -850,7 +850,7 @@ func _win() -> void:
 	Run.shards += 2
 	Run.finish(true)
 	Audio.play("guild_battlewin.wav")
-	hud.log_line("[Notice] %s cleared. The Harkon Shards resonate." % Run.region.display_name, Color("e0b54d"))
+	hud.log_line("[Notice] %s cleared. The Harkon Shards resonate." % Run.route.region.display_name, Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout
 	if _legend:
 		_return_to = "win"
@@ -872,14 +872,14 @@ func _finish_win() -> void:
 func _region_cleared() -> void:
 	Run.shards += 1
 	Audio.play("guild_battlewin.wav", -4.0)
-	var next: Run.RoomPlan = Run.plan[Run.depth + 1]
-	hud.center("%s cleared\n%s ahead" % [Run.region.display_name, next.region.display_name], 2.0)
-	hud.log_line("[Notice] %s cleared. A Harkon Shard hums. %s lies ahead." % [Run.region.display_name,
+	var next: RoomPlan = Run.route.plan[Run.route.depth + 1]
+	hud.center("%s cleared\n%s ahead" % [Run.route.region.display_name, next.region.display_name], 2.0)
+	hud.log_line("[Notice] %s cleared. A Harkon Shard hums. %s lies ahead." % [Run.route.region.display_name,
 		next.region.display_name], Color("e0b54d"))
 
 
 func _region_boss_name() -> String:
-	for e in Run.region.enemies:
+	for e in Run.route.region.enemies:
 		if e.is_boss:
 			return Run.monster_name(e)
 	return "Boss"

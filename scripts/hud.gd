@@ -304,7 +304,7 @@ func _pack(entries: PackedStringArray, label: Label) -> String:
 
 func show_results(won: bool) -> void:
 	var title: Label = %ResultsTitle
-	title.text = "%s cleared" % Run.region.display_name if won else "Rollback"
+	title.text = "%s cleared" % Run.route.region.display_name if won else "Rollback"
 	title.add_theme_color_override("font_color", Color("e0b54d") if won else Color("f07a62"))
 	var cards: PackedStringArray = []
 	for id: StringName in Run.cards:
@@ -313,7 +313,7 @@ func show_results(won: bool) -> void:
 	for k in Run.EQUIP_SLOTS:
 		if Run.equipped(k):
 			gear.append(Run.equipped(k).title())
-	var rows := [["Rooms cleared", "%d / %d" % [Run.depth + (1 if won else 0), Run.plan.size()]],
+	var rows := [["Rooms cleared", "%d / %d" % [Run.route.depth + (1 if won else 0), Run.route.plan.size()]],
 		["Time", "%d:%04.1f" % [int(Run.time) / 60, fmod(Run.time, 60.0)]],
 		["Level", "%d  %s" % [Run.level, Run.job.display_name]],
 		["Monsters", str(Run.kills)],

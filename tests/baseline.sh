@@ -17,6 +17,10 @@ bot_summary() {
 
 record() {
 	name=$1
+	# Code must not change while a recording runs: tests/baselines/RECORDING says one is.
+	mkdir -p "$BASE"
+	echo "$name $(date)" > "$BASE/RECORDING"
+	trap 'rm -f "$BASE/RECORDING"' EXIT
 	seeds=${2:-3}
 	out=$BASE/$name
 	rm -rf "$out"

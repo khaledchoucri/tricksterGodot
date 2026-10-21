@@ -129,7 +129,7 @@ func _fill_profile() -> void:
 	Profile.ore = 999
 	for r: RestorationData in Run.hub.restorations:
 		Profile.restorations[String(r.id)] = r.max_level
-	for region in Run.regions:
+	for region in Run.route.regions:
 		for e in region.enemies:
 			Profile.cards[String(e.id)] = 9
 	for f in DirAccess.get_files_at("res://data/wardrobe"):

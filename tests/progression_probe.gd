@@ -29,7 +29,7 @@ func _ready() -> void:
 				Run.pending_levels -= 1
 			var skill_lv := mini(1 + room / 3, 5)
 			Run.cards[basic] = skill_lv
-			var r: RegionData = Run.regions[0 if room < 8 else 1]
+			var r: RegionData = Run.route.regions[0 if room < 8 else 1]
 			var d: int = room if room < 8 else room - 8
 			var dmg := c.value_at(skill_lv) * (Run.gun_shot_mult() if basic == &"gun_shot" else Run.skill_mult(c))
 			var line := ""

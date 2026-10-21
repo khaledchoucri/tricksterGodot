@@ -170,15 +170,15 @@ func _shoot_desert() -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.0)
-	for depth in [Run.regions[0].run_length + 1, Run.regions[0].run_length + 5, Run.plan.size() - 1]:
-		Run.depth = depth
+	for depth in [Run.route.regions[0].run_length + 1, Run.route.regions[0].run_length + 5, Run.route.plan.size() - 1]:
+		Run.route.depth = depth
 		game._load_room()
 		await _wait(3.5)
 		if is_instance_valid(game.player):
 			game.player.invulnerable_until = game.player.now() + 999.0
 		await _wait(1.5)
 		await _snap("20_desert_%d" % depth)
-		if depth == Run.regions[0].run_length + 1:
+		if depth == Run.route.regions[0].run_length + 1:
 			for i in Run.echoes.size():
 				game.room.spawn(Run.echoes[i].id, game.player.global_position + Vector2(-120 + 120 * i, -60))
 			Run.take_rune(Run.echoes[0].runes[0])

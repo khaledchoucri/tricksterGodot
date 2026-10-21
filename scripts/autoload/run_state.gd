@@ -6,8 +6,9 @@ extends Node
 
 signal leveled_up(new_level: int)
 
-## Regions a run passes through, in order; the last one's boss ends it.
-const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres"]
+## The run's route (Run.route): the regions it crosses, the planned rooms and how deep you are.
+var route := RunRoute.new()
+
 const HUB_PATH := "res://data/megalopolis/hub.tres"
 const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://data/classes/bunny.tres",
 	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
@@ -40,11 +41,6 @@ const MA_SOFT := 50.0
 const DX_SOFT := 60.0
 const DEF_SOFT := 100.0
 
-var regions: Array[RegionData] = []
-## The region of the room the run is in.
-var region: RegionData:
-	get:
-		return plan[depth].region if depth < plan.size() else regions[0]
 var hub: HubData
 var cls: ClassData
 var classes: Array[ClassData] = []
@@ -61,8 +57,6 @@ var run_seed := 0
 ## then cleared.
 var next_seed := -1
 
-var depth := 0
-var plan: Array[RoomPlan] = []
 var level := 1
 var xp := 0
 var hp := 100
@@ -120,28 +114,9 @@ var bunker_hp := 0
 var _baseline := false
 
 
-## A room in this run's plan: which room, and how it's modified.
-class RoomPlan:
-	var data: RoomData
-	var region: RegionData
-	## Depth within its region (elites, the trial and monster unlocks use it).
-	var local_depth := 0
-	var elite := false
-	var boss := false
-	## Monster the room's waves lean on (chosen with the door), or &"".
-	var feature: StringName
-
-	func _init(p_data: RoomData, p_region: RegionData, p_local := 0, p_elite := false, p_boss := false) -> void:
-		data = p_data
-		region = p_region
-		local_depth = p_local
-		elite = p_elite
-		boss = p_boss
-
-
 func _ready() -> void:
-	for p in REGION_PATHS:
-		regions.append(load(p))
+	for p in route.REGION_PATHS:
+		route.regions.append(load(p))
 	hub = load(HUB_PATH)
 	for p in CLASS_PATHS:
 		classes.append(load(p))
@@ -165,7 +140,7 @@ var _cards: Dictionary = {}  # card id -> CardData, from every region and job
 
 
 func _index_cards() -> void:
-	for r in regions:
+	for r in route.regions:
 		for c in r.cards:
 			_cards[c.id] = c
 	var jobs_left: Array[JobData] = []
@@ -186,7 +161,7 @@ func card(id: StringName) -> CardData:
 
 ## An enemy from any region (or an Echo).
 func enemy(id: StringName) -> EnemyData:
-	for r in regions:
+	for r in route.regions:
 		var e := r.enemy(id)
 		if e:
 			return e
@@ -310,7 +285,7 @@ func new_run(with_seed := -1) -> void:
 	bunker_until = 0.0
 	bunker_hp = 0
 	cls = chosen_class()
-	depth = 0
+	route.depth = 0
 	level = 1
 	xp = 0
 	type_points = {"power": 0, "magic": 0, "sense": 0, "charm": 0}
@@ -355,7 +330,7 @@ func new_run(with_seed := -1) -> void:
 	stats_changed()
 	hp = max_hp
 	mp = max_mp
-	plan = _plan_rooms()
+	route.plan = route.plan_rooms()
 
 
 ## Equips the heirloom chosen in the warehouse, level-synced to the region.
@@ -366,14 +341,14 @@ func _carry_heirloom() -> void:
 	if g == null:
 		return
 	g.stored = Profile.heirloom
-	g.refine_cap = regions[0].refine_cap
+	g.refine_cap = route.regions[0].refine_cap
 	g.sync_level = sync_level()
 	equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
 
 
 ## The item level gear is synced to at this depth (drops use the same scale).
 func sync_level() -> int:
-	return 3 + 3 * depth
+	return 3 + 3 * route.depth
 
 
 ## Re-syncs carried heirlooms to the current depth and region (on entering a room).
@@ -381,7 +356,7 @@ func sync_heirlooms() -> void:
 	for g: GearItem in equipment.values():
 		if g.sync_level >= 0:
 			g.sync_level = sync_level()
-			g.refine_cap = region.refine_cap
+			g.refine_cap = route.region.refine_cap
 	stats_changed()
 
 
@@ -485,7 +460,7 @@ func try_revive() -> bool:
 ## Banks the finished run into the profile and remembers it for the hub.
 ## Heat adds TM; clearing at a new best Heat pays a shard per new level.
 func finish(p_won: bool) -> void:
-	var reached := depth + (1 if p_won else 0)
+	var reached := route.depth + (1 if p_won else 0)
 	var heat := ServerSettings.heat()
 	tm += int(tm * heat * ServerSettings.TM_PER_HEAT)
 	var bounty := 0
@@ -497,34 +472,6 @@ func finish(p_won: bool) -> void:
 	Profile.bank_run(p_won, reached, tm, shards, String(job.id))
 	if system_on(&"warehouse"):
 		last_result.kept = Profile.bank_leftovers(p_won, galder, ore, materials)
-
-
-func _plan_rooms() -> Array[RoomPlan]:
-	var out: Array[RoomPlan] = []
-	for r in regions:
-		var pool := r.rooms.duplicate()
-		shuffle(pool)
-		for i in r.run_length:
-			out.append(RoomPlan.new(pool[i % pool.size()], r, i, i in r.elite_depths))
-		out.append(RoomPlan.new(r.boss_room, r, r.run_length, false, true))
-	return out
-
-
-func current_room() -> RoomPlan:
-	return plan[depth]
-
-
-func local_depth() -> int:
-	return plan[depth].local_depth if depth < plan.size() else depth
-
-
-func region_index() -> int:
-	return regions.find(region)
-
-
-## Whether the current room's boss ends the run (the last region's).
-func final_boss() -> bool:
-	return current_room().boss and region == regions[regions.size() - 1]
 
 
 # ---------------------------------------------------------------- monster curve
@@ -628,7 +575,7 @@ func monster_stats(enemy: EnemyData) -> Dictionary:
 
 ## Whether an Echo joins this elite room (after the first clear).
 func echo_here() -> EnemyData:
-	if not current_room().elite or int(Profile.stats.get("clears", 0)) < 1 or rng.randf() > 0.45:
+	if not route.current_room().elite or int(Profile.stats.get("clears", 0)) < 1 or rng.randf() > 0.45:
 		return null
 	return echoes[rng.randi() % echoes.size()]
 
@@ -636,7 +583,7 @@ func echo_here() -> EnemyData:
 ## Takes a sky-blue rune: its skill goes in slot 4, stronger in later regions.
 func take_rune(c: CardData) -> void:
 	rune = c
-	rune_level = 1 + 2 * region_index()
+	rune_level = 1 + 2 * route.region_index()
 	for e in echoes:
 		if c in e.runes:
 			Profile.stats["runes_" + String(e.id)] = int(Profile.stats.get("runes_" + String(e.id), 0)) + 1
@@ -837,7 +784,7 @@ func auto_points(t: String) -> float:
 
 ## Whether the run has reached its job change and the job has somewhere to go.
 func job_change_due() -> bool:
-	return local_depth() == region.job_change_depth and job.next_jobs.size() > 0 and system_on(&"jobs")
+	return route.local_depth() == route.region.job_change_depth and job.next_jobs.size() > 0 and system_on(&"jobs")
 
 
 func has_passive(id: StringName) -> bool:
@@ -1256,7 +1203,7 @@ func dig_rewards(depth_reached: int) -> Dictionary:
 		out.ore = 1 + depth_reached / 10
 	if depth_reached >= 15:
 		var mats: Array[MaterialData] = []
-		for e in region.enemies:
+		for e in route.region.enemies:
 			if e.material and not e.is_boss:
 				mats.append(e.material)
 		if not mats.is_empty():
@@ -1273,7 +1220,7 @@ func dig_rewards(depth_reached: int) -> Dictionary:
 
 ## Every material the run can drop, by id (for city crafting).
 func material_by_id(id: StringName) -> MaterialData:
-	for r in regions:
+	for r in route.regions:
 		for e in r.enemies:
 			if e.material and e.material.id == id:
 				return e.material
@@ -1324,7 +1271,7 @@ func can_use(it: ItemData) -> bool:
 
 func gear_offers(n: int) -> Array[GearItem]:
 	var pool: Array[ItemData] = []
-	var top := 1 + 3 * depth
+	var top := 1 + 3 * route.depth
 	for it in items:
 		if it.level <= top and it.level >= top - 24 and not it.legend and it != cls.start_weapon and can_use(it):
 			pool.append(it)
@@ -1704,8 +1651,8 @@ func shop_offers() -> Array[Dictionary]:
 		out.append({"kind": "gear", "item": g, "price": int((160 + 24 * g.data.level + 50 * g.slots) * cut)})
 	out.append({"kind": "ore", "count": 3, "price": int(180 * cut)})
 	var mats: Array[MaterialData] = []
-	for e in region.enemies:
-		if e.material and local_depth() >= e.min_depth and not e.is_boss:
+	for e in route.region.enemies:
+		if e.material and route.local_depth() >= e.min_depth and not e.is_boss:
 			mats.append(e.material)
 	if mats.size() > 0:
 		var m: MaterialData = mats[rng.randi() % mats.size()]

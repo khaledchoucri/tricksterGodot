@@ -386,7 +386,7 @@ func _core_rewards() -> void:
 	if game.room == room and is_instance_valid(door):  # it may already have walked into one
 		game.player.global_position = door.global_position
 	await wait(2.6)
-	check(Run.depth == 1 and game.room != room, "entering a door loads room 2 (%s)" % game.room.data.id)
+	check(Run.route.depth == 1 and game.room != room, "entering a door loads room 2 (%s)" % game.room.data.id)
 
 	# Clione's shot travels and hurts the player.
 	await wait(1.0)
@@ -423,8 +423,8 @@ func _core_rewards() -> void:
 func _balance() -> void:
 	var Run := run_state()
 	var outliers: PackedStringArray = []
-	for ri in Run.regions.size():
-		var r: RegionData = Run.regions[ri]
+	for ri in Run.route.regions.size():
+		var r: RegionData = Run.route.regions[ri]
 		for e in r.enemies:
 			if e.echo or e.min_depth >= 99:
 				continue
@@ -512,7 +512,7 @@ func _ui_audit() -> void:
 func _end_of_run() -> void:
 	var Run := run_state()
 	await clear_room()
-	Run.depth = Run.regions[0].run_length
+	Run.route.depth = Run.route.regions[0].run_length
 	game.get_tree().paused = false
 	game.hud.pick_panel.visible = false
 	game._load_room()
@@ -638,7 +638,7 @@ func _systems(Run: Node) -> void:
 	var replays: Array[String] = []
 	for s in [42, 42, 43]:
 		Run.new_run(s)
-		var rooms: Array = Run.plan.map(func(r) -> String: return String(r.data.id) + ("*" if r.elite else ""))
+		var rooms: Array = Run.route.plan.map(func(r) -> String: return String(r.data.id) + ("*" if r.elite else ""))
 		var offers: Array = Run.card_offers(3, false).map(func(c: CardData) -> String: return String(c.id))
 		var gear: Array = Run.gear_offers(3).map(func(g: GearItem) -> String: return g.title() + str(g.stats))
 		replays.append("%s | %s | %s" % [", ".join(rooms), ", ".join(offers), ", ".join(gear)])
@@ -719,9 +719,9 @@ func _systems(Run: Node) -> void:
 	check(dropped, "a failed refine from +5 can drop a level")
 	check(not Run.can_afford_refine(sword) or Run.ore > 0, "refining costs Bronze Fragments and Galder")
 
-	Run.depth = 0
+	Run.route.depth = 0
 	var early: Array = Run.gear_offers(30)
-	Run.depth = 5
+	Run.route.depth = 5
 	var late: Array = Run.gear_offers(30)
 	check(early.all(func(g: GearItem) -> bool: return g.data.level <= 1)
 		and late.any(func(g: GearItem) -> bool: return g.data.level >= 13), "deeper rooms drop higher-level gear")
@@ -743,7 +743,7 @@ func _systems(Run: Node) -> void:
 			offered_smash = offered_smash or c.id == &"upper_smash"
 	check(offered_smash, "Bull's Eye Lv 3 opens Upper Smash")
 
-	Run.depth = Run.region.job_change_depth
+	Run.route.depth = Run.route.region.job_change_depth
 	check(Run.job_change_due() and Run.job.id == &"fighter", "the trial room brings the Fighter's job change")
 	var sword_mult: float = Run.attack_mult()
 	var knight: JobData = Run.job.next_jobs[0]
@@ -771,7 +771,7 @@ func _systems(Run: Node) -> void:
 
 	# Monster materials and compounding.
 	Run.new_run()
-	var penguin: EnemyData = Run.region.enemy(&"blue_penguin")
+	var penguin: EnemyData = Run.route.region.enemy(&"blue_penguin")
 	var ice: MaterialData = penguin.material
 	var drop: Dictionary = Run.add_kill(0, 0, 0, true, false, ice, 0.0)
 	check(drop.material == ice and Run.material_count(ice) == 2, "an elite Blue Penguin drops 2 Cool Ice")
@@ -784,7 +784,7 @@ func _systems(Run: Node) -> void:
 	check(c.stat == "Water" and c.value >= ice.min_value and c.value <= ice.max_value and Run.material_count(ice) == 0
 		and blade.free_slots() == 0, "compounding uses 4 Cool Ice and rolls Water attack %d" % c.value)
 	check(Run.element_attack().get("Water", 0) == c.value, "the sword's Water attack counts toward elemental damage")
-	var hard: MaterialData = Run.region.enemy(&"bustshell").material
+	var hard: MaterialData = Run.route.region.enemy(&"bustshell").material
 	var helm := GearItem.make(_item("candy_hat"))
 	Run.equip(helm)
 	var dp: int = Run.stat("DP")
@@ -794,8 +794,8 @@ func _systems(Run: Node) -> void:
 	var shop: Array[Dictionary] = Run.shop_offers()
 	check(shop.any(func(o: Dictionary) -> bool: return o.kind == "gear") and shop.any(func(o: Dictionary) -> bool: return o.kind == "potion"),
 		"the shop sells gear and potions")
-	Run.depth = 4
-	Run.current_room().feature = &"blue_penguin"
+	Run.route.depth = 4
+	Run.route.current_room().feature = &"blue_penguin"
 	var roller = load("res://scripts/room.gd").new()
 	var penguins := 0
 	var total := 0
@@ -818,11 +818,11 @@ func _systems(Run: Node) -> void:
 	check(carried.data.id == &"wood_sword" and carried.refine == 5 and carried.effective_refine() == 3
 		and carried.sync_factor() < 1.0, "the heirloom comes back level-synced: %s" % carried.title())
 	var synced_ap: int = carried.stats().AP
-	Run.depth = 3
+	Run.route.depth = 3
 	Run.sync_heirlooms()
 	check(carried.stats().AP > synced_ap and carried.sync_factor() == 1.0, "deeper rooms lift the sync (AP %d -> %d)"
 		% [synced_ap, carried.stats().AP])
-	Run.depth = 0
+	Run.route.depth = 0
 	Run.ore = 20
 	Run.galder = 5000
 	Run.try_refine(carried, 0.0)
@@ -841,7 +841,7 @@ func _systems(Run: Node) -> void:
 	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()
 	check(not Run.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")
-	Run.depth = Run.region.job_change_depth
+	Run.route.depth = Run.route.region.job_change_depth
 	check(not Run.job_change_due(), "without the Job Hall the trial room changes nothing")
 	_restore_all(Run)
 	check(Run.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
@@ -867,7 +867,7 @@ func _systems(Run: Node) -> void:
 
 	# Echoes appear in elite rooms only after a first clear.
 	Run.new_run()
-	Run.depth = Run.regions[0].elite_depths[0]
+	Run.route.depth = Run.route.regions[0].elite_depths[0]
 	var echo_seen := false
 	for _i in 40:
 		echo_seen = echo_seen or Run.echo_here() != null
@@ -1614,7 +1614,7 @@ func elements_and_shields() -> void:
 	check(absf(float(hp - target.hp) / plain - 0.6) < 0.05, "40%% physical resistance takes 40%% off a hit (%d)" % (hp - target.hp))
 	check(target.attack_element() == "", "physical resistance is never a monster's attack element")
 	var mats: Array[String] = []
-	for r in Run.regions:
+	for r in Run.route.regions:
 		for e in r.enemies:
 			if e.material and e.material.is_element():
 				mats.append(e.material.stat)
@@ -1628,10 +1628,10 @@ func elements_and_shields() -> void:
 	p.refresh_gear()
 	var offered_shield := false
 	for i in 40:
-		Run.depth = i % 16
+		Run.route.depth = i % 16
 		for g in Run.gear_offers(3):
 			offered_shield = offered_shield or g.data.slot == ItemData.Slot.SHIELD
-	Run.depth = 0
+	Run.route.depth = 0
 	check(not offered_shield, "a gunner is never offered a shield")
 	Profile.class_id = "fox"
 	Run.new_run()

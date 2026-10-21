@@ -328,7 +328,7 @@ func start_encounter(depth: int, elite: bool, boss: bool) -> void:
 
 
 func _boss_id() -> StringName:
-	for e in Run.region.enemies:
+	for e in Run.route.region.enemies:
 		if e.is_boss:
 			return e.id
 	return &""
@@ -336,13 +336,13 @@ func _boss_id() -> StringName:
 
 func _make_waves(depth: int, elite: bool) -> Array:
 	var pool: Array[EnemyData] = []
-	for e in Run.region.enemies:
+	for e in Run.route.region.enemies:
 		if not e.is_boss and depth >= e.min_depth:
 			pool.append(e)
 	var out: Array = []
 	var count := 2 if depth < 3 else 3
 	for w in count:
-		var budget := 3.0 + depth * 1.2 + w * 1.5 + Run.region_index() * 2.0
+		var budget := 3.0 + depth * 1.2 + w * 1.5 + Run.route.region_index() * 2.0
 		var wave_list: Array[Dictionary] = []
 		var shooters := 0
 		while budget >= 1.0:
@@ -354,7 +354,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 				break
 			var pick: EnemyData = options[Run.rng.randi() % options.size()]
 			# A featured monster (its den) fills about half of each wave.
-			var featured := Run.enemy(Run.current_room().feature) if Run.current_room().feature != &"" else null
+			var featured := Run.enemy(Run.route.current_room().feature) if Run.route.current_room().feature != &"" else null
 			if featured and featured in options and Run.rng.randf() < 0.5:
 				pick = featured
 			if pick.kind == "shot":

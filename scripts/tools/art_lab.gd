@@ -38,7 +38,7 @@ var _home: Array[Vector2] = []
 func _ready() -> void:
 	_room = Room.new()
 	add_child(_room)
-	_room.build(Run.region.rooms[0])
+	_room.build(Run.route.region.rooms[0])
 	var center := _room.nearest_reachable(_room.rect.get_center())
 	var names: Array[String] = ["buffalo"]
 	if DirAccess.dir_exists_absolute("res://art_build"):

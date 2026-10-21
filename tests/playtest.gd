@@ -68,7 +68,7 @@ func _ready() -> void:
 			seed_base = int(kv[1])
 	Events.enemy_died.connect(func(e: Enemy) -> void:
 		if e.first_hit_at >= 0.0:
-			kill_log.append({"region": Run.region_index(), "depth": Run.depth, "elite": e.is_elite or e.is_boss,
+			kill_log.append({"region": Run.route.region_index(), "depth": Run.route.depth, "elite": e.is_elite or e.is_boss,
 				"boss": e.is_boss, "ttk": e.now() - e.first_hit_at, "hits": e.hits_taken, "max_hp": e.max_hp}))
 	# What the bot casts, and why a cast was refused (the caster's messages).
 	Events.skill_cast.connect(func(slot: int) -> void:
@@ -80,7 +80,7 @@ func _ready() -> void:
 			_refused[text] = int(_refused.get(text, 0)) + 1)
 	Events.player_hp_changed.connect(func() -> void:
 		if _hp_seen > Run.hp and Run.max_hp > 0:
-			hit_log.append({"region": Run.region_index(), "pct": 100.0 * (_hp_seen - Run.hp) / Run.max_hp})
+			hit_log.append({"region": Run.route.region_index(), "pct": 100.0 * (_hp_seen - Run.hp) / Run.max_hp})
 		_hp_seen = Run.hp)
 	var chosen := Profile.class_id
 	Profile.use_path("user://playtest_profile%s.json" % tag, true)
@@ -145,7 +145,7 @@ func _one_run(index: int) -> void:
 	for k in Run.EQUIP_SLOTS:
 		if Run.equipped(k):
 			gear.append(Run.equipped(k).title())
-	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.depth + (1 if Run.won else 0),
+	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.route.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.cards.duplicate(), "rooms": _room_log.duplicate(),
 		"ore": Run.ore, "galder": Run.galder, "around": killers, "materials": Run.materials.duplicate(),
@@ -180,16 +180,16 @@ func _tick(delta: float) -> void:
 	if not is_instance_valid(player) or player.state == Player.State.DEAD:
 		_release()
 		return
-	if Run.depth != _last_depth:
+	if Run.route.depth != _last_depth:
 		_end_room()
-		_last_depth = Run.depth
+		_last_depth = Run.route.depth
 		_room_t = 0.0
 		_room_hp = Run.hp
 	match game.phase:
 		game.Phase.FIGHT:
 			_room_t += delta
 			if _room_t > ROOM_LIMIT:
-				print("  stuck in room %d (%s); clearing it" % [Run.depth + 1, game.room.data.id])
+				print("  stuck in room %d (%s); clearing it" % [Run.route.depth + 1, game.room.data.id])
 				for e in game.room.enemies:
 					print("    %s state %d at %s reachable %s path %d  player at %s" % [e.data.id, e.state, e.global_position,
 						game.room.is_walkable(e.global_position), game.room.find_path(player.global_position, e.global_position).size(),
