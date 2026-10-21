@@ -17,3 +17,4 @@ sounds = {"ap": "snd_M_319_ap.wav"}
 effects = {"ap": ["M_319_bloody_oath_ap"]}
 master_material = ExtResource("m_master")
 element = "Dark"
+mods = Dictionary[String, String]({"MA%": "value"})

@@ -15,3 +15,4 @@ table = {"value": [22.0, 37.0, 56.0, 69.0, 90.0, 99.0, 108.0, 118.0]}
 sounds = {"ap": "snd_skl_pub2_sbg.wav"}
 effects = {"ap": ["eft_skl_m_013_sbg"]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"MP": "value"})

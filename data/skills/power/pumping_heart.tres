@@ -13,3 +13,4 @@ text = "+{v}% AP."
 requires = {&"burning_rave": 1}
 table = {"value": [6.0, 8.0, 11.0, 13.0, 16.0, 16.0, 16.0, 16.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"AP%": "value"})

@@ -593,6 +593,25 @@ func _systems(Run: Node) -> void:
 	check(replays[0] == replays[1] and replays[0] != replays[2] and Run.run_seed == 43,
 		"the same seed replays the room plan, offers and gear, and another seed doesn't (%s...)" % replays[0].left(60))
 	Run.new_run()
+
+	# Cards declare their stat mods; Run.mod() sums the held ones.
+	var bad_keys: PackedStringArray = []
+	var modded := 0
+	for c: CardData in Run.all_cards():
+		modded += 1 if not c.mods.is_empty() else 0
+		for key: String in c.mods:
+			if not Mod.is_key(key):
+				bad_keys.append("%s:%s" % [c.id, key])
+	check(bad_keys.is_empty() and modded >= 17, "every card's mods use known keys (%d cards with mods)%s"
+		% [modded, "" if bad_keys.is_empty() else ": " + ", ".join(bad_keys)])
+	var ap0: int = Run.stat("AP")
+	var heart: CardData = Run.card(&"pumping_heart")
+	Run.cards[&"pumping_heart"] = 3
+	Run.stats_changed()
+	check(is_equal_approx(Run.mod("AP%"), heart.value_at(3)) and Run.stat("AP") == floori(ap0 * (1.0 + heart.value_at(3) / 100.0)),
+		"a held AP%% card raises AP by its value (+%s%%: %d -> %d)" % [heart.value_at(3), ap0, Run.stat("AP")])
+	Run.cards.erase(&"pumping_heart")
+	Run.stats_changed()
 	var ap: int = Run.stat("AP")
 	var ac: int = Run.stat("AC")
 	var t: Dictionary = Run.apply_type("power")

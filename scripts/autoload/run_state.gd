@@ -155,6 +155,10 @@ func _ready() -> void:
 			_cards[c.id] = c
 	if FileAccess.file_exists(MONSTERS_PATH):
 		monster_data = JSON.parse_string(FileAccess.get_file_as_string(MONSTERS_PATH))
+	for c: CardData in _cards.values():
+		for key: String in c.mods:
+			if not Mod.is_key(key):
+				push_error("%s: unknown mod key %s (see scripts/data/mod.gd)" % [c.resource_path, key])
 
 
 var _cards: Dictionary = {}  # card id -> CardData, from every region and job
@@ -667,21 +671,12 @@ func _compute_stats() -> void:
 	for w in ([] if _baseline else worn_pieces()):
 		for k: String in w.stats:
 			s[k] = s.get(k, 0.0) + w.stats[k]
-	# Buffs, always on (Trickster's are timed casts).
-	s.AP *= 1.0 + (card_value(&"pumping_heart") + card_value(&"adrenaline")) / 100.0
-	s.AC *= 1.0 + (card_value(&"bulls_eye") + card_value(&"eagle_eye")) / 100.0
-	s.MA *= 1.0 + (card_value(&"mist_of_mana") + card_value(&"blood_testament")) / 100.0
-	s.DA *= 1.0 + card_value(&"sixth_sense") / 100.0
-	s.LK *= 1.0 + (card_value(&"lucky_seven") + card_value(&"aura_of_luck")) / 100.0
-	s.WT += card_value(&"heavy_carrier")
-	s.HV *= 1.0 + card_value(&"dodge_master") / 100.0
-	s.DP *= 1.0 + (card_value(&"shield_all") + card_value(&"sturdy_shield")) / 100.0
-	s.HP += card_value(&"physical_training")
+	# Buffs, always on (Trickster's are timed casts): every held card's stat mods.
+	for key: String in Mod.STAT_PERCENT:
+		s[key.trim_suffix("%")] *= 1.0 + mod(key) / 100.0
+	for key: String in Mod.STAT_FLAT:
+		s[key] += mod(key)
 	_form_stats(s)
-	var guard := card(&"light_shield").param("guard", card_level(&"light_shield")) if card(&"light_shield") else 0.0
-	s.MD *= 1.0 + (card_value(&"mana_shield") + guard) / 100.0
-	s.DP *= 1.0 + guard / 100.0
-	s.MP += card_value(&"bottle_of_mana")
 	for k: String in s:
 		_stats[k] = maxi(0, floori(s[k]))
 
@@ -999,6 +994,19 @@ func card_level(id: StringName) -> int:
 	if rune and id == rune.id:
 		return rune_level
 	return cards.get(id, 0)
+
+
+## The sum of every held card's `mods` for `key` (a Mod key), at the card's level.
+func mod(key: String) -> float:
+	assert(Mod.is_key(key), "not a Mod key: " + key)
+	var total := 0.0
+	for id: StringName in cards:
+		var c := card(id)
+		if c and c.mods.has(key):
+			total += c.mod_at(key, card_level(id))
+	if rune and not cards.has(rune.id) and rune.mods.has(key):
+		total += rune.mod_at(key, rune_level)
+	return total
 
 
 func card_value(id: StringName) -> float:

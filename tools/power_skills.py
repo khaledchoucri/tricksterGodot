@@ -28,8 +28,8 @@ SPEC = {
     # ---- 1st job: Fighter and Schoolgirl
     '1001': dict(card='shockwave', kind='skill', behavior='shockwave', value=pct_hit,
                  text='Gather all your strength into one blow that knocks enemies around you down for {v} damage.'),
-    '1002': dict(card='pumping_heart', value=lambda r: r['Comment'], text='+{v}% AP.'),
-    '1003': dict(card='bulls_eye', value=lambda r: r['Comment'], text='+{v}% Accuracy (AC): fewer grazes on evasive foes.'),
+    '1002': dict(card='pumping_heart', mods={'AP%': 'value'}, value=lambda r: r['Comment'], text='+{v}% AP.'),
+    '1003': dict(card='bulls_eye', mods={'AC%': 'value'}, value=lambda r: r['Comment'], text='+{v}% Accuracy (AC): fewer grazes on evasive foes.'),
     '1004': dict(card='burning_rave', kind='skill', behavior='burning_rave', value=pct_hit,
                  text='Two blows fused into one: a heavy strike for {v} damage.'),
     '1005': dict(card='armor_breaker', value=lambda r: r['Comment'], rows={'seconds': 'Seconds'},
@@ -54,7 +54,7 @@ SPEC = {
                  text='Uppercut an enemy into the air for {v} damage.'),
     '1104': dict(card='quad_punch', kind='skill', behavior='quad_punch', value=lambda r: pct_hit(r) / 4,
                  text='Four blazing blows in a row, {v} damage each.'),
-    '1105': dict(card='eagle_eye', value=lambda r: r['Comment'], text='+{v}% Accuracy (AC).'),
+    '1105': dict(card='eagle_eye', mods={'AC%': 'value'}, value=lambda r: r['Comment'], text='+{v}% Accuracy (AC).'),
     '1106': dict(card='counter_punch', value=pct_hit, rows={'chance': lambda r: 50},
                  text='While you Uppercut, a {chance}% chance of a counter blow for {v} more damage.'),
     '1107': dict(card='guard', name='Guard', value=lambda r: r['Count'], rows={'cooldown': 'CoolTime'},
@@ -92,7 +92,7 @@ SPEC = {
                  rows={'targets': 'KillNum', 'stun': 'StunTime', 'chance': lambda r: r['StunRatio'] * 100},
                  text='Lightning strikes the nearest enemies (up to {targets}) for {v} damage, with a {chance}% chance to stun for {stun} s.'),
     # ---- Champion
-    '1301': dict(card='adrenaline', value=lambda r: r['Comment'], text='+{v}% AP.'),
+    '1301': dict(card='adrenaline', mods={'AP%': 'value'}, value=lambda r: r['Comment'], text='+{v}% AP.'),
     '1302': dict(card='flash_cut', kind='skill', behavior='flash_cut', value=pct_hit, rows={'range': 'Range'},
                  text='Close {range} in a flash and strike for {v} damage.'),
     '1303': dict(card='flaming_fist', kind='skill', behavior='flaming_fist', value=pct_hit, element='fire',

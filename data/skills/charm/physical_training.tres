@@ -12,3 +12,4 @@ skill_id = 4009
 text = "+{v} max HP."
 table = {"value": [50.0, 71.0, 110.0, 141.0, 236.0, 260.0, 283.0, 307.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"HP": "value"})

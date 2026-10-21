@@ -17,3 +17,4 @@ sounds = {"ap": "snd_m_217_ap.wav", "ke": "snd_m_313_ke.wav"}
 effects = {"ap": ["M_217_water_shield_apply"], "ke": ["M_313_light_shield_keep"]}
 master_material = ExtResource("m_master")
 element = "Light"
+mods = Dictionary[String, String]({"MD%": "guard", "DP%": "guard"})

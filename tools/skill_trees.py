@@ -300,6 +300,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
             lines.append(f'element = "{element}"')
         if sp.get('scaling'):
             lines.append(f'scaling = "{sp["scaling"]}"')
+        if sp.get('mods'):
+            # What the card adds to Run.mod(): a Mod key -> 'value' or one of its table rows.
+            lines.append('mods = Dictionary[String, String]({' + ', '.join(f'"{k}": "{v}"' for k, v in sp['mods'].items()) + '})')
         if behavior:
             lines.append('behavior = ExtResource("2_b")')
         with open(os.path.join(out, sp['card'] + '.tres'), 'w', encoding='utf-8', newline='\n') as f:

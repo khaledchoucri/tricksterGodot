@@ -44,6 +44,9 @@ enum Kind { TALENT, SKILL }
 @export var table: Dictionary = {}
 ## Monster material Master Louis takes to raise this card's level cap.
 @export var master_material: MaterialData
+## What the card adds to Run.mod() while held: a Mod key -> "value" (its value at its level)
+## or the name of one of its table rows. Written by the generators from each card's SPEC.
+@export var mods: Dictionary[String, String] = {}
 
 @export_group("Skill")
 @export var mp_cost := 0
@@ -66,6 +69,15 @@ func param(name: String, level: int, default := 0.0) -> float:
 	if row.is_empty() or level <= 0:
 		return default
 	return float(row[mini(level, row.size()) - 1])
+
+
+## What this card adds to Run.mod(`key`) at `level`: its value, or the table row its `mods`
+## names; 0 when it adds nothing to that key.
+func mod_at(key: String, level: int) -> float:
+	var source: String = mods.get(key, "")
+	if source == "":
+		return 0.0
+	return value_at(level) if source == "value" else param(source, level)
 
 
 func value_at(level: int) -> float:

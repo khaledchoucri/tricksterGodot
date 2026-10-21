@@ -14,3 +14,4 @@ requires = {&"lucky_seven": 2}
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [6.0, 8.0, 11.0, 13.0, 18.0, 18.0, 18.0, 18.0]}
 master_material = ExtResource("m_master")
+mods = Dictionary[String, String]({"LK%": "value"})
