@@ -6,7 +6,10 @@ extends Node
 ## every change.
 
 const VERSION := 2
-const WAREHOUSE_SIZE := 20
+## The warehouse is the original's grid (WareHouseUI.ucf: 8 wide, 3 rows shown, up to 10 rows).
+const WAREHOUSE_ROW := 8
+const WAREHOUSE_ROWS_START := 3
+const WAREHOUSE_ROWS_MAX := 10
 const DEFAULT_PATH := "user://profile.json"
 
 var path := DEFAULT_PATH
@@ -22,6 +25,8 @@ var stats := {"runs": 0, "deaths": 0, "clears": 0, "best_depth": 0, "shards_foun
 var flags: Dictionary = {}         # String -> true
 var restorations: Dictionary = {}  # restoration id -> level
 ## Items sent home (GearItem.to_dict()).
+## Rows of shelves bought so far (Keeper Julio sells more for Harkon Shards).
+var warehouse_rows := WAREHOUSE_ROWS_START
 var warehouse: Array = []
 ## What is worn from the warehouse in every run: gear slot key -> shelf index.
 var loadout: Dictionary = {}
@@ -74,6 +79,7 @@ func load_profile() -> void:
 	flags = {}
 	restorations = {}
 	warehouse = []
+	warehouse_rows = WAREHOUSE_ROWS_START
 	loadout = {}
 	lost_bag = {}
 	server_settings = {}
@@ -108,6 +114,7 @@ func load_profile() -> void:
 	for k: String in data.get("loadout", {}):
 		loadout[k] = int(data.loadout[k])
 	legacy_heirloom = int(data.get("heirloom", -1))
+	warehouse_rows = clampi(int(data.get("warehouse_rows", WAREHOUSE_ROWS_START)), WAREHOUSE_ROWS_START, WAREHOUSE_ROWS_MAX)
 	lost_bag = data.get("lost_bag", {})
 	for k: String in data.get("server_settings", {}):
 		server_settings[k] = int(data.server_settings[k])
@@ -132,7 +139,7 @@ func save() -> void:
 		return
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "galder": galder, "ore": ore,
 		"materials": materials, "stats": stats,
-		"flags": flags, "restorations": restorations, "warehouse": warehouse, "loadout": loadout, "lost_bag": lost_bag,
+		"flags": flags, "restorations": restorations, "warehouse": warehouse, "warehouse_rows": warehouse_rows, "loadout": loadout, "lost_bag": lost_bag,
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
 		"worn": worn, "mastery": mastery, "start_skills": start_skills, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
@@ -210,7 +217,7 @@ func wear(slot: String, piece: StringName) -> void:
 
 ## Stores an item sent home; returns its index, or -1 if the warehouse is full.
 func store_item(item: Dictionary) -> int:
-	if warehouse.size() >= WAREHOUSE_SIZE:
+	if warehouse_full():
 		return -1
 	warehouse.append(item)
 	save()
@@ -222,6 +229,32 @@ func update_item(index: int, item: Dictionary) -> void:
 	if index >= 0 and index < warehouse.size():
 		warehouse[index] = item
 		save()
+
+
+## How many items the warehouse holds: a row of 8 per row bought.
+func warehouse_size() -> int:
+	return WAREHOUSE_ROW * warehouse_rows
+
+
+func warehouse_full() -> bool:
+	return warehouse.size() >= warehouse_size()
+
+
+## Ours: Harkon Shards for the next row (row 4 costs 1, each after it one more: 28 for all ten),
+## or 0 when every row is bought.
+func row_price() -> int:
+	return 0 if warehouse_rows >= WAREHOUSE_ROWS_MAX else warehouse_rows - WAREHOUSE_ROWS_START + 1
+
+
+## Buys the next row of shelves; false if it's the last row already or the shards are short.
+func buy_row() -> bool:
+	var price := row_price()
+	if price <= 0 or shards < price:
+		return false
+	shards -= price
+	warehouse_rows += 1
+	save()
+	return true
 
 
 ## Wears shelf `index` in gear slot `key` in every run (replacing what was there).

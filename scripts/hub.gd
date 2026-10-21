@@ -191,7 +191,11 @@ func _warehouse_menu(npc: Npc) -> void:
 		options.append({"title": "Wear nothing", "tag": "", "text": "Head out with only your class's own weapon."})
 		options.append({"title": "Wardrobe", "tag": "%d pieces" % Profile.wardrobe.size(),
 			"text": "Choose what to wear: ears, tails, hats, masks, capes and sprints.", "submenu": "wardrobe"})
-		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
+		var price := Profile.row_price()
+		options.append({"title": "More shelves", "tag": "%d Harkon Shard%s" % [price, "" if price == 1 else "s"] if price else "All built",
+			"text": "Another row of %d shelves (%d of %d rows)." % [Profile.WAREHOUSE_ROW, Profile.warehouse_rows, Profile.WAREHOUSE_ROWS_MAX],
+			"disabled": price == 0 or Profile.shards < price})
+		options.append({"title": "Leave", "cancel": true, "tag": "", "text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.warehouse_size()]})
 		var line := "What goes out with you?" if items.size() else "Empty shelves. Send something home from a Portable Port."
 		var pick := await dialogue.choose(talker.line(String(npc.data.id), line), options)
 		if pick == items.size():
@@ -202,7 +206,12 @@ func _warehouse_menu(npc: Npc) -> void:
 		if pick == items.size() + 1:
 			await _wardrobe_menu(npc)
 			continue
-		if pick < 0 or pick > items.size() + 1:
+		if pick == items.size() + 2:
+			if Profile.buy_row():
+				Audio.play("ui_unique_get.wav", -4.0)
+				hud.log_line("[System] Keeper Julio put up another row: %d shelves." % Profile.warehouse_size(), Color("e0b54d"))
+			continue
+		if pick < 0 or pick > items.size() + 2:
 			return
 		await _stored_item_menu(npc, pick, items[pick])
 

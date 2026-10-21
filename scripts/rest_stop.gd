@@ -62,7 +62,7 @@ func _warehouse_menu(npc: Npc) -> void:
 	while true:
 		var options: Array = []
 		var actions: Array[Callable] = []
-		var full := Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE
+		var full := Profile.warehouse_full()
 		for i in Profile.warehouse.size():
 			var g := Run.city.from_shelf(i)
 			if g == null:
@@ -79,7 +79,7 @@ func _warehouse_menu(npc: Npc) -> void:
 					"text": "Safe on a shelf, but you stop wearing it for the rest of the run.", "disabled": no_room})
 				actions.append(Run.city.bank.bind(g))
 		options.append({"title": "Leave", "cancel": true, "tag": "",
-			"text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.WAREHOUSE_SIZE]})
+			"text": "%d / %d shelves used." % [Profile.warehouse.size(), Profile.warehouse_size()]})
 		var line := "Swap what you carry for what's on the shelves." if not Profile.warehouse.is_empty() \
 			else "Empty shelves. Anything you send home stays put."
 		var pick := await talker.dialogue.choose(talker.line(String(npc.data.id), line), options)

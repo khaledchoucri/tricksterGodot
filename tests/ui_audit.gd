@@ -142,7 +142,7 @@ func _fill_profile() -> void:
 	for f in DirAccess.get_files_at("res://data/materials"):
 		var m: MaterialData = load("res://data/materials/" + f.trim_suffix(".remap"))
 		Profile.materials[String(m.id)] = 99
-	for g in _longest_items(Profile.WAREHOUSE_SIZE):
+	for g in _longest_items(Profile.warehouse_size()):
 		Profile.store_item(g.to_dict())
 	Profile.save()
 

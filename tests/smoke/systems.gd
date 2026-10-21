@@ -286,6 +286,14 @@ func run(Run: Node) -> void:
 		"a rollback banks half the leftover Galder, ore and materials")
 	Profile.bank_leftovers(true, 100, 4, {&"cool_ice": 4})
 	check(Profile.galder == 150 and Profile.materials.cool_ice == 5, "a clear banks all of them")
+	# The warehouse is the original's grid: 24 shelves, then a row of 8 for Harkon Shards, up to 80.
+	var start_size: int = Profile.warehouse_size()
+	Profile.shards = 28
+	var rows_bought := 0
+	while Profile.buy_row():
+		rows_bought += 1
+	check(start_size == 24 and rows_bought == 7 and Profile.warehouse_size() == 80 and Profile.shards == 0
+		and not Profile.buy_row(), "24 shelves to start; 28 Harkon Shards buy the seven more rows, up to 80")
 	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()
 	check(not Run.city.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")

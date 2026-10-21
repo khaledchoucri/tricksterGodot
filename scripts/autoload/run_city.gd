@@ -129,7 +129,7 @@ func swap_from_shelf(index: int) -> bool:
 			key = k
 			break
 	var old := Run.gear.equipped(key)
-	if old and old.stored < 0 and Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE:
+	if old and old.stored < 0 and Profile.warehouse_full():
 		return false
 	Run.gear.equip(g, key)
 	for put_away: GearItem in ([old] if old else []) + Run.gear.displaced:

@@ -26,8 +26,8 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   runes.
 - **Twelve stats in four types**, with traits at their thresholds. There are six run-gear slots with refining
   and compounding, monster dens and shops.
-- **Between runs:** a warehouse whose items you wear in every run (the loadout, designed on the
-  equipment window in the city), a death that leaves what you wore in a lost bag where you fell (reach
+- **Between runs:** a warehouse (24 shelves, up to 80 with Harkon Shards) whose items you wear in every
+  run (the loadout, designed on the equipment window in the city), a death that leaves what you wore in a lost bag where you fell (reach
   that room again to recover it; sending an item home keeps it safe but takes it off you), and wardrobe
   pieces from monster card sets. You also get drilling, a mastered starting skill from Master Louis, and
   Heat (Server Settings), which makes monsters tougher and raises the item level of everything a run

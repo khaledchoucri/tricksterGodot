@@ -478,7 +478,7 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base
 				shown.append(entry)
 			title = "Shop  ·  %d Galder" % Run.purse.galder
 		"port":
-			var full := Profile.warehouse.size() >= Profile.WAREHOUSE_SIZE
+			var full := Profile.warehouse_full()
 			for g: GearItem in options:
 				if g == null:
 					shown.append({"title": "Go on" if phase != Phase.WON else "Log out", "tag": "", "cancel": true,

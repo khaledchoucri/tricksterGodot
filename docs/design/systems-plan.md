@@ -244,7 +244,7 @@ what forces the choice of what to keep.
 4. Heat raises the gear bands; the original's higher item ladders fill them. Done.
 5. The loadout before a run; worn gear stops counting against the load; heirlooms and level sync removed. Done.
 6. The lost bag and banking. Done.
-7. Warehouse rows and their price.
+7. Warehouse rows and their price (ours: row 4 costs 1 Harkon Shard, each after it one more). Done.
 8. Bots for the three targets, and tuning Heat's monster scaling to them.
 
 ---
