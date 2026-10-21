@@ -17,8 +17,8 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   - the Charm line, Cat and Raccoon (Galder skills, and the Evolution and Metamorphosis beast forms)
   - a custom Trickster that combines two trees, once Buffalo and Bunny have each cleared a 3rd job
 - **229 skill and talent cards** from the original skill tables (their deviations are marked in the generators).
-- **A run** crosses Coral Beach, Desert Beach and the Caballa Relics: seven rooms each, elite rooms at the 3rd
-  and 6th, then a boss (the Real Golden Mole, Tutankhamen, Tombeth). The first two regions bring a job change
+- **A run** crosses Coral Beach, Desert Beach and the Caballa Relics: nine rooms each, elite rooms at the 4th
+  and 8th, then a boss (the Real Golden Mole, Tutankhamen, Tombeth). The first two regions bring a job change
   once the Job Hall is restored; the Relics are where your 3rd job peaks.
 - **23 monsters**, three bosses with their summons, and three Echoes of other classes that lend their skills as
   runes.

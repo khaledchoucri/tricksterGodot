@@ -141,9 +141,15 @@ func can_use(it: ItemData) -> bool:
 	return not gunner
 
 
+## The item level offered in the current room: its region's gear levels, read along its rooms.
+func gear_level() -> int:
+	var r := Run.route.region
+	return r.gear_levels.x + roundi(float(r.gear_levels.y - r.gear_levels.x) * Run.route.local_depth() / maxi(1, r.run_length))
+
+
 func gear_offers(n: int) -> Array[GearItem]:
 	var pool: Array[ItemData] = []
-	var top := 1 + 3 * Run.route.depth
+	var top := gear_level()
 	for it in items:
 		if it.level <= top and it.level >= top - 24 and not it.legend and it != Run.cls.start_weapon and can_use(it):
 			pool.append(it)

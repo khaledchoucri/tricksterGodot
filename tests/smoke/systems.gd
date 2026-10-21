@@ -110,6 +110,17 @@ func run(Run: Node) -> void:
 	var late: Array = Run.gear.gear_offers(30)
 	check(early.all(func(g: GearItem) -> bool: return g.data.level <= 1)
 		and late.any(func(g: GearItem) -> bool: return g.data.level >= 13), "deeper rooms drop higher-level gear")
+	# Each region offers its own gear levels, first room to boss, however long the run is.
+	var ranges: Array[String] = []
+	for d: int in Run.route.plan.size():
+		var p: RoomPlan = Run.route.plan[d]
+		Run.route.depth = d
+		if p.local_depth == 0 or p.boss:
+			ranges.append(str(Run.gear.gear_level()))
+	var want: Array[String] = []
+	for r: RegionData in Run.route.regions:
+		want.append_array([str(r.gear_levels.x), str(r.gear_levels.y)])
+	check(ranges == want and Run.route.plan.size() == 30, "each of the 30 rooms offers its region's gear levels (%s)" % " ".join(ranges))
 	# The Caballa Relics offer their own tier: the level-50 and level-65 lines, every slot.
 	Run.route.depth = Run.route.plan.size() - 2
 	var relics_gear: Array = Run.gear.gear_offers(60)

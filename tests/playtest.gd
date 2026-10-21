@@ -14,6 +14,8 @@ const ROOM_LIMIT := 150.0
 ## Seconds a whole run may take, menus included, before the bot gives up (three regions of rooms
 ## take up to about 30 minutes; a capped run is reported as such, not as a death).
 const RUN_LIMIT := 3600.0
+## Rooms per band in the combat-feel report.
+const FEEL_BAND := 4
 
 var runs := 4
 var build := "mixed"
@@ -561,7 +563,8 @@ func _end_room() -> void:
 ## Hits and seconds to kill, and how hard monsters hit, by depth band.
 func _feel_report() -> void:
 	print("---- combat feel ----")
-	for band: Array in [[0, 3], [4, 7], [8, 11], [12, 16], [17, 20], [21, 24]]:
+	for first: int in range(0, Run.route.plan.size(), FEEL_BAND):
+		var band: Array[int] = [first, first + FEEL_BAND - 1]
 		var n := []
 		var e := []
 		for k in kill_log:

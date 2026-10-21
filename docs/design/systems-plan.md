@@ -9,8 +9,8 @@ Built:
   and the beast forms as permanent talents). Hybrid 3rd jobs unlock after a clear.
 - 229 skill and talent cards from the original tables. Upgrades replace their base, buffs are talents, and
   supplements change their skill.
-- Three regions (Coral Beach, Desert Beach, Caballa Relics), seven rooms and a boss each, elites at the 3rd and
-  6th rooms, and a job change after the 3rd in the first two. 23 monsters with five attack patterns, three bosses
+- Three regions (Coral Beach, Desert Beach, Caballa Relics), nine rooms and a boss each, elites at the 4th and
+  8th rooms, and a job change after the 4th in the first two. 23 monsters with five attack patterns, three bosses
   (the Golden Mole, Tutankhamen, Tombeth).
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops. Gear comes from
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,

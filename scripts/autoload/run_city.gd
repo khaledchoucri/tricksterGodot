@@ -88,9 +88,9 @@ func carry_heirloom() -> void:
 	Run.gear.equip(g, "acc1" if g.data.slot == ItemData.Slot.ACCESSORY else "")
 
 
-## The item level gear is synced to at this depth (drops use the same scale).
+## The item level gear is synced to in this room: a little above what it offers.
 func sync_level() -> int:
-	return 3 + 3 * Run.route.depth
+	return Run.gear.gear_level() + 2
 
 
 ## Re-syncs carried heirlooms to the current depth and region (on entering a room).

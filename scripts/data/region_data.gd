@@ -8,8 +8,11 @@ extends Resource
 @export var enemies: Array[EnemyData] = []
 @export var cards: Array[CardData] = []
 ## Combat rooms before the boss.
-@export var run_length := 7
-@export var elite_depths: Array[int] = [3, 6]
+@export var run_length := 9
+@export var elite_depths: Array[int] = [3, 7]
+## Ours: the item levels its rooms offer, from the first room (x) to the boss (y). Each region
+## follows on from the one before, whatever the run's length.
+@export var gear_levels := Vector2i(1, 22)
 ## Depth of the room whose clear brings the job change (the trial).
 @export var job_change_depth := 3
 ## Level sync: the highest refine an heirloom counts as here.
