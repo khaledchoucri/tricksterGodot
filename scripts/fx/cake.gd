@@ -15,7 +15,7 @@ extends Node2D
 ## StartAngle..EndAngle is the starting rotation; Bounding bounces particles
 ## off the ground.
 
-const DIR := "res://original_assets/effects/"
+const DIR := Assets.EFFECTS
 const SORT_Z := {"Ground_Over": -2, "Object_Over": 18, "Map_Over": 20, "UI_Over": 40}
 
 static var _cakes: Dictionary = {}

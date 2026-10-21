@@ -66,7 +66,7 @@ func _throw(foe: Enemy, reach: float, amount: float) -> void:
 	item.room = room
 	item.target = foe
 	item.target_point = foe.global_position if foe else player.global_position + Combat.screen(aim) * reach
-	var path := "res://original_assets/icons/items/%d.png" % (GALDERS if _galder else EMPTY_CARD)
+	var path := Assets.item_icon(GALDERS if _galder else EMPTY_CARD)
 	item.icon = load(path) if ResourceLoader.exists(path) else null
 	linger()
 	item.on_hit = func(e: Enemy) -> void:

@@ -32,7 +32,7 @@ func _ready() -> void:
 ## Switches to another exported weapon sprite (original_assets/weapons/<name>).
 func use(p_name: String) -> void:
 	weapon_name = p_name
-	var base := "res://original_assets/weapons/%s" % weapon_name
+	var base := Assets.weapon(weapon_name)
 	if not FileAccess.file_exists(base + ".json"):
 		push_warning("Missing weapon %s; run tools/setup_assets.py" % weapon_name)
 		visible = false

@@ -49,7 +49,7 @@ var _cleared := false
 func build(p_data: RoomData) -> bool:
 	data = p_data
 	rect = Rect2(data.rect)
-	var dir := "res://original_assets/maps/%s/" % data.map
+	var dir := Assets.map_dir(data.map)
 	if not FileAccess.file_exists(dir + "map.json"):
 		push_warning("Missing exported map %s; run tools/setup_assets.py" % data.map)
 		return false

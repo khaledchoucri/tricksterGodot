@@ -29,7 +29,7 @@ func start() -> void:
 	item.room = room
 	item.target = foe
 	item.target_point = foe.global_position if foe else player.global_position + Combat.screen(aim) * reach
-	var path := "res://original_assets/icons/items/%d.png" % (SHURIKEN if Run.job.tier >= 2 else NEEDLE)
+	var path := Assets.item_icon(SHURIKEN if Run.job.tier >= 2 else NEEDLE)
 	item.icon = load(path) if ResourceLoader.exists(path) else null
 	var amount := damage()
 	var seconds := param("seconds", 0.0)

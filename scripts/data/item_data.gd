@@ -42,7 +42,7 @@ func slot_name() -> String:
 
 
 func icon() -> Texture2D:
-	var path := "res://original_assets/icons/items/%d.png" % item_id
+	var path := Assets.item_icon(item_id)
 	return load(path) if ResourceLoader.exists(path) else null
 
 
@@ -58,7 +58,7 @@ static var _worn_map: Dictionary = {}
 
 static func worn_sprite_for(id: int) -> String:
 	if _worn_map.is_empty():
-		var path := "res://original_assets/equip/items.json"
+		var path := Assets.EQUIP_ITEMS
 		_worn_map = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {"": ""}
 	return _worn_map.get(str(id), "")
 

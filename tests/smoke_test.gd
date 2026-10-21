@@ -641,6 +641,13 @@ func _lint() -> void:
 			elif b != "" and Run.get(a) is RefCounted and not _has_member(Run.get(a), b):
 				missing["Run.%s.%s (%s)" % [a, b, path.get_file()]] = true
 	check(missing.is_empty(), "every Run member the scripts name exists%s" % ("" if missing.is_empty() else ": " + ", ".join(missing.keys())))
+	# Paths to the original assets go through Assets (scripts/assets.gd), never a literal.
+	var literal_paths: PackedStringArray = []
+	for path in all_scripts:
+		if path != "res://scripts/assets.gd" and FileAccess.get_file_as_string(path).contains("\"" + Assets.ROOT):
+			literal_paths.append(path.get_file())
+	check(literal_paths.is_empty(), "no script spells out an original_assets path%s"
+		% ("" if literal_paths.is_empty() else ": " + ", ".join(literal_paths)))
 	# Every monster names an attack pattern, and its tune overrides only that pattern's fields.
 	var bad_attacks: PackedStringArray = []
 	var monsters: Array[EnemyData] = Run.echoes.duplicate()

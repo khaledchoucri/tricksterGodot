@@ -22,7 +22,7 @@ func start() -> void:
 		return
 	var count := maxi(int(param("count", 2)), 1)
 	var share := damage() / count
-	var path := "res://original_assets/icons/items/%d.png" % (SHURIKEN if Run.job.tier >= 2 else NEEDLE)
+	var path := Assets.item_icon(SHURIKEN if Run.job.tier >= 2 else NEEDLE)
 	var icon: Texture2D = load(path) if ResourceLoader.exists(path) else null
 	linger()
 	var left := [count]

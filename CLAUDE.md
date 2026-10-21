@@ -69,8 +69,8 @@ if card.has_tag(&"galder"): ...
 - **Time** is the game clock (`Events.time` / `player.now()`), never wall time. **Randomness** goes through
   the run's seeded RNG (`Run.rng`, `Run.shuffle()`, `Run.pick()`), so a seed reproduces a run. Only effects
   that are purely visual or audible (particles, pitch, shake) use the global `randf()`/`randi()`.
-- **Paths to original assets** go through one asset lookup, never a literal `res://original_assets/...`
-  string, so new art can replace them through a manifest.
+- **Paths to original assets** go through `Assets` (`scripts/assets.gd`), never a literal
+  `res://original_assets/...` string (the lint checks), so new art can replace them through a manifest.
 - **Naming.** `snake_case` files and functions, `PascalCase` classes, `SCREAMING_CASE` constants. Private
   members start with `_`.
 
@@ -105,7 +105,6 @@ if card.has_tag(&"galder"): ...
 
 Pay these down when you're working near them, and remove each line when it's fixed.
 
-- 35 literal `res://original_assets/` paths in 23 scripts.
 - `README.md` describes an older pitch ("Sunlit Impact"), and the systems plan's status stops at Buffalo and
   Bunny.
 - The `poison_assault` smoke check was flaky; the dummy-placement fix (2026-10-21) should have cured it.

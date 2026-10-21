@@ -53,6 +53,6 @@ func _set_shade(frac: float) -> void:
 
 static func _icon_for(card: CardData) -> Texture2D:
 	if not _icons.has(card.skill_id):
-		var path := "res://original_assets/icons/%d.png" % card.skill_id
+		var path := Assets.skill_icon(card.skill_id)
 		_icons[card.skill_id] = load(path) if ResourceLoader.exists(path) else null
 	return _icons[card.skill_id]

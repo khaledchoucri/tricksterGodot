@@ -23,7 +23,7 @@ extends Resource
 
 
 func icon() -> Texture2D:
-	var path := "res://original_assets/icons/items/%d.png" % item_id
+	var path := Assets.item_icon(item_id)
 	return load(path) if ResourceLoader.exists(path) else null
 
 

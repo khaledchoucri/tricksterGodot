@@ -18,7 +18,7 @@ const CLASS_PATHS: Array[String] = ["res://data/classes/buffalo.tres", "res://da
 	"res://data/classes/sheep.tres", "res://data/classes/dragon.tres",
 	"res://data/classes/fox.tres", "res://data/classes/lion.tres",
 	"res://data/classes/cat.tres", "res://data/classes/raccoon.tres"]
-const MONSTERS_PATH := "res://original_assets/data/monsters.json"
+const MONSTERS_PATH := Assets.MONSTERS
 ## Echoes of other classes that can haunt elite rooms after the first clear.
 const ECHO_PATHS: Array[String] = ["res://data/echoes/echo_bard.tres", "res://data/echoes/echo_explorer.tres",
 	"res://data/echoes/echo_entertainer.tres"]

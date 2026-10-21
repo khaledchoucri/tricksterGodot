@@ -82,7 +82,7 @@ func _make_actor(actor_name: String, imported: bool) -> Node2D:
 	var sprite := ActorSprite.new()
 	sprite.name = "Sprite"
 	root.add_child(sprite)
-	sprite.setup(actor_name, "res://art_build" if imported else "res://original_assets/actors")
+	sprite.setup(actor_name, "res://art_build" if imported else Assets.ACTORS)
 	if imported:
 		var mat := ShaderMaterial.new()
 		mat.shader = STYLE

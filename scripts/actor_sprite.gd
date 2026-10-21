@@ -14,7 +14,7 @@ extends AnimatedSprite2D
 ## frame from the original pivot tables (tools/export_equip.py).
 
 const PALETTE_SHADER := preload("res://shaders/palette.gdshader")
-const EQUIP_DIR := "res://original_assets/equip"
+const EQUIP_DIR := Assets.EQUIP
 
 const DIRS: Array[String] = ["e", "se", "s", "sw", "w", "nw", "n", "ne"]
 const MIRROR := {"e": "w", "se": "sw", "s": "s", "sw": "se", "w": "e", "nw": "ne", "n": "n", "ne": "nw"}
@@ -41,7 +41,7 @@ var _worn: Dictionary = {}      # slot -> {"item", "sprite": Sprite2D, "frames":
 
 ## Loads <folder>/<actor_name>/<actor_name>.json and .tres. Original sprites
 ## live in original_assets/actors/; imported new art in art_build/.
-func setup(p_actor: String, folder := "res://original_assets/actors") -> bool:
+func setup(p_actor: String, folder := Assets.ACTORS) -> bool:
 	var base := "%s/%s/%s" % [folder, p_actor, p_actor]
 	if not ResourceLoader.exists(base + ".tres") or not FileAccess.file_exists(base + ".json"):
 		push_warning("Missing exported sprites for %s; run tools/export_actor.py" % p_actor)

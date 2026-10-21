@@ -43,7 +43,7 @@ job passives declare `mods`; card families are tags and fields; supplements are 
 `Talent` scripts, each with a smoke check; shared code names no card. `Run` is the character (535 lines, from
 1,714) and six modules: route, deck, gear, purse, formulas, city. It stops short of the ~400 aimed at: the stats,
 `new_run()` and the mods are the character's, and splitting them further would only scatter them. Enemy attacks are `AttackPattern` resources
-(`data/attacks/`). Next: phase 6.
+(`data/attacks/`), and every original asset path goes through `Assets`. Next: phase 7.
 
 | # | Phase | Check |
 |---|---|---|

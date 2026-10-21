@@ -225,7 +225,7 @@ func _guide_sockets(actor: String, action: String, dirs: Array) -> Dictionary:
 	var out := {}
 	var guide_action := String(_cfg.get("guides", {}).get(action, action))
 	for d: String in dirs:
-		var path := "res://original_assets/pose_guides/%s/%s/%s/guide.json" % [actor, guide_action, d]
+		var path := Assets.POSE_GUIDES + "%s/%s/%s/guide.json" % [actor, guide_action, d]
 		if not FileAccess.file_exists(path):
 			continue
 		var g: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))

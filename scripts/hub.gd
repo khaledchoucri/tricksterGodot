@@ -28,7 +28,7 @@ var _portraits: Dictionary = {}
 
 func _ready() -> void:
 	hub = Run.hub
-	if not FileAccess.file_exists("res://original_assets/maps/%s/map.json" % hub.room.map):
+	if not FileAccess.file_exists(Assets.map_dir(hub.room.map) + "map.json"):
 		hud.center("Original assets not found.\nRun tools/setup_assets.py (see docs/poc/README.md), then reopen the project.")
 		return
 	story = Story.new(hub.story)
@@ -174,7 +174,7 @@ func _portrait(data: NpcData) -> Texture2D:
 	if data == null or data.portrait.is_empty():
 		return null
 	if not _portraits.has(data.portrait):
-		var path := "res://original_assets/portraits/%s.png" % data.portrait
+		var path := Assets.portrait(data.portrait)
 		_portraits[data.portrait] = load(path) if ResourceLoader.exists(path) else null
 	return _portraits[data.portrait]
 

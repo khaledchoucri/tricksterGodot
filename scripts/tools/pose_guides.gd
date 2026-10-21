@@ -27,12 +27,12 @@ func _run() -> void:
 	var args := OS.get_cmdline_user_args()
 	var actor := args[0] if args.size() > 0 else "buffalo"
 	var only: PackedStringArray = args[1].split(",") if args.size() > 1 else PackedStringArray()
-	var src := "res://original_assets/actors/%s/" % actor
+	var src := "%s/%s/" % [Assets.ACTORS, actor]
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(src + actor + ".json"))
 	var cell := Vector2i(manifest.cell[0], manifest.cell[1])
 	var anchor := Vector2i(manifest.anchor[0], manifest.anchor[1])
 	var scale := BODY_HEIGHT / _body_height(src, manifest, cell, anchor)
-	var out := ProjectSettings.globalize_path("res://original_assets/pose_guides/%s/" % actor)
+	var out := ProjectSettings.globalize_path(Assets.POSE_GUIDES + "%s/" % actor)
 	var count := 0
 	for action: String in manifest.actions:
 		if only.size() > 0 and not action in only:

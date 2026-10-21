@@ -68,8 +68,8 @@ func _ready() -> void:
 	Events.revived.connect(func() -> void:
 		hud.log_line("[System] You refused to log out.", Color("c9a4ff"))
 		hud.notice("Saved from the rollback"))
-	if not FileAccess.file_exists("res://original_assets/actors/%s/%s.json" % [Run.chosen_class().actor, Run.chosen_class().actor]) \
-			or not FileAccess.file_exists("res://original_assets/maps/map_fd11d/map.json"):
+	if not FileAccess.file_exists(Assets.actor_json(Run.chosen_class().actor)) \
+			or not FileAccess.file_exists(Assets.map_dir("map_fd11d") + "map.json"):
 		phase = Phase.MISSING
 		hud.center("Original assets not found.\nRun tools/setup_assets.py (see docs/poc/README.md), then reopen the project.")
 		return

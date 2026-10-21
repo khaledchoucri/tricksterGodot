@@ -6,6 +6,8 @@ extends Skill
 
 const SPREAD := deg_to_rad(28.0)
 const COLOR := Color(1.0, 0.85, 0.35)
+## The thrown Galder's icon (ItemParam 200, the Galder coin).
+const GALDER_ICON := 200
 
 
 func _init() -> void:
@@ -27,7 +29,7 @@ func start() -> void:
 		var coin := ThrownItem.new()
 		coin.room = room
 		coin.target_point = at
-		var path := "res://original_assets/icons/items/200.png"
+		var path := Assets.item_icon(GALDER_ICON)
 		coin.icon = load(path) if ResourceLoader.exists(path) else null
 		coin.on_hit = func(_e: Enemy) -> void:
 			if is_instance_valid(room):

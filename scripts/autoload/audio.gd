@@ -3,7 +3,7 @@ extends Node
 ## (autoloaded as `Audio`). Missing files are skipped silently so the game
 ## still runs without generated assets.
 
-const DIR := "res://original_assets/audio/"
+const DIR := Assets.AUDIO
 const POOL_SIZE := 12
 
 var _players: Array[AudioStreamPlayer] = []
