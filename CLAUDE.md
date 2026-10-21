@@ -78,8 +78,8 @@ if card.has_tag(&"galder"): ...
 
 ## 5. Tests
 
-- **Every behaviour change has a check** in the smoke test section for its class or system. Run just that
-  section while working (`tests/run_smoke.sh charm`, `tests/run_smoke.sh lion ui`; sections: core, power,
+- **Every behaviour change has a check** in the smoke test section for its class or system, its own file in
+  `tests/smoke/` (a `SmokeSection`; a new system gets a new section). Run just that section while working (`tests/run_smoke.sh charm`, `tests/run_smoke.sh lion ui`; sections: core, power,
   magic, sense, elements, charm, talents, balance, ui, boss, systems, lint). Each section passes on its own. Changes to
   shared code, and every commit, run the full suite (`tests/run_smoke.sh`). It runs at a fixed 60 fps and a
   fixed seed (`-- seed=N` to change it), so the full suite takes under a minute and a result repeats exactly.
@@ -110,5 +110,5 @@ if card.has_tag(&"galder"): ...
 
 Pay these down when you're working near them, and remove each line when it's fixed.
 
-- None. The refactor (docs/design/refactor-plan.md) cleared the list. Add a line here when you knowingly
-  leave something for later.
+- `scripts/game.gd` is 974 lines (the lint allows 700): split its reward flow, the room flow and the pick
+  menus into their own scripts, then take it off the lint's `LONG_ALLOWED`.
