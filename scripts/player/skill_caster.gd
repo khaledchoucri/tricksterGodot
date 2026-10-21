@@ -46,18 +46,8 @@ func cost_of(card: CardData, level: int) -> int:
 
 ## Only the basic shot needs a load; the gun skills fire without one and
 ## leave the reload as it is.
-const GUN_LOADED: Array[StringName] = [&"gun_shot"]
-const GUN_NEEDED: Array[StringName] = [&"gun_shot", &"power_shot", &"double_shot", &"shield_breaker", &"butt_plate",
-	&"shooting_spree", &"berserk"]
 
 
-## Skills only a beast can use: the form they need (&"" for either).
-const FORM_NEEDED := {&"beast_claw": &"evolution", &"fatal_wound": &"evolution", &"raging_nail": &"evolution",
-	&"wild_nail": &"metamorphosis", &"sharp_scream": &"", &"heavy_hit": &"", &"card_soldier": &"",
-	&"beasts_instinct": &"evolution"}
-## Skills paid in the run's Galder (their table's "galder", per throw).
-const GALDER_SKILLS: Array[StringName] = [&"galder_thrower", &"galder_barrage", &"fist_full_of_galders",
-	&"furious_galder_throw"]
 
 
 ## Why `card` can't be cast right now ("" when it can): the Charm line's
@@ -78,17 +68,15 @@ func charm_block(card: CardData, level: int, slot: int) -> String:
 					n += 1
 			if n < 4:
 				return "Needs four enemies"
-	if card.id in GALDER_SKILLS and Run.galder < galder_cost(card, level):
+	if galder_cost(card, level) > 0 and Run.galder < galder_cost(card, level):
 		return "Not enough Galder"
 	return ""
 
 
-## Galder a cast of `card` costs (Fist Full of Galders pays per throw).
+## Galder a cast of `card` costs: its table's "galder" per throw (Fist Full of Galders
+## throws its Count); 0 for a skill that isn't paid in Galder.
 func galder_cost(card: CardData, level: int) -> int:
-	if not card.id in GALDER_SKILLS:
-		return 0
-	var each := int(card.param("galder", level, 0.0))
-	return each * (int(card.param("count", level, 1.0)) if card.id == &"fist_full_of_galders" else 1)
+	return int(card.param("galder", level, 0.0)) * int(card.param("count", level, 1.0))
 
 
 ## Casts the skill in `slot` if one is equipped, off cooldown and affordable.
@@ -98,9 +86,9 @@ func try_cast(slot: int) -> bool:
 		return false
 	# Gun skills need a gun, and the shots a loaded one (the client's checks:
 	# "Bullet_NeededReload", "Alert_NoGun").
-	if card.id in GUN_LOADED and not player.gun.loaded():
+	if card.has_tag(&"needs_load") and not player.gun.loaded():
 		return false
-	if card.id in GUN_NEEDED and not player.gun.has_gun():
+	if card.has_tag(&"gun") and not player.gun.has_gun():
 		Events.text_shown.emit(player.global_position + Vector2(0, -70), "No gun", Color(1.0, 0.7, 0.5))
 		return false
 	if slot == BASIC and Run.in_bunker(player.now()):

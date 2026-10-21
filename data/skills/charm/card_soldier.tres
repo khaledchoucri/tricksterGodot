@@ -18,4 +18,5 @@ sounds = {"ht": "snd_C_604_ht1.wav"}
 effects = {"ht": ["C_604_Summon_Soldier_ht1"]}
 master_material = ExtResource("m_master")
 scaling = "AP+8HV"
+form = &"beast"
 behavior = ExtResource("2_b")

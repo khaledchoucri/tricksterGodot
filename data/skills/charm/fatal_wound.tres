@@ -18,4 +18,5 @@ sounds = {"ht": "snd_c_207_ht.wav", "ke": "snd_c_207_ke.wav"}
 effects = {"ht": ["c_206_rush_hit"], "ke": ["C_207_sharp_claw_keep"]}
 master_material = ExtResource("m_master")
 scaling = "AP"
+form = &"evolution"
 behavior = ExtResource("2_b")

@@ -19,3 +19,5 @@ effects = {"ap": ["M_409_earth_counter_ap"], "ke": ["M_409_earth_counter_ke"]}
 master_material = ExtResource("m_master")
 element = "Earth"
 scaling = "MA"
+tags = Array[StringName]([&"retaliate"])
+mods = Dictionary[String, String]({"resist:Earth": "base"})

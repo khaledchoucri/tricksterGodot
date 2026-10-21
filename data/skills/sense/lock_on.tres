@@ -15,3 +15,4 @@ table = {"value": [11.0, 13.0, 16.0, 18.0, 23.0, 25.0, 28.0, 30.0], "seconds": [
 sounds = {"ap": "snd_S_309_ap.wav"}
 effects = {"ap": ["S_309_lock_on_ap"], "ke": ["S_309_lock_on_ke"]}
 master_material = ExtResource("m_master")
+inflicts = "hv"

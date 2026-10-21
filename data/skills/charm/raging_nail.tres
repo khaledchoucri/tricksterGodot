@@ -18,4 +18,5 @@ sounds = {"ke": "snd_c_403_ke.wav"}
 effects = {"ke": ["C_403_wild_talon_ke"]}
 master_material = ExtResource("m_master")
 scaling = "AP+16HV"
+form = &"evolution"
 behavior = ExtResource("2_b")

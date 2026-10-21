@@ -17,4 +17,5 @@ table = {"value": [110.0, 150.0, 210.0, 250.0, 350.0, 385.0, 420.0, 455.0], "mp"
 effects = {"ht": ["skill_power attack"]}
 master_material = ExtResource("m_master")
 scaling = "GUN"
+tags = Array[StringName]([&"gun"])
 behavior = ExtResource("2_b")

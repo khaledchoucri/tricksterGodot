@@ -18,4 +18,5 @@ sounds = {"ht": "snd_s_208_ht.wav"}
 effects = {"ht": ["hit drow"]}
 master_material = ExtResource("m_master")
 scaling = "DA"
+tags = Array[StringName]([&"thrown"])
 behavior = ExtResource("2_b")

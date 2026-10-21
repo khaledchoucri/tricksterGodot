@@ -60,12 +60,14 @@ def seal(card, name, element):
 
 
 def shield(card, element):
-    return dict(card=card, value=lambda r: r['Value'],
+    return dict(card=card, mods={f'resist:{element}': 'value'}, value=lambda r: r['Value'],
                 text=f'{element} resistance +{{v}}%: {element.lower()} monsters hurt you less.')
 
 
 def blessing(card, spirit, element, shield_id):
-    return dict(card=card, upgrades=shield_id, value=pct_hit, scaling='MA',
+    # It keeps the Shield's resistance at its own level ('base': the card it upgrades).
+    return dict(card=card, upgrades=shield_id, value=pct_hit, scaling='MA', tags=['retaliate'],
+                mods={f'resist:{element}': 'base'},
                 text=f'{spirit} guards your {element} Shield: a monster that hits you takes {{v}} {element.lower()} damage back. Keeps the Shield\'s resistance.')
 
 

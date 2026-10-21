@@ -18,4 +18,5 @@ sounds = {"ap": "snd_C_404_ap.wav"}
 effects = {"ap": ["C_404_Sharp_scream_ap"]}
 master_material = ExtResource("m_master")
 scaling = "AP+16HV"
+form = &"beast"
 behavior = ExtResource("2_b")

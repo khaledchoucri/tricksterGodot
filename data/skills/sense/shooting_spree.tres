@@ -16,4 +16,5 @@ jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_l
 table = {"value": [125.0, 145.0, 175.0, 195.0, 245.0, 270.0, 294.0, 318.0], "mp": [29.0, 32.0, 35.0, 37.0, 42.0, 42.0, 42.0, 42.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "radius": [152.0, 160.0, 172.0, 180.0, 200.0, 200.0, 200.0, 200.0], "targets": [2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0, 5.0]}
 master_material = ExtResource("m_master")
 scaling = "GUN"
+tags = Array[StringName]([&"gun"])
 behavior = ExtResource("2_b")

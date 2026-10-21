@@ -15,4 +15,5 @@ jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_l
 table = {"value": [40.0, 52.0, 70.0, 82.0, 112.0, 123.0, 134.0, 146.0]}
 sounds = {"ap": "snd_s_305_ap.wav"}
 master_material = ExtResource("m_master")
+tags = Array[StringName]([&"grows_gun"])
 mods = Dictionary[String, String]({"power_shot%": "value"})

@@ -19,3 +19,5 @@ effects = {"ap": ["M_407_thunder_counter_ap"], "ke": ["M_407_thunder_counter_ke"
 master_material = ExtResource("m_master")
 element = "Elec"
 scaling = "MA"
+tags = Array[StringName]([&"retaliate"])
+mods = Dictionary[String, String]({"resist:Elec": "base"})

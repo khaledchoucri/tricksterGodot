@@ -13,3 +13,4 @@ text = "Your hits lower an enemy's DP by {v}% for {seconds} s."
 requires = {&"shockwave": 3}
 table = {"value": [14.0, 18.0, 24.0, 28.0, 38.0, 42.0, 46.0, 49.0], "seconds": [16.0, 20.0, 26.0, 30.0, 40.0, 40.0, 40.0, 40.0]}
 master_material = ExtResource("m_master")
+inflicts = "dp"

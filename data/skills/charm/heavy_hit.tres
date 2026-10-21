@@ -18,4 +18,5 @@ sounds = {"ht": "snd_c_603_ht.wav"}
 effects = {"ht": ["C_603_massive_attack_ht"]}
 master_material = ExtResource("m_master")
 scaling = "AP+0.125HPNOW"
+form = &"beast"
 behavior = ExtResource("2_b")

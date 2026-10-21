@@ -15,3 +15,4 @@ table = {"value": [10.0, 14.0, 20.0, 24.0, 34.0, 37.0, 41.0, 44.0], "seconds": [
 sounds = {"ht": "snd_skl_s_105_ebg.wav"}
 effects = {"ht": ["eft_skl_s_105_ebg", "eft_skl_s_105_eps"]}
 master_material = ExtResource("m_master")
+inflicts = "dp"

@@ -18,4 +18,5 @@ sounds = {"ap": "snd_s_307_ap.wav", "ke": "snd_s_307_ke.wav"}
 effects = {"ap": ["S_307_break_barrier_apply"], "ke": ["S_307_break_barrier_keep"]}
 master_material = ExtResource("m_master")
 scaling = "GUN"
+tags = Array[StringName]([&"gun"])
 behavior = ExtResource("2_b")

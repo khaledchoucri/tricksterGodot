@@ -414,10 +414,9 @@ func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 		var back := amount * Run.card(&"dark_barrier").param("reflect", lvl) / 100.0
 		if back >= 1.0:
 			attacker.take_hit(roundi(back), Combat.ground(attacker.global_position - global_position).normalized(), 0.0, false)
-	for id: StringName in Run.BLESSINGS:
-		if Run.card_level(id) > 0:
-			var c := Run.card(id)
-			deal_hit(attacker, Run.card_value(id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
+	for c in Run.held_cards():
+		if c.has_tag(&"retaliate"):
+			deal_hit(attacker, Run.card_value(c.id) * Run.skill_mult(c), 1.0, 60.0, false, {"element": c.element, "magic": true})
 			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 

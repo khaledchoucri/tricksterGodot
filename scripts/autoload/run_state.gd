@@ -804,17 +804,13 @@ func start_job(j: JobData) -> void:
 
 ## The character on screen: the latest job's (a job change replaces the
 ## character), else the class's.
-## The beast bodies (the client's ESAWildMutation loads trs001,
-## ESAWildChange trs002).
-const FORM_ACTORS := {&"evolution": "beast_evolution", &"metamorphosis": "beast_metamorphosis"}
-
-
 ## Whether skill `id` works in your form: in a beast, only the skills either
-## form can use or that form's own (SkillCaster.FORM_NEEDED).
+## form can use (`form` &"beast") or that form's own.
 func form_allows(id: StringName, as_form := form) -> bool:
 	if as_form == &"":
 		return true
-	return SkillCaster.FORM_NEEDED.get(id, &"none") in [&"", as_form]
+	var need: StringName = card(id).form if card(id) else &""
+	return need == &"beast" or (need != &"" and need == as_form)
 
 
 ## Why a slotted skill can't be used in your current shape ("" when it can):
@@ -822,16 +818,15 @@ func form_allows(id: StringName, as_form := form) -> bool:
 func form_block(id: StringName) -> String:
 	if not form_allows(id):
 		return "Not in %s" % card(form).display_name
-	if SkillCaster.FORM_NEEDED.has(id):
-		var need: StringName = SkillCaster.FORM_NEEDED[id]
-		if form == &"" or (need != &"" and form != need):
-			return "Beast form only"
+	var need: StringName = card(id).form if card(id) else &""
+	if need != &"" and (form == &"" or (need != &"beast" and form != need)):
+		return "Beast form only"
 	return ""
 
 
 func actor() -> String:
 	if form != &"":
-		return FORM_ACTORS[form]
+		return card(form).form_actor  # the client's ESAWildMutation loads trs001, ESAWildChange trs002
 	for i in range(jobs.size() - 1, -1, -1):
 		if jobs[i].actor != "":
 			return jobs[i].actor
@@ -927,7 +922,7 @@ func add_card(id: StringName, slot := -1) -> void:
 		stats_changed()
 		return
 	cards[id] = mini(card_level(id) + 1, card_cap(id))
-	if id in FORM_ACTORS:
+	if c.form_actor != "":
 		form = id
 		instinct = false
 	stats_changed()
@@ -1015,6 +1010,27 @@ func mod_factor(key: String, cut := false, start := 1.0) -> float:
 	return f
 
 
+## What card `c` adds to `key` at `level`. The source "base" is the value of the card it
+## upgrades, at its own level (a Blessing keeps its Shield's resistance).
+func _card_mod(c: CardData, key: String, level: int) -> float:
+	if c.mods[key] == "base":
+		return card(c.upgrades).value_at(level)
+	return c.mod_at(key, level)
+
+
+## The cards held now (a borrowed rune too), in skill-id order: the order the original's
+## tables list them, so effects that stack apply in a fixed order.
+func held_cards() -> Array[CardData]:
+	var out: Array[CardData] = []
+	for id: StringName in cards:
+		if card_level(id) > 0 and card(id):
+			out.append(card(id))
+	if rune and not cards.has(rune.id):
+		out.append(rune)
+	out.sort_custom(func(a: CardData, b: CardData) -> bool: return a.skill_id < b.skill_id)
+	return out
+
+
 ## Every held source's amount for `key`, in the order mod() documents.
 func _mod_values(key: String) -> Array[float]:
 	assert(Mod.is_key(key), "not a Mod key: " + key)
@@ -1022,9 +1038,9 @@ func _mod_values(key: String) -> Array[float]:
 	for id: StringName in cards:
 		var c := card(id)
 		if c and c.mods.has(key):
-			out.append(c.mod_at(key, card_level(id)))
+			out.append(_card_mod(c, key, card_level(id)))
 	if rune and not cards.has(rune.id) and rune.mods.has(key):
-		out.append(rune.mod_at(key, rune_level))
+		out.append(_card_mod(rune, key, rune_level))
 	for j in jobs:
 		if j.passive_mods.has(key):
 			out.append(j.passive_mods[key])
@@ -1081,16 +1097,12 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 
 
 ## The class's basic spell, or a talent that improves it.
-## The gun's own talents: they grow a gunner's basic shot, so they are offered
-## like the cards that build on a basic skill.
-const GUN_GROWERS: Array[StringName] = [&"overcharge", &"invincible_reload", &"quick_reload", &"gun_booster",
-	&"keen_sense", &"sharp_sense", &"speedloader", &"gun_overdrive"]
-
-
 func _grows_basic(c: CardData) -> bool:
 	if cls == null or cls.basic_skill == null:
 		return false
-	if cls.basic_skill.id == &"gun_shot" and c.id in GUN_GROWERS:
+	# The gun's own talents grow a gunner's basic shot, so they're offered like the cards
+	# that build on a basic skill.
+	if cls.basic_skill.has_tag(&"gun") and c.has_tag(&"grows_gun"):
 		return true
 	return c.id == cls.basic_skill.id or (not c.is_skill() and c.requires.has(cls.basic_skill.id))
 
@@ -1383,8 +1395,8 @@ func skill_mult(c: CardData = null) -> float:
 		m = attack_power(scaling) / maxf(attack_power(scaling, true), 1.0)
 	else:
 		m = _ratio(scaling, {"DP": 60.0}.get(scaling, AP_SOFT))
-	if c and c.id in THROWN:
-		m *= 1.0 + card_value(&"precise_pitch") / 100.0
+	if c and c.has_tag(&"thrown"):
+		m *= 1.0 + mod("thrown_damage%") / 100.0
 	m = mod_factor("skill_damage%", false, m)
 	return m * _berserk_mult()
 
@@ -1503,25 +1515,10 @@ func skill_cooldown_mult() -> float:
 	return 1.0 - mod("cooldown_cut%") / 100.0
 
 
-## The elemental Shields and the Blessings that upgrade them (2117-2121, 2306-2310).
-const SHIELDS := {&"water_shield": "Water", &"thunder_shield": "Elec", &"fire_shield": "Fire",
-	&"earth_shield": "Earth", &"wind_shield": "Wind"}
-const BLESSINGS := {&"undines_blessing": &"water_shield", &"raions_blessing": &"thunder_shield",
-	&"salamanders_blessing": &"fire_shield", &"gnomes_blessing": &"earth_shield", &"sylphs_blessing": &"wind_shield"}
-
-
 ## Your resistance to an element, in %.
 func resist(element: String) -> float:
-	var r := 0.0
-	for id: StringName in SHIELDS:
-		if SHIELDS[id] == element:
-			r += card_value(id)
-	for id: StringName in BLESSINGS:
-		# A Blessing keeps the resistance of the Shield it replaced, at its level.
-		if card_level(id) > 0 and SHIELDS[BLESSINGS[id]] == element:
-			r += card(BLESSINGS[id]).value_at(card_level(id))
-	if element in Mod.ELEMENTS:
-		r += mod("resist:" + element)
+	# The elemental Shields, the Blessings that keep their Shield's resistance, Lightning Rod...
+	var r := mod("resist:" + element) if element in Mod.ELEMENTS else 0.0
 	return minf(r, 80.0)
 
 
@@ -1543,22 +1540,16 @@ func dash_cooldown_mult() -> float:
 	return m * (0.8 if not cls.armed else 1.0)  # fighting bare-handed keeps you light on your feet
 
 
-## Debuffs your hits carry from the breaker talents ({key: [value, seconds]},
-## see Enemy.debuffs).
-const BREAKERS := {&"armor_breaker": "dp", &"shockvibe": "ac", &"sense_breaker": "perception", &"luck_breaker": "luck",
-	&"armor_destructor": "dp", &"sticky_foot": "slow", &"lock_on": "hv",
-	&"magic_meltdown": "ma", &"magic_def_breaker": "md"}
-
-
+## Debuffs your hits carry from the talents that inflict one ({key: [value, seconds]},
+## see Enemy.debuffs): the breakers' value for their Seconds, Suffocate's pin and
+## Entrancing Wink's silence (no magic) for their value in seconds.
 func hit_debuffs() -> Dictionary:
 	var out := {}
-	for id: StringName in BREAKERS:
-		if card_level(id) > 0:
-			out[BREAKERS[id]] = [card_value(id), card(id).param("seconds", card_level(id))]
-	if card_level(&"suffocate") > 0:
-		out["pinned"] = [1.0, card_value(&"suffocate")]
-	if card_level(&"entrancing_wink") > 0:
-		out["silence"] = [1.0, card_value(&"entrancing_wink")]  # no magic while entranced
+	for c in held_cards():
+		if c.inflicts == "":
+			continue
+		var lvl := card_level(c.id)
+		out[c.inflicts] = [c.value_at(lvl), c.param("seconds", lvl)] if c.table.has("seconds") else [1.0, c.value_at(lvl)]
 	return out
 
 

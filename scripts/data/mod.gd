@@ -18,6 +18,7 @@ const STAT_FLAT: Array[String] = ["HP", "MP", "WT"]
 ##  - power_shot%: more damage on an overcharged shot
 ##  - gun_AP%: the gun's own Gun AP
 ##  - compound%: compounding succeeds more often
+##  - thrown_damage%: thrown weapons (cards tagged "thrown")
 ##  - skill_damage%: your skills (job passives); elite_damage%: against elites and bosses
 ##  - move%, dash_distance%, dash_cooldown_cut%: moving and dashing
 ##  - galder%: Galder from kills; shop_discount%: shop prices
@@ -25,7 +26,7 @@ const STAT_FLAT: Array[String] = ["HP", "MP", "WT"]
 const PERCENT: Array[String] = ["damage%", "attack_speed%", "cooldown_cut%", "mp_cost_cut%", "damage_cut%",
 	"magic_damage_cut%", "reload_speed%", "power_shot%", "gun_AP%", "compound%", "skill_damage%",
 	"elite_damage%", "move%", "dash_distance%", "dash_cooldown_cut%", "galder%", "shop_discount%",
-	"room_heal%", "clear_heal%"]
+	"room_heal%", "clear_heal%", "thrown_damage%"]
 ## Other flat amounts:
 ##  - gun_AP: Gun AP added to every shot
 ##  - crit_damage: added to the critical multiplier (1.75)

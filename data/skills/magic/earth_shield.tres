@@ -17,3 +17,4 @@ sounds = {"ap": "snd_m_217_ap.wav", "ke": "snd_m_220_ke.wav"}
 effects = {"ap": ["M_217_water_shield_apply"], "ke": ["M_220_earth_shield_keep"]}
 master_material = ExtResource("m_master")
 element = "Earth"
+mods = Dictionary[String, String]({"resist:Earth": "value"})

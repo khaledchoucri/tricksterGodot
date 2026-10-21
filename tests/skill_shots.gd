@@ -74,9 +74,9 @@ func _shoot() -> void:
 		# beast skill needs, full HP for Mass Destruction.
 		Run.galder = 999
 		Run.hp = Run.max_hp
-		if SkillCaster.FORM_NEEDED.has(id) or id == &"beasts_instinct":
-			var need: StringName = SkillCaster.FORM_NEEDED.get(id, &"evolution")
-			need = need if need != &"" else &"metamorphosis"
+		if Run.card(id).form != &"":
+			var need: StringName = Run.card(id).form
+			need = need if need != &"beast" else &"metamorphosis"
 			Run.cards[need] = 3
 			Run.add_card(need)
 			p.become_beast()

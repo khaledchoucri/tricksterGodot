@@ -17,4 +17,5 @@ table = {"value": [70.0, 87.0, 113.0, 130.0, 174.0, 191.0, 209.0, 226.0], "mp": 
 sounds = {"ht": "snd_s_212_ht.wav"}
 master_material = ExtResource("m_master")
 scaling = "DA"
+tags = Array[StringName]([&"thrown"])
 behavior = ExtResource("2_b")

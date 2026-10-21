@@ -47,6 +47,20 @@ enum Kind { TALENT, SKILL }
 ## What the card adds to Run.mod() while held: a Mod key -> "value" (its value at its level)
 ## or the name of one of its table rows. Written by the generators from each card's SPEC.
 @export var mods: Dictionary[String, String] = {}
+## What kind of card this is, for the rules that apply to a family of cards:
+##  - gun: needs a gun; needs_load: also needs it loaded (the basic shot)
+##  - thrown: a thrown weapon (Precise Pitch's thrown_damage%)
+##  - grows_gun: a gun talent, offered like the cards that build on a gunner's basic
+##  - retaliate: strikes back at a monster that hits you (the elemental Blessings)
+@export var tags: Array[StringName] = []
+## The beast form this skill needs: a form card's id (Evolution, Metamorphosis), "beast"
+## for either, or empty for any shape (and then it doesn't work in a beast).
+@export var form: StringName
+## On a form card (Evolution, Metamorphosis): the beast body learning it turns you into.
+@export var form_actor := ""
+## The debuff your hits carry while this talent is held (an Enemy.debuffs key): its
+## value for `seconds` (its table row) when it has one, else for its value in seconds.
+@export var inflicts := ""
 
 @export_group("Skill")
 @export var mp_cost := 0
@@ -57,6 +71,10 @@ enum Kind { TALENT, SKILL }
 @export_enum("AP", "MA", "DA", "DP") var scaling := "AP"
 ## Script extending Skill that performs it.
 @export var behavior: Script
+
+
+func has_tag(tag: StringName) -> bool:
+	return tag in tags
 
 
 func is_skill() -> bool:

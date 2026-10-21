@@ -14,4 +14,5 @@ requires = {&"invincible_reload": 1}
 table = {"value": [100.0, 150.0, 225.0, 275.0, 400.0, 440.0, 480.0, 520.0]}
 effects = {"ap": ["eft_skl_s_112_sbg", "eft_skl_s_112_sps"]}
 master_material = ExtResource("m_master")
+tags = Array[StringName]([&"grows_gun"])
 mods = Dictionary[String, String]({"gun_AP": "value"})

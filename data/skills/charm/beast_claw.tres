@@ -18,4 +18,5 @@ sounds = {"hi": "snd_c_206_ht.wav"}
 effects = {"ht": ["c_206_rush_hit"]}
 master_material = ExtResource("m_master")
 scaling = "AP"
+form = &"evolution"
 behavior = ExtResource("2_b")

@@ -17,4 +17,5 @@ table = {"value": [65.0, 74.0, 87.0, 139.0, 183.0, 201.0, 219.0, 238.0], "mp": [
 effects = {"ht": ["hit drow"]}
 master_material = ExtResource("m_master")
 scaling = "DA"
+tags = Array[StringName]([&"thrown"])
 behavior = ExtResource("2_b")

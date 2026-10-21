@@ -12,7 +12,7 @@ const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", 
 	"lint"]
 ## Card id literals allowed in shared code (scripts/ outside skills/ and tools/): CLAUDE.md,
 ## section 2. Lower it as hooks move into card data; it may never rise.
-const CARD_ID_LITERALS_MAX := 122
+const CARD_ID_LITERALS_MAX := 59
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
@@ -1746,9 +1746,9 @@ func charm_line() -> void:
 		Run.cards.erase(&"evolution")
 		Run.cards[c.id] = 1
 		Run.loadout[0] = c.id
-		if SkillCaster.FORM_NEEDED.has(c.id) or c.id == &"beasts_instinct":
-			var need: StringName = SkillCaster.FORM_NEEDED.get(c.id, &"evolution")
-			Run.form = need if need != &"" else &"metamorphosis"
+		if c.form != &"":
+			var need: StringName = c.form
+			Run.form = need if need != &"beast" else &"metamorphosis"
 			Run.cards[Run.form] = 1
 			Run.stats_changed()
 		Run.mp = Run.max_mp

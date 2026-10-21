@@ -300,6 +300,14 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
             lines.append(f'element = "{element}"')
         if sp.get('scaling'):
             lines.append(f'scaling = "{sp["scaling"]}"')
+        if sp.get('tags'):
+            lines.append('tags = Array[StringName]([' + ', '.join(f'&"{t}"' for t in sp['tags']) + '])')
+        if sp.get('form'):
+            lines.append(f'form = &"{sp["form"]}"')
+        if sp.get('form_actor'):
+            lines.append(f'form_actor = "{sp["form_actor"]}"')
+        if sp.get('inflicts'):
+            lines.append(f'inflicts = "{sp["inflicts"]}"')
         if sp.get('mods'):
             # What the card adds to Run.mod(): a Mod key -> 'value' or one of its table rows.
             lines.append('mods = Dictionary[String, String]({' + ', '.join(f'"{k}": "{v}"' for k, v in sp['mods'].items()) + '})')

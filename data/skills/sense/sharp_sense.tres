@@ -17,3 +17,4 @@ table = {"value": [2.0, 6.0, 12.0, 16.0, 26.0, 29.0, 31.0, 34.0]}
 sounds = {"ap": "snd_S_604_ap.wav"}
 effects = {"ap": ["S_604_SharpSense_EX_ap"]}
 master_material = ExtResource("m_master")
+tags = Array[StringName]([&"grows_gun"])

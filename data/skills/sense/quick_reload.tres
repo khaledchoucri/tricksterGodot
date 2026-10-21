@@ -14,3 +14,4 @@ requires = {&"invincible_reload": 1}
 max_level = 1
 table = {"value": [0.0]}
 master_material = ExtResource("m_master")
+tags = Array[StringName]([&"grows_gun"])

@@ -347,7 +347,7 @@ func _start_pick(kind: String, options: Array) -> void:
 					tag = "Upgrade"
 					text += "
 Replaces %s and keeps its Lv %d." % [base.display_name, Run.card_level(base.id)]
-				if lvl == 0 and card.id in Run.FORM_ACTORS:
+				if lvl == 0 and card.form_actor != "":
 					text += _beast_warning(card.id)
 				shown.append({"title": card.display_name, "tag": tag, "text": text})
 			title = "Level %d  ·  Train a skill" % (Run.level - Run.pending_levels) if _skill_training else "Choose a %s skill card" % Run.job.display_name
