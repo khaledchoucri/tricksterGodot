@@ -32,7 +32,7 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   pieces from monster card sets. You also get drilling, a mastered starting skill from Master Louis, and
   Heat (Server Settings), which makes monsters tougher and raises the item level of everything a run
   offers, up to the original's level-110 lines.
-- **Megalopolis:** eleven people and twelve restorations, each switching a system on inside your runs, and a
+- **Megalopolis:** eleven people and eleven restorations, each switching a system on inside your runs, and a
   short story told through their conversations.
 
 ## Setup

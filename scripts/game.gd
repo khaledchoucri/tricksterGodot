@@ -209,7 +209,7 @@ func _on_room_cleared() -> void:
 	_steps.append(reward_here)
 	if Run.route.current_room().elite and Run.city.system_on(&"smithing"):
 		_steps.append("gear")
-	if (Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss) and Run.city.system_on(&"warehouse"):
+	if Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss:
 		_steps.append("port")
 	_next_step()
 
@@ -864,7 +864,7 @@ func _refine(g: GearItem) -> void:
 
 func _on_player_died() -> void:
 	phase = Phase.DEAD
-	var bagged := Run.city.drop_bag(player.global_position) if Run.city.system_on(&"warehouse") else ([] as Array[String])
+	var bagged := Run.city.drop_bag(player.global_position)
 	Run.last_bag = bagged
 	Run.city.finish(false)
 	Audio.play("shchr002.wav")
@@ -898,10 +898,7 @@ func _win() -> void:
 
 
 func _finish_win() -> void:
-	if Run.city.system_on(&"warehouse"):
-		_open_port()
-	else:
-		_show_win_results()
+	_open_port()
 
 
 ## A region's boss (not the last) is down: a shard, then on to the next region.

@@ -25,7 +25,7 @@ func arrive(p_data: RestStopData, p_room: Room, player: Player, hud: Hud) -> voi
 	talker.player = player
 	for n in data.npcs:
 		if n.requires != &"" and Profile.level(n.requires) <= 0:
-			continue  # as in the hub: Julio keeps the shelves once the warehouse is restored
+			continue  # as in the hub: someone who comes back with a restoration
 		var npc: Npc = NPC_SCENE.instantiate()
 		npc.data = n
 		npc.position = n.position if room.is_walkable(n.position) else room.nearest_reachable(n.position)

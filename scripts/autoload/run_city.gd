@@ -78,8 +78,6 @@ func build_trickster() -> ClassData:
 ## Wears the loadout: each slot's item from its warehouse shelf, at full strength (decided
 ## with the user, 2026-10-21: no level sync, no level or weight gate).
 func carry_loadout() -> void:
-	if not system_on(&"warehouse"):
-		return
 	if Profile.legacy_heirloom >= 0:
 		var old := from_shelf(Profile.legacy_heirloom)
 		if old and Profile.worn_in(Profile.legacy_heirloom) == "":
@@ -276,5 +274,4 @@ func finish(p_won: bool) -> void:
 	Profile.bank_run(p_won, reached, Run.purse.tm, Run.purse.shards, String(Run.job.id))
 	if p_won:
 		save_point()  # what you wore from the shelves comes home with its progress
-	if system_on(&"warehouse"):
-		Run.last_result.kept = Profile.bank_leftovers(p_won, Run.purse.galder, Run.purse.ore, Run.purse.materials)
+	Run.last_result.kept = Profile.bank_leftovers(p_won, Run.purse.galder, Run.purse.ore, Run.purse.materials)

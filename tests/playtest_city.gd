@@ -25,8 +25,6 @@ func city_craft() -> void:
 			if Run.deck.start_level(c.id) > 0:
 				Profile.start_skills[String(Run.cls.id)] = String(c.id)
 				break
-	if not Run.city.system_on(&"warehouse"):
-		return
 	for h: int in Profile.loadout.values():
 		_invest(h)
 

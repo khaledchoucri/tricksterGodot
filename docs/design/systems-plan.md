@@ -17,7 +17,7 @@ Built:
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,
   written by `tools/gear_items.py` and `tools/gun_items.py`).
 - The warehouse and the loadout (worn in every run, designed on the equipment window), Ports and rollback.
-- Megalopolis: 11 people, 12 restorations that switch systems on, and the story.
+- Megalopolis: 11 people, 11 restorations that switch systems on (the warehouse is open from the first run), and the story.
 - Server Settings (Heat), monster cards, card sets and the wardrobe, the Skill Master, Echoes and sky-blue
   runes, drilling, and the custom Trickster class.
 

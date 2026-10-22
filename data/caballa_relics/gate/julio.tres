@@ -11,4 +11,4 @@ portrait = "julio"
 position = Vector2(1060, 660)
 facing = Vector2(-1, 1)
 is_object = false
-requires = &"warehouse"
+requires = &""

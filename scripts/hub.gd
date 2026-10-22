@@ -254,9 +254,6 @@ func _loadout_key(data: ItemData) -> String:
 func _on_loadout_slot(kind: String, key: String) -> void:
 	if talker.talking or leaving:
 		return
-	if not Run.city.system_on(&"warehouse"):
-		hud.log_line("[System] Your shelves are Keeper Julio's: restore the warehouse first.", Color("94a7b2"))
-		return
 	hud.sheet.toggle()
 	talker.set_talking(true)
 	if kind == "gear":

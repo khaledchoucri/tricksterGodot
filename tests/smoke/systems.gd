@@ -281,11 +281,15 @@ func run(Run: Node) -> void:
 	Run.new_run()
 	check(Profile.loadout == {"weapon": 0} and Run.gear.equipped("weapon").data.id == &"wood_sword",
 		"an old save's heirloom is worn in its slot")
+	# Earlier runs in this suite banked their own leftovers: count from what's banked now.
+	var galder0: int = Profile.galder
+	var ore0: int = Profile.ore
+	var ice0: int = int(Profile.materials.get("cool_ice", 0))
 	var kept: Dictionary = Profile.bank_leftovers(false, 101, 5, {&"cool_ice": 3})
-	check(kept.galder == 50 and Profile.ore == 2 and Profile.materials.get("cool_ice", 0) == 1,
+	check(kept.galder == 50 and Profile.ore - ore0 == 2 and int(Profile.materials.get("cool_ice", 0)) - ice0 == 1,
 		"a rollback banks half the leftover Galder, ore and materials")
 	Profile.bank_leftovers(true, 100, 4, {&"cool_ice": 4})
-	check(Profile.galder == 150 and Profile.materials.cool_ice == 5, "a clear banks all of them")
+	check(Profile.galder - galder0 == 150 and int(Profile.materials.cool_ice) - ice0 == 5, "a clear banks all of them")
 	# The warehouse is the original's grid: 24 shelves, then a row of 8 for Harkon Shards, up to 80.
 	var start_size: int = Profile.warehouse_size()
 	Profile.shards = 28

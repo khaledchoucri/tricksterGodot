@@ -75,7 +75,7 @@ func run() -> void:
 	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)
-	check(hub.talker.npcs.size() == 4 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
+	check(hub.talker.npcs.size() == 5 and hub.gate != null and hub.room.is_walkable(hub.player.global_position),
 		"the hub builds Megalopolis with %d people and the gate" % hub.talker.npcs.size())
 	check(hub.hud.sheet.equipment.editable, "in the city the equipment window is where the loadout is designed")
 	check(hub.talker.story.conversation_for("cavalier").get("id") == "cav_intro", "Don Cavalier starts with his introduction")
