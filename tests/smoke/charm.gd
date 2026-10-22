@@ -1,10 +1,18 @@
 extends SmokeSection
 ## The Charm line: Cat and Raccoon, the beast forms, every Charm skill.
 
+## Map-independent checks for prepared animation and duration.
+const CHARM_PREPARATION := preload("res://tests/smoke/charm_preparation.gd")
+
 
 ## The Charm line: Cat and Raccoon, the server's HV-weighted attacks, the
 ## beast forms, Galder, and every Charm skill on a dummy.
 func run() -> void:
+	var checks: SmokeSection = CHARM_PREPARATION.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var p: Player = game.player
 	var saved: String = Profile.class_id
 
