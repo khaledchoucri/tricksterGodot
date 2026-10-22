@@ -1,10 +1,28 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/nemeth_towel.tres" id="m_mat"]
 [ext_resource type="PackedScene" path="res://scenes/boss_tutankhamen.tscn" id="2_scene"]
 [ext_resource type="Resource" path="res://data/items/golden_sword.tres" id="3_drop"]
 [ext_resource type="Resource" path="res://data/attacks/slam.tres" id="atk"]
+[ext_resource type="Script" path="res://scripts/data/boss_data.gd" id="b_s"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/mad_lieutenant.tres" id="e_lt"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/mad_sergeant.tres" id="e_sgt"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/mad_captain.tres" id="e_cap"]
+[ext_resource type="Resource" path="res://data/desert_beach/enemies/sphinx.tres" id="e_sphinx"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_arrow.tres" id="c_arrow"]
+[ext_resource type="Resource" path="res://data/skills/magic/mana_storm.tres" id="c_storm"]
+
+[sub_resource type="Resource" id="boss_row"]
+script = ExtResource("b_s")
+lives = 3
+heals = Array[Dictionary]([{"lives": 1, "share": 0.06, "every": 5.0}, {"lives": 0, "share": 0.12, "every": 1.5}])
+line_open = "My soldiers, rise.. and fight!"
+line_summon = "Charge!"
+line_rage = "I can feel the power!"
+title = "Pharaoh of the Pyramid Steps"
+summons = {&"spirit": ExtResource("e_lt"), &"barrier": ExtResource("e_sgt"), &"mender": ExtResource("e_cap"), &"sphinx": ExtResource("e_sphinx")}
+spells = {&"arrow": ExtResource("c_arrow"), &"storm": ExtResource("c_storm")}
 
 [resource]
 script = ExtResource("1_s")
@@ -16,6 +34,7 @@ cost = 0
 min_depth = 0
 hp_mult = 3.8
 is_boss = true
+boss = SubResource("boss_row")
 scene = ExtResource("2_scene")
 drop_item = ExtResource("3_drop")
 drop_chance = 0.35

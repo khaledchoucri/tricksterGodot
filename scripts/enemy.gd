@@ -136,8 +136,9 @@ func _ready() -> void:
 	sprite.setup(String(data.id))
 	if data.echo:
 		sprite.self_modulate = Color(0.7, 0.85, 1.4, 0.75)  # a ghost of a former player
+	sprite.scale *= data.sprite_scale  # on top of its sheet's display_scale
 	if is_elite:
-		sprite.scale = Vector2(1.25, 1.25)
+		sprite.scale *= 1.25
 		sprite.self_modulate = Color(1.2, 1.05, 0.7)
 	sprite.self_modulate.a *= opacity
 	sprite.play_action("idle", Vector2(-1, 1))

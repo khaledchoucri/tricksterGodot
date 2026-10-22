@@ -93,6 +93,13 @@ ACTORS = {
 }
 # Interface art from data/UI_nori: name -> NORI file (one bitmap each).
 UI_ART = {'equip_window': 'data/UI_nori/EquipUI.nri'}
+# Interface strips: name -> (NORI file, anim title), each anim's frames side by side.
+# The boss HP bar (MonsterHPInfoUI.nri, drawn by the client's uBossHPInfoView, 0x79f7e0):
+# a gauge per lives left (0 red, 1 yellow, 2 green, 3 blue, 4 purple), its 9-px frame
+# and the 52-px window behind it.
+UI_STRIPS = {**{f'boss_gauge_{i}': ('data/UI_nori/MonsterHPInfoUI.nri', f'BossGauge_{i}') for i in range(5)},
+             'boss_gauge_frame': ('data/UI_nori/MonsterHPInfoUI.nri', 'Gauge_BG'),
+             'boss_window': ('data/UI_nori/MonsterHPInfoUI.nri', 'BackgroundEX')}
 # Dialogue portraits: name -> NPC illustration
 PORTRAITS = {'cavalier': 'data/npc/npc001_illu.nri', 'miranda': 'data/npc/npc003_illu.nri',
              'julio': 'data/npc/npc046_illu.nri', 'paul': 'data/npc/npc040_illu.nri', 'marx': 'data/npc/npc119_illu.nri',
@@ -324,6 +331,8 @@ def main():
     os.makedirs(os.path.join(OUT, 'ui'), exist_ok=True)
     for name, rel in UI_ART.items():
         run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel), os.path.join(OUT, 'ui', name + '.png'))
+    for name, (rel, anim) in UI_STRIPS.items():
+        run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel), os.path.join(OUT, 'ui', name + '.png'), anim)
     os.makedirs(os.path.join(OUT, 'weapons'), exist_ok=True)
     for name, rel in WEAPONS.items():
         run(os.path.join(HERE, 'export_weapon.py'), os.path.join(client, rel),

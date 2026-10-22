@@ -1,5 +1,6 @@
 extends SmokeSection
-## The bosses (Master Mong, Tombeth), a lingering spell, death and the rollback, then Megalopolis.
+## The bosses (Master Mong, Tutankhamen, Tombeth) and their bars, a lingering spell, death and
+## the rollback, then Megalopolis.
 
 
 ## The boss room, a lingering spell, death and the rollback, then Megalopolis.
@@ -19,6 +20,9 @@ func run() -> void:
 		"the Coral Beach boss is Master Mong, in the Dark Cave (%s)" % (boss.display_name if boss else "no boss"))
 	if boss is BossMong:
 		await _master_mong(boss as BossMong)
+
+	await _boss_bar()
+	await _tutankhamen()
 
 	# The Caballa Relics: the last region's boss room is the Trident Maze, with Tombeth, who
 	# calls Chimu as he loses his first life.
@@ -182,3 +186,81 @@ func _thief_steals(p: Player) -> void:
 
 func _thieves() -> int:
 	return enemies().filter(func(e: Enemy) -> bool: return e.data.id == BossMong.SUMMON_ID).size()
+
+
+## Loads the boss room of `region` (or the last region's) and waits for its boss to step in.
+func _boss_room(region: int) -> Boss:
+	var Run := run_state()
+	await clear_room()
+	Run.route.depth = Run.route.plan.find_custom(func(p: RoomPlan) -> bool:
+		return p.region == Run.route.regions[region] and p.boss)
+	game.get_tree().paused = false
+	game.hud.pick_panel.visible = false
+	game._load_room()
+	for _i in 40:
+		await wait(0.2)
+		for e: Enemy in enemies():
+			if e is Boss:
+				game.player.invulnerable_until = game.player.now() + 999.0
+				return e
+	return null
+
+
+## The boss bar's art: one gauge colour per lives left, as the client's MonsterHPInfoUI.nri.
+func _boss_bar() -> void:
+	var bar: BossHpBar = game.hud.get_node("%BossBar")
+	var want: Array[Color] = [Color8(255, 0, 0), Color8(255, 206, 0), Color8(0, 206, 0), Color8(24, 156, 255), Color8(189, 41, 255)]
+	var seen: PackedStringArray = []
+	for i in 6:
+		var tex := bar.gauge_texture(i)
+		var c := tex.get_image().get_pixel(10, 3) if tex else Color.BLACK
+		seen.append(c.to_html(false))
+		if not c.is_equal_approx(want[mini(i, 4)]):
+			seen.append("<- wrong")
+	check(not "<- wrong" in seen, "boss bars are red, yellow, green, blue, purple by lives left (%s)" % ", ".join(seen))
+	bar.set_hp("Test", 500, 1000, 4)
+	check(bar.layer() == 1 and absf(bar.fill() - 1.0) < 0.01,
+		"500 of 1000 HP in four bars is a full yellow bar over the red (layer %d, fill %.2f)" % [bar.layer(), bar.fill()])
+	bar.set_hp("Test", 100, 1000, 4)
+	check(bar.layer() == 0 and absf(bar.fill() - 0.4) < 0.01, "and 100 is the red bar 40%% full (%.2f)" % bar.fill())
+
+
+## Tutankhamen: four bars, his Mads and their spells on him, a stagger as a bar breaks, and two
+## Sphinxes at half HP.
+func _tutankhamen() -> void:
+	var tut := await _boss_room(1) as BossTutankhamen
+	check(tut != null, "the Desert Beach boss room has Tutankhamen")
+	if tut == null:
+		return
+	var bar: BossHpBar = game.hud.get_node("%BossBar")
+	check(tut.bars == 4 and bar.layer() == 3, "Tutankhamen has four bars, blue on top (%d, layer %d)" % [tut.bars, bar.layer()])
+	var card := game.hud.boss_intro()
+	check(card != null and (card.get_child(0) as Label).text == tut.display_name, "his name card shows as he steps in")
+	await wait(4.5)
+	var roles := {}
+	for role: StringName in [&"spirit", &"barrier", &"mender"]:
+		roles[role] = tut.minion(role) != null
+	check(not false in roles.values(), "he calls his Mad Lieutenant, Sergeant and Captain (%s)" % roles)
+	check(tut.is_empowered() and tut.has_shield(), "the Lieutenant's Mad Spirit and the Sergeant's Mana Shield are on him (%s, %s)"
+		% [tut.is_empowered(), tut.has_shield()])
+	var before := tut.hp
+	tut.take_hit(300, Vector2.RIGHT, 0.0, true)
+	check(tut.hp > before - 300, "the Mana Shield soaks his hits (%d of 300 got through)" % (before - tut.hp))
+	tut._barrier = 0
+	tut.hp = tut.bar_top() - 200
+	tut._cure_at = 0.0
+	before = tut.hp
+	await wait(0.2)
+	check(tut.hp > before, "the Captain's M Cure heals him (%d -> %d)" % [before, tut.hp])
+	tut.take_hit(int(tut.hp - tut.bar_hp * 1.98), Vector2.RIGHT, 0.0, true)
+	await wait(0.1)
+	check(tut.state == Enemy.State.HURT and tut.lives_left == 1 and bar.layer() == 1,
+		"losing bars staggers him and the bar drops to yellow (lives %d, layer %d)" % [tut.lives_left, bar.layer()])
+	await wait(Boss.STAGGER_FOR + 1.8)
+	var sphinxes := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"sphinx")
+	check(sphinxes.size() == 2, "at half his HP he calls two Sphinxes (%d)" % sphinxes.size())
+	if not sphinxes.is_empty():
+		var sx: Enemy = sphinxes[0]
+		check(float(sx.stats.MD) > float(tut.stats.MD) and sx.damage >= tut._base_damage * 0.6,
+			"Sphinxes resist magic and hit hard (MD %d, hit %d)" % [sx.stats.MD, sx.damage])
+

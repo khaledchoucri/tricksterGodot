@@ -51,6 +51,10 @@ func _shoot() -> void:
 		await _shoot_desert()
 		get_tree().quit()
 		return
+	if "boss" in OS.get_cmdline_user_args():
+		await _shoot_bosses()
+		get_tree().quit()
+		return
 	if "clear" in OS.get_cmdline_user_args():
 		await _shoot_clear()
 		get_tree().quit()
@@ -391,3 +395,42 @@ func _shoot_desert() -> void:
 			Run.deck.take_rune(Run.echoes[0].runes[0])
 			await _wait(1.0)
 			await _snap("21_echoes")
+
+
+## The chunk's bosses: Tutankhamen's name card, his Mads, a bar breaking, half HP with the Sphinxes.
+func _shoot_bosses() -> void:
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.0)
+	for region: int in [1]:
+		Run.route.depth = Run.route.plan.find_custom(func(p: RoomPlan) -> bool:
+			return p.region == Run.route.regions[region] and p.boss)
+		game._load_room()
+		var boss: Boss = null
+		for _i in 30:
+			await _wait(0.1)
+			for e: Enemy in game.room.enemies:
+				if e is Boss:
+					boss = e
+			if boss:
+				break
+		if boss == null:
+			print("no boss in region %d" % region)
+			continue
+		await _wait(0.8)
+		game.player.invulnerable_until = game.player.now() + 999.0
+		game.player.global_position = boss.global_position + Vector2(-110, 50)
+		var tag := String(boss.data.id)
+		await _snap("40_%s_intro" % tag)
+		await _wait(3.5)
+		await _snap("41_%s_first_bar" % tag)
+		boss.take_hit(roundi(boss.hp - boss.bar_hp * 2.6), Vector2.RIGHT, 0.0, true)
+		await _wait(0.2)
+		await _snap("42_%s_bar_breaks" % tag)
+		await _wait(3.0)
+		await _snap("43_%s_second_bar" % tag)
+		boss.take_hit(roundi(boss.hp - boss.bar_hp * 1.7), Vector2.RIGHT, 0.0, true)
+		await _wait(Boss.STAGGER_FOR + 1.2)
+		await _snap("44_%s_half" % tag)
+		await _wait(2.0)
+		await _snap("45_%s_later" % tag)
