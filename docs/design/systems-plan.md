@@ -16,7 +16,7 @@ Built:
 - Bosses (`scripts/boss.gd`, a `BossData` each): HP in bars, one per life of the BossMonsterparamEx row
   (the server refills a boss per life, GameServer.exe 0x5645d0; the client draws one bar per life left,
   0x79f4e0, in MonsterHPInfoUI.nri's colours); a stagger as a bar breaks, then the next phase; the row's M
-  Cure heals; a name card. Monster debuffs on you (Rust, Magic Meltdown) cut a stat for a while.
+  Cure heals; a name card. Master Mong (three bars) uses it too. Monster debuffs on you (Rust, Magic Meltdown) cut a stat for a while.
   Tutankhamen: his Mads (Mad Spirit, Mana Shield, M Cure on him), Mana Arrow, Rust, Mana Storm, two Sphinxes
   at half HP, M Warp. Tombeth: Sturdy Shield, Mana Reflector 10 s on 30, Magic Meltdown, the rage at half HP
   (faster, defences down, Power and Final Blows quick, the leap and the X of falling rocks). Numbers sit in `BossData.tune` for the coming Extreme Measures Heat to harden.

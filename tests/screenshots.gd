@@ -397,13 +397,13 @@ func _shoot_desert() -> void:
 			await _snap("21_echoes")
 
 
-## The chunk's bosses: Tutankhamen's name card, his Mads, half HP with the Sphinxes; Tombeth's
+## The chunk's bosses: Master Mong in his three bars; Tutankhamen's name card, his Mads, half HP with the Sphinxes; Tombeth's
 ## card, Mana Reflector, and his rage with the X of falling rocks.
 func _shoot_bosses() -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.0)
-	for region: int in [1, Run.route.regions.size() - 1]:
+	for region: int in [0, 1, Run.route.regions.size() - 1]:
 		Run.route.depth = Run.route.plan.find_custom(func(p: RoomPlan) -> bool:
 			return p.region == Run.route.regions[region] and p.boss)
 		game._load_room()

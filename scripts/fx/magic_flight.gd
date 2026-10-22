@@ -29,8 +29,6 @@ var room: Room
 var target: Node2D
 ## Where to fly when there's no target (or it dies on the way).
 var target_point := Vector2.ZERO
-## A node to home on instead of a monster: a monster's spell flying at the player.
-var homing: Node2D
 var caster: Node2D
 var appear := 0.0
 var fire := 0.3
@@ -89,8 +87,6 @@ func _ready() -> void:
 func _aim_ground() -> Vector2:
 	if _target_alive():
 		target_point = target.global_position
-	elif is_instance_valid(homing):
-		target_point = homing.global_position
 	return Combat.ground(target_point)
 
 

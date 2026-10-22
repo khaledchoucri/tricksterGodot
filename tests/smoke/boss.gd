@@ -7,15 +7,7 @@ extends SmokeSection
 func run() -> void:
 	var Run := run_state()
 	await clear_room()
-	Run.route.depth = Run.route.regions[0].run_length
-	game.get_tree().paused = false
-	game.hud.pick_panel.visible = false
-	game._load_room()
-	await wait(3.0)
-	var boss: Enemy = null
-	for e: Enemy in enemies():
-		if e.is_boss:
-			boss = e
+	var boss := await _boss_room(0)
 	check(boss is BossMong and game.room.data.map == "map_dg11b" and boss.display_name == "Master Mong",
 		"the Coral Beach boss is Master Mong, in the Dark Cave (%s)" % (boss.display_name if boss else "no boss"))
 	if boss is BossMong:
@@ -114,19 +106,19 @@ func _master_mong(mong: BossMong) -> void:
 	check(mong.casts.get("storm", 0) >= 1 and mong.casts.get("shield", 0) == 0 and mong.casts.get("ring", 0) == 0,
 		"on his first life Mong casts only his storm (%s)" % mong.casts)
 	mong.take_hit(int(mong.max_hp * 0.36), Vector2.RIGHT, 0.0, true)
-	await wait(1.0)
-	check(mong.lives_left() == 2 and mong.is_shielded() and int(mong.stats.MD) == roundi(mong.base_md * 1.19),
-		"at 2/3 HP Mong loses a life and raises Mana Shield, MD +19%% (%d lives, %s)" % [mong.lives_left(), mong.casts])
+	await wait(Boss.STAGGER_FOR + 1.0)
+	check(mong.bars == 3 and mong.bars_left() == 2 and mong.is_shielded() and int(mong.stats.MD) == roundi(mong.base_md * 1.19),
+		"at 2/3 HP Mong loses a life and raises Mana Shield, MD +19%% (%d lives, %s)" % [mong.bars_left(), mong.casts])
 	mong.take_hit(int(mong.max_hp * 0.16), Vector2.RIGHT, 0.0, true)
-	await wait(1.5)
+	await wait(Boss.STAGGER_FOR + 1.5)
 	check(called[0] == mong.summon_start + mong.summon_half,
 		"at half HP Mong calls %d more Thief Mongs (%d in all, %d standing)" % [mong.summon_half, called[0], _thieves()])
 	check(mong.casts.get("ring", 0) == 0, "Mana Ring waits for his last life (%s)" % mong.casts)
 	mong.take_hit(int(mong.max_hp * 0.2), Vector2.RIGHT, 0.0, true)
 	var low := mong.hp
 	mong.global_position = game.room.nearest_reachable(p.global_position + Vector2(90, 0))
-	await wait((BossMong.HEAL_EVERY + BossMong.HEAL_CAST) * (mong.heal_casts + 1))
-	check(mong.lives_left() == 1 and mong.casts.get("ring", 0) >= 1 and mong.hp > low,
+	await wait(Boss.STAGGER_FOR + (BossMong.HEAL_EVERY + BossMong.HEAL_CAST) * (mong.heal_casts + 1))
+	check(mong.bars_left() == 1 and mong.casts.get("ring", 0) >= 1 and mong.hp > low,
 		"on his last life Mong casts Mana Ring and Cures himself (%s, %d -> %d HP)" % [mong.casts, low, mong.hp])
 	check(mong.casts.get("heal", 0) == mong.heal_casts, "Mong's Cure runs out after %d casts (%s)" % [mong.heal_casts, mong.casts])
 	Events.enemy_spawned.disconnect(count_thief)

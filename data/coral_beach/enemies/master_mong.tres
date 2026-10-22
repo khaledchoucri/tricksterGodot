@@ -1,9 +1,19 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/master_mong_fur.tres" id="m_mat"]
 [ext_resource type="Resource" path="res://data/attacks/slam.tres" id="atk"]
 [ext_resource type="PackedScene" path="res://scenes/boss_mong.tscn" id="2_scene"]
+[ext_resource type="Script" path="res://scripts/data/boss_data.gd" id="b_s"]
+[ext_resource type="Resource" path="res://data/coral_beach/enemies/thief_mong.tres" id="e_thief"]
+
+[sub_resource type="Resource" id="boss_row"]
+script = ExtResource("b_s")
+lives = 3
+line_open = "Hey, guys~ Do I have to put myself forward to this matter?"
+line_summon = "Come on out immediately~"
+title = "Master of the Dark Cave"
+summons = {&"thief": ExtResource("e_thief")}
 
 [resource]
 script = ExtResource("1_s")
@@ -15,5 +25,6 @@ cost = 0
 min_depth = 0
 hp_mult = 2.9
 is_boss = true
+boss = SubResource("boss_row")
 scene = ExtResource("2_scene")
 material = ExtResource("m_mat")

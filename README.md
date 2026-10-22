@@ -26,7 +26,7 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
 - **28 monsters**, three bosses with their summons, and three Echoes of other classes that lend their skills as
   runes.
 - **Bosses fight in bars.** Their HP is drawn as the original client draws it: one bar per life in their
-  BossMonsterparamEx row (four for Tutankhamen and Tombeth), stacked in the client's colours. A boss staggers as
+  BossMonsterparamEx row (three for Master Mong, four for Tutankhamen and Tombeth), stacked in the client's colours. A boss staggers as
   a bar breaks, then starts its next phase, and steps in with a name card and one of its original lines.
   Tutankhamen calls his three Mads, who buff, shield and heal him, casts Mana Arrow and Rust, calls two Sphinxes
   at half HP and warps away when you pin him. Tombeth hides behind Sturdy Shield (half damage), raises Mana Reflector (10 s
