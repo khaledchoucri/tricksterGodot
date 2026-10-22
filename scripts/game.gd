@@ -18,7 +18,8 @@ const ROOM_MP := 40
 ## The next card pick is a level-up's skill training (for its title).
 var _skill_training := false
 ## Rewards that need a city system: reward -> Run.city.system_on() id.
-const REWARD_SYSTEMS := {"gear": &"smithing", "anvil": &"smithing", "shop": &"smithing", "compound": &"compounding",
+## Gear is found from the first run (decided with the user, 2026-10-22: the loot loop starts at once).
+const REWARD_SYSTEMS := {"anvil": &"smithing", "shop": &"smithing", "compound": &"compounding",
 	"dig": &"drilling"}
 ## Misses at a Dig Site that wake an ambush.
 const DIG_NOISE := 3
@@ -207,7 +208,7 @@ func _on_room_cleared() -> void:
 	if Run.job_change_due():
 		_steps.append("job")
 	_steps.append(reward_here)
-	if Run.route.current_room().elite and Run.city.system_on(&"smithing"):
+	if Run.route.current_room().elite:
 		_steps.append("gear")
 	if Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss:
 		_steps.append("port")
@@ -969,7 +970,7 @@ func _on_enemy_died(e: Enemy) -> void:
 		hud.log_line("[System] The %s fades. A sky-blue rune is left behind." % e.display_name, Color("8fd8ff"))
 	if e.is_boss:
 		hud.hide_boss()
-		if e.data.drop_item and Run.city.system_on(&"smithing") and Run.rng.randf() < e.data.drop_chance:
+		if e.data.drop_item and Run.rng.randf() < e.data.drop_chance:
 			_legend = GearItem.roll(e.data.drop_item, clampf(Run.stat("DA") / 60.0, 0.0, 1.0))
 			Audio.play("ui_unique_get.wav")
 			hud.log_line("[Notice] %s dropped the legendary %s!" % [e.display_name, _legend.title()], Color("e0b54d"))

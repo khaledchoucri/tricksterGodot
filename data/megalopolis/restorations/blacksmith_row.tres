@@ -6,7 +6,7 @@
 script = ExtResource("1_s")
 id = &"blacksmith_row"
 display_name = "Blacksmith Row"
-text = "Brings back Blacksmith Marx. Equipment drops, anvils and shops appear in runs."
+text = "Brings back Blacksmith Marx. Anvils and shops appear in runs, and his forge refines stored gear."
 max_level = 1
 per_level = 1.0
 effect = "system"
