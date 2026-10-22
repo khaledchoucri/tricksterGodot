@@ -194,7 +194,7 @@ func _one_run(index: int) -> void:
 		"rune": Run.deck.rune.display_name if Run.deck.rune else "", "casts": _casts.duplicate(), "refused": _refused.duplicate(),
 		"loadout": Run.deck.loadout.duplicate(), "heat": heat_here,
 		"home": Profile.warehouse.size() - shelves_before, "shelves": Profile.warehouse.size(),
-		"bag": Profile.lost_bag.get("items", []).size()}
+		"bag": Profile.lost_bag.get("items", []).size(), "wt": Run.stat("WT"), "worn": _worn_weights()}
 	results.append(r)
 	print("run %d: %s at room %d, Lv %d %s, %.0fs, %d kills" % [r.run, "CLEAR" if r.won else "died", r.depth,
 		r.level, r.job, r.time, r.kills])
@@ -274,6 +274,16 @@ func _tick(delta: float) -> void:
 					player.global_position = d.global_position
 		_:
 			_release()
+
+
+## What the bot wears at the end of a run, but its class weapon: each piece's weight (for comparing
+## death rules offline: the split happens after the run, so it can't change how the run went).
+func _worn_weights() -> Array[int]:
+	var out: Array[int] = []
+	for g: GearItem in Run.gear.equipment.values():
+		if not (g.stored < 0 and g.data == Run.cls.start_weapon):
+			out.append(g.data.weight)
+	return out
 
 
 ## The lost bag lying in this room, or null.
@@ -585,6 +595,7 @@ func _report() -> void:
 		print("run %d  %s  room %d  Lv %d %s  %.0fs  kills %d  types %s  seed %d  heat %d  home %+d  shelves %d  bag %d" % [
 			r.run, "CLEAR" if r.won else "died ", r.depth, r.level, r.job, r.time, r.kills, r.types, r.seed, r.heat, r.home,
 			r.shelves, r.bag])
+		print("   at the end: WT %d, worn weights %s" % [r.wt, r.worn])
 		print("   gear: %s" % ", ".join(r.gear))
 		if not r.won:
 			print("   died near: %s" % ", ".join(r.around))
