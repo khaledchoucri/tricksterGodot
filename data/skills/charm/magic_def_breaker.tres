@@ -10,6 +10,7 @@ display_name = "Magic Def Breaker"
 kind = 0
 skill_id = 4006
 text = "Your hits strip a monster's magic veil: {v}% less MD for {seconds} s."
+tm_level = 20
 table = {"value": [21.0, 27.0, 36.0, 42.0, 57.0, 63.0, 68.0, 74.0], "seconds": [12.0, 16.0, 22.0, 26.0, 36.0, 36.0, 36.0, 36.0]}
 sounds = {"ht": "snd_skl_c_106_ebg.wav"}
 effects = {"ht": ["eft_skl_c_106_ebg", "eft_skl_c_106_eps"]}

@@ -11,6 +11,7 @@ display_name = "Phoenix Rising"
 kind = 1
 skill_id = 2124
 text = "Fire flowers blossom around the enemy at the cursor for {seconds} s, burning up to {targets} enemies for {v} at a time."
+tm_level = 140
 requires = {&"incinerate": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [38.0, 49.0, 67.0, 78.0, 107.0, 118.0, 129.0, 139.0], "mp": [45.0, 47.0, 50.0, 52.0, 57.0, 57.0, 57.0, 57.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "cast": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "range": [180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0], "radius": [100.0, 110.0, 125.0, 135.0, 160.0, 160.0, 160.0, 160.0], "seconds": [3.0, 5.0, 8.0, 10.0, 15.0, 15.0, 15.0, 15.0], "targets": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0]}

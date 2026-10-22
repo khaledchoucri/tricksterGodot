@@ -10,6 +10,7 @@ display_name = "Quick Reload"
 kind = 0
 skill_id = 3010
 text = "Your reload keeps filling while you walk or run."
+tm_level = 40
 requires = {&"invincible_reload": 1}
 max_level = 1
 table = {"value": [0.0]}

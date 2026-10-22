@@ -10,6 +10,7 @@ display_name = "Bottle of Mana"
 kind = 0
 skill_id = 2004
 text = "+{v} max MP."
+tm_level = 20
 requires = {&"cure": 3}
 table = {"value": [22.0, 37.0, 56.0, 69.0, 90.0, 99.0, 108.0, 118.0]}
 sounds = {"ap": "snd_skl_pub2_sbg.wav"}

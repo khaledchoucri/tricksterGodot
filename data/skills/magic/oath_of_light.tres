@@ -11,6 +11,7 @@ display_name = "Oath of Light"
 kind = 0
 skill_id = 2220
 text = "Recover {v}% of your max HP every 10 s."
+tm_level = 70
 requires = {&"light_pact": 1}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 table = {"value": [5.0, 6.0, 8.0, 10.0, 14.0, 14.0, 14.0, 14.0]}

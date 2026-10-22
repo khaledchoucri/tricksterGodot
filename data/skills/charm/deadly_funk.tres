@@ -11,6 +11,7 @@ display_name = "Deadly Funk"
 kind = 1
 skill_id = 4110
 text = "The smelliest gym socks: everything around the cursor faints for {stun} s."
+tm_level = 160
 requires = {&"skunk_pouch": 3}
 upgrades = &"skunk_pouch"
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])

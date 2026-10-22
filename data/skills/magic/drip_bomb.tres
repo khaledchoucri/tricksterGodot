@@ -11,6 +11,7 @@ display_name = "Drip Bomb"
 kind = 1
 skill_id = 2103
 text = "A cannonball of water bursts on the enemies at the cursor for {v} damage."
+tm_level = 55
 requires = {&"seal_of_water": 1}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [64.0, 70.0, 78.0, 84.0, 99.0, 108.0, 118.0, 128.0], "mp": [27.0, 30.0, 33.0, 35.0, 40.0, 40.0, 40.0, 40.0], "cooldown": [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [200.0, 210.0, 225.0, 235.0, 250.0, 250.0, 250.0, 250.0], "radius": [70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0]}

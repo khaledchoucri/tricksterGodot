@@ -11,6 +11,7 @@ display_name = "Berserker"
 kind = 0
 skill_id = 1203
 text = "Rage: +{v}% AP, but you keep losing HP and MP while enemies are near."
+tm_level = 70
 requires = {&"pumping_heart": 2}
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [5.3, 11.0, 24.0, 34.0, 69.0, 76.0, 83.0, 90.0]}

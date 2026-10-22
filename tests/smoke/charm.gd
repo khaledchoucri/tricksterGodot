@@ -348,9 +348,11 @@ func _full_house(p: Player) -> void:
 	Run.deck.cards[&"skunk_pouch"] = 3
 	var early := Run.deck.can_learn(fh)
 	Run.deck.cards[&"one_pair"] = 3
+	Run.level = Run.deck.unlock_level(fh)  # Full House is TM 150
 	var offered := false
 	for i in 30:
 		offered = offered or fh in Run.deck.card_offers(3, false, gambler)
+	Run.level = 1
 	check(not early and Run.deck.can_learn(fh) and offered, "a Gambler is offered Full House once One Pair reaches Lv 3")
 	var first := await _dummy(p, 70.0)
 	var foes: Array[Enemy] = [first]

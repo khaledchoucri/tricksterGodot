@@ -10,6 +10,7 @@ display_name = "Sacred Oath"
 kind = 0
 skill_id = 2504
 text = "Your faith adds {v}% of your max HP to every Oath of Light recovery."
+tm_level = 145
 requires = {&"oath_of_light": 3}
 jobs = Array[StringName]([&"priest"])
 table = {"value": [4.0, 6.0, 9.0, 11.0, 15.0, 15.0, 15.0, 15.0]}

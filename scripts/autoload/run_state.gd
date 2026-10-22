@@ -430,10 +430,6 @@ func auto_points(t: String) -> float:
 
 
 ## Whether the run has reached its job change and the job has somewhere to go.
-func job_change_due() -> bool:
-	return route.local_depth() == route.region.job_change_depth and job.next_jobs.size() > 0 and city.system_on(&"jobs")
-
-
 func has_passive(id: StringName) -> bool:
 	for j in jobs:
 		if j.passive == id:

@@ -186,6 +186,17 @@ func run(Run: Node) -> void:
 		% rolls.filter(func(g: GearItem) -> bool: return g.prefix != "")[0].title())
 
 	Run.new_run()
+	# Cards arrive by their original TM level: up to TM 20 from room 1, Upper Smash (TM 40) at Lv 12.
+	var smash: CardData = Run.deck.card(&"upper_smash")
+	var first_offers: Array[StringName] = []
+	for _i in 40:
+		for c: CardData in Run.deck.card_offers(3, false):
+			if not c.id in first_offers:
+				first_offers.append(c.id)
+	check(first_offers.size() >= 5 and first_offers.all(func(id: StringName) -> bool: return Run.deck.card(id).tm_level <= RunDeck.TM_OPEN)
+		and Run.deck.unlock_level(smash) == 12, "a Lv 1 Fighter is offered the original's TM 1-20 cards (%s); Upper Smash comes at Lv 12"
+		% ", ".join(first_offers))
+	Run.level = 12
 	var offered_smash := false
 	for _i in 40:
 		for c: CardData in Run.deck.card_offers(3, false):
@@ -195,10 +206,21 @@ func run(Run: Node) -> void:
 	for _i in 40:
 		for c: CardData in Run.deck.card_offers(3, false):
 			offered_smash = offered_smash or c.id == &"upper_smash"
-	check(offered_smash, "Bull's Eye Lv 3 opens Upper Smash")
+	check(offered_smash, "at Lv 12, Bull's Eye Lv 3 opens Upper Smash")
+	Run.level = 1
 
-	Run.route.depth = Run.route.region.job_change_depth
-	check(Run.job_change_due() and Run.job.id == &"fighter", "the trial room brings the Fighter's job change")
+	# Chunk 1 is played in the 1st job: no room changes it. Its clear opens chunk 2 for this
+	# character, in its 2nd job.
+	Run.route.depth = Run.route.region.port_depth
+	check(Run.job.id == &"fighter" and not Run.get_script().get_script_method_list().any(
+		func(m: Dictionary) -> bool: return m.name == "job_change_due"), "no room of chunk 1 brings a job change")
+	var chunks_before: Dictionary = Profile.chunks.duplicate()
+	Profile.chunks.erase("buffalo")
+	check(Profile.chunk_open("buffalo", 1) and not Profile.chunk_open("buffalo", 2), "chunk 2 is closed to a Buffalo who hasn't cleared chunk 1")
+	check(Profile.clear_chunk("buffalo", 1) and Profile.chunk_open("buffalo", 2) and not Profile.chunk_open("bunny", 2)
+		and not Profile.clear_chunk("buffalo", 1), "a Buffalo's chunk 1 clear opens chunk 2 for the Buffalo only, once")
+	Profile.chunks = chunks_before
+	Profile.save()
 	var sword_mult: float = Run.formulas.attack_mult()
 	var knight: JobData = Run.job.next_jobs[0]
 	Run.start_job(knight)
@@ -355,11 +377,9 @@ func run(Run: Node) -> void:
 		and not Profile.buy_row(), "24 shelves to start; 28 Harkon Shards buy the seven more rows, up to 80")
 	Profile.use_path("user://smoke_test_profile.json", true)
 	Run.new_run()
-	check(not Run.city.system_on(&"smithing") and not Run.job_change_due(), "a fresh city has no smithing or job changes")
-	Run.route.depth = Run.route.region.job_change_depth
-	check(not Run.job_change_due(), "without the Job Hall the trial room changes nothing")
+	check(not Run.city.system_on(&"smithing"), "a fresh city has no smithing")
 	_restore_all(Run)
-	check(Run.city.system_on(&"smithing") and Run.job_change_due(), "restoring the Job Hall turns the job change on")
+	check(Run.city.system_on(&"smithing"), "restoring the Forge turns smithing on")
 
 	# Monster cards and the wardrobe.
 	Profile.restorations["card_house"] = 1

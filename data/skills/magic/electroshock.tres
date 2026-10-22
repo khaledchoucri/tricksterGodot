@@ -10,6 +10,7 @@ display_name = "Electroshock"
 kind = 0
 skill_id = 2113
 text = "Electro Attack immobilizes what it strikes for {v} s."
+tm_level = 90
 requires = {&"electro_attack": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 max_level = 1

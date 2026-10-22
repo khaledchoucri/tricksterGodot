@@ -10,6 +10,7 @@ display_name = "Suffocate"
 kind = 0
 skill_id = 1503
 text = "Your hits pin an enemy down: for {v} s it can't hide (burrow or vanish)."
+tm_level = 130
 requires = {&"sense_breaker": 3}
 jobs = Array[StringName]([&"gladiator"])
 table = {"value": [15.0, 19.0, 25.0, 29.0, 39.0, 43.0, 47.0, 51.0]}

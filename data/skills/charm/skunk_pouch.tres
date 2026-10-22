@@ -11,6 +11,7 @@ display_name = "Skunk Pouch"
 kind = 1
 skill_id = 4010
 text = "Toss a pouch of skunk stink: the enemy faints for {stun} s."
+tm_level = 40
 table = {"value": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "mp": [34.0, 36.0, 39.0, 41.0, 45.0, 45.0, 45.0, 45.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "range": [120.0, 130.0, 145.0, 155.0, 180.0, 180.0, 180.0, 180.0], "radius": [40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0], "stun": [2.0, 4.0, 7.0, 9.0, 12.0, 12.0, 12.0, 12.0]}
 sounds = {"ht": "snd_skl_c_110_ebg.wav"}
 effects = {"ht": ["eft_skl_c_110_ebg", "eft_skl_c_110_eps"]}

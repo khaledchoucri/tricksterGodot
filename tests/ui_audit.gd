@@ -300,7 +300,6 @@ func _audit_game() -> void:
 		"card": Run.deck.card_pool().slice(0, 4),
 		"replace": [0, 1, 2, -1],
 		"type": Stats.TYPE_ORDER.duplicate(),
-		"job": Run.job.next_jobs.duplicate() if Run.job.next_jobs.size() else [Run.job],
 		"gear": Run.gear.gear_offers(3),
 		"gear_slot": ["acc1", "acc2", ""],
 		"rune": Run.echoes[0].runes + [null],

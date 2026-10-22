@@ -10,6 +10,7 @@ display_name = "Counter Punch"
 kind = 0
 skill_id = 1106
 text = "While you Uppercut, a {chance}% chance of a counter blow for {v} more damage."
+tm_level = 100
 requires = {&"uppercut": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [35.0, 46.0, 64.0, 75.0, 104.0, 115.0, 125.0, 136.0], "chance": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]}

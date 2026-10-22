@@ -10,6 +10,7 @@ display_name = "Dark Commando"
 kind = 0
 skill_id = 2704
 text = "A dark being follows you: after each dark spell hits, it strikes the same enemy for {v} damage."
+tm_level = 155
 requires = {&"dark_barrier": 3, &"fear": 1}
 jobs = Array[StringName]([&"dark_lord"])
 table = {"value": [29.0, 33.0, 39.0, 43.0, 53.0, 59.0, 64.0, 69.0]}

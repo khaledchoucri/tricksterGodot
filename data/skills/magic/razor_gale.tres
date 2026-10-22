@@ -11,6 +11,7 @@ display_name = "Razor Gale"
 kind = 1
 skill_id = 2126
 text = "A boomerang of wind at the enemy you aim at for {v} damage."
+tm_level = 135
 requires = {&"wind_blade": 3, &"mana_ring": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [44.0, 54.0, 70.0, 80.0, 106.0, 117.0, 127.0, 138.0], "mp": [42.0, 43.0, 46.0, 47.0, 50.0, 50.0, 50.0, 50.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "cast": [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], "range": [140.0, 150.0, 165.0, 175.0, 200.0, 200.0, 200.0, 200.0]}

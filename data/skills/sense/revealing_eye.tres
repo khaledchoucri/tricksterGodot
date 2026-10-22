@@ -10,6 +10,7 @@ display_name = "Revealing Eye"
 kind = 0
 skill_id = 3502
 text = "Hiding monsters within {v} can't escape your sight."
+tm_level = 130
 requires = {&"sixth_sense": 3}
 jobs = Array[StringName]([&"scientist"])
 table = {"value": [160.0, 180.0, 210.0, 230.0, 280.0, 308.0, 336.0, 364.0]}

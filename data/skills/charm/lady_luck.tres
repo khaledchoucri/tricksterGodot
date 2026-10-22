@@ -10,6 +10,7 @@ display_name = "Lady Luck"
 kind = 0
 skill_id = 4210
 text = "One Pair throws {min} to {v} cards in a fan up to 30 degrees wide, each adding to the damage."
+tm_level = 160
 requires = {&"one_pair": 1}
 jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])
 table = {"value": [2.0, 2.0, 3.0, 4.0, 6.0, 6.0, 6.0, 6.0], "min": [2.0, 2.0, 2.0, 2.0, 4.0, 4.0, 4.0, 4.0]}

@@ -11,6 +11,7 @@ display_name = "Summon Boulder"
 kind = 1
 skill_id = 2115
 text = "A giant boulder crashes down at the cursor on up to {targets} enemies for {v} damage."
+tm_level = 115
 requires = {&"seal_of_earth": 1, &"mana_ring": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [87.0, 96.0, 109.0, 117.0, 139.0, 153.0, 167.0, 181.0], "mp": [46.0, 46.0, 47.0, 48.0, 50.0, 50.0, 50.0, 50.0], "cooldown": [4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5], "cast": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "range": [150.0, 170.0, 200.0, 220.0, 250.0, 250.0, 250.0, 250.0], "radius": [140.0, 148.0, 160.0, 168.0, 188.0, 188.0, 188.0, 188.0], "targets": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0]}

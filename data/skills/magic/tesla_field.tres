@@ -11,6 +11,7 @@ display_name = "Tesla Field"
 kind = 1
 skill_id = 2123
 text = "The ground at the cursor turns into an electric field for {seconds} s: up to {targets} enemies in it take {v} damage at a time."
+tm_level = 145
 requires = {&"electro_attack": 3, &"mana_arrow": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [72.0, 81.0, 94.0, 103.0, 125.0, 137.0, 150.0, 162.0], "mp": [32.0, 37.0, 44.0, 47.0, 55.0, 55.0, 55.0, 55.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [160.0, 170.0, 185.0, 195.0, 220.0, 220.0, 220.0, 220.0], "radius": [100.0, 120.0, 150.0, 170.0, 220.0, 220.0, 220.0, 220.0], "seconds": [4.0, 6.0, 9.0, 11.0, 16.0, 16.0, 16.0, 16.0], "targets": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]}

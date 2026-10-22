@@ -10,6 +10,7 @@ display_name = "Gnome's Blessing"
 kind = 0
 skill_id = 2309
 text = "Gnome guards your Earth Shield: a monster that hits you takes {v} earth damage back. Keeps the Shield's resistance."
+tm_level = 140
 requires = {&"earth_shield": 1}
 upgrades = &"earth_shield"
 jobs = Array[StringName]([&"soul_master"])

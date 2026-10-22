@@ -11,6 +11,7 @@ display_name = "Med. Cure"
 kind = 1
 skill_id = 2501
 text = "Cures beginner and medium ailments."
+tm_level = 140
 requires = {&"basic_healing": 1}
 jobs = Array[StringName]([&"priest"])
 max_level = 1

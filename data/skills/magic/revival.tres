@@ -11,6 +11,7 @@ display_name = "Revival"
 kind = 0
 skill_id = 2221
 text = "If you fall, light revives you with {v}% HP (once every {cooldown} s)."
+tm_level = 210
 requires = {&"oath_of_light": 3}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 max_level = 1

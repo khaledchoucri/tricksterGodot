@@ -10,6 +10,7 @@ display_name = "Aura of Mana"
 kind = 0
 skill_id = 2003
 text = "MP regeneration +{v}%."
+tm_level = 20
 requires = {&"cure": 3}
 table = {"value": [200.0, 230.0, 275.0, 305.0, 360.0, 396.0, 432.0, 468.0]}
 master_material = ExtResource("m_master")

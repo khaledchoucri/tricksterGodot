@@ -11,6 +11,7 @@ display_name = "Flux Capacitor"
 kind = 1
 skill_id = 4208
 text = "Burn {hp}% of your max HP into MP: {v}% of it comes back as MP."
+tm_level = 115
 requires = {&"physical_training": 3}
 jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])
 table = {"value": [30.0, 40.0, 55.0, 65.0, 90.0, 99.0, 108.0, 117.0], "mp": [13.0, 19.0, 26.0, 29.0, 35.0, 35.0, 35.0, 35.0], "cooldown": [12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0], "hp": [10.0, 12.0, 15.0, 17.0, 22.0, 22.0, 22.0, 22.0]}

@@ -11,6 +11,7 @@ display_name = "Sharp Sense"
 kind = 0
 skill_id = 3504
 text = "Overcharged shots deal {v}% more damage on top of a mastered Keen Sense."
+tm_level = 150
 requires = {&"keen_sense": 1}
 upgrades = &"keen_sense"
 jobs = Array[StringName]([&"scientist"])

@@ -10,6 +10,7 @@ display_name = "Sylph's Blessing"
 kind = 0
 skill_id = 2310
 text = "Sylph guards your Wind Shield: a monster that hits you takes {v} wind damage back. Keeps the Shield's resistance."
+tm_level = 140
 requires = {&"wind_shield": 1}
 upgrades = &"wind_shield"
 jobs = Array[StringName]([&"soul_master"])

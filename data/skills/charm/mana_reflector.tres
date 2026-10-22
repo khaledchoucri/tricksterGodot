@@ -11,6 +11,7 @@ display_name = "Mana Reflector"
 kind = 0
 skill_id = 4008
 text = "A barrier turns {v}% of each magic hit back on its caster, and you take that much less."
+tm_level = 20
 table = {"value": [20.0, 24.0, 30.0, 34.0, 44.0, 48.0, 53.0, 57.0]}
 sounds = {"ap": "snd_skl_c_108_sps.wav"}
 master_material = ExtResource("m_master")

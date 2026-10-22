@@ -11,6 +11,7 @@ display_name = "Catastrophe Heal"
 kind = 1
 skill_id = 2207
 text = "In a pinch, recover {v}% of your max HP, more with luck."
+tm_level = 60
 requires = {&"cure": 3, &"light_pact": 1}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 table = {"value": [8.0, 12.0, 18.0, 22.0, 32.0, 35.0, 38.0, 42.0], "mp": [19.0, 24.0, 29.0, 32.0, 37.0, 37.0, 37.0, 37.0], "cooldown": [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], "cast": [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], "luck": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}

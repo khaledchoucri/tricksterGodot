@@ -11,6 +11,7 @@ display_name = "Butt Plate"
 kind = 1
 skill_id = 3201
 text = "Club the enemy in front with your gun's butt: {v}% of a gun shot. Needs a gun."
+tm_level = 41
 requires = {&"gun_carrier": 1}
 jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
 table = {"value": [115.0, 155.0, 215.0, 255.0, 355.0, 390.0, 426.0, 462.0], "mp": [24.0, 25.0, 27.0, 29.0, 31.0, 31.0, 31.0, 31.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}

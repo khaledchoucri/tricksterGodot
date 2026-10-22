@@ -11,6 +11,7 @@ display_name = "Chi Release"
 kind = 1
 skill_id = 1305
 text = "Release your chi in one explosion: the enemies around you (up to {targets}) take {v} damage."
+tm_level = 240
 requires = {&"flaming_fist": 3}
 jobs = Array[StringName]([&"champion"])
 table = {"value": [87.0, 99.0, 116.0, 128.0, 157.0, 172.0, 188.0, 204.0], "mp": [50.0, 53.0, 56.0, 58.0, 63.0, 63.0, 63.0, 63.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "radius": [110.0, 114.0, 120.0, 124.0, 140.0, 140.0, 140.0, 140.0], "targets": [3.0, 3.0, 4.0, 4.0, 6.0, 6.0, 6.0, 6.0]}

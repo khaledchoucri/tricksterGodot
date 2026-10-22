@@ -10,6 +10,7 @@ display_name = "Invincible Casting"
 kind = 0
 skill_id = 2002
 text = "Hits can't interrupt your casting (innate for mages)."
+tm_level = 10
 max_level = 1
 table = {"value": [0.0]}
 master_material = ExtResource("m_master")

@@ -11,6 +11,7 @@ display_name = "Bunker"
 kind = 1
 skill_id = 3505
 text = "Dig in behind a bunker for {seconds} s: it takes the hits ({v}% of your max HP), and your shots hit harder."
+tm_level = 240
 requires = {&"revealing_eye": 3}
 jobs = Array[StringName]([&"scientist"])
 table = {"value": [120.0, 150.0, 195.0, 225.0, 300.0, 330.0, 360.0, 390.0], "mp": [42.0, 46.0, 52.0, 55.0, 63.0, 63.0, 63.0, 63.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "seconds": [30.0, 36.0, 45.0, 51.0, 66.0, 66.0, 66.0, 66.0]}

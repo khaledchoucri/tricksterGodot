@@ -10,6 +10,7 @@ display_name = "Seal of Water"
 kind = 0
 skill_id = 2102
 text = "A pact with water: its magic can be learned. Two other elements are closed to you for good."
+tm_level = 55
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 excludes = Array[StringName]([&"seal_of_fire", &"seal_of_earth"])
 max_level = 1

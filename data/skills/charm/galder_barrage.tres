@@ -11,6 +11,7 @@ display_name = "Galder Barrage"
 kind = 1
 skill_id = 4102
 text = "Throw {galder} Galder in three directions at the cursor: {v} damage through any defence."
+tm_level = 55
 requires = {&"galder_thrower": 3}
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
 table = {"value": [72.0, 102.0, 145.0, 174.0, 246.0, 271.0, 296.0, 320.0], "mp": [22.0, 24.0, 26.0, 27.0, 30.0, 30.0, 30.0, 30.0], "cooldown": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], "range": [170.0, 190.0, 220.0, 240.0, 270.0, 270.0, 270.0, 270.0], "radius": [60.0, 68.0, 80.0, 88.0, 108.0, 108.0, 108.0, 108.0], "galder": [30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0]}

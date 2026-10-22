@@ -10,6 +10,7 @@ display_name = "Poison Pouch"
 kind = 0
 skill_id = 3305
 text = "Pouch of Pain poisons what it hits: {v}% of its damage again over {seconds} s."
+tm_level = 125
 requires = {&"pouch_of_pain": 3}
 jobs = Array[StringName]([&"thief_master"])
 table = {"value": [8.0, 10.0, 13.0, 15.0, 20.0, 20.0, 20.0, 20.0], "seconds": [6.0, 8.0, 11.0, 13.0, 18.0, 18.0, 18.0, 18.0]}

@@ -5,6 +5,8 @@ extends RefCounted
 ## Regions a run passes through, in order; the last one's boss ends it.
 const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres",
 	"res://data/caballa_relics/region.tres"]
+## The chunk being played (a run is one chunk of three regions). Only chunk 1 exists so far.
+var chunk := 1
 var regions: Array[RegionData] = []
 
 ## The region of the room the run is in.

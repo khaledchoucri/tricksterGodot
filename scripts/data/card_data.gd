@@ -19,6 +19,9 @@ enum Kind { TALENT, SKILL }
 ## Description; "{v}" is replaced by the value at the shown level, and
 ## "{name}" by table row `name` at that level.
 @export_multiline var text := ""
+## The level the original learns it at (Item_SkillCardParam.TMLV): a new card
+## is offered once the run reaches RunDeck.unlock_level() of it.
+@export var tm_level := 0
 ## Prerequisites from the original skill tree: card id -> level needed.
 @export var requires: Dictionary = {}
 ## The skill this one is an advanced form of (Gale Strike -> Tempest Strike).

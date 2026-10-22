@@ -11,6 +11,7 @@ display_name = "Poison Assult"
 kind = 1
 skill_id = 3306
 text = "From hiding, a poisoned throw for {v} damage that keeps hurting for {seconds} s. Only while hidden."
+tm_level = 135
 requires = {&"shuriken_master": 1, &"hide": 1}
 jobs = Array[StringName]([&"thief_master"])
 table = {"value": [44.0, 55.0, 72.0, 84.0, 113.0, 124.0, 136.0, 147.0], "mp": [52.0, 54.0, 56.0, 58.0, 62.0, 62.0, 62.0, 62.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "range": [160.0, 180.0, 210.0, 230.0, 260.0, 260.0, 260.0, 260.0], "seconds": [7.0, 9.0, 12.0, 14.0, 17.0, 17.0, 17.0, 17.0]}

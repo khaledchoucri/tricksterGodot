@@ -257,8 +257,30 @@ func card_value(id: StringName) -> float:
 	return c.value_at(card_level(id)) if c else 0.0
 
 
+## Ours: cards up to this original TM level (CardData.tm_level) are offered from room 1. The
+## original's first 20 TM levels pass in its first hours; here they give room 1 a choice (six
+## of a Fighter's eleven cards).
+const TM_OPEN := 20
+## Ours: past TM_OPEN, a card comes this many run levels per original TM level. The original
+## spreads a 1st job's cards over TM levels 1-50 (Sense's to 70) and chunk 1 runs from Lv 1 to
+## about 54: a Fighter's last card (TM 50) comes at Lv 18 in Desert Beach, Sense's TM 70 ones
+## at Lv 30 in the Relics. Reading: one run level stands for both the original's character and
+## TM levels. A later chunk will need its own start (its 2nd-job cards begin at TM 41).
+const TM_PACE := 0.6
+
+
+## The run level `c` is first offered at.
+func unlock_level(c: CardData) -> int:
+	return maxi(1, ceili((c.tm_level - TM_OPEN) * TM_PACE))
+
+
+## Whether the run is far enough along for `c` to be offered.
+func level_reached(c: CardData) -> bool:
+	return Run.level >= unlock_level(c)
+
+
 ## Up to `n` card offers from the current jobs' trees (or only `from_job`'s):
-## new cards whose prerequisites are met, or upgrades of owned ones when
+## new cards whose prerequisites and level are met, or upgrades of owned ones when
 ## `upgrade` is true. New-card offers lean on skills: at least two of three
 ## while there are skills left to learn.
 func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardData]:
@@ -267,7 +289,7 @@ func card_offers(n: int, upgrade: bool, from_job: JobData = null) -> Array[CardD
 	for c in (from_job.cards if from_job else card_pool()):
 		var lvl := card_level(c.id)
 		# Training can also teach what grows the basic spell (Arrow Rush).
-		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or ((not upgrade or grows_basic(c)) and can_learn(c)):
+		if (upgrade and lvl > 0 and lvl < card_cap(c.id)) or ((not upgrade or grows_basic(c)) and can_learn(c) and level_reached(c)):
 			(skills if c.is_skill() else talents).append(c)
 	Run.shuffle(skills)
 	Run.shuffle(talents)

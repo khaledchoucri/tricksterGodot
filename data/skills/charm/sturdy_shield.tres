@@ -10,6 +10,7 @@ display_name = "Sturdy Shield"
 kind = 0
 skill_id = 4007
 text = "A shield on threads circles you: +{v}% DP."
+tm_level = 30
 table = {"value": [10.0, 14.0, 20.0, 24.0, 34.0, 37.0, 41.0, 44.0]}
 master_material = ExtResource("m_master")
 mods = Dictionary[String, String]({"DP%": "value"})

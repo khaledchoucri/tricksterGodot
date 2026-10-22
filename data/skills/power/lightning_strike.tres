@@ -11,6 +11,7 @@ display_name = "Lightning Strike"
 kind = 1
 skill_id = 1211
 text = "Lightning strikes the nearest enemies (up to {targets}) for {v} damage, with a {chance}% chance to stun for {stun} s."
+tm_level = 210
 requires = {&"piercing_wave": 3}
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [81.0, 90.0, 103.0, 112.0, 133.0, 147.0, 160.0, 173.0], "mp": [56.0, 59.0, 63.0, 66.0, 72.0, 72.0, 72.0, 72.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "targets": [2.0, 2.0, 3.0, 4.0, 6.0, 6.0, 6.0, 6.0], "stun": [3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0], "chance": [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]}

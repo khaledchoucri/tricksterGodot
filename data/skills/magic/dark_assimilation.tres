@@ -10,6 +10,7 @@ display_name = "Dark Assimilation"
 kind = 0
 skill_id = 2706
 text = "Dark damage +{v}%."
+tm_level = 240
 requires = {&"ghostly_whisper": 3}
 jobs = Array[StringName]([&"dark_lord"])
 table = {"value": [2.0, 5.0, 9.0, 12.0, 20.0, 20.0, 20.0, 20.0]}

@@ -11,6 +11,7 @@ display_name = "Chakra Balance"
 kind = 1
 skill_id = 1506
 text = "Recover {v}% of your HP every {interval} s for {seconds} s, until you take a hit."
+tm_level = 240
 requires = {&"chi_sword": 3}
 jobs = Array[StringName]([&"gladiator"])
 table = {"value": [1.0, 2.0, 3.5, 4.5, 8.0, 8.8, 9.6, 10.0], "mp": [58.0, 61.0, 65.0, 67.0, 71.0, 71.0, 71.0, 71.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "seconds": [30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0], "interval": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]}

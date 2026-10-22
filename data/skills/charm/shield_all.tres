@@ -10,6 +10,7 @@ display_name = "Shield All"
 kind = 0
 skill_id = 4004
 text = "+{v}% DP."
+tm_level = 25
 requires = {&"mana_reflector": 3}
 table = {"value": [6.0, 8.0, 11.0, 13.0, 18.0, 18.0, 18.0, 18.0]}
 master_material = ExtResource("m_master")

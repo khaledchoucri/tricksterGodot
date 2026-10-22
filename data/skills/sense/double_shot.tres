@@ -11,6 +11,7 @@ display_name = "Double Shot"
 kind = 1
 skill_id = 3206
 text = "Fire twice in a row, {v}% of a gun shot in all; the second can't be dodged."
+tm_level = 115
 requires = {&"power_shot": 3}
 jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
 table = {"value": [240.0, 280.0, 340.0, 380.0, 480.0, 528.0, 576.0, 624.0], "mp": [40.0, 41.0, 42.0, 43.0, 45.0, 45.0, 45.0, 45.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "range": [180.0, 190.0, 205.0, 215.0, 240.0, 240.0, 240.0, 240.0], "count": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]}

@@ -11,6 +11,7 @@ display_name = "Celestial Strike"
 kind = 1
 skill_id = 2503
 text = "A column of light rises at the cursor and strikes the monsters around it for {v} damage."
+tm_level = 150
 requires = {&"light_wave": 1, &"radiant_strike": 1}
 jobs = Array[StringName]([&"priest"])
 table = {"value": [65.0, 77.0, 93.0, 105.0, 133.0, 146.0, 160.0, 173.0], "mp": [49.0, 54.0, 60.0, 64.0, 72.0, 72.0, 72.0, 72.0], "cooldown": [7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [100.0, 110.0, 125.0, 135.0, 160.0, 160.0, 160.0, 160.0], "radius": [150.0, 158.0, 170.0, 178.0, 198.0, 198.0, 198.0, 198.0]}

@@ -10,6 +10,7 @@ display_name = "Refreshing Dew"
 kind = 0
 skill_id = 2505
 text = "Skill cooldowns {v}% shorter."
+tm_level = 240
 requires = {&"sacred_oath": 3}
 jobs = Array[StringName]([&"priest"])
 table = {"value": [5.0, 13.0, 25.0, 33.0, 50.0, 55.0, 60.0, 65.0]}

@@ -10,6 +10,7 @@ display_name = "Salamander's Blessing"
 kind = 0
 skill_id = 2308
 text = "Salamander guards your Fire Shield: a monster that hits you takes {v} fire damage back. Keeps the Shield's resistance."
+tm_level = 140
 requires = {&"fire_shield": 1}
 upgrades = &"fire_shield"
 jobs = Array[StringName]([&"soul_master"])

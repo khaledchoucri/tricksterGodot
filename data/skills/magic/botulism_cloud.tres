@@ -11,6 +11,7 @@ display_name = "Botulism Cloud"
 kind = 1
 skill_id = 2125
 text = "Deadly spores at the cursor: the enemies there take twice as long to attack for {seconds} s."
+tm_level = 120
 requires = {&"seal_of_earth": 1, &"mana_web": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [100.0, 100.0, 100.0, 100.0, 100.0, 110.0, 120.0, 130.0], "mp": [34.0, 36.0, 39.0, 41.0, 45.0, 45.0, 45.0, 45.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [120.0, 124.0, 130.0, 134.0, 144.0, 144.0, 144.0, 144.0], "seconds": [10.0, 12.0, 15.0, 17.0, 22.0, 22.0, 22.0, 22.0], "radius": [60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0]}

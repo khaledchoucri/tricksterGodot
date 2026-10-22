@@ -11,6 +11,7 @@ display_name = "Cleaving Terra"
 kind = 1
 skill_id = 2109
 text = "A fissure runs along the ground toward the cursor, hitting everything on it for {v} damage."
+tm_level = 55
 requires = {&"seal_of_earth": 1}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [72.0, 76.0, 83.0, 87.0, 98.0, 108.0, 117.0, 127.0], "mp": [27.0, 30.0, 34.0, 36.0, 41.0, 41.0, 41.0, 41.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "cast": [1.2, 1.1, 1.0, 0.9, 0.75, 0.75, 0.75, 0.75], "range": [200.0, 210.0, 225.0, 235.0, 250.0, 250.0, 250.0, 250.0], "radius": [150.0, 160.0, 175.0, 185.0, 210.0, 210.0, 210.0, 210.0]}

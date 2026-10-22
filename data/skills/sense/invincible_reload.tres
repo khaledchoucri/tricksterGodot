@@ -10,6 +10,7 @@ display_name = "Invincible Reload"
 kind = 0
 skill_id = 3011
 text = "Being hit no longer resets your reload."
+tm_level = 20
 requires = {&"gun_carrier": 1}
 max_level = 1
 table = {"value": [0.0]}

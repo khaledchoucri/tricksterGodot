@@ -11,6 +11,7 @@ display_name = "Flaming Fist"
 kind = 1
 skill_id = 1303
 text = "Fists burning with fighting spirit strike for {v} fire damage."
+tm_level = 145
 requires = {&"burning_rave": 3, &"counter_punch": 3}
 jobs = Array[StringName]([&"champion"])
 table = {"value": [67.0, 84.0, 110.0, 128.0, 165.0, 182.0, 198.0, 215.0], "mp": [45.0, 48.0, 51.0, 54.0, 59.0, 59.0, 59.0, 59.0], "cooldown": [15.0, 13.0, 10.0, 8.0, 5.0, 5.0, 5.0, 5.0]}

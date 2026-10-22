@@ -11,6 +11,7 @@ display_name = "Electro Attack"
 kind = 1
 skill_id = 2105
 text = "A bolt strikes the enemy you aim at and sparks on to others (up to {targets}) for {v} damage."
+tm_level = 55
 requires = {&"seal_of_thunder": 1}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [67.0, 74.0, 85.0, 92.0, 109.0, 120.0, 131.0, 142.0], "mp": [32.0, 33.0, 36.0, 38.0, 41.0, 41.0, 41.0, 41.0], "cooldown": [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [200.0, 210.0, 225.0, 235.0, 250.0, 250.0, 250.0, 250.0], "targets": [2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0, 5.0], "radius": [250.0, 250.0, 250.0, 250.0, 250.0, 250.0, 250.0, 250.0]}

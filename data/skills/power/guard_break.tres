@@ -10,6 +10,7 @@ display_name = "Guard Break"
 kind = 0
 skill_id = 1101
 text = "Shockwave has a {v}% chance to break an enemy's guard for {seconds} s: it can't evade and has no DP."
+tm_level = 41
 requires = {&"shockwave": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 max_level = 1

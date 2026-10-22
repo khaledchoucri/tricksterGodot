@@ -11,6 +11,7 @@ display_name = "Quad Punch"
 kind = 1
 skill_id = 1104
 text = "Four blazing blows in a row, {v} damage each."
+tm_level = 85
 requires = {&"burning_rave": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [24.0, 28.0, 35.0, 39.0, 50.0, 55.0, 60.0, 65.0], "mp": [38.0, 40.0, 42.0, 44.0, 48.0, 48.0, 48.0, 48.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]}

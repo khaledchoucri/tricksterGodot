@@ -10,7 +10,7 @@ Built:
 - 229 skill and talent cards from the original tables. Upgrades replace their base, buffs are talents, and
   supplements change their skill.
 - Three regions (Coral Beach, Desert Beach, Caballa Relics), nine rooms and a boss each, elites at the 4th and
-  8th rooms, and a job change after the 4th in the first two. A rest stop at the original's gate follows the
+  8th rooms, played in the 1st job (a chunk's clear opens the next job for that character). A rest stop at the original's gate follows the
   first two bosses (32 rooms): half of max HP and MP back, Keeper Julio and the warehouse swap. 23 monsters with five attack patterns, three bosses
   (the Golden Mole, Tutankhamen, Tombeth).
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops. Gear comes from
@@ -115,12 +115,10 @@ Lv 1 Fighter ──(region 1 boss)──▶ Knight or Boxer* ──(region 2 bos
   prerequisites (Hyper Beat needs Bull's Eye 10 and Burning Rave 10; Tidal Slash
   needs Lacerator 10). Taking a skill early opens deeper ones later, so each
   run has a build path, much like Hades's duo boons.
-- A job change is a big moment: a new tree, a new passive, maybe a new combo
-  finisher, and a choice of branch.
+- A job change is the biggest unlock between runs: a new tree, a new passive, maybe a new combo
+  finisher, and a choice of branch. See "Jobs and chunks" below.
 - Hybrid 3rd jobs (Mercenary learns Boxer skills, Duelist learns Knight skills)
   are the most interesting picks, and they lead into the custom class.
-- Until we have a second region, the first job change can be a trial room
-  halfway through Coral Beach.
 
 ### The custom class
 
@@ -206,8 +204,38 @@ collection grows. The challenge comes from the world rising to meet it.
   is felt), the next one is a challenge, and its later regions drop gear above your loadout, so finds
   keep mattering inside a run.
 
+**Jobs and chunks.** Decided with the user, 2026-10-22. The original's levels already split into chunks:
+its 1st-job cards run over TM levels 1-50 (Sense's to 70), the 2nd job came at Lv 50 in Relics Town, its
+2nd-job cards run over TM 41-125, and the 3rd job came at Lv 120 (cards TM 120-150).
+- **A chunk is played in one job tier.** Chunk 1 (Lv 1 to about 54) is the 1st job throughout: no room changes
+  job.
+- **Clearing a chunk opens the next one for that character**, in its next job (`Profile.chunks`). Chunk 2 needs
+  a chunk-1 clear with each of the eight characters, and chunk 3 a chunk-2 clear per 3rd job.
+  - Built: the per-character record and the results line. To build: choosing the job at a chunk's start, and
+    the 3rd-job choice at a chunk-2 clear (one of the two branches per clear).
+- **Cards arrive by their original TM level** (`CardData.tm_level`, `RunDeck.unlock_level`). Up to TM 20 they're
+  open from room 1. Past it, 0.6 run levels per TM level (Ours): a Fighter's last card (TM 50) at Lv 18, Sense's
+  TM 70 cards at Lv 30. Upgrades of cards you hold aren't gated.
+- **The Job Hall restoration is gone.** It only switched on the in-run job change.
+- **Next:** a chunk resource (its regions, starting level, job tier and unlock), and the veteran start: a chunk-2
+  run starts at about Lv 54 in the 2nd job, with a draft of 1st-job cards.
+
+| Chunk | Region 1 (boss) | Region 2 (boss) | Region 3 (boss) | Rest stops |
+|---|---|---|---|---|
+| 1 | Coral Beach (Master Mong, Lv 55) | Desert Beach (Tutankhamen, 71) | Caballa Relics (Tombeth, 120) | Gates of Desert Beach, Caballa Relics |
+| 2 | Oops Wharf (Captain Skull, 152) | Ghost Blue (Pirate King Karan, 250) | Rose Garden (Count Blood, 330) | Gate of Ghost Blue (`mapg02`), Event Garden - Ceremonia (`map_pa04`) |
+| 3 (tentative) | Black Swamp (Tenter Lion, 420) | Snow Hill (Queen Odinea, 520) | Techichi Volcano (Soki, 630) | Gates of Snow Hill (`map_fd07`), Techichi (`map_fd08`) |
+
+- Boss levels and HP are MonsterParamEx2's; the boss rooms are the original's (`fd05e`, `uw04a`, `dg09f`, `dg04g`,
+  `dg07e`, `pa05e`).
+- Chunk 2 maps: Wharf Fields 1-4 and the Path to Oops Wharf (original item levels 40-60, Phantom School 40-80);
+  Seabed Fields 1-5 and the Paths to Ghost Blue (70-100); Rose Fields 1-4 (110-130) and the Vamp Dungeons (130-160).
+- Chunk 3 maps: Swamp Fields 1-6 and Dungeons 1-6 (140-200); Snow Fields 1-4 and Ice Dungeons 1-3 (180-250);
+  Techichi Fields 1-4 (230-250).
+
 **Three layers of progression:**
-1. **A run** (minutes): level 1 to about 54, the job changes, the deck and the run's finds. It resets.
+1. **A run** (minutes): level 1 to about 54, the deck growing as cards reach their original levels, and the
+   run's finds. It resets.
 2. **Between runs** (hours): the loadout, the starting skill (Master Louis), refining and compounding
    stored gear in the city, the wardrobe, the warehouse's size, and the lost bag.
 3. **The world** (the long arc): Heat raises stakes and rewards within a chunk; chunks add places; the
@@ -289,7 +317,6 @@ Hades paces its unlocks and how the story already works.
 |---|---|---|
 | Blacksmith Row | the Refiner | gear drops, anvil rooms, forging |
 | Compounder's Stall | the Compounder | compound slots, monster materials, compound rooms, recipe compounding in the city |
-| Job Hall | the Job Master | job change at bosses; branch-unlock quests ("clear Coral Beach as Knight without dashing") |
 | Warehouse | the Warehouse Keeper | sending items home, the loadout, appearance transfer |
 | Skill Shrine | the Skill Master | mastering a skill with monster materials to start runs with it, one level higher per mastery (permanent hunting goals) |
 | Card House | the Card Collector | monster cards, a bestiary, set rewards that grant wardrobe items |

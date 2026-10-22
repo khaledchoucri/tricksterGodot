@@ -10,6 +10,7 @@ display_name = "Entrancing Wink"
 kind = 0
 skill_id = 4301
 text = "Your hits entrance a monster: it can't cast magic for {v} s."
+tm_level = 150
 requires = {&"magic_meltdown": 3, &"magic_def_breaker": 3}
 jobs = Array[StringName]([&"primadonna"])
 table = {"value": [12.0, 16.0, 22.0, 26.0, 36.0, 40.0, 43.0, 47.0]}

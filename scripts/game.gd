@@ -136,9 +136,7 @@ func _load_room() -> void:
 	var title := _region_boss_name() if plan.boss else plan.data.display_name
 	if plan.local_depth == 0 and not plan.boss:
 		title = "%s\n%s" % [Run.route.region.display_name, title]
-	if Run.job_change_due():
-		title += "\n%s's trial: clear it to change job" % Run.job.display_name
-	elif plan.elite:
+	if plan.elite:
 		title += "\nElite monsters ahead"
 	hud.center(title, 1.2)
 	await get_tree().create_timer(0.9).timeout
@@ -206,12 +204,10 @@ func _on_room_cleared() -> void:
 		_steps.append("legend")
 	if _rune_from:
 		_steps.append("rune")
-	if Run.job_change_due():
-		_steps.append("job")
 	_steps.append(reward_here)
 	if Run.route.current_room().elite:
 		_steps.append("gear")
-	if Run.route.local_depth() == Run.route.region.job_change_depth or Run.route.current_room().boss:
+	if Run.route.local_depth() == Run.route.region.port_depth or Run.route.current_room().boss:
 		_steps.append("port")
 	_next_step()
 
@@ -238,20 +234,12 @@ func _grant(reward: String) -> void:
 			if not opts.is_empty():
 				_start_pick("card", opts)
 				return
-		"job":
-			_start_pick("job", Run.job.next_jobs.duplicate())
-			return
 		"skill_level":
 			# Trickster levels skills with the TM points play earns; here each
 			# character level also trains one skill you have.
 			var opts := Run.deck.card_offers(3, true)
 			if not opts.is_empty():
 				_skill_training = true
-				_start_pick("card", opts)
-				return
-		"job_skill":
-			var opts := Run.deck.card_offers(3, false, Run.job)
-			if not opts.is_empty():
 				_start_pick("card", opts)
 				return
 		"gear":
@@ -365,8 +353,8 @@ func _on_door_entered(reward: String, feature: StringName) -> void:
 # ---------------------------------------------------------------- picks
 
 ## Picks pause the game. kind "card": CardData options. "replace": skill
-## slot indices, -1 keeps the current skills. "type": type keys. "job":
-## JobData. "gear": GearItems, then null to leave it. "gear_slot": accessory
+## slot indices, -1 keeps the current skills. "type": type keys.
+## "gear": GearItems, then null to leave it. "gear_slot": accessory
 ## slot keys, "" keeps both. "anvil": equipment slot keys to refine, "" leaves.
 func _start_pick(kind: String, options: Array) -> void:
 	_pick_kind = kind
@@ -408,17 +396,6 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base
 				shown.append(_type_option(t))
 			title = "Level %d  ·  Invest in a type" % (Run.level - Run.pending_levels)
 			Audio.play("etc_levelup.wav")
-		"job":
-			for j: JobData in options:
-				var text := j.text
-				if j.passive != &"":
-					text += "\n%s: %s" % [j.passive_name, j.passive_text]
-				if not j.unlocked():
-					text = "Locked. " + j.unlock_text
-				shown.append({"title": j.display_name, "tag": "%s job" % ["1st", "2nd", "3rd"][j.tier - 1], "text": text,
-					"disabled": not j.unlocked()})
-			title = "Job change  ·  the %s's trial is passed" % Run.job.display_name
-			Audio.play("ui_unique_get.wav", -4.0)
 		"gear":
 			for g: GearItem in options:
 				shown.append(_gear_option(g))
@@ -517,14 +494,6 @@ Safe on a shelf, refines and compounds included; you stop wearing it."),
 	get_tree().paused = true
 
 
-## The job change moment: a pillar of light and the new look.
-func _job_change_fx(j: JobData) -> void:
-	Audio.play("ui_unique_get.wav", -2.0)
-	Events.shake_requested.emit(6.0)
-	for i in 3:
-		Ring.spawn(room.ground_fx, player.global_position, 40.0 + 40.0 * i, 0.4 + 0.15 * i, Color(1.0, 0.85, 0.45, 0.9))
-
-
 func _type_option(t: String) -> Dictionary:
 	var info: Dictionary = Stats.TYPES[t]
 	var pts: int = Run.type_points[t]
@@ -599,15 +568,6 @@ func _on_picked(i: int) -> void:
 				hud.log_line("[System] %s %d: %s. %s" % [Stats.TYPES[t].name, Run.type_points[t], unlocked.name,
 					unlocked.text], Stats.TYPES[t].color)
 				player.refresh_gear()
-		"job":
-			var j: JobData = _pick_options[i]
-			Run.start_job(j)
-			player.refresh_gear()
-			_job_change_fx(j)
-			hud.center("%s advanced to %s" % [Run.cls.display_name, j.display_name], 1.6)
-			hud.log_line("[Notice] %s has advanced to %s. Congratulations!" % [Run.cls.display_name, j.display_name],
-				Color("e0b54d"))
-			_steps.push_front("job_skill")
 		"gear":
 			var g: GearItem = _pick_options[i]
 			if g == null:

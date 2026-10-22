@@ -11,6 +11,7 @@ display_name = "Aqua Bomb"
 kind = 1
 skill_id = 2301
 text = "The air's moisture crashes down on the enemies at the cursor for {v} damage."
+tm_level = 120
 requires = {&"drip_bomb": 3, &"mana_arrow": 3}
 jobs = Array[StringName]([&"soul_master"])
 table = {"value": [64.0, 75.0, 93.0, 104.0, 133.0, 147.0, 160.0, 173.0], "mp": [42.0, 45.0, 49.0, 51.0, 57.0, 57.0, 57.0, 57.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0], "cast": [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], "range": [160.0, 168.0, 180.0, 188.0, 208.0, 208.0, 208.0, 208.0], "radius": [70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0, 70.0]}

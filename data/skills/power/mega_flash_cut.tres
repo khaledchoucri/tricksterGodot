@@ -11,6 +11,7 @@ display_name = "Mega Flash Cut"
 kind = 1
 skill_id = 1304
 text = "A faster Flash Cut over {range}: {v} damage, and the enemy is thrown into the air."
+tm_level = 160
 requires = {&"flash_cut": 3}
 upgrades = &"flash_cut"
 jobs = Array[StringName]([&"champion"])

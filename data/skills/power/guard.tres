@@ -11,6 +11,7 @@ display_name = "Guard"
 kind = 0
 skill_id = 1107
 text = "Block up to {v} physical hits completely (not magic). A spent block returns after {cooldown} s."
+tm_level = 110
 requires = {&"hyper_beat": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [1.0, 1.0, 2.0, 3.0, 5.0, 5.0, 5.0, 5.0], "cooldown": [10.0, 10.0, 13.0, 16.0, 22.0, 22.0, 22.0, 22.0]}

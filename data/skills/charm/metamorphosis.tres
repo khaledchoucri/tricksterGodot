@@ -10,6 +10,7 @@ display_name = "Metamorphosis"
 kind = 0
 skill_id = 4206
 text = "Change at a cellular level for the rest of the run: {v}% more DP and HV, {loss}% less AP and LK, slower attacks. Only beast skills work in this form (Wild Nail, Heavy Hit, Card Soldier): your other skills stop working."
+tm_level = 115
 jobs = Array[StringName]([&"card_master", &"gambler", &"duke"])
 table = {"value": [30.0, 50.0, 80.0, 100.0, 150.0, 165.0, 180.0, 195.0], "dx": [-1.0, -1.0, -2.0, -3.0, -4.0, -4.0, -4.0, -4.0], "loss": [20.0, 22.0, 25.0, 27.0, 30.0, 30.0, 30.0, 30.0]}
 sounds = {"ap": "snd_c_306_ap.wav", "ht": "snd_skl_m_015_eed.wav"}

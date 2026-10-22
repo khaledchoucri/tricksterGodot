@@ -10,6 +10,7 @@ display_name = "Lock-on"
 kind = 0
 skill_id = 3209
 text = "Your hits mark the enemy: {v}% less HV for {seconds} s."
+tm_level = 110
 jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
 table = {"value": [11.0, 13.0, 16.0, 18.0, 23.0, 25.0, 28.0, 30.0], "seconds": [10.0, 12.0, 15.0, 17.0, 22.0, 22.0, 22.0, 22.0]}
 sounds = {"ap": "snd_S_309_ap.wav"}

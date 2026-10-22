@@ -10,6 +10,7 @@ display_name = "Gas Mask"
 kind = 0
 skill_id = 3107
 text = "Resist Skunk Pouch."
+tm_level = 85
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [20.0, 24.0, 30.0, 34.0, 44.0, 48.0, 53.0, 57.0]}
 sounds = {"ap": "snd_s_207_ap.wav", "fl": "snd_s_207_fl.wav", "ke": "snd_s_207_ke.wav"}

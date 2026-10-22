@@ -10,6 +10,7 @@ display_name = "Heavy Carrier"
 kind = 0
 skill_id = 3003
 text = "+{v} weight limit."
+tm_level = 10
 table = {"value": [10.0, 39.0, 111.0, 182.0, 336.0, 370.0, 403.0, 437.0]}
 master_material = ExtResource("m_master")
 mods = Dictionary[String, String]({"WT": "value"})

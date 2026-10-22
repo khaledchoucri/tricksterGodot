@@ -11,6 +11,7 @@ display_name = "Siren Song"
 kind = 1
 skill_id = 4104
 text = "Your voice hits up to {targets} enemies in front for {v} damage, more with HP and DP."
+tm_level = 90
 requires = {&"physical_training": 3}
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
 table = {"value": [64.0, 75.0, 93.0, 104.0, 133.0, 147.0, 160.0, 173.0], "mp": [34.0, 37.0, 41.0, 44.0, 49.0, 49.0, 49.0, 49.0], "cooldown": [8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0], "range": [160.0, 168.0, 180.0, 188.0, 208.0, 208.0, 208.0, 208.0], "targets": [2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0], "angle": [30.0, 50.0, 80.0, 100.0, 150.0, 150.0, 150.0, 150.0]}

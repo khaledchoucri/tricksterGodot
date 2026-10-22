@@ -128,10 +128,6 @@ func _shoot() -> void:
 	await _snap("06b_compounder_full")
 	game.hud.pick_panel.visible = false
 	get_tree().paused = false
-	game._start_pick("job", Run.job.next_jobs.duplicate())
-	await _wait(0.3)
-	await _snap("07_job_change")
-	game.hud.pick_panel.visible = false
 	Profile.restorations["drill_shop"] = 1
 	game.hud.drill.start(Run.purse.drill(), 0.02)
 	await _wait(0.7)

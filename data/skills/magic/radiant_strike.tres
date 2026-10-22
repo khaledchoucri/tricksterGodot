@@ -11,6 +11,7 @@ display_name = "Radiant Strike"
 kind = 1
 skill_id = 2214
 text = "Light floods the ground around you: every enemy in it takes {v} damage."
+tm_level = 120
 requires = {&"arrow_of_light": 3, &"mana_storm": 3}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 table = {"value": [29.0, 46.0, 72.0, 90.0, 133.0, 147.0, 160.0, 173.0], "mp": [46.0, 47.0, 49.0, 50.0, 53.0, 53.0, 53.0, 53.0], "cooldown": [3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "radius": [100.0, 116.0, 140.0, 156.0, 196.0, 196.0, 196.0, 196.0], "targets": [99.0, 99.0, 99.0, 99.0, 99.0, 99.0, 99.0, 99.0]}

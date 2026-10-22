@@ -10,6 +10,7 @@ display_name = "Withering Disease"
 kind = 0
 skill_id = 2217
 text = "Gravity Crush stops its targets regenerating for {v} s."
+tm_level = 135
 requires = {&"gravity_crush": 3}
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 table = {"value": [1.0, 3.0, 6.0, 8.0, 11.0, 11.0, 11.0, 11.0]}

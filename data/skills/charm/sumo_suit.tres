@@ -10,6 +10,7 @@ display_name = "Sumo Suit"
 kind = 0
 skill_id = 4108
 text = "All the padding you need: you take {v}% less damage."
+tm_level = 135
 requires = {&"shield_all": 3, &"sturdy_shield": 3, &"physical_training": 3}
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva", &"duke"])
 table = {"value": [8.0, 14.0, 23.0, 29.0, 44.0, 48.0, 53.0, 57.0]}

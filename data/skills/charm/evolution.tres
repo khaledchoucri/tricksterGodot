@@ -10,6 +10,7 @@ display_name = "Evolution"
 kind = 0
 skill_id = 4105
 text = "Become a beast for the rest of the run: {v}% more AP, faster attacks, {loss}% less DP, HV and LK. Only beast skills work in this form (Beast Claw, Fatal Wound, Raging Nail, Sharp Scream, Beast's Instinct): your other skills stop working."
+tm_level = 110
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva"])
 table = {"value": [30.0, 50.0, 80.0, 100.0, 150.0, 165.0, 180.0, 195.0], "dx": [1.0, 1.0, 2.0, 3.0, 4.0, 4.0, 4.0, 4.0], "loss": [20.0, 22.0, 25.0, 27.0, 30.0, 30.0, 30.0, 30.0]}
 sounds = {"ap": "snd_c_205_ap.wav"}

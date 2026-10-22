@@ -11,6 +11,7 @@ display_name = "Piercing Wave"
 kind = 1
 skill_id = 1204
 text = "Shoot a wave of energy that pierces every enemy in a line for {v} damage."
+tm_level = 85
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [41.0, 58.0, 84.0, 102.0, 145.0, 160.0, 174.0, 188.0], "mp": [37.0, 39.0, 42.0, 43.0, 47.0, 47.0, 47.0, 47.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]}
 sounds = {"ap": "snd_skl_p_109_sbg.wav"}

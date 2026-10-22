@@ -11,6 +11,7 @@ display_name = "Inferno Blade"
 kind = 1
 skill_id = 1208
 text = "Throw your sword: it spins out and back like a ball of fire, cutting for {v} damage."
+tm_level = 125
 requires = {&"piercing_wave": 3}
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [55.0, 70.0, 91.0, 106.0, 142.0, 156.0, 171.0, 185.0], "mp": [50.0, 53.0, 56.0, 58.0, 63.0, 63.0, 63.0, 63.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "radius": [90.0, 96.0, 105.0, 111.0, 126.0, 126.0, 126.0, 126.0]}

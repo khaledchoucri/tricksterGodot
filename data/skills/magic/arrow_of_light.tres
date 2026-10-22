@@ -11,6 +11,7 @@ display_name = "Arrow of Light"
 kind = 1
 skill_id = 2205
 text = "A pillar of light rains down on the enemy you aim at for {v} damage."
+tm_level = 55
 requires = {&"light_pact": 1}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 table = {"value": [78.0, 81.0, 86.0, 88.0, 96.0, 105.0, 115.0, 124.0], "mp": [30.0, 32.0, 34.0, 36.0, 39.0, 39.0, 39.0, 39.0], "cooldown": [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5], "cast": [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], "range": [150.0, 170.0, 200.0, 220.0, 270.0, 270.0, 270.0, 270.0], "count": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}

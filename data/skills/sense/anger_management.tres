@@ -10,5 +10,6 @@ display_name = "Anger Management"
 kind = 0
 skill_id = 3016
 text = "Stress builds {v}% faster toward Crazy Drilling."
+tm_level = 55
 table = {"value": [40.0, 50.0, 65.0, 75.0, 100.0, 110.0, 120.0, 130.0]}
 master_material = ExtResource("m_master")

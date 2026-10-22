@@ -11,6 +11,7 @@ display_name = "Shuriken Master"
 kind = 1
 skill_id = 3007
 text = "Throw a hidden weapon at the enemy you aim at for {v} damage. Fox's basic attack."
+tm_level = 15
 table = {"value": [65.0, 78.0, 98.0, 111.0, 144.0, 158.0, 172.0, 187.0], "mp": [17.0, 18.0, 21.0, 22.0, 25.0, 25.0, 25.0, 25.0], "cooldown": [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], "range": [200.0, 220.0, 250.0, 270.0, 300.0, 300.0, 300.0, 300.0]}
 effects = {"ht": ["hit drow"]}
 master_material = ExtResource("m_master")

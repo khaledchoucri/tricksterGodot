@@ -11,6 +11,7 @@ display_name = "Searing Light"
 kind = 1
 skill_id = 2502
 text = "Arrows of light shower down at the cursor: {v} damage to everything under them."
+tm_level = 130
 requires = {&"arrow_of_light": 3, &"mana_arrow": 3}
 jobs = Array[StringName]([&"priest"])
 table = {"value": [61.0, 78.0, 104.0, 122.0, 165.0, 182.0, 198.0, 215.0], "mp": [69.0, 72.0, 78.0, 81.0, 88.0, 88.0, 88.0, 88.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "cast": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], "range": [120.0, 128.0, 140.0, 148.0, 168.0, 168.0, 168.0, 168.0], "radius": [150.0, 158.0, 170.0, 178.0, 198.0, 198.0, 198.0, 198.0]}

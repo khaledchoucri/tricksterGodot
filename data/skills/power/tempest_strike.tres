@@ -11,6 +11,7 @@ display_name = "Tempest Strike"
 kind = 1
 skill_id = 1209
 text = "Circular blades of wind slash the enemies around you (up to {targets}) for {v} wind damage."
+tm_level = 130
 requires = {&"lacerator": 3}
 upgrades = &"lacerator"
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])

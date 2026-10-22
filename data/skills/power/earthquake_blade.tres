@@ -11,6 +11,7 @@ display_name = "Earthquake Blade"
 kind = 1
 skill_id = 1210
 text = "Drive a sword into the ground ahead: its shockwave hits the enemies there (up to {targets}) for {v} earth damage."
+tm_level = 115
 requires = {&"piercing_wave": 3}
 upgrades = &"piercing_wave"
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])

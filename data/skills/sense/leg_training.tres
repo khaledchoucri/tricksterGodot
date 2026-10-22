@@ -10,6 +10,7 @@ display_name = "Leg Training"
 kind = 0
 skill_id = 3208
 text = "Resist slows."
+tm_level = 130
 jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
 table = {"value": [20.0, 26.0, 35.0, 41.0, 56.0, 62.0, 67.0, 73.0]}
 sounds = {"fl": "snd_s_308_fl.wav", "ht": "snd_s_308_ht.wav", "ke": "snd_s_308_ke.wav"}

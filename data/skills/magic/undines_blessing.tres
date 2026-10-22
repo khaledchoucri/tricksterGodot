@@ -10,6 +10,7 @@ display_name = "Undine's Blessing"
 kind = 0
 skill_id = 2306
 text = "Undine guards your Water Shield: a monster that hits you takes {v} water damage back. Keeps the Shield's resistance."
+tm_level = 140
 requires = {&"water_shield": 1}
 upgrades = &"water_shield"
 jobs = Array[StringName]([&"soul_master"])

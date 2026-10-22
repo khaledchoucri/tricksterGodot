@@ -33,10 +33,12 @@ func run() -> void:
 	for i in 20:
 		always = always and Run.deck.card(&"mana_arrow") in Run.deck.card_offers(3, true)
 	Run.deck.cards[&"mana_arrow"] = 3
+	Run.level = Run.deck.unlock_level(Run.deck.card(&"arrow_rush"))  # Arrow Rush is TM 50
 	for i in 20:
 		always = always and Run.deck.card(&"arrow_rush") in Run.deck.card_offers(3, false)
 	for i in 20:
 		always = always and Run.deck.card(&"arrow_rush") in Run.deck.card_offers(3, true)
+	Run.level = 1
 	check(always, "Dragon is always offered Mana Arrow's level-ups, and Arrow Rush (new cards and training) once Mana Arrow is Lv 3")
 	# The two basics: Mana Arrow wins on one or two targets, Mana Ring from three,
 	# at every stage (the basic and its supplement at the same level).

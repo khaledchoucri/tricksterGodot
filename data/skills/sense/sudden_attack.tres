@@ -11,6 +11,7 @@ display_name = "Sudden Attack"
 kind = 1
 skill_id = 3302
 text = "From hiding, strike the enemy in front for {v} damage. Only while hidden."
+tm_level = 150
 requires = {&"hide": 3}
 jobs = Array[StringName]([&"thief_master"])
 table = {"value": [87.0, 113.0, 152.0, 178.0, 244.0, 268.0, 292.0, 317.0], "mp": [49.0, 51.0, 55.0, 57.0, 60.0, 60.0, 60.0, 60.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]}

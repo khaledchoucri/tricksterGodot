@@ -11,6 +11,7 @@ display_name = "Pouch of Pain"
 kind = 1
 skill_id = 3105
 text = "Hurl a heavy pouch at the cursor: {v} damage to everything around it."
+tm_level = 115
 requires = {&"heavy_carrier": 3}
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [87.0, 104.0, 130.0, 148.0, 191.0, 211.0, 230.0, 249.0], "mp": [46.0, 48.0, 51.0, 52.0, 57.0, 57.0, 57.0, 57.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [100.0, 124.0, 160.0, 184.0, 244.0, 244.0, 244.0, 244.0], "radius": [100.0, 104.0, 110.0, 114.0, 124.0, 124.0, 124.0, 124.0]}

@@ -11,6 +11,7 @@ display_name = "Bunker Release"
 kind = 1
 skill_id = 3506
 text = "Cut your bunker's time short by 10 s."
+tm_level = 240
 requires = {&"bunker": 3}
 jobs = Array[StringName]([&"scientist"])
 max_level = 1

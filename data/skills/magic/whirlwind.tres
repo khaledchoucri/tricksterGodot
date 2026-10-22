@@ -11,6 +11,7 @@ display_name = "Whirlwind"
 kind = 1
 skill_id = 2116
 text = "Tornados rage at the cursor for {seconds} s, cutting up to {targets} enemies for {v} damage at a time. They fade if you move."
+tm_level = 105
 requires = {&"seal_of_wind": 1, &"mana_storm": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [64.0, 72.0, 86.0, 94.0, 116.0, 128.0, 139.0, 151.0], "mp": [42.0, 43.0, 44.0, 45.0, 47.0, 47.0, 47.0, 47.0], "cooldown": [6.0, 8.0, 11.0, 13.0, 19.0, 19.0, 19.0, 19.0], "cast": [1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2], "range": [200.0, 220.0, 250.0, 270.0, 290.0, 290.0, 290.0, 290.0], "radius": [136.0, 140.0, 146.0, 150.0, 160.0, 160.0, 160.0, 160.0], "seconds": [5.0, 7.0, 10.0, 12.0, 18.0, 18.0, 18.0, 18.0], "targets": [2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0], "still": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}

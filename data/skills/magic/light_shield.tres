@@ -10,6 +10,7 @@ display_name = "Light Shield"
 kind = 0
 skill_id = 2213
 text = "Light resistance +{v}%, DP and MD +{guard}%."
+tm_level = 95
 requires = {&"light_pact": 1, &"mana_shield": 3}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 table = {"value": [8.0, 10.0, 13.0, 15.0, 20.0, 20.0, 20.0, 20.0], "guard": [3.0, 5.0, 8.0, 10.0, 15.0, 15.0, 15.0, 15.0]}

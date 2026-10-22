@@ -11,6 +11,7 @@ display_name = "Tetra Punch"
 kind = 1
 skill_id = 1108
 text = "Four blows at vital points, {v} damage and stronger with every one that lands."
+tm_level = 120
 requires = {&"quad_punch": 3}
 upgrades = &"quad_punch"
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])

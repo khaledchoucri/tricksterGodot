@@ -10,5 +10,6 @@ display_name = "Basic Detection"
 kind = 0
 skill_id = 3013
 text = "You sense what lies below: digs reach {v} deeper."
+tm_level = 35
 table = {"value": [5.0, 6.0, 7.5, 8.5, 11.0, 12.0, 13.0, 14.0]}
 master_material = ExtResource("m_master")

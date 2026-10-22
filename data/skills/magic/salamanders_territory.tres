@@ -11,6 +11,7 @@ display_name = "Salamander's Territory"
 kind = 1
 skill_id = 2313
 text = "Mark the ground for {seconds} s: monsters in it lose {resist}% earth resistance."
+tm_level = 150
 requires = {&"seal_of_fire": 1}
 jobs = Array[StringName]([&"soul_master"])
 table = {"value": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "mp": [52.0, 55.0, 59.0, 61.0, 67.0, 67.0, 67.0, 67.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0], "radius": [80.0, 100.0, 130.0, 150.0, 180.0, 180.0, 180.0, 180.0], "seconds": [16.0, 18.0, 21.0, 23.0, 26.0, 26.0, 26.0, 26.0], "resist": [8.0, 10.0, 13.0, 15.0, 18.0, 18.0, 18.0, 18.0]}

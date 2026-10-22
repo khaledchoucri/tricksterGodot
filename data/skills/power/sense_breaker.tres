@@ -10,6 +10,7 @@ display_name = "Sense Breaker"
 kind = 0
 skill_id = 1007
 text = "Your hits dull an enemy's perception by {v}% for {seconds} s: it is slower to see its attacks through."
+tm_level = 20
 table = {"value": [15.0, 21.0, 30.0, 36.0, 51.0, 56.0, 61.0, 66.0], "seconds": [14.0, 18.0, 24.0, 28.0, 38.0, 38.0, 38.0, 38.0]}
 sounds = {"ap": "snd_skl_p_006_sbg.wav"}
 effects = {"ht": ["eft_skl_p_107_eps"]}

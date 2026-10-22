@@ -11,6 +11,7 @@ display_name = "2 Hit Combo"
 kind = 1
 skill_id = 4302
 text = "A Power Blow into a Volley Kick, {v} damage in all, more with both skills' levels."
+tm_level = 140
 requires = {&"power_blow": 1, &"volley_kick": 1}
 jobs = Array[StringName]([&"primadonna"])
 table = {"value": [116.0, 128.0, 145.0, 157.0, 180.0, 198.0, 216.0, 234.0], "mp": [53.0, 55.0, 58.0, 60.0, 65.0, 65.0, 65.0, 65.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}

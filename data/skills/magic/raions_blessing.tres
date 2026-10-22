@@ -10,6 +10,7 @@ display_name = "Raion's Blessing"
 kind = 0
 skill_id = 2307
 text = "Raion guards your Elec Shield: a monster that hits you takes {v} elec damage back. Keeps the Shield's resistance."
+tm_level = 140
 requires = {&"thunder_shield": 1}
 upgrades = &"thunder_shield"
 jobs = Array[StringName]([&"soul_master"])

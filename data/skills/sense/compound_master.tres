@@ -10,6 +10,7 @@ display_name = "Compound Master"
 kind = 0
 skill_id = 3014
 text = "Compounding succeeds {v}% more often."
+tm_level = 70
 table = {"value": [5.0, 15.0, 30.0, 40.0, 65.0, 72.0, 78.0, 84.0]}
 master_material = ExtResource("m_master")
 mods = Dictionary[String, String]({"compound%": "value"})

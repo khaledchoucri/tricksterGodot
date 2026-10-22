@@ -11,6 +11,7 @@ display_name = "Hinder Snare"
 kind = 1
 skill_id = 2201
 text = "Enemies around you are held in place for {seconds} s, until you move or are hit."
+tm_level = 41
 jobs = Array[StringName]([&"magician", &"priest", &"dark_lord", &"wizard", &"witch"])
 max_level = 1
 table = {"value": [0.0], "mp": [32.0], "cooldown": [20.0], "cast": [0.5], "radius": [150.0], "seconds": [15.0], "still": [1.0], "self": [1.0]}

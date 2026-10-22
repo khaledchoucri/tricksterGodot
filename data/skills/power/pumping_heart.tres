@@ -10,6 +10,7 @@ display_name = "Pumping Heart"
 kind = 0
 skill_id = 1002
 text = "+{v}% AP."
+tm_level = 25
 requires = {&"burning_rave": 1}
 table = {"value": [6.0, 8.0, 11.0, 13.0, 16.0, 16.0, 16.0, 16.0]}
 master_material = ExtResource("m_master")

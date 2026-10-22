@@ -10,6 +10,7 @@ display_name = "Precise Pitch"
 kind = 0
 skill_id = 3101
 text = "Thrown weapons hit {v}% harder."
+tm_level = 41
 requires = {&"shuriken_master": 3}
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [20.0, 40.0, 70.0, 90.0, 140.0, 154.0, 168.0, 182.0]}

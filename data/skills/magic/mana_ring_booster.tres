@@ -10,6 +10,7 @@ display_name = "Mana Ring Booster"
 kind = 0
 skill_id = 2012
 text = "Mana Ring hits {v} harder."
+tm_level = 50
 requires = {&"mana_ring": 3}
 table = {"value": [5.6, 17.0, 34.0, 45.0, 73.0, 80.0, 88.0, 95.0]}
 master_material = ExtResource("m_master")

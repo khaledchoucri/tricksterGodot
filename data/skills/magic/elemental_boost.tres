@@ -10,6 +10,7 @@ display_name = "Elemental Boost"
 kind = 0
 skill_id = 2132
 text = "Fire, water, wind, thunder and earth damage +{v}%."
+tm_level = 210
 requires = {&"bolster_ballad": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [2.0, 4.0, 7.0, 9.0, 15.0, 15.0, 15.0, 15.0]}

@@ -11,6 +11,7 @@ display_name = "Clinch Release"
 kind = 1
 skill_id = 1110
 text = "Usable while staggered: shake off the hit, its knockback and anything holding you."
+tm_level = 210
 requires = {&"desperate_rally": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 max_level = 1

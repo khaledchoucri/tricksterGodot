@@ -11,6 +11,7 @@ display_name = "Scorching Earth"
 kind = 1
 skill_id = 2129
 text = "The ground at the cursor burns for {seconds} s: up to {targets} enemies in it take {v} damage at a time."
+tm_level = 70
 requires = {&"seal_of_fire": 1}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [49.0, 55.0, 64.0, 70.0, 84.0, 93.0, 101.0, 109.0], "mp": [34.0, 37.0, 41.0, 44.0, 49.0, 49.0, 49.0, 49.0], "cooldown": [20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], "radius": [80.0, 90.0, 105.0, 115.0, 140.0, 140.0, 140.0, 140.0], "seconds": [4.0, 6.0, 9.0, 11.0, 14.0, 14.0, 14.0, 14.0], "targets": [2.0, 2.0, 3.0, 4.0, 6.0, 6.0, 6.0, 6.0]}

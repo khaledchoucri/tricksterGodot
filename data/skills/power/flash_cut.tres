@@ -11,6 +11,7 @@ display_name = "Flash Cut"
 kind = 1
 skill_id = 1302
 text = "Close {range} in a flash and strike for {v} damage."
+tm_level = 120
 requires = {&"boxer_dash": 1, &"uppercut": 3}
 jobs = Array[StringName]([&"champion"])
 table = {"value": [52.0, 78.0, 117.0, 144.0, 209.0, 230.0, 251.0, 271.0], "mp": [42.0, 43.0, 46.0, 47.0, 50.0, 50.0, 50.0, 50.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 8.0, 8.0, 8.0, 8.0], "range": [200.0, 220.0, 250.0, 270.0, 320.0, 320.0, 320.0, 320.0]}

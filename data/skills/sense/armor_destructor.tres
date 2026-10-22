@@ -10,6 +10,7 @@ display_name = "Armor Destructor"
 kind = 0
 skill_id = 3005
 text = "Your hits break armour: the enemy has {v}% less DP for {seconds} s."
+tm_level = 40
 requires = {&"stone_strike": 3}
 table = {"value": [10.0, 14.0, 20.0, 24.0, 34.0, 37.0, 41.0, 44.0], "seconds": [3.0, 5.0, 8.0, 10.0, 14.0, 14.0, 14.0, 14.0]}
 sounds = {"ht": "snd_skl_s_105_ebg.wav"}

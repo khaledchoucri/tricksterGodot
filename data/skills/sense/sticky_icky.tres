@@ -11,6 +11,7 @@ display_name = "Sticky Icky"
 kind = 1
 skill_id = 3106
 text = "Splash glue around the cursor: monsters there lose {v}% HV, LK and DP for {seconds} s."
+tm_level = 105
 requires = {&"sticky_foot": 3, &"armor_destructor": 3}
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [10.0, 14.0, 20.0, 24.0, 34.0, 37.0, 41.0, 44.0], "mp": [37.0, 38.0, 39.0, 40.0, 42.0, 42.0, 42.0, 42.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "range": [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0], "radius": [80.0, 84.0, 90.0, 94.0, 104.0, 104.0, 104.0, 104.0], "seconds": [10.0, 12.0, 15.0, 17.0, 20.0, 20.0, 20.0, 20.0]}

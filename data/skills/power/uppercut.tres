@@ -11,6 +11,7 @@ display_name = "Uppercut"
 kind = 1
 skill_id = 1103
 text = "Uppercut an enemy into the air for {v} damage."
+tm_level = 60
 requires = {&"upper_smash": 3}
 jobs = Array[StringName]([&"boxer", &"champion", &"duelist", &"mercenary"])
 table = {"value": [70.0, 87.0, 113.0, 130.0, 174.0, 191.0, 209.0, 226.0], "mp": [36.0, 38.0, 41.0, 42.0, 46.0, 46.0, 46.0, 46.0], "cooldown": [23.0, 21.0, 18.0, 16.0, 11.0, 11.0, 11.0, 11.0]}

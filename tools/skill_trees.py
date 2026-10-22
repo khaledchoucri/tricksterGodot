@@ -23,6 +23,8 @@ How the original maps onto this game:
   original Delay before their effect. The Power line acts at once, even its
   few SpellType 1 skills (Earthquake Blade, Dash).
 - Cooldowns, durations, chances, target counts and blocks: as the original.
+- TM level: the card's Item_SkillCardParam.TMLV, the level the original
+  learns it at; offers wait for it (RunDeck.unlock_level).
 - Prerequisite levels (out of 11) map to 1 (levels 0-6), 2 (7-9) and 3
   (10-11) here. A level-0 prerequisite (a Seal or Pact) just has to be known.
 - Kind: Type 2 is an active skill. Type 3 is active when it targets an area
@@ -276,6 +278,8 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
         lines += ['', '[resource]', 'script = ExtResource("1_s")', f'id = &"{sp["card"]}"',
                   f'display_name = {json.dumps(display)}', f'kind = {1 if skill else 0}', f'skill_id = {sid}',
                   f'text = {json.dumps(sp["text"])}']
+        if int(cp['TMLV']) > 1:
+            lines.append(f'tm_level = {int(cp["TMLV"])}')
         if requires:
             lines.append('requires = {' + ', '.join(f'&"{k}": {v}' for k, v in requires.items()) + '}')
         if sp.get('upgrades'):

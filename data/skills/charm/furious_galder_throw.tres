@@ -11,6 +11,7 @@ display_name = "Furious Galder Throw"
 kind = 1
 skill_id = 4209
 text = "Throw a wild handful of Galder (up to 1000, a fifth of it paid): {v} damage per Galder, through any defence."
+tm_level = 115
 requires = {&"galder_thrower": 3}
 upgrades = &"galder_thrower"
 jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])

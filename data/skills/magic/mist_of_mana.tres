@@ -10,6 +10,7 @@ display_name = "Mist of Mana"
 kind = 0
 skill_id = 2006
 text = "+{v}% MA."
+tm_level = 40
 requires = {&"bottle_of_mana": 1}
 table = {"value": [10.0, 16.0, 25.0, 31.0, 45.0, 50.0, 54.0, 58.0]}
 effects = {"ap": ["skill_ni ke ma up"]}

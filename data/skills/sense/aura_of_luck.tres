@@ -10,6 +10,7 @@ display_name = "Aura of Luck"
 kind = 0
 skill_id = 3103
 text = "+{v}% LK."
+tm_level = 70
 requires = {&"lucky_seven": 2}
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [6.0, 8.0, 11.0, 13.0, 18.0, 18.0, 18.0, 18.0]}

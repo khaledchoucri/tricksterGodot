@@ -11,6 +11,7 @@ display_name = "Mass Destruction"
 kind = 1
 skill_id = 4211
 text = "Hug a huge bomb as it goes off: up to {targets} enemies around take {v} damage, and you are left with {hp_left}% of your HP. Needs 80% HP."
+tm_level = 210
 requires = {&"furious_galder_throw": 3}
 jobs = Array[StringName]([&"card_master", &"gambler", &"duke", &"diva"])
 table = {"value": [14.0, 20.0, 29.0, 35.0, 44.0, 48.0, 52.0, 57.0], "mp": [37.0, 41.0, 46.0, 48.0, 52.0, 52.0, 52.0, 52.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "radius": [120.0, 130.0, 145.0, 155.0, 200.0, 200.0, 200.0, 200.0], "targets": [4.0, 4.0, 5.0, 6.0, 7.0, 7.0, 7.0, 7.0], "hp_left": [20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0]}

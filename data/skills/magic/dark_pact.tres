@@ -10,6 +10,7 @@ display_name = "Dark Pact"
 kind = 0
 skill_id = 2202
 text = "A pact with darkness: its magic can be learned. Two other elements are closed to you for good."
+tm_level = 55
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 excludes = Array[StringName]([&"light_pact"])
 max_level = 1

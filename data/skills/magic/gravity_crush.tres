@@ -11,6 +11,7 @@ display_name = "Gravity Crush"
 kind = 1
 skill_id = 2210
 text = "Gravity crushes the enemies around you (up to {targets}) for {v} damage."
+tm_level = 125
 requires = {&"dark_pact": 1, &"mana_storm": 3}
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 table = {"value": [87.0, 116.0, 160.0, 188.0, 261.0, 287.0, 313.0, 339.0], "mp": [72.0, 79.0, 88.0, 93.0, 105.0, 105.0, 105.0, 105.0], "cooldown": [15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0], "cast": [1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2, 1.2], "radius": [120.0, 130.0, 145.0, 155.0, 180.0, 180.0, 180.0, 180.0], "targets": [2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0, 5.0]}

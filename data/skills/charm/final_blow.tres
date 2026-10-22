@@ -11,6 +11,7 @@ display_name = "Final Blow"
 kind = 1
 skill_id = 4012
 text = "Pay back every blow you've taken: {v} damage, more for each HP you've lost."
+tm_level = 50
 requires = {&"sturdy_shield": 3}
 table = {"value": [35.0, 48.0, 67.0, 80.0, 113.0, 124.0, 136.0, 147.0], "mp": [29.0, 32.0, 35.0, 37.0, 42.0, 42.0, 42.0, 42.0], "cooldown": [3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}
 effects = {"ht": ["eft_skl_c_112_ebg"]}

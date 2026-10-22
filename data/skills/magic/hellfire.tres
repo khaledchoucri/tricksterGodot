@@ -11,6 +11,7 @@ display_name = "Hellfire"
 kind = 1
 skill_id = 2203
 text = "A blazing inferno of dark flames at the cursor for {v} damage."
+tm_level = 55
 requires = {&"dark_pact": 1}
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 table = {"value": [67.0, 78.0, 96.0, 107.0, 136.0, 150.0, 164.0, 177.0], "mp": [33.0, 35.0, 38.0, 40.0, 44.0, 44.0, 44.0, 44.0], "cooldown": [2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [200.0, 210.0, 225.0, 235.0, 250.0, 250.0, 250.0, 250.0], "radius": [55.0, 55.0, 55.0, 55.0, 55.0, 55.0, 55.0, 55.0]}

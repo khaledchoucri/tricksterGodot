@@ -11,6 +11,7 @@ display_name = "Lucky Fist"
 kind = 1
 skill_id = 3204
 text = "Trust your luck: a punch for {v} damage, more with LK."
+tm_level = 95
 requires = {&"lucky_seven": 3}
 jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
 table = {"value": [58.0, 70.0, 87.0, 99.0, 128.0, 140.0, 153.0, 166.0], "mp": [36.0, 38.0, 40.0, 41.0, 44.0, 44.0, 44.0, 44.0], "cooldown": [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0]}

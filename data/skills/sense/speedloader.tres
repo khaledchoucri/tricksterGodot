@@ -10,6 +10,7 @@ display_name = "Speedloader"
 kind = 0
 skill_id = 3210
 text = "Your reload fills {v}% faster."
+tm_level = 210
 requires = {&"double_shot": 3}
 jobs = Array[StringName]([&"inventor", &"scientist", &"cyber_hunter", &"hunter_lord"])
 table = {"value": [4.0, 12.0, 24.0, 32.0, 50.0, 55.0, 60.0, 65.0]}

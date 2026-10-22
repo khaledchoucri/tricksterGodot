@@ -10,6 +10,7 @@ display_name = "Titanium Wrist"
 kind = 0
 skill_id = 4011
 text = "Power Blow strikes with {v}% more of your AP."
+tm_level = 40
 requires = {&"power_blow": 3}
 table = {"value": [20.0, 30.0, 45.0, 55.0, 80.0, 88.0, 96.0, 104.0]}
 master_material = ExtResource("m_master")

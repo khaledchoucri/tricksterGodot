@@ -10,6 +10,7 @@ display_name = "Sticky Foot"
 kind = 0
 skill_id = 3004
 text = "Your hits pour sticky oil: the enemy is {v}% slower for {seconds} s."
+tm_level = 20
 table = {"value": [15.0, 21.0, 30.0, 36.0, 51.0, 56.0, 61.0, 66.0], "seconds": [12.0, 16.0, 22.0, 26.0, 36.0, 36.0, 36.0, 36.0]}
 sounds = {"ht": "snd_skl_s_104_ebg.wav"}
 effects = {"ht": ["eft_skl_s_104_ebg"]}

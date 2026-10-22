@@ -11,6 +11,7 @@ display_name = "Hide"
 kind = 1
 skill_id = 3301
 text = "Vanish for {v} s: monsters lose you. Attacking or a skill ends it."
+tm_level = 130
 requires = {&"sixth_sense": 3, &"aura_of_luck": 3}
 jobs = Array[StringName]([&"thief_master"])
 table = {"value": [10.0, 16.0, 25.0, 31.0, 46.0, 51.0, 55.0, 60.0], "mp": [46.0, 49.0, 53.0, 55.0, 60.0, 60.0, 60.0, 60.0], "cooldown": [15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0], "seconds": [10.0, 16.0, 25.0, 31.0, 46.0, 46.0, 46.0, 46.0]}

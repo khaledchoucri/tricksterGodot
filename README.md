@@ -18,8 +18,9 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   - a custom Trickster that combines two trees, once Buffalo and Bunny have each cleared a 3rd job
 - **229 skill and talent cards** from the original skill tables (their deviations are marked in the generators).
 - **A run** crosses Coral Beach, Desert Beach and the Caballa Relics: nine rooms each, elite rooms at the 4th
-  and 8th, then a boss (the Real Golden Mole, Tutankhamen, Tombeth). The first two regions bring a job change
-  once the Job Hall is restored; the Relics are where your 3rd job peaks. Between regions, a rest stop at the
+  and 8th, then a boss (the Real Golden Mole, Tutankhamen, Tombeth). It's played in your 1st job, with new skills
+  arriving as you reach their original levels; clearing it opens the next chunk for that character, in its
+  2nd job. Between regions, a rest stop at the
   original's gate (the Gates of Desert Beach and Caballa Relics) heals half your HP and MP, and Keeper Julio
   lets you swap what you wear with your warehouse shelves: 32 rooms in all.
 - **23 monsters**, three bosses with their summons, and three Echoes of other classes that lend their skills as

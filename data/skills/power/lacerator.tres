@@ -11,6 +11,7 @@ display_name = "Lacerator"
 kind = 1
 skill_id = 1202
 text = "A blade aura cuts in front of and behind you for {v} damage."
+tm_level = 55
 jobs = Array[StringName]([&"knight", &"gladiator", &"mercenary", &"duelist"])
 table = {"value": [33.0, 45.0, 62.0, 74.0, 103.0, 113.0, 124.0, 134.0], "mp": [29.0, 30.0, 32.0, 33.0, 36.0, 36.0, 36.0, 36.0], "cooldown": [3.7, 3.7, 3.7, 3.7, 3.7, 3.7, 3.7, 3.7]}
 master_material = ExtResource("m_master")

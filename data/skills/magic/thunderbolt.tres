@@ -11,6 +11,7 @@ display_name = "Thunderbolt"
 kind = 1
 skill_id = 2128
 text = "A gigantic bolt strikes the enemy you aim at {count} times for {v} damage each."
+tm_level = 70
 requires = {&"seal_of_thunder": 1}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [145.0, 151.0, 160.0, 165.0, 180.0, 198.0, 216.0, 234.0], "mp": [44.0, 46.0, 49.0, 51.0, 55.0, 55.0, 55.0, 55.0], "cooldown": [20.0, 19.0, 18.0, 17.0, 15.0, 15.0, 15.0, 15.0], "cast": [0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75], "range": [200.0, 220.0, 250.0, 270.0, 300.0, 300.0, 300.0, 300.0], "count": [2.0, 4.0, 7.0, 9.0, 12.0, 12.0, 12.0, 12.0]}

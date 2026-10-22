@@ -11,6 +11,7 @@ display_name = "Fatal Wound"
 kind = 1
 skill_id = 4107
 text = "Beast form only: a deep wound for {v} damage that bleeds {bleed}% of it again over {seconds} s."
+tm_level = 130
 requires = {&"evolution": 1}
 jobs = Array[StringName]([&"entertainer", &"primadonna", &"diva"])
 table = {"value": [46.0, 52.0, 61.0, 67.0, 81.0, 89.0, 97.0, 106.0], "mp": [42.0, 45.0, 49.0, 51.0, 57.0, 57.0, 57.0, 57.0], "cooldown": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0], "range": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0], "bleed": [10.0, 16.0, 25.0, 31.0, 46.0, 46.0, 46.0, 46.0], "seconds": [10.0, 12.0, 15.0, 17.0, 22.0, 22.0, 22.0, 22.0]}

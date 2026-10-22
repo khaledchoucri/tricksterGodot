@@ -11,6 +11,7 @@ display_name = "Shield of Heaven"
 kind = 0
 skill_id = 2218
 text = "A holy barrier absorbs damage up to {v}% of your MA. Broken, it returns {cooldown} s later."
+tm_level = 120
 requires = {&"light_shield": 3}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 table = {"value": [120.0, 150.0, 195.0, 225.0, 300.0, 330.0, 360.0, 390.0], "recover": [8.0, 7.0, 6.0, 5.0, 3.0, 3.0, 3.0, 3.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]}

@@ -11,6 +11,7 @@ display_name = "Tornado Bomb"
 kind = 1
 skill_id = 1011
 text = "A spinning fist sends out a tornado that cuts enemies for {v} damage several times a second."
+tm_level = 50
 requires = {&"armor_breaker": 1}
 table = {"value": [22.0, 26.0, 33.0, 37.0, 48.0, 53.0, 57.0, 62.0], "mp": [29.0, 31.0, 33.0, 35.0, 38.0, 38.0, 38.0, 38.0], "cooldown": [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0]}
 master_material = ExtResource("m_master")

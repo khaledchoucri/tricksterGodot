@@ -10,6 +10,7 @@ display_name = "Lightning Rod"
 kind = 0
 skill_id = 3108
 text = "Electric resistance +{v}%."
+tm_level = 110
 jobs = Array[StringName]([&"explorer", &"thief_master", &"hunter_lord", &"cyber_hunter"])
 table = {"value": [20.0, 26.0, 35.0, 41.0, 56.0, 62.0, 67.0, 73.0]}
 sounds = {"ap": "snd_s_208_ap.wav", "fl": "snd_s_208_fl.wav", "ke": "snd_s_208_ke.wav"}

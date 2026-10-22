@@ -11,6 +11,7 @@ display_name = "Mana Storm"
 kind = 1
 skill_id = 2009
 text = "A mana storm gathers on the enemies around the cursor for {v} damage."
+tm_level = 35
 table = {"value": [117.0, 150.0, 200.0, 233.0, 317.0, 349.0, 380.0, 412.0], "mp": [32.0, 34.0, 38.0, 40.0, 44.0, 44.0, 44.0, 44.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], "radius": [135.0, 139.0, 145.0, 149.0, 155.0, 155.0, 155.0, 155.0]}
 sounds = {"ht": "snd_skl_m_109_sed.wav"}
 effects = {"ht": ["eft_skl_m_109_ebg"]}

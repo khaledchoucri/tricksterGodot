@@ -15,8 +15,8 @@ extends Resource
 ## Ours: the item levels its rooms offer, from the first room (x) to the boss (y). Each region
 ## follows on from the one before, whatever the run's length.
 @export var gear_levels := Vector2i(1, 22)
-## Depth of the room whose clear brings the job change (the trial).
-@export var job_change_depth := 3
+## Depth of the room whose clear brings a Portable Port, besides the boss's.
+@export var port_depth := 3
 ## Scales on the original monsters' HP and damage, so a region's numbers
 ## follow on from the one before.
 @export var hp_scale := 1.0

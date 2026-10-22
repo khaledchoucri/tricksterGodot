@@ -10,6 +10,7 @@ display_name = "Water Web"
 kind = 0
 skill_id = 2112
 text = "Drip Bomb leaves its targets {v}% slower for {seconds} s."
+tm_level = 85
 requires = {&"drip_bomb": 3, &"mana_web": 1}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 max_level = 1

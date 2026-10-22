@@ -11,6 +11,7 @@ display_name = "Basic Healing"
 kind = 1
 skill_id = 2211
 text = "Cures ailments from 1st-job magic."
+tm_level = 100
 requires = {&"light_pact": 1, &"catastrophe_heal": 1}
 jobs = Array[StringName]([&"magician", &"priest", &"wizard", &"witch"])
 max_level = 1

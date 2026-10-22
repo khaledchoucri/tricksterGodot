@@ -11,6 +11,7 @@ display_name = "Dimensional Rift"
 kind = 1
 skill_id = 2316
 text = "A rip into another dimension swallows up to {targets} enemies at the cursor for {seconds} s, then spits them out for {v} damage."
+tm_level = 240
 requires = {&"mana_shield": 3}
 jobs = Array[StringName]([&"soul_master"])
 table = {"value": [58.0, 75.0, 102.0, 119.0, 160.0, 175.0, 191.0, 207.0], "mp": [93.0, 102.0, 114.0, 121.0, 131.0, 131.0, 131.0, 131.0], "cooldown": [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0], "cast": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "range": [200.0, 210.0, 225.0, 235.0, 250.0, 250.0, 250.0, 250.0], "radius": [150.0, 158.0, 170.0, 178.0, 198.0, 198.0, 198.0, 198.0], "seconds": [3.0, 3.0, 4.0, 5.0, 7.0, 7.0, 7.0, 7.0], "targets": [5.0, 5.0, 6.0, 6.0, 7.0, 7.0, 7.0, 7.0]}

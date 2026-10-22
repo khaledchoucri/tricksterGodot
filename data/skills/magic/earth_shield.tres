@@ -10,6 +10,7 @@ display_name = "Earth Shield"
 kind = 0
 skill_id = 2120
 text = "Earth resistance +{v}%: earth monsters hurt you less."
+tm_level = 100
 requires = {&"seal_of_earth": 1, &"mana_shield": 3}
 jobs = Array[StringName]([&"bard", &"soul_master", &"witch", &"wizard"])
 table = {"value": [10.0, 14.0, 20.0, 24.0, 34.0, 37.0, 41.0, 44.0]}

@@ -11,6 +11,7 @@ display_name = "Blood Testament"
 kind = 0
 skill_id = 2219
 text = "+{v}% MA, but every spell costs {hp}% of your max HP."
+tm_level = 70
 requires = {&"dark_pact": 1}
 jobs = Array[StringName]([&"magician", &"dark_lord", &"wizard", &"witch"])
 table = {"value": [3.0, 5.0, 8.0, 10.0, 15.0, 15.0, 15.0, 15.0], "hp": [1.0, 0.92, 0.8, 0.72, 0.52, 0.52, 0.52, 0.52]}
