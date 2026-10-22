@@ -78,12 +78,12 @@ func _on(section: String) -> bool:
 
 
 func _run() -> void:
-	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
 	if _on("magic"):
 		var wait_checks: Node = SKILL_WAIT.new()
 		add_child(wait_checks)
 		check(await wait_checks.run() == 0, "skill pause/resume regression checks")
 		wait_checks.free()
+	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	await get_tree().create_timer(2.6).timeout

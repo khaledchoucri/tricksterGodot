@@ -64,10 +64,10 @@ live in the git-ignored `original_assets/` folder, generated from your own clien
 
 - `CLAUDE.md`: how the code is written here (cards and monsters are data, sources cited, typed code, tests).
 - `tests/run_smoke.sh [section|character ...]`: the smoke test, under a minute, seeded so results repeat.
-- `godot --headless --fixed-fps 60 --path . res://tests/combat/skill_wait.tscn`: map-independent
-  skill pause/resume checks (also included in the Magic smoke section).
 - `tests/baseline.sh record|compare`: smoke results, the progression probe and seeded bots for every
   character, to show a change kept behaviour.
 - `tests/check_generated.sh`: generated data matches its generators.
+- `godot --headless --fixed-fps 60 --path . res://tests/combat/skill_wait.tscn`: map-independent
+  skill pause/resume checks (also included in the Magic smoke section).
 - `docs/design/systems-plan.md`: what each system is for; `docs/design/refactor-plan.md`: the code's structure.
 - `docs/poc/`: map format, actor art, timing references and the QA backlog.
