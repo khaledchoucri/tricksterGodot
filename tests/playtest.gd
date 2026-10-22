@@ -33,6 +33,9 @@ var tag := ""
 var city := "earn"
 ## seed=N: run i uses the run seed N + i; below 0, every run is random.
 var seed_base := -1
+## regions=N: a run ends, as a clear, once it leaves the first N regions (0: play them all). A
+## boss's balance needs only its region: regions=1 plays Coral Beach and stops at the Desert gate.
+var stop_regions := 0
 ## The class chosen before the profile is set up (kept for fresh=1 profiles).
 var _chosen_class := ""
 ## Between runs: the city, crafting and the loadout (tests/playtest_city.gd).
@@ -83,6 +86,8 @@ func _ready() -> void:
 			trees = kv[1].split("+")
 		elif kv.size() == 2 and kv[0] == "seed":
 			seed_base = int(kv[1])
+		elif kv.size() == 2 and kv[0] == "regions":
+			stop_regions = int(kv[1])
 	Events.enemy_died.connect(func(e: Enemy) -> void:
 		if e.first_hit_at >= 0.0:
 			kill_log.append({"region": Run.route.region_index(), "depth": Run.route.depth, "elite": e.is_elite or e.is_boss,
@@ -167,7 +172,7 @@ func _one_run(index: int) -> void:
 	# The last HP losses, for a death's report: when, how much, and the nearest monster.
 	var drops: PackedStringArray = []
 	var last_hp := Run.hp
-	while not game.hud.results_panel.visible and t < RUN_LIMIT:
+	while not game.hud.results_panel.visible and t < RUN_LIMIT and not _past_stop():
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		_tick(get_physics_process_delta_time())
@@ -187,7 +192,7 @@ func _one_run(index: int) -> void:
 	for k in Run.gear.EQUIP_SLOTS:
 		if Run.gear.equipped(k):
 			gear.append(Run.gear.equipped(k).title())
-	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON, "depth": Run.route.depth + (1 if Run.won else 0),
+	var r := {"run": index + 1, "seed": Run.run_seed, "won": game.phase == game.Phase.WON or _past_stop(), "depth": Run.route.depth + (1 if Run.won else 0),
 		"level": Run.level, "job": Run.job.display_name, "time": Run.time, "kills": Run.kills,
 		"types": Run.type_points.duplicate(), "gear": gear, "cards": Run.deck.cards.duplicate(), "rooms": _room_log.duplicate(),
 		"ore": Run.purse.ore, "galder": Run.purse.galder, "around": killers, "materials": Run.purse.materials.duplicate(),
@@ -212,6 +217,11 @@ func _one_run(index: int) -> void:
 	Engine.time_scale = 1.0
 	game.queue_free()
 	await get_tree().process_frame
+
+
+## Whether the run has left the regions it plays (regions=N).
+func _past_stop() -> bool:
+	return stop_regions > 0 and Run.route.depth < Run.route.plan.size() and Run.route.region_index() >= stop_regions
 
 
 # ---------------------------------------------------------------- the bot
