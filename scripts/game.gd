@@ -865,14 +865,19 @@ func _refine(g: GearItem) -> void:
 
 func _on_player_died() -> void:
 	phase = Phase.DEAD
-	var bagged := Run.city.drop_bag(player.global_position)
+	var fall := Run.city.drop_bag(player.global_position)
+	var bagged: Array[String] = fall.bag
+	var saved: Array[String] = fall.home
 	Run.last_bag = bagged
+	Run.last_saved = saved
 	Run.city.finish(false)
 	Audio.play("shchr002.wav")
 	await get_tree().create_timer(1.2).timeout
 	hud.log_line("[System] Connection lost.", Color("f07a62"))
 	await hud.fade(0.85, 0.6)
 	hud.log_line("[System] Rolling back server state...", Color("f07a62"))
+	if not saved.is_empty():
+		hud.log_line("[System] You carried out %s (WT): back on your shelves." % ", ".join(saved), Color("a8d8da"))
 	if not bagged.is_empty():
 		hud.log_line("[System] Your gear fell in a lost bag here: %s. Reach this room again to pick it up."
 			% ", ".join(bagged), Color("f07a62"))

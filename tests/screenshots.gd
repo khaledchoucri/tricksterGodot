@@ -182,7 +182,7 @@ func _shoot_hub() -> void:
 	await _snap("12_card_album")
 
 
-## The lost bag as a player meets it: wearing a stored sword, die in room 3 to a monster's
+## The lost bag as a player meets it: wearing a stored sword and ring, die in room 3 to a monster's
 ## hit (the results name the bag), then a new run reaches room 3, where the bag lies, and walking
 ## onto it with the movement keys puts the sword back on the shelf.
 func _shoot_bag() -> void:
@@ -193,6 +193,8 @@ func _shoot_bag() -> void:
 	var sword := GearItem.make(load("res://data/items/edge_sabre.tres"))
 	Run.city.save_point(sword)
 	Profile.wear_stored(Profile.warehouse.size() - 1, "weapon")
+	Run.city.save_point(GearItem.make(load("res://data/items/might_ring.tres")))
+	Profile.wear_stored(Profile.warehouse.size() - 1, "acc1")
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.0)

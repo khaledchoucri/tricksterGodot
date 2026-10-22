@@ -261,7 +261,7 @@ func run(Run: Node) -> void:
 		"sending the worn hat home keeps it safe on its shelf and takes it off you")
 	# A death in room 4 leaves what you wear in a lost bag: the +6 sword leaves its shelf.
 	Run.route.depth = 3
-	var bagged: Array[String] = Run.city.drop_bag(Vector2(320, 240))
+	var bagged: Array[String] = Run.city.drop_bag(Vector2(320, 240)).bag
 	check(bagged.size() == 1 and bagged[0] == "Wood Sword +6" and Profile.warehouse.size() == 1
 		and not Profile.loadout.has("weapon"), "a death leaves the +6 sword in a lost bag, off its shelf (%s)" % ", ".join(bagged))
 	Run.new_run()
@@ -274,6 +274,18 @@ func run(Run: Node) -> void:
 	check(found == ["Wood Sword +6"] and Profile.lost_bag.is_empty() and back.refine == 6,
 		"reaching room 4 again finds the bag, and the sword goes back on a shelf at +6")
 	Run.route.depth = 0
+	# WT saves the lightest pieces from a fall, up to WT / 4 in weight; the heaviest go in the bag.
+	var light := GearItem.make(_item("might_ring"))
+	var heavy := GearItem.make(_item("aegis_knight_shield"))
+	Run.gear.equip(light, "acc1")
+	Run.gear.equip(heavy)
+	var split: Dictionary = Run.city.split_at_death()
+	check(Run.city.save_capacity() == Run.stat("WT") / 4 and light in split.home and heavy in split.bag,
+		"a fall saves the %s (weight %d, within WT / 4 = %d) and bags the %s (weight %d)"
+		% [light.title(), light.data.weight, Run.city.save_capacity(), heavy.title(), heavy.data.weight])
+	Run.gear.take_off(heavy)
+	check(Run.city.split_at_death().bag == [light], "however light, one piece always falls in the bag")
+	Run.gear.take_off(light)
 	Profile.discard_item(0)
 	check(Profile.loadout.is_empty(), "throwing a worn item away takes it out of the loadout")
 	Profile.loadout = {}

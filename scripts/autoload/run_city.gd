@@ -147,19 +147,60 @@ func bank(g: GearItem) -> bool:
 	return true
 
 
-## The lost bag (decided with the user, 2026-10-21; the original's death costs EXP, not items): on a
-## death everything worn but the class's own weapon goes into a bag where you fell, stored pieces
-## off their shelves, progress and all. A new death with something to lose replaces the old bag.
-## Returns the names of what went in.
-func drop_bag(at: Vector2) -> Array[String]:
-	var items: Array = []
-	var names: Array[String] = []
-	var shelves: Array[int] = []
+## Ours: a death saves worn pieces up to WT / SAVE_WT_DIVISOR in weight (the old equip load's ratio:
+## a level-1 Buffalo's WT 300 saves 75, a ring or two; a Knight Shield alone weighs 130).
+const SAVE_WT_DIVISOR := 4
+
+
+## The weight of worn pieces a death saves (decided with the user, 2026-10-22: WT is what you carry,
+## out of a fall too).
+func save_capacity() -> int:
+	return Run.stat("WT") / SAVE_WT_DIVISOR
+
+
+## What a death does with each worn piece but the class's own weapon: the lightest go home while
+## they fit under save_capacity(), the rest (the heaviest first) go into the bag, at least one always.
+## Returns {"home": Array[GearItem], "bag": Array[GearItem]}.
+func split_at_death() -> Dictionary:
+	var worn: Array[GearItem] = []
 	for g: GearItem in Run.gear.equipment.values():
-		if g.stored < 0 and g.data == Run.cls.start_weapon:
-			continue
+		if not (g.stored < 0 and g.data == Run.cls.start_weapon):
+			worn.append(g)
+	worn.sort_custom(func(a: GearItem, b: GearItem) -> bool: return a.data.weight < b.data.weight)
+	var home: Array[GearItem] = []
+	var bag: Array[GearItem] = []
+	var room := save_capacity()
+	for g in worn:
+		if home.size() < worn.size() - 1 and g.data.weight <= room:
+			home.append(g)
+			room -= g.data.weight
+		else:
+			bag.append(g)
+	return {"home": home, "bag": bag}
+
+
+## The lost bag (decided with the user, 2026-10-21; the original's death costs EXP, not items): on a
+## death the worn pieces split_at_death() doesn't save go into a bag where you fell, stored ones off
+## their shelves, progress and all; the saved ones go home with theirs (a found one onto a free shelf,
+## or into the bag when the shelves are full). A new death with something to lose replaces the old bag.
+## Returns {"home": names saved, "bag": names lost in the bag}.
+func drop_bag(at: Vector2) -> Dictionary:
+	var split := split_at_death()
+	var items: Array = []
+	var bagged: Array[String] = []
+	var saved: Array[String] = []
+	var shelves: Array[int] = []
+	for g: GearItem in split.home:
+		if g.stored >= 0:
+			Profile.update_item(g.stored, g.to_dict())
+			saved.append(g.title())
+		elif Profile.store_item(g.to_dict()) >= 0:
+			saved.append(g.title())
+		else:
+			split.bag.append(g)
+	for g: GearItem in split.bag:
 		items.append(g.to_dict())
-		names.append(g.title())
+		bagged.append(g.title())
 		if g.stored >= 0:
 			shelves.append(g.stored)
 	shelves.sort()
@@ -169,8 +210,8 @@ func drop_bag(at: Vector2) -> Array[String]:
 	if not items.is_empty():
 		Profile.lost_bag = {"region": Run.route.region_index(), "room": Run.route.local_depth(),
 			"x": at.x, "y": at.y, "items": items}
-		Profile.save()
-	return names
+	Profile.save()
+	return {"home": saved, "bag": bagged}
 
 
 ## Whether the lost bag lies in the current room.

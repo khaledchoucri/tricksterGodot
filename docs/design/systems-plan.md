@@ -227,6 +227,8 @@ Weight, and what doesn't fit is left behind.
   home with its progress. The bag arms once you step clear of it, so one left at a room's spawn is found
   by walking onto it.
 - Wardrobe pieces are never at stake.
+- **WT carries gear out of a fall** (decided with the user, 2026-10-22): worn pieces up to WT / 4 in
+  weight (ours) go home, the lightest first; the heaviest fall in the bag, and at least one always does.
 
 **The warehouse is the original's grid** (`WareHouseUI.ucf`): 8 x 3 = 24 items to start. Each upgrade
 adds a row of 8, up to 8 x 10 = 80, bought with Harkon Shards (or a boss currency). Storage space is
