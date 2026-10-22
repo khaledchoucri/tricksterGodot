@@ -60,7 +60,7 @@ func update(delta: float) -> void:
 				if s.slash:
 					_spawn_slash(s, (w.y - w.x) / speed)
 			_apply(s)
-	if t >= s.dash_cancel and player.take_buffer("dash") and player.can_dash():
+	if t >= s.dash_cancel and player.can_dash() and player.take_buffer("dash"):
 		player.start_dash()
 		return
 	if t >= s.chain_at and step + 1 < _steps().size() and player.take_buffer("attack"):
