@@ -256,7 +256,9 @@ def build(spec, out_dir, jobs, starters=None, names_extra=None, casting=False, e
         listed = job_ids(cp['Job'])
         learners = [] if not listed or all(j in FIRST_JOBS for j in listed) else listed
         element = ELEMENT_NAMES.get(sp.get('element', ''), sp.get('element')) or ELEMENTS.get(sk['Element'], 'none')
-        client = CLIENT_FX.get(sp['card'], {})
+        # A spec's own `client_fx` (read by hand from the client) stands in for
+        # client_effects.json's entry.
+        client = sp.get('client_fx') or CLIENT_FX.get(sp['card'], {})
         sounds = sp.get('sounds') or {**(sounds_for(sk) or ({} if client.get('sounds') else ELEMENT_SOUNDS.get(element, {}) if skill else {})),
                                       **client.get('sounds', {})}
         behavior = sp.get('behavior')

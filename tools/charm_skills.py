@@ -55,6 +55,21 @@ CARD_FLIGHT = 'eft_skl_c_301_sut'
 THROW_HIT = 'skill_throw_hit_dorw.wav'
 
 
+# The Gambler's dealt hands as the client plays them (read with REA, see
+# scripts/skills/card_deal.gd): Full House (ESAFullHouse 0x49b1b0, 0x49af00;
+# ESAFullHouseHit 0x49b940, 0x49b6e0) shines on you, flies a card to each
+# target, shows the hand there and goes off, or fails (the client's
+# C_601_full house_hit_fail and snd_c_601_ht_f, for our bad hand); Four of a
+# Kind (ESAFourCardDo 0x4c2960) shows four_card on you and a suit over each
+# of its four targets.
+FULL_HOUSE_FX = {'effects': {'ap': ['M_314_shining_ray_apply'], 'fl': [CARD_FLIGHT],
+                             'ke': ['C_601_full house_apply'], 'ht': ['C_601_full house_hit'],
+                             'fail': ['C_601_full house_hit_fail']},
+                 'sounds': {'fail': 'snd_c_601_ht_f.wav'}}
+FOUR_OF_A_KIND_FX = {'effects': {'ap': ['four_card'], 'ke': ['card_s', 'card_c', 'card_h', 'card_d']},
+                     'sounds': {'ap': 'snd_c_605_ap.wav'}}
+
+
 def reach(r):
     """An aimed throw's reach: the table's Range x CARD_REACH."""
     return r['Range'] * CARD_REACH
@@ -170,7 +185,7 @@ SPEC = {
                  text='In Evolution: unleash the beast for {seconds} s, {v}% more AP and faster attacks, but no skills '
                       'and a steady MP drain.'),
     # ---- Gambler (Raccoon)
-    '4501': dict(card='full_house', behavior='charm_burst', value=pct_hit, scaling='AP+8HV+8LK',
+    '4501': dict(card='full_house', behavior='card_deal', client_fx=FULL_HOUSE_FX, value=pct_hit, scaling='AP+8HV+8LK',
                  rows={'radius': 'Radius', 'targets': lambda r: 5},
                  text='Deal the cards around you: up to {targets} enemies take {v} damage, more with LK. '
                       'A bad hand turns some back on you.'),
@@ -185,7 +200,7 @@ SPEC = {
                  requires_extra={'metamorphosis': 1},
                  text='Beast form only: summon a card soldier numbered {min} to {max} at the cursor; it strikes for '
                       '{v} damage, more the higher its number.'),
-    '4505': dict(card='four_of_a_kind', behavior='charm_burst', value=lambda r: pct_hit(r) / 4, scaling='AP',
+    '4505': dict(card='four_of_a_kind', behavior='card_deal', client_fx=FOUR_OF_A_KIND_FX, value=lambda r: pct_hit(r) / 4, scaling='AP',
                  rows={'radius': 'Radius', 'targets': 'KillNum'},
                  text='Four cards for four enemies: {v} damage each, but only with at least four enemies around you.'),
 }

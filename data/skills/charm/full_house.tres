@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/ugly_pearl.tres" id="m_master"]
-[ext_resource type="Script" path="res://scripts/skills/charm_burst.gd" id="2_b"]
+[ext_resource type="Script" path="res://scripts/skills/card_deal.gd" id="2_b"]
 
 [resource]
 script = ExtResource("1_s")
@@ -14,8 +14,8 @@ text = "Deal the cards around you: up to {targets} enemies take {v} damage, more
 requires = {&"one_pair": 3, &"skunk_pouch": 3}
 jobs = Array[StringName]([&"gambler"])
 table = {"value": [93.0, 116.0, 151.0, 174.0, 232.0, 255.0, 278.0, 302.0], "mp": [46.0, 49.0, 53.0, 55.0, 60.0, 60.0, 60.0, 60.0], "cooldown": [6.0, 6.0, 5.0, 5.0, 4.0, 4.0, 4.0, 4.0], "radius": [160.0, 170.0, 185.0, 195.0, 220.0, 220.0, 220.0, 220.0], "targets": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]}
-sounds = {"ht": "snd_c_601_ht.wav", "ke": "snd_c_601_ke.wav"}
-effects = {"ap": ["C_601_full house_apply"], "ht": ["C_601_full house_hit"]}
+sounds = {"fail": "snd_c_601_ht_f.wav", "ht": "snd_c_601_ht.wav", "ke": "snd_c_601_ke.wav"}
+effects = {"ap": ["M_314_shining_ray_apply"], "fail": ["C_601_full house_hit_fail"], "fl": ["eft_skl_c_301_sut"], "ht": ["C_601_full house_hit"], "ke": ["C_601_full house_apply"]}
 master_material = ExtResource("m_master")
 scaling = "AP+8HV+8LK"
 behavior = ExtResource("2_b")

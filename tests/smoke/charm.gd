@@ -176,6 +176,7 @@ func run() -> void:
 
 	await _card_reach(p)
 	await _one_pair_fan(p)
+	await _full_house(p)
 
 	# Every Charm skill does its job on a dummy.
 	var skills: Array[CardData] = []
@@ -326,4 +327,63 @@ func _one_pair_fan(p: Player) -> void:
 	Run.deck.cards.erase(&"lady_luck")
 	Run.deck.loadout[0] = &""
 	_remove(dummy)
+	await wait(0.3)
+
+
+## Full House is the Gambler's (Item_SkillCardParam 4501: Job Gambler,
+## One Pair 10 and Skunk Pouch 10, Lv 3 here): offered only then, it deals a
+## flying card to each of up to five enemies, shows the hand over them and
+## strikes (or a bad hand turns on you).
+func _full_house(p: Player) -> void:
+	var fh := Run.deck.card(&"full_house")
+	check(fh.jobs == [&"gambler"] and fh.requires == {&"one_pair": 3, &"skunk_pouch": 3},
+		"Full House is the Gambler's, after One Pair 3 and Skunk Pouch 3 (%s, %s)" % [fh.jobs, fh.requires])
+	var job0 := Run.job
+	var jobs0 := Run.jobs.duplicate()
+	var gambler: JobData = load("res://data/jobs/gambler.tres")
+	Run.jobs.append(load("res://data/jobs/card_master.tres"))
+	Run.jobs.append(gambler)
+	Run.job = gambler
+	Run.deck.cards[&"one_pair"] = 2
+	Run.deck.cards[&"skunk_pouch"] = 3
+	var early := Run.deck.can_learn(fh)
+	Run.deck.cards[&"one_pair"] = 3
+	var offered := false
+	for i in 30:
+		offered = offered or fh in Run.deck.card_offers(3, false, gambler)
+	check(not early and Run.deck.can_learn(fh) and offered, "a Gambler is offered Full House once One Pair reaches Lv 3")
+	var first := await _dummy(p, 70.0)
+	var foes: Array[Enemy] = [first]
+	for k in 4:
+		var e: Enemy = game.room.spawn(&"torobbie", p.global_position + Combat.screen(Vector2.from_angle(TAU * (k + 1) / 5.0) * 70.0))
+		foes.append(e)
+	await wait(0.6)
+	for e in foes:
+		e.max_hp = 99999
+		e.hp = 99999
+	Run.deck.cards[&"full_house"] = 1
+	Run.deck.loadout[0] = &"full_house"
+	Run.mp = Run.max_mp
+	Run.hp = Run.max_hp
+	p.skills.slot_ready_at[0] = 0.0
+	p.invulnerable_until = p.now() + 9.0
+	var cast := p.skills.try_cast(0)
+	await wait(0.3)
+	var cards := 0
+	for n in game.room.get_children():
+		if n is ThrownItem and (n as ThrownItem).cake == "eft_skl_c_301_sut":
+			cards += 1
+	await wait(1.0)
+	var struck := foes.filter(func(e: Enemy) -> bool: return e.hp < 99999).size()
+	check(cast and cards == 5 and struck >= 3 and struck + (1 if Run.hp < Run.max_hp else 0) >= 4,
+		"Full House deals a flying card to each of five monsters (%d cards, %d struck, HP %d/%d)" % [cards, struck, Run.hp, Run.max_hp])
+	p.invulnerable_until = 0.0
+	for e in foes:
+		_remove(e)
+	for id: StringName in [&"full_house", &"one_pair", &"skunk_pouch"]:
+		Run.deck.cards.erase(id)
+	Run.deck.loadout[0] = &""
+	Run.jobs.assign(jobs0)
+	Run.job = job0
+	Run.hp = Run.max_hp
 	await wait(0.3)

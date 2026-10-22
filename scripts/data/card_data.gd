@@ -30,7 +30,8 @@ enum Kind { TALENT, SKILL }
 ## Cards that can't be held together with this one (the Seals and Pacts:
 ## Seal of Water shuts out Seal of Fire and Seal of Earth).
 @export var excludes: Array[StringName] = []
-## The original's sounds: "ap" (cast), "ht" (hit), "fl" (flight), "ke" (lasting).
+## The original's sounds: "ap" (cast), "ht" (hit), "fl" (flight), "ke" (lasting),
+## "fail" (a hit that goes wrong: Full House's bad hand).
 @export var sounds: Dictionary = {}
 ## The original's particle effects (cake.xml names) by the same phases, plus
 ## "ed" (when it ends). Played through Cake.

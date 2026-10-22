@@ -7,20 +7,13 @@ extends Skill
 ##  - Impelling Rage (4205) and Power Charging (4502): your force pushes up
 ##    to five enemies around you back by the Radius (the server's magic
 ##    formula: MA against MD); Power Charging roots them.
-##  - Full House (4501): cards dealt to up to five enemies around you,
-##    AP + 8 HV + 8 LK; a card that comes up wrong turns on you.
 ##  - Mass Destruction (4211): a huge bomb that hurts KillNum enemies around
 ##    and leaves you with the table's share of your HP.
-##  - Four of a Kind (4505): four cards for four enemies, only with four.
 ##  - [Summon] Card Soldier (4504, beast form): a soldier numbered from
 ##    MinCard to MaxCard strikes at the cursor, harder the higher its number
 ##    (the server's x (number / 6 + 0.1)).
 
 const COLOR := Color(1.0, 0.75, 0.9)
-## Full House: the share of cards that come up wrong, and how much of that
-## card's damage you take (the original's odds aren't in the client; ours).
-const BAD_HAND := 0.2
-const BAD_SHARE := 0.25
 
 
 static func cast_block(card: CardData, level: int, player: Player) -> String:
@@ -28,13 +21,6 @@ static func cast_block(card: CardData, level: int, player: Player) -> String:
 		&"mass_destruction":
 			if Run.hp < Run.max_hp * 0.8:
 				return "Needs 80% HP"
-		&"four_of_a_kind":
-			var n := 0
-			for e in player.room.enemies:
-				if e.is_hittable() and Combat.in_circle(player.global_position, e.global_position, card.param("radius", level, 160.0), e.body_radius):
-					n += 1
-			if n < 4:
-				return "Needs four enemies"
 	return ""
 
 
@@ -77,16 +63,6 @@ func update(t: float, _delta: float) -> void:
 			var fx := {"stun": param("stun", 0.0)} if card.id == &"power_charging" else {}
 			for e in closest_in_circle(at, radius, int(param("targets", 5))):
 				hit(e, damage(), 260.0 + radius, true, fx)
-		&"full_house":
-			var radius := param("radius", 160.0)
-			_ring(at, radius)
-			for e in closest_in_circle(at, radius, int(param("targets", 5))):
-				if Run.rng.randf() < BAD_HAND:
-					var back := roundi(damage() * BAD_SHARE)
-					Run.take_damage(mini(back, Run.hp - 1))  # never fatal
-					Events.text_shown.emit(at + Vector2(0, -70), "Bad hand", Color(1.0, 0.5, 0.5))
-				else:
-					hit(e, damage(), 80.0, true)
 		&"mass_destruction":
 			var radius := param("radius", 120.0)
 			_ring(at, radius)
@@ -98,12 +74,6 @@ func update(t: float, _delta: float) -> void:
 			if Run.hp > left:
 				Run.take_damage(Run.hp - left)
 			feedback(0.1, 9.0)
-		&"four_of_a_kind":
-			var radius := param("radius", 160.0)
-			var foes := closest_in_circle(at, radius, 4)
-			_ring(at, radius)
-			for e in foes:
-				hit(e, damage(), 80.0, true)
 		&"card_soldier":
 			var spot := target_spot(160.0)
 			var number := Run.rng.randi_range(int(param("min", 2)), int(param("max", 5)))

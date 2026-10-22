@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/scorpion_sting.tres" id="m_master"]
-[ext_resource type="Script" path="res://scripts/skills/charm_burst.gd" id="2_b"]
+[ext_resource type="Script" path="res://scripts/skills/card_deal.gd" id="2_b"]
 
 [resource]
 script = ExtResource("1_s")
@@ -15,7 +15,7 @@ requires = {&"full_house": 3}
 jobs = Array[StringName]([&"gambler"])
 table = {"value": [29.0, 35.0, 44.0, 49.0, 65.0, 72.0, 78.0, 85.0], "mp": [56.0, 58.0, 61.0, 63.0, 65.0, 65.0, 65.0, 65.0], "cooldown": [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], "radius": [160.0, 170.0, 185.0, 195.0, 220.0, 220.0, 220.0, 220.0], "targets": [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]}
 sounds = {"ap": "snd_c_605_ap.wav"}
-effects = {"ht": ["four_card"]}
+effects = {"ap": ["four_card"], "ke": ["card_s", "card_c", "card_h", "card_d"]}
 master_material = ExtResource("m_master")
 scaling = "AP"
 behavior = ExtResource("2_b")
