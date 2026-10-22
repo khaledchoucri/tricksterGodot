@@ -462,8 +462,10 @@ func _choose() -> void:
 		"rune":
 			pick = 0
 		"port":
+			# A careful player: banks the best find at the Port after a boss (giving up its power for
+			# the rest of the run) and at the last Port of a clear; keeps everything on otherwise.
 			pick = opts.size() - 1
-			if game.phase == game.Phase.WON:
+			if game.phase == game.Phase.WON or Run.route.current_room().boss:
 				var best_score := 0.0
 				for i in opts.size() - 1:
 					var g: GearItem = opts[i]
