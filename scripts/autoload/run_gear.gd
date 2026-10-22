@@ -154,17 +154,39 @@ func _band_level() -> int:
 	return r.gear_levels.x + roundi(float(r.gear_levels.y - r.gear_levels.x) * along / maxi(1, r.run_length))
 
 
+## Ours (decided with the user, 2026-10-22): an item's chance to be offered is (LEAN_FLOOR + fit())
+## to the LEAN power, so offers lean toward what the character uses (a mage's rod comes up about 4
+## times as often as an AP-only sword) and other pieces still turn up.
+const LEAN_FLOOR := 0.15
+const LEAN := 1.5
+
+
+## How much `it` suits this character: the class's type graph weight (the original's growth
+## graph) for each stat type the item raises. A mage's rod or hood fits, a sword hardly.
+func fit(it: ItemData) -> float:
+	var types: Dictionary[String, bool] = {}
+	for k: String in it.stats:
+		if int(it.stats[k]) > 0 and Stats.type_of(k) != "":
+			types[Stats.type_of(k)] = true
+	var f := 0.0
+	for t: String in types:
+		f += float(Run.cls.graph.get(t, 0.0))
+	return f
+
+
+## Up to `n` different items for this room's level, drawn by their fit (weighted, without
+## repeats, on the run's RNG), rolled with DA.
 func gear_offers(n: int) -> Array[GearItem]:
-	var pool: Array[ItemData] = []
+	var keyed: Array = []
 	var top := gear_level()
 	for it in items:
 		if it.level <= top and it.level >= top - 24 and not it.legend and it != Run.cls.start_weapon and can_use(it):
-			pool.append(it)
-	Run.shuffle(pool)
+			keyed.append([pow(Run.rng.randf(), 1.0 / pow(LEAN_FLOOR + fit(it), LEAN)), it])  # weighted draw keys
+	keyed.sort_custom(func(a: Array, b: Array) -> bool: return a[0] > b[0])
 	var out: Array[GearItem] = []
 	var quality := clampf(Run.stat("DA") / 60.0, 0.0, 1.0)
-	for it: ItemData in pool.slice(0, n):
-		out.append(GearItem.roll(it, quality))
+	for k: Array in keyed.slice(0, n):
+		out.append(GearItem.roll(k[1], quality))
 	return out
 
 

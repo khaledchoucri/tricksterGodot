@@ -121,6 +121,31 @@ func run(Run: Node) -> void:
 	var late: Array = Run.gear.gear_offers(30)
 	check(early.all(func(g: GearItem) -> bool: return g.data.level <= 1)
 		and late.any(func(g: GearItem) -> bool: return g.data.level >= 13), "deeper rooms drop higher-level gear")
+	# Offers lean toward what the character uses (its type graph): what's offered fits better on
+	# average than the pool, and pieces that barely fit (a fit of 0.1 or less) turn up less often.
+	var pool_fit := 0.0
+	var pool_size := 0
+	var pool_poor := 0
+	var top_level: int = Run.gear.gear_level()
+	for it: ItemData in Run.gear.items:
+		if it.level <= top_level and it.level >= top_level - 24 and not it.legend and it != Run.cls.start_weapon 				and Run.gear.can_use(it):
+			pool_size += 1
+			pool_fit += Run.gear.fit(it)
+			pool_poor += 1 if Run.gear.fit(it) <= 0.1 else 0
+	var offer_fit := 0.0
+	var offered := 0
+	var offer_poor := 0
+	for _i in 80:
+		for g: GearItem in Run.gear.gear_offers(1):
+			offered += 1
+			offer_fit += Run.gear.fit(g.data)
+			offer_poor += 1 if Run.gear.fit(g.data) <= 0.1 else 0
+	var pool_avg := pool_fit / maxf(1.0, pool_size)
+	var offer_avg := offer_fit / maxf(1.0, offered)
+	check(offer_avg > pool_avg * 1.15 and float(offer_poor) / maxf(1.0, offered) < 0.6 * float(pool_poor) / maxf(1.0, pool_size)
+		and offer_poor > 0,
+		"offers lean to what Buffalo uses: average fit %.2f offered against %.2f in the pool; poor fits %d%% against %d%%"
+		% [offer_avg, pool_avg, 100 * offer_poor / maxi(1, offered), 100 * pool_poor / maxi(1, pool_size)])
 	# Each region offers its own gear levels, first room to boss, however long the run is.
 	var ranges: Array[String] = []
 	for d: int in Run.route.plan.size():

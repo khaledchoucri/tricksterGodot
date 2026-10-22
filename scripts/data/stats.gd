@@ -62,6 +62,14 @@ const TRAITS := {
 
 
 ## The trait a type unlocks at its n-th threshold (0-based), or {}.
+## The type a stat belongs to (TYPES' gains: AP is Power, MA Magic...), or "".
+static func type_of(stat: String) -> String:
+	for t: String in TYPES:
+		if TYPES[t].gain.has(stat):
+			return t
+	return ""
+
+
 static func trait_at(type: String, n: int) -> Dictionary:
 	var list: Array = TRAITS[type]
 	return list[n] if n < list.size() else {}
