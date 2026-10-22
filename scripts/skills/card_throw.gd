@@ -19,6 +19,8 @@ const AIM_ARC := deg_to_rad(60.0)
 const EMPTY_CARD := 20400
 const GALDERS := 200
 const GAP := 0.12
+## Ours: base throw pose duration, before the spacing of additional throws.
+const THROW_TIME := 0.32
 ## One Pair's fan: each card past the first opens it by CONE_STEP, up to
 ## CONE_MAX across (6 cards, Lady Luck's most). Deviation (user, 2026-10-22):
 ## a tight cone of about 30 degrees at full Lady Luck. The client fans the
@@ -35,10 +37,11 @@ const CARD_LINE := 16.0
 const FURIOUS := [[1, 15], [200, 10], [300, 10], [400, 10], [500, 20], [600, 15], [700, 10], [800, 5], [1000, 5]]
 
 var _galder := false
+var _throws := 1
 
 
 func _init() -> void:
-	duration = 0.32
+	duration = THROW_TIME
 	anim = "throw"
 	dash_cancel_at = 0.14
 
@@ -53,26 +56,27 @@ static func fan_angles(cards: int) -> Array[float]:
 	return out
 
 
+## Finalize burst length without throwing, spending Galder or rolling its amount.
+func prepare() -> void:
+	_throws = int(param("count", 2)) if card.id == &"fist_full_of_galders" else 1
+	duration = THROW_TIME + GAP * maxi(_throws - 1, 0)
+
+
 func start() -> void:
 	_galder = card.id in [&"galder_thrower", &"fist_full_of_galders", &"furious_galder_throw"]
 	var reach := param("range", 160.0)
 	var foe := nearest_in_wedge(aim, reach, AIM_ARC)
-	var throws := 1
 	var amount := damage()
 	match card.id:
 		&"one_pair":
 			_fan(foe, reach, amount / 2.0)  # the pair's damage, a card's share each
 			return
-		&"fist_full_of_galders":
-			throws = int(param("count", 2))
 		&"furious_galder_throw":
 			var roll := _roll()
 			amount *= roll
 			Events.text_shown.emit(player.global_position + Vector2(0, -70), "%d G!" % roll, Color(1.0, 0.85, 0.35))
-	if throws > 1:
-		duration = 0.32 + GAP * (throws - 1)
 	linger()
-	for i in throws:
+	for i in _throws:
 		if i > 0 and not await wait_for(GAP):
 			release()
 			return
