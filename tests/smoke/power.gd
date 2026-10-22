@@ -1,9 +1,17 @@
 extends SmokeSection
 ## The Power line: every Power attack and echo rune, job changes, upgrade skills and its talents.
 
+## Shared map-independent skill activation checks.
+const SKILL_PREPARATION := preload("res://tests/smoke/skill_preparation.gd")
+
 
 ## Every Power-line attack and echo rune casts and damages a monster in front of Buffalo.
 func attacks() -> void:
+	var checks: SmokeSection = SKILL_PREPARATION.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var Run := run_state()
 	var room: Room = game.room
 	var player: Player = game.player

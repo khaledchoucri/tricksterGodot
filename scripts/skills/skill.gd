@@ -1,7 +1,8 @@
 class_name Skill
 extends RefCounted
 ## One cast of an active skill. The player creates it from the card's
-## `behavior` script, fills in the fields below, calls start(), then
+## `behavior` script, fills in the fields below, prepares settings before
+## animation/protection, calls start(), then
 ## update() every physics frame for `duration` seconds and finish() at the
 ## end (or when the cast is interrupted). Effects that outlive the cast
 ## (waves, thrown blades, tornadoes) are nodes added to the room.
@@ -47,6 +48,13 @@ func damage(scale := 1.0) -> float:
 	return card.value_at(level) * scale * Run.formulas.skill_mult(card)
 
 
+## Finalizes settings at activation, after cast time and before animation/protection.
+## Override for target-dependent timing; reserve damage, sounds and effects for start().
+func prepare() -> void:
+	pass
+
+
+## Activates the already-prepared skill and its effects.
 func start() -> void:
 	pass
 

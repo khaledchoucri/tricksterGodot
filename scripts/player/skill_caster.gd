@@ -151,6 +151,7 @@ func casting_slot() -> int:
 
 
 func _begin() -> void:
+	_skill.prepare()
 	if _skill.invulnerable:
 		player.invulnerable_until = maxf(player.invulnerable_until, player.now() + _skill.duration)
 		player.set_phasing(true)
