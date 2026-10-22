@@ -197,7 +197,9 @@ def sounds_for(sk):
             m = re.match(r'^[A-Za-z]+_\d+_(.+?)_(apply|hit|fly|keep|ap|ht|fl|ke)\d*$', r['Name'], re.I)
             if m:
                 key = re.sub(r'[^a-z]', '', m.group(1).lower())
-                _SOUNDS.setdefault(key, {}).setdefault(m.group(2).lower()[:2], r['FileName'].replace('\\', '/').split('/')[-1])
+                # The suffix's phase as the cards name it ("hit" is "ht", not "hi").
+                phase = PHASES[m.group(2).lower()]
+                _SOUNDS.setdefault(key, {}).setdefault(phase, r['FileName'].replace('\\', '/').split('/')[-1])
     for t in (sk['ESAIITable'], sk['ESATable']):
         if t and '_' in t:
             key = re.sub(r'[^a-z]', '', t.split('_', 1)[1].lower())
