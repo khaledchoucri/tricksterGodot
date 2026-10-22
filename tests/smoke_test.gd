@@ -27,6 +27,8 @@ const TALENTS := preload("res://tests/smoke/talents.gd")
 const BALANCE := preload("res://tests/smoke/balance.gd")
 const UI := preload("res://tests/smoke/ui.gd")
 const BOSS := preload("res://tests/smoke/boss.gd")
+## Boss timer checks run before the map-dependent game starts.
+const BOSS_PAUSE := preload("res://tests/smoke/boss_pause.gd")
 const SYSTEMS := preload("res://tests/smoke/systems.gd")
 const REST := preload("res://tests/smoke/rest.gd")
 const ART := preload("res://tests/smoke/art.gd")
@@ -66,6 +68,8 @@ func _ready() -> void:
 				return
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
+	if _on("boss"):
+		await _section(BOSS_PAUSE).run()
 	Run.next_seed = test_seed
 	_run.call_deferred()
 

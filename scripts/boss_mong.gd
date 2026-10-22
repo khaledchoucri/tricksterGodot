@@ -105,7 +105,7 @@ func _ready() -> void:
 	_storm_at = now() + STORM_EVERY
 	Audio.play(SND_VOICE, -4.0)
 	Events.boss_spoke.emit(LINE_OPEN)
-	await get_tree().create_timer(SUMMON_DELAY).timeout
+	await get_tree().create_timer(SUMMON_DELAY, false, true).timeout
 	if state != State.DEAD and is_inside_tree():
 		_summon(summon_start)
 
@@ -187,7 +187,7 @@ func _mana_storm() -> void:
 	var radius := STORM_RADIUS * STORM_SHRINK
 	var warn := Telegraph.make("circle", STORM_DELAY, {"radius": radius})
 	room.add_ground_fx(warn, at)
-	await get_tree().create_timer(STORM_DELAY).timeout
+	await get_tree().create_timer(STORM_DELAY, false, true).timeout
 	room.release_attack_token(self)
 	if state == State.DEAD or not is_inside_tree() or not is_instance_valid(player):
 		return
@@ -274,7 +274,7 @@ func _summon(count: int) -> void:
 func _cure() -> void:
 	_cast("heal", HEAL_CAST)
 	_heal_at = now() + HEAL_EVERY if casts.heal < heal_casts else INF
-	await get_tree().create_timer(HEAL_CAST).timeout
+	await get_tree().create_timer(HEAL_CAST, false, true).timeout
 	if state == State.DEAD or not is_inside_tree():
 		return
 	hp = mini(max_hp, hp + roundi(max_hp * HEAL_SHARE))

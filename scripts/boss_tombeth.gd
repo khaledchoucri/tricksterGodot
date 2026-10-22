@@ -76,7 +76,7 @@ func _power_blow() -> void:
 	sprite.play_action("attack", Combat.screen(_attack_dir), BLOW_WINDUP + 0.4, true)
 	var warn := Telegraph.make("wedge", BLOW_WINDUP, {"dir": _attack_dir, "radius": BLOW_RADIUS, "arc": BLOW_ARC})
 	room.add_ground_fx(warn, global_position)
-	await get_tree().create_timer(BLOW_WINDUP).timeout
+	await get_tree().create_timer(BLOW_WINDUP, false, true).timeout
 	room.release_attack_token(self)
 	if state == State.DEAD or not is_inside_tree() or not is_instance_valid(player):
 		return
@@ -99,7 +99,7 @@ func _final_blow() -> void:
 		FINAL_WINDUP + 0.5, true)
 	var warn := Telegraph.make("circle", FINAL_WINDUP, {"radius": FINAL_RADIUS})
 	room.add_ground_fx(warn, global_position)
-	await get_tree().create_timer(FINAL_WINDUP).timeout
+	await get_tree().create_timer(FINAL_WINDUP, false, true).timeout
 	room.release_attack_token(self)
 	if state == State.DEAD or not is_inside_tree() or not is_instance_valid(player):
 		return

@@ -56,7 +56,7 @@ func _curse() -> void:
 	sprite.play_action("attack", Combat.screen(_attack_dir), 0.9, true)
 	var warn := Telegraph.make("wedge", 0.45, {"dir": _attack_dir, "radius": 120.0, "arc": CURSE_SPREAD + 0.3})
 	room.add_ground_fx(warn, global_position)
-	await get_tree().create_timer(0.45).timeout
+	await get_tree().create_timer(0.45, false, true).timeout
 	if state == State.DEAD or not is_inside_tree() or not is_instance_valid(room) or not is_instance_valid(player):
 		return
 	if is_instance_valid(warn):
@@ -98,7 +98,7 @@ func _sand_coffins() -> void:
 func _coffin(at: Vector2, delay: float) -> void:
 	var warn := Telegraph.make("circle", delay, {"radius": COFFIN_RADIUS})
 	room.add_ground_fx(warn, at)
-	await get_tree().create_timer(delay).timeout
+	await get_tree().create_timer(delay, false, true).timeout
 	if state == State.DEAD or not is_inside_tree():
 		return
 	if is_instance_valid(warn):
