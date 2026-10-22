@@ -26,6 +26,11 @@ Line-specific readings:
   no skill. Sharp Scream also asks for Evolution, so it comes after it.
 - Beast's Instinct stays a timed cast on top of Evolution (its own MP drain
   while it lasts); when it ends, Evolution doesn't.
+- Throws at the enemy you aim at (Card Strike, One Pair and the three Galder
+  throws, all card_throw) reach 35% further than the table's Range (Ours,
+  CARD_REACH): taken as it is, a Lv 1 Card Strike (150) only reaches about a
+  sixth of the screen, the user found the cards too short for a thrower,
+  and the ground's 2:1 tilt halves it again toward the top and bottom.
 - Held back for want of the system they act on: Team Bolster and Bodyguard
   (no party), Aura Shatter (monsters have no buffs), Super Hips (monsters
   don't crit), Warm Up (no job lists it).
@@ -35,6 +40,16 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from skill_trees import NORMAL_HIT, build, job_ids, load, pct_hit  # noqa: E402
+
+
+# Ours: how much further the aimed throws reach than the table's Range (see
+# the docstring).
+CARD_REACH = 1.35
+
+
+def reach(r):
+    """An aimed throw's reach: the table's Range x CARD_REACH."""
+    return r['Range'] * CARD_REACH
 
 
 def ratio_pct(r):
@@ -48,7 +63,7 @@ SPEC = {
                  rows={'range': 'Range', 'ratio': 'Ratio'},
                  text='Gather your strength into a lashing blow at the enemy in front: {v} damage.'),
     '4002': dict(card='galder_thrower', behavior='card_throw', value=pct_hit, scaling='HV',
-                 rows={'range': 'Range', 'galder': lambda r: 20},
+                 rows={'range': reach, 'galder': lambda r: 20},
                  text='Hurl {galder} Galder at the enemy you aim at: {v} damage through any defence.'),
     '4003': dict(card='dodge_master', mods={'HV%': 'value'}, value=lambda r: r['Comment'], text='+{v}% HV.'),
     '4004': dict(card='shield_all', mods={'DP%': 'value'}, value=lambda r: r['Comment'], text='+{v}% DP.'),
@@ -91,17 +106,17 @@ SPEC = {
                  text='Beast form only: a deep wound for {v} damage that bleeds {bleed}% of it again over {seconds} s.'),
     '4108': dict(card='sumo_suit', mods={'damage_cut%': 'value'}, value=lambda r: r['Comment'], text='All the padding you need: you take {v}% less damage.'),
     '4109': dict(card='fist_full_of_galders', behavior='card_throw', value=pct_hit, scaling='HV',
-                 rows={'range': 'Range', 'count': 'Count', 'galder': lambda r: 20},
+                 rows={'range': reach, 'count': 'Count', 'galder': lambda r: 20},
                  text='Throw {count} fistfuls of {galder} Galder at the enemy you aim at, {v} damage each through any defence.'),
     '4110': dict(card='deadly_funk', behavior='pouch_throw', kind='skill', upgrades='4010', value=lambda r: 0,
                  rows={'range': lambda r: r['Range'] + 60, 'radius': 'Radius', 'stun': 'Seconds'},
                  text='The smelliest gym socks: everything around the cursor faints for {stun} s.'),
     # ---- Card Master (Raccoon)
     '4201': dict(card='card_strike', behavior='card_throw', value=pct_hit, scaling='AP+8HV',
-                 rows={'range': 'Range', 'radius': 'Radius'},
+                 rows={'range': reach, 'radius': 'Radius'},
                  text='Flick an empty card at the enemy you aim at: {v} damage, splashing those nearby.'),
     '4204': dict(card='one_pair', behavior='card_throw', value=pct_hit, scaling='AP+8HV',
-                 rows={'range': 'Range', 'count': lambda r: 2},
+                 rows={'range': reach, 'count': lambda r: 2},
                  text='Throw a pair of cards at one enemy, {v} damage in all, from further away than Card Strike.'),
     '4205': dict(card='impelling_rage', behavior='charm_burst', value=pct_hit, scaling='MA',
                  rows={'radius': 'Radius', 'targets': lambda r: 5},
@@ -118,7 +133,7 @@ SPEC = {
                  rows={'hp': lambda r: r['HpRatio'] * 100},
                  text='Burn {hp}% of your max HP into MP: {v}% of it comes back as MP.'),
     '4209': dict(card='furious_galder_throw', behavior='card_throw', upgrades='4002', value=lambda r: pct_hit(r) / 1000,
-                 scaling='HV', rows={'range': 'Range', 'galder': lambda r: 100},
+                 scaling='HV', rows={'range': reach, 'galder': lambda r: 100},
                  text='Throw a wild handful of Galder (up to 1000, a fifth of it paid): {v} damage per Galder, '
                       'through any defence.'),
     '4210': dict(card='lady_luck', mods={'one_pair.cards_min': 'min', 'one_pair.cards_max': 'value'}, value=lambda r: r['MaxCard'], rows={'min': 'MinCard'},

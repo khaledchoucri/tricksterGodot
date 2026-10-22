@@ -174,6 +174,8 @@ func run() -> void:
 	check(p.skills.try_cast(0) and Run.purse.galder == 80, "Galder Thrower spends 20 Galder (100 -> %d)" % Run.purse.galder)
 	await wait(0.5)
 
+	await _card_reach(p)
+
 	# Every Charm skill does its job on a dummy.
 	var skills: Array[CardData] = []
 	for c in Run.deck.all_cards():
@@ -262,3 +264,27 @@ func run() -> void:
 	Run.new_run()
 	p.refresh_gear()
 	await wait(0.5)
+
+
+## The aimed throws reach CARD_REACH (x1.35) past the table's Range: a Lv 1
+## Card Strike hits a monster at 190 px, past the original's 150.
+func _card_reach(p: Player) -> void:
+	var strike := Run.deck.card(&"card_strike")
+	var pair := Run.deck.card(&"one_pair")
+	check(is_equal_approx(strike.param("range", 1), 202.0) and is_equal_approx(pair.param("range", 5), 308.0),
+		"the card throws reach 35%% past the original's Range (Card Strike Lv 1 %d, One Pair Lv 5 %d)" % [
+		strike.param("range", 1), pair.param("range", 5)])
+	var dummy := await _dummy(p, 190.0)
+	Run.deck.cards[&"card_strike"] = 1
+	Run.deck.loadout[0] = &"card_strike"
+	Run.mp = Run.max_mp
+	p.skills.slot_ready_at[0] = 0.0
+	var before := dummy.hp
+	var cast := p.skills.try_cast(0)
+	await wait(0.8)
+	check(cast and dummy.hp < before, "a Lv 1 Card Strike hits a monster 190 px away (%d -> %d)%s" % [before, dummy.hp,
+		"" if dummy.hp < before else _why(cast, dummy, p)])
+	Run.deck.cards.erase(&"card_strike")
+	Run.deck.loadout[0] = &""
+	_remove(dummy)
+	await wait(0.3)
