@@ -177,6 +177,14 @@ func play_action(act: String, v := Vector2.ZERO, duration := 0.0, restart := fal
 		frame = clampi(frames[0], 0, sprite_frames.get_frame_count(anim) - 1)
 
 
+## Plays `act` through once and holds its last frame, whether or not the clip
+## loops (a monster's idle fidget).
+func play_once(act: String, v := Vector2.ZERO) -> void:
+	play_action(act, v, 0.0, true)
+	if action == act:
+		_stop_at = sprite_frames.get_frame_count(animation) - 1
+
+
 ## Hand socket of the frame on screen, relative to the feet, in the parent's space:
 ## {"hand": Vector2, "front": bool}, or an empty Dictionary if the frame has none.
 func hand_socket() -> Dictionary:

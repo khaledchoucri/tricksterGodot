@@ -1,7 +1,7 @@
 extends SmokeSection
-## The original art the game draws: every monster of every region has its sprite and shows on every
-## frame, and every shield is worn by every character that can carry one, in every direction of the
-## poses it walks and stands in.
+## The original art the game draws and how it plays: every monster of every region has its sprite
+## and shows on every frame, standing monsters fidget, grazed ones dodge and echoes run; every shield
+## is worn by every character that can carry one, in every direction of the poses it walks and stands in.
 
 ## The poses a worn shield must show in: the original's pivot files place shields on all of their
 ## frames (tools/pivots.py; the punchers through their equipped poses, ActorSprite.SHIELD_POSE).
@@ -13,6 +13,51 @@ const MONSTER_ACTIONS: Array[String] = ["idle", "walk", "attack", "hit", "faint"
 func run() -> void:
 	_monsters()
 	_shields()
+	await _fidget()
+
+
+## A monster standing still plays its idle_auto clip through now and then, and goes back to idle.
+func _fidget() -> void:
+	if not is_instance_valid(game.room) or not is_instance_valid(game.player):
+		game._load_room()  # an earlier section left the game without a room
+		await wait(3.0)
+	var e: Enemy = game.room.spawn(&"torobbie", game.room.random_spot(game.player.global_position, 260.0))
+	var seen := {}
+	for _i in 60 * int(Enemy.FIDGET_EVERY.y * 2.0 + 2.0):
+		if not is_instance_valid(e):
+			break
+		if e.state != Enemy.State.SPAWN:
+			e.state = Enemy.State.IDLE  # keep it standing: no chase, no wander
+			e._state_len = 999.0
+			e._wander_target = e.global_position
+		seen[e.sprite.action] = true
+		if seen.has("idle_auto") and e.sprite.action == "idle":
+			break
+		await get_tree().physics_frame
+	check(seen.has("idle_auto") and seen.has("idle"), "a standing monster fidgets with its idle_auto clip and returns to idle (%s)"
+		% ", ".join(seen.keys()))
+	# A graze is the monster half evading: it shows its dodge clip; a clean hit shows its hit clip.
+	var reactions: Array[String] = []
+	for fx: Dictionary in [{"graze": true}, {}]:
+		e.state = Enemy.State.IDLE
+		e.take_hit(1, Vector2.RIGHT, 0.0, false, fx)
+		reactions.append(e.sprite.action)
+		await wait(0.5)
+	check(reactions == ["dodge", "hit"], "a grazed monster dodges, a hit one flinches (%s)" % ", ".join(reactions))
+	_remove(e)
+	# An echo (another class's character) chases at a run, as a player does.
+	var echo: Enemy = game.room.spawn(&"echo_bard", game.room.random_spot(game.player.global_position, 300.0))
+	var ran := false
+	for _i in 240:
+		if not is_instance_valid(echo):
+			break
+		ran = ran or (echo.state == Enemy.State.CHASE and echo.sprite.action == "run")
+		if echo.state == Enemy.State.IDLE:
+			echo._state_len = 0.0  # chase now
+		await get_tree().physics_frame
+	check(ran, "a chasing echo runs")
+	if is_instance_valid(echo):
+		_remove(echo)
 
 
 ## Every monster a region or an echo can spawn has exported sprites with the actions enemy.gd plays,

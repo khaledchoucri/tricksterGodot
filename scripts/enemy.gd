@@ -78,6 +78,7 @@ var debuffs: Dictionary = {}
 ## How opaque the client draws it: 1 - CharacterInfo TransRate / 100 (Punisher Aposis is a
 ## 30% see-through Aposis).
 var opacity := 1.0
+var _fidget_at := 0.0
 
 @onready var sprite: ActorSprite = $Sprite
 @onready var shape: CollisionShape2D = $Shape
@@ -187,6 +188,9 @@ func defense_mult(magic := false, attack := 100.0, keep := 1.0) -> float:
 ## Gun hits meet HV instead of DP, at 30 per point against the attack's 20
 ## (the server's gun formula, 0x59d440); Lock-on lowers it.
 const GUN_HV_WEIGHT := 1.5
+## Reading: the original monsters' 자동행동 clip (idle_auto) is their fidget while they stand.
+## Ours: how many seconds apart a standing monster plays it.
+const FIDGET_EVERY := Vector2(3.0, 7.0)
 
 
 func gun_defense_mult(attack: float) -> float:
@@ -311,9 +315,22 @@ func _state_idle() -> void:
 		sprite.play_action("walk", to)
 	else:
 		velocity = _knock
-		sprite.play_action("idle")
+		_stand()
 	if _t >= _state_len:
 		_enter(State.CHASE)
+
+
+## Stands idle, playing its fidget clip now and then.
+func _stand() -> void:
+	if sprite.action == "idle_auto" and sprite.is_playing():
+		return
+	if sprite.has_action("idle_auto") and now() >= _fidget_at:
+		if _fidget_at > 0.0:
+			sprite.play_once("idle_auto")
+		_fidget_at = now() + randf_range(FIDGET_EVERY.x, FIDGET_EVERY.y)  # visual only
+		if sprite.action == "idle_auto":
+			return
+	sprite.play_action("idle")
 
 
 func _state_chase() -> void:
@@ -341,8 +358,11 @@ func _state_chase() -> void:
 		return
 	var step := _steer_toward(player.global_position)
 	velocity = step * run_speed * speed_factor() + _knock
-	sprite.play_action("walk", step if step != Vector2.ZERO else to)
-	sprite.speed_scale = 1.3
+	if sprite.has_action("run"):
+		sprite.play_action("run", step if step != Vector2.ZERO else to)  # echoes run as players do
+	else:
+		sprite.play_action("walk", step if step != Vector2.ZERO else to)
+		sprite.speed_scale = 1.3
 
 
 ## Direct line when it's clear, otherwise follow a grid path around obstacles.
@@ -485,7 +505,9 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 	elif not armored and _hits_taken > attack.poise:
 		_cancel_attack()
 		_enter(State.HURT, 0.28 if heavy else 0.2)
-		sprite.play_action("hit", -Combat.screen(dir), 0.2, true)
+		# Reading: a graze is the monster half evading, so it shows its dodge clip (회피) if it has one.
+		var react := "dodge" if fx.get("graze", false) and sprite.has_action("dodge") else "hit"
+		sprite.play_action(react, -Combat.screen(dir), 0.2, true)
 
 
 ## Out cold for `seconds` without a hit (Skunk Pouch's stink). Bosses shrug

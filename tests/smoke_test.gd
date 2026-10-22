@@ -9,8 +9,8 @@ extends Node
 ## shared code still run the full suite (CLAUDE.md, section 5).
 
 ## The sections, in the order they run.
-const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "talents", "balance", "ui", "rest", "boss",
-	"systems", "art", "lint"]
+const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "talents", "balance", "ui", "rest", "art", "boss",
+	"systems", "lint"]
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
@@ -110,12 +110,13 @@ func _run() -> void:
 	if _on("rest"):
 		# Before the bosses, which end in Megalopolis. Rest stops between regions: the heal, Julio and the warehouse swap.
 		await _section(REST).run()
+	if _on("art"):
+		# Before the bosses too: its monster checks play in a room.
+		await _section(ART).run()
 	if _on("boss"):
 		await _section(BOSS).run()
 	if _on("systems"):
 		_section(SYSTEMS).run(get_node("/root/Run"))
-	if _on("art"):
-		_section(ART).run()
 	if _on("lint"):
 		_section(LINT).run()
 
