@@ -134,6 +134,8 @@ func param(name: String, default := 0.0) -> float:
 
 
 func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}, from := Vector2.INF) -> void:
+	if not is_instance_valid(e) or not e.can_take_hit():
+		return
 	fx = fx.duplicate()
 	if card.element != "none" and not fx.has("element"):
 		fx.element = card.element

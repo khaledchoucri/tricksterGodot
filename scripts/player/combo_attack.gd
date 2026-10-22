@@ -79,7 +79,7 @@ func _apply(s: ComboStep) -> void:
 	for e in player.room.enemies:
 		if e in _hit_this_window or not e.is_hittable():
 			continue
-		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius):
+		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius) and e.can_take_hit():
 			_hit_this_window.append(e)
 			crit_any = player.deal_hit(e, s.damage, _mult(s), s.knockback, s.finisher, _talent_fx(s)) or crit_any
 			if player.now() >= float(e.get_meta("hit_fx_at", -1.0)) + HIT_EFFECT_GAP:
