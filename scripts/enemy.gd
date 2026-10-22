@@ -75,6 +75,10 @@ var _burn_tick := 0.0
 ## "resist_<Element>" lowers that resistance.
 var debuffs: Dictionary = {}
 
+## How opaque the client draws it: 1 - CharacterInfo TransRate / 100 (Punisher Aposis is a
+## 30% see-through Aposis).
+var opacity := 1.0
+
 @onready var sprite: ActorSprite = $Sprite
 @onready var shape: CollisionShape2D = $Shape
 
@@ -88,6 +92,7 @@ func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void
 	display_name = Run.formulas.monster_name(data) if data.display_name != "" or stats_row.is_empty() else stats_row.get("name", String(data.id).capitalize())
 	stats = Stats.from_monster(stats_row.get("stats", {}))
 	elements = stats_row.get("elements", {})
+	opacity = 1.0 - float(stats_row.get("trans_rate", 0)) / 100.0
 	# Deeper rooms field tougher monsters.
 	if data.echo:
 		max_hp = roundi(float(stats.get("HP", 100)) * 0.6 * data.hp_mult * (1.0 + DEPTH_HP * Run.route.depth))
@@ -133,6 +138,7 @@ func _ready() -> void:
 	if is_elite:
 		sprite.scale = Vector2(1.25, 1.25)
 		sprite.self_modulate = Color(1.2, 1.05, 0.7)
+	sprite.self_modulate.a *= opacity
 	sprite.play_action("idle", Vector2(-1, 1))
 	_enter(State.SPAWN, 0.5)
 	sprite.modulate.a = 0.0

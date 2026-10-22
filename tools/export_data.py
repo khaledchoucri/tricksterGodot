@@ -77,6 +77,8 @@ def monster_summary(tables, ids):
             'elements': {k[:-1]: p[k] for k in ('FireR', 'WaterR', 'WindR', 'EarthR', 'ElecR', 'LightR', 'DarkR', 'PhysicalR')},
             'tactics': p.get('TacticsTable', ''),
             'boss': p.get('IsBoss', 0),
+            # CharacterInfo TransRate: how see-through the client draws it, in % (Punisher Aposis 30).
+            'trans_rate': c.get('TransRate', 0),
             'speech': [s for s in speech if s.strip()],
         }
     return out

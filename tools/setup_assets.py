@@ -33,7 +33,9 @@ FIST_ACTIONS = 'idle,walk,run,attack,attack2,weapon_crit,hit,faint,dodge,cast,ch
 # Held weapons: name -> item sprite.
 WEAPONS = {'long_sword': 'data/equip/weapon_ex_009.nri'}
 
-# actor name -> (sprite file, actions to export or '' for all, hand sockets or None)
+# actor name -> (sprite file, actions to export or '' for all, hand sockets or None).
+# The regions' monsters aren't listed: monster_actors() takes each one's sprite
+# from its CharacterInfo row.
 ACTORS = {
     'buffalo': ('data/character/chr002.nri', ARMED_ACTIONS, BUFFALO_SOCKETS),
     'bunny': ('data/character/chr001.nri', FIST_ACTIONS, None),
@@ -72,33 +74,6 @@ ACTORS = {
     'charm_m': ('data/character/chr024.nri', ARMED_ACTIONS, ('data/character/chr024.pvt', 'weapon001.nri')),
     'beast_evolution': ('data/character/Trs001.nri', FIST_ACTIONS, None),
     'beast_metamorphosis': ('data/character/Trs002.nri', FIST_ACTIONS, None),
-    'torobbie': ('data/monster/mon249.nri', '', None),
-    'bad_fury': ('data/monster/mon250.nri', '', None),
-    'tottochi': ('data/monster/mon251.nri', '', None),
-    'bustshell': ('data/monster/mon252.nri', '', None),
-    'clione': ('data/monster/mon253.nri', '', None),
-    'little_cora': ('data/monster/mon254.nri', '', None),
-    'blue_penguin': ('data/monster/mon021.nri', '', None),
-    'golden_mole': ('data/monster/mon103.nri', '', None),
-    # Desert Beach
-    'fanta_slime': ('data/monster/mon116.nri', '', None),
-    'shell_trap': ('data/monster/mon117.nri', '', None),
-    'field_mole': ('data/monster/mon101.nri', '', None),
-    'sea_scorpion': ('data/monster/mon001.nri', '', None),
-    'pineapple': ('data/monster/mon119.nri', '', None),
-    'fan_lizard': ('data/monster/mon003.nri', '', None),
-    'sand_demon': ('data/monster/mon109.nri', '', None),
-    'cannon_shell': ('data/monster/mon005.nri', '', None),
-    'basic_mummy': ('data/monster/mon153.nri', '', None),
-    'tutankhamen': ('data/monster/mon163.nri', '', None),
-    # Caballa Relics (Mon_Relics_Play 1-4), Tombeth and his summons (BossMonsterparamEx 2072)
-    'mandragora': ('data/monster/mon012.nri', '', None),
-    'stone_soldier': ('data/monster/mon013.nri', '', None),
-    'mimic': ('data/monster/mon014.nri', '', None),
-    'aposis': ('data/monster/mon015.nri', '', None),
-    'tombeth': ('data/monster/mon138.nri', '', None),
-    'chimu': ('data/monster/mon141.nri', '', None),
-    'naranjo': ('data/monster/mon139.nri', '', None),
     # Echoes: other classes' characters
     'echo_bard': ('data/character/chr003.nri', 'idle,walk,run,attack,hit,faint,cast', None),
     'echo_explorer': ('data/character/chr005.nri', 'idle,walk,run,attack,hit,faint,throw', None),
@@ -163,9 +138,9 @@ def card_sounds():
     return out
 
 
-def monster_ids():
-    """Monster row IDs referenced by the EnemyData resources."""
-    ids = []
+def region_enemies():
+    """(enemy id, monster row ID) of every EnemyData in data/<region>/enemies."""
+    out = []
     for region in sorted(os.listdir(os.path.join(ROOT, 'data'))):
         folder = os.path.join(ROOT, 'data', region, 'enemies')
         if not os.path.isdir(folder):
@@ -174,8 +149,42 @@ def monster_ids():
             if f.endswith('.tres'):
                 m = re.search(r'^monster_id = "(\d+)"', open(os.path.join(folder, f), encoding='utf-8').read(), re.M)
                 if m:
-                    ids.append(m.group(1))
-    return ids
+                    out.append((f[:-len('.tres')], m.group(1)))
+    return out
+
+
+def monster_ids():
+    """Monster row IDs referenced by the EnemyData resources."""
+    return [mid for _, mid in region_enemies()]
+
+
+def monster_actors():
+    """Enemy id -> its sprite file, from the CharacterInfo FileName that
+    export_data.py copies into monsters.json (Punisher Aposis, 2560, is drawn
+    from Aposis's mon015.nri). Every enemy must have one."""
+    rows = json.load(open(os.path.join(OUT, 'data', 'monsters.json'), encoding='utf-8'))
+    out = {}
+    for eid, mid in region_enemies():
+        sprite = rows.get(mid, {}).get('sprite', '')
+        if not sprite:
+            sys.exit(f'monster {eid} ({mid}) has no CharacterInfo sprite')
+        out[eid] = sprite.replace(chr(92), '/')
+    return out
+
+
+def export_actor(client, name, rel, actions='', sockets=None):
+    """Exports one actor's sheets to original_assets/actors/<name>."""
+    args = [os.path.join(HERE, 'export_actor.py'), os.path.join(client, rel),
+            os.path.join(OUT, 'actors', name), name,
+            '--res-prefix', f'res://original_assets/actors/{name}']
+    if actions:
+        args += ['--actions', actions]
+    if sockets:
+        pivot_file, section = sockets
+        args += ['--pivots', os.path.join(client, pivot_file), '--pivot-section', section]
+    if name in PLAYERS:
+        args += ['--indexed', os.path.join(client, 'data')]
+    run(*args)
 
 
 # Big Needle, Shuriken (Fox); Empty Card and Galders (the Charm line's throws).
@@ -306,17 +315,7 @@ def main():
     client = sys.argv[1]
     effect_client = sys.argv[2] if len(sys.argv) == 3 else client
     for name, (rel, actions, sockets) in ACTORS.items():
-        args = [os.path.join(HERE, 'export_actor.py'), os.path.join(client, rel),
-                os.path.join(OUT, 'actors', name), name,
-                '--res-prefix', f'res://original_assets/actors/{name}']
-        if actions:
-            args += ['--actions', actions]
-        if sockets:
-            pivot_file, section = sockets
-            args += ['--pivots', os.path.join(client, pivot_file), '--pivot-section', section]
-        if name in PLAYERS:
-            args += ['--indexed', os.path.join(client, 'data')]
-        run(*args)
+        export_actor(client, name, rel, actions, sockets)
     for name, rel in PORTRAITS.items():
         run(os.path.join(HERE, 'export_still.py'), os.path.join(client, rel),
             os.path.join(OUT, 'portraits', name + '.png'))
@@ -333,6 +332,8 @@ def main():
     ids = ','.join(monster_ids())
     run(os.path.join(HERE, 'export_data.py'), os.path.join(client, 'libconfig_eng.xml'),
         os.path.join(OUT, 'data'), '--monsters', ids)
+    for name, rel in monster_actors().items():
+        export_actor(client, name, rel)
     run(os.path.join(HERE, 'export_icons.py'), client, os.path.join(OUT, 'data', 'tables', 'SkillParam2.json'),
         os.path.join(OUT, 'icons'), ','.join(skill_ids()))
     run(os.path.join(HERE, 'export_items.py'), client, os.path.join(OUT, 'data', 'tables'), OUT, ','.join(item_ids()))

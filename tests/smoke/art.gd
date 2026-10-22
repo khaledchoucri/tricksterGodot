@@ -1,14 +1,59 @@
 extends SmokeSection
-## The original art the game draws: every shield is worn by every character that can carry one, in
-## every direction of the poses it walks and stands in.
+## The original art the game draws: every monster of every region has its sprite and shows on every
+## frame, and every shield is worn by every character that can carry one, in every direction of the
+## poses it walks and stands in.
 
 ## The poses a worn shield must show in: the original's pivot files place shields on all of their
 ## frames (tools/pivots.py; the punchers through their equipped poses, ActorSprite.SHIELD_POSE).
 const SHIELD_POSES: Array[String] = ["idle", "walk", "run"]
+## The actions enemy.gd plays on every monster.
+const MONSTER_ACTIONS: Array[String] = ["idle", "walk", "attack", "hit", "faint"]
 
 
 func run() -> void:
+	_monsters()
 	_shields()
+
+
+## Every monster a region or an echo can spawn has exported sprites with the actions enemy.gd plays,
+## and no frame of any of its animations is blank.
+func _monsters() -> void:
+	var bad: PackedStringArray = []
+	var count := 0
+	var s := ActorSprite.new()
+	add_child(s)
+	for path: String in _enemy_paths():
+		var e: EnemyData = load(path)
+		count += 1
+		if not s.setup(String(e.id)):
+			bad.append("%s: no sprites" % e.id)
+			continue
+		var lacking := MONSTER_ACTIONS.filter(func(a: String) -> bool: return not s.has_action(a))
+		if not lacking.is_empty():
+			bad.append("%s: no %s" % [e.id, ", ".join(lacking)])
+		for anim: StringName in s.sprite_frames.get_animation_names():
+			for i in s.sprite_frames.get_frame_count(anim):
+				var img := s.sprite_frames.get_frame_texture(anim, i).get_image()
+				if img == null or img.get_used_rect().size == Vector2i.ZERO:
+					bad.append("%s: %s frame %d is blank" % [e.id, anim, i])
+					break
+	s.queue_free()
+	check(bad.is_empty() and count > 0, "all %d monsters have sprites with %s and no blank frame%s"
+		% [count, ", ".join(MONSTER_ACTIONS), "" if bad.is_empty() else ": " + "; ".join(bad.slice(0, 8))])
+
+
+## The EnemyData of every region (data/<region>/enemies) and the echoes.
+func _enemy_paths() -> PackedStringArray:
+	var out: PackedStringArray = []
+	var dirs: PackedStringArray = ["res://data/echoes"]
+	for region in DirAccess.get_directories_at("res://data"):
+		if DirAccess.dir_exists_absolute("res://data/%s/enemies" % region):
+			dirs.append("res://data/%s/enemies" % region)
+	for dir in dirs:
+		for f in DirAccess.get_files_at(dir):
+			if f.ends_with(".tres"):
+				out.append(dir.path_join(f))
+	return out
 
 
 ## Every shield item has a worn sprite, and each character that can hold a shield shows it on every
