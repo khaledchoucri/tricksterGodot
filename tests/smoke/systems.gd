@@ -318,6 +318,24 @@ func run(Run: Node) -> void:
 	Run.new_run()
 	check(Profile.loadout == {"weapon": 0} and Run.gear.equipped("weapon").data.id == &"wood_sword",
 		"an old save's heirloom is worn in its slot")
+	# A clear brings home everything you wear: finds go onto free shelves.
+	var shelves_before: int = Profile.warehouse.size()
+	var find_hat := GearItem.make(_item("candy_hat"))
+	var find_ring := GearItem.make(_item("might_ring"))
+	Run.gear.equip(find_hat)
+	Run.gear.equip(find_ring, "acc1")
+	var left: Array[GearItem] = Run.city.bring_home()
+	check(left.is_empty() and Profile.warehouse.size() == shelves_before + 2 and find_hat.stored >= 0 and find_ring.stored >= 0,
+		"a clear brings home both finds you wear")
+	# With full shelves, the finds that don't fit come back to choose room for.
+	while not Profile.warehouse_full():
+		Profile.store_item(GearItem.make(_item("candy_shield")).to_dict())
+	var overflow := GearItem.make(_item("steel_helmet"))
+	Run.gear.equip(overflow)
+	check(Run.city.bring_home() == [overflow], "full shelves hand back the find that doesn't fit")
+	while Profile.warehouse.size() > shelves_before:
+		Profile.discard_item(Profile.warehouse.size() - 1)
+	Run.new_run()
 	# Earlier runs in this suite banked their own leftovers: count from what's banked now.
 	var galder0: int = Profile.galder
 	var ore0: int = Profile.ore

@@ -51,6 +51,10 @@ func _shoot() -> void:
 		await _shoot_desert()
 		get_tree().quit()
 		return
+	if "clear" in OS.get_cmdline_user_args():
+		await _shoot_clear()
+		get_tree().quit()
+		return
 	if "bag" in OS.get_cmdline_user_args():
 		await _shoot_bag()
 		get_tree().quit()
@@ -180,6 +184,27 @@ func _shoot_hub() -> void:
 	hub.dialogue._chosen.emit(0)
 	await _wait(0.5)
 	await _snap("12_card_album")
+
+
+## A clear with full shelves: the found sabre doesn't fit, so the last screen asks what to throw
+## away; the 1 key frees the first shelf for it, and the results follow.
+func _shoot_clear() -> void:
+	Profile.lost_bag = {}
+	Run.new_run()
+	while not Profile.warehouse_full():
+		Profile.store_item(GearItem.make(load("res://data/items/candy_shield.tres")).to_dict())
+	game = load("res://scenes/game.tscn").instantiate()
+	add_child(game)
+	await _wait(2.0)
+	Run.gear.equip(GearItem.make(load("res://data/items/edge_sabre.tres")))
+	game.player.dress()
+	game._win()
+	await _wait(3.0)
+	await _snap("51_clear_make_room")
+	_key(KEY_1)
+	await _wait(1.0)
+	await _snap("52_clear_results")
+	print("shelves: ", Profile.warehouse.size(), " sabre home: ", Profile.warehouse.any(func(d: Dictionary) -> bool: return d.id == "edge_sabre"))
 
 
 ## The lost bag as a player meets it: wearing a stored sword and ring, die in room 3 to a monster's

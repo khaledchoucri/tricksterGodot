@@ -240,6 +240,18 @@ func pick_up_bag() -> Array[String]:
 	return names
 
 
+## A clear brings home everything you wear (decided with the user, 2026-10-22): stored pieces with
+## their progress, finds onto free shelves. Returns the finds that didn't fit.
+func bring_home() -> Array[GearItem]:
+	var left: Array[GearItem] = []
+	for g: GearItem in Run.gear.equipment.values():
+		if g.stored >= 0:
+			Profile.update_item(g.stored, g.to_dict())
+		elif g.data != Run.cls.start_weapon and not save_point(g):
+			left.append(g)
+	return left
+
+
 ## Portable Port: saves every stored item's progress, and sends `item` home
 ## (if given). Returns false if the warehouse is full.
 func save_point(item: GearItem = null) -> bool:
@@ -313,6 +325,4 @@ func finish(p_won: bool) -> void:
 		Profile.best_heat = heat
 	Run.last_result = {"won": p_won, "depth": reached, "tm": Run.purse.tm, "shards": Run.purse.shards, "heat": heat, "bounty": bounty}
 	Profile.bank_run(p_won, reached, Run.purse.tm, Run.purse.shards, String(Run.job.id))
-	if p_won:
-		save_point()  # what you wore from the shelves comes home with its progress
 	Run.last_result.kept = Profile.bank_leftovers(p_won, Run.purse.galder, Run.purse.ore, Run.purse.materials)

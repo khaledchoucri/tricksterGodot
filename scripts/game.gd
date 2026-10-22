@@ -50,6 +50,7 @@ var _legend: GearItem       # a boss's legendary drop, offered when the room is 
 var _rune_from: EnemyData   # an Echo beaten in this room: offer its runes
 var _boss_name := ""
 var _ambush := false  # an ambush from a Dig Site is being fought
+var _left_behind: Array[GearItem] = []  # a clear's finds that found no free shelf
 
 @onready var hud: Hud = $Hud
 
@@ -482,9 +483,8 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base
 			var full := Profile.warehouse_full()
 			for g: GearItem in options:
 				if g == null:
-					shown.append({"title": "Go on" if phase != Phase.WON else "Log out", "tag": "", "cancel": true,
-						"text": "What you wear stays at stake: a death leaves it in a lost bag." if phase != Phase.WON
-							else "What you wore from the shelves goes home with its progress."})
+					shown.append({"title": "Go on", "tag": "", "cancel": true,
+						"text": "What you wear stays at stake: a death leaves it in a lost bag."})
 					continue
 				shown.append({"title": "Send %s home" % g.title(), "tag": "On a shelf" if g.stored >= 0 else g.data.slot_name(), "icon": g.data.icon(),
 					"text": g.summary() + ("
@@ -492,6 +492,18 @@ The warehouse is full." if full else "
 Safe on a shelf, refines and compounds included; you stop wearing it."),
 					"disabled": full and g.stored < 0})
 			title = "Portable Port  ·  save your progress"
+		"make_room":
+			var keep: GearItem = _left_behind[0]
+			for i: Variant in options:
+				if i == null:
+					shown.append({"title": "Log out", "tag": "", "cancel": true, "text": "Leave %s behind." % ", ".join(
+						_left_behind.map(func(x: GearItem) -> String: return x.title()))})
+					continue
+				var stored := GearItem.from_dict(Profile.warehouse[i], Run.gear.item_by_id)
+				shown.append({"title": "Throw away %s" % (stored.title() if stored else "(unknown item)"),
+					"tag": "Worn" if Profile.worn_in(i) != "" else (stored.data.slot_name() if stored else ""),
+					"icon": stored.data.icon() if stored else null, "text": "Frees its shelf for %s." % keep.title()})
+			title = "Your shelves are full  ·  make room for %s" % keep.title()
 		"rune":
 			for c: CardData in options:
 				if c == null:
@@ -659,9 +671,14 @@ func _on_picked(i: int) -> void:
 				hud.log_line("[System] %s is safe in the Megalopolis warehouse." % g.title(), Color("e0b54d"))
 				player.dress()
 				player.refresh_gear()
-			if phase == Phase.WON:
-				_show_win_results()
-				return
+		"make_room":
+			if _pick_options[i] == null:
+				_left_behind.clear()
+			else:
+				Profile.discard_item(int(_pick_options[i]))
+				Run.city.save_point(_left_behind.pop_front())
+			_make_room()
+			return
 		"rune":
 			var c: CardData = _pick_options[i]
 			if c:
@@ -903,8 +920,23 @@ func _win() -> void:
 	_finish_win()
 
 
+## A clear: everything you wear goes home; finds that don't fit ask for room on the shelves.
 func _finish_win() -> void:
-	_open_port()
+	_left_behind = Run.city.bring_home()
+	hud.log_line("[System] You logged out with everything you wore.", Color("e0b54d"))
+	_make_room()
+
+
+## Full shelves: throw away a stored item to keep the next find, or log out without the rest.
+func _make_room() -> void:
+	if _left_behind.is_empty():
+		_show_win_results()
+		return
+	var shelves: Array = []
+	for i in Profile.warehouse.size():
+		shelves.append(i)
+	shelves.append(null)
+	_start_pick("make_room", shelves)
 
 
 ## A region's boss (not the last) is down: a shard, then on to the next region.

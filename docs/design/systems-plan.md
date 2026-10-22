@@ -223,8 +223,9 @@ Weight, and what doesn't fit is left behind.
   time: a new death replaces it.
 - **Banking:** sending an item home at a Portable Port or a rest stop makes it safe, and you stop wearing
   it for the rest of the run (decided with the user, 2026-10-21), so safety costs power.
-- Worn gear no longer rolls back at a death: it goes into the bag with its progress, and a clear brings it
-  home with its progress. The bag arms once you step clear of it, so one left at a room's spawn is found
+- Worn gear no longer rolls back at a death: it goes into the bag with its progress. **A clear brings home
+  everything you wear** (decided with the user, 2026-10-22): finds onto free shelves, and when the shelves
+  are full the last Port asks what to throw away to make room. The bag arms once you step clear of it, so one left at a room's spawn is found
   by walking onto it.
 - Wardrobe pieces are never at stake.
 - **WT carries gear out of a fall** (decided with the user, 2026-10-22): worn pieces up to WT / 4 in
