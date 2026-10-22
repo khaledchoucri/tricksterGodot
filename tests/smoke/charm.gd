@@ -175,6 +175,7 @@ func run() -> void:
 	await wait(0.5)
 
 	await _card_reach(p)
+	await _one_pair_fan(p)
 
 	# Every Charm skill does its job on a dummy.
 	var skills: Array[CardData] = []
@@ -285,6 +286,44 @@ func _card_reach(p: Player) -> void:
 	check(cast and dummy.hp < before, "a Lv 1 Card Strike hits a monster 190 px away (%d -> %d)%s" % [before, dummy.hp,
 		"" if dummy.hp < before else _why(cast, dummy, p)])
 	Run.deck.cards.erase(&"card_strike")
+	Run.deck.loadout[0] = &""
+	_remove(dummy)
+	await wait(0.3)
+
+
+## One Pair's cards leave together in a tight fan (the user's ~30 degrees at
+## full Lady Luck), centred on the monster aimed at, which they all strike.
+func _one_pair_fan(p: Player) -> void:
+	var throw: GDScript = load("res://scripts/skills/card_throw.gd")
+	var six: Array[float] = throw.fan_angles(6)
+	var two: Array[float] = throw.fan_angles(2)
+	check(is_equal_approx(rad_to_deg(six[5] - six[0]), 30.0) and is_equal_approx(rad_to_deg(two[1] - two[0]), 6.0),
+		"One Pair's fan opens 6 degrees a card, 30 at six cards (%.0f, %.0f)" % [rad_to_deg(two[1] - two[0]), rad_to_deg(six[5] - six[0])])
+	var dummy := await _dummy(p, 110.0)
+	Run.deck.cards[&"one_pair"] = 5
+	Run.deck.cards[&"lady_luck"] = 5  # 4 to 6 cards
+	Run.deck.loadout[0] = &"one_pair"
+	Run.mp = Run.max_mp
+	p.skills.slot_ready_at[0] = 0.0
+	var before := dummy.hp
+	var cast := p.skills.try_cast(0)
+	await get_tree().physics_frame
+	var angles: Array[float] = []
+	var as_cards := true
+	for n in game.room.get_children():
+		if n is ThrownItem:
+			var item := n as ThrownItem
+			angles.append(Combat.ground(item.target_point - p.global_position).angle())
+			as_cards = as_cards and item.cake == "eft_skl_c_301_sut" and not item.homing
+	angles.sort()
+	var spread := rad_to_deg(angles[-1] - angles[0]) if angles.size() > 1 else 0.0
+	await wait(0.8)
+	check(cast and angles.size() >= 4 and angles.size() <= 6 and spread > 10.0 and spread <= 30.5 and dummy.hp < before,
+		"One Pair with Lady Luck throws %d cards together in a %.0f-degree fan, striking the monster ahead (%d -> %d)" % [
+		angles.size(), spread, before, dummy.hp])
+	check(as_cards, "the cards fly as the client's flying card (eft_skl_c_301_sut), each keeping to its line")
+	Run.deck.cards.erase(&"one_pair")
+	Run.deck.cards.erase(&"lady_luck")
 	Run.deck.loadout[0] = &""
 	_remove(dummy)
 	await wait(0.3)

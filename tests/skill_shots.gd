@@ -3,9 +3,16 @@ extends Node
 ## each just after it goes off (spells: after their cast time), plus a card
 ## pick with an upgrade offer and, for mages, a frame mid-cast. Needs a window:
 ##   godot res://tests/skill_shots.tscn -- out=C:/some/folder [class=bunny|sheep|dragon|cat|raccoon]
+## To look at a few skills over time: only=one_pair,full_house (just these),
+## frames=8 (a frame every 0.08 s from the cast), far=1 (the monsters 2.5x as
+## far), with=lady_luck (cards held at Lv 5 alongside).
 
 var out := "user://skill_shots"
 var game: Game
+var _only: PackedStringArray = []
+var _with: PackedStringArray = []
+var _frames := 0
+var _far := 1.0
 
 
 func _ready() -> void:
@@ -13,6 +20,14 @@ func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("out="):
 			out = a.substr(4)
+		elif a.begins_with("only="):
+			_only = a.substr(5).split(",")
+		elif a.begins_with("with="):
+			_with = a.substr(5).split(",")
+		elif a.begins_with("frames="):
+			_frames = int(a.substr(7))
+		elif a.begins_with("far="):
+			_far = 2.5 if a.substr(4) == "1" else 1.0
 	DirAccess.make_dir_recursive_absolute(out)
 	Profile.use_path("user://skill_shots_profile.json", true)
 	for a in OS.get_cmdline_user_args():
@@ -42,7 +57,7 @@ func _shoot() -> void:
 	var line := "magic" if Run.cls.basic_skill else "charm" if Run.cls.id in [&"cat", &"raccoon"] else "power"
 	var ids: Array[StringName] = []
 	for c in Run.deck.all_cards():
-		if c.is_skill() and c.resource_path.begins_with("res://data/skills/%s/" % line):
+		if c.is_skill() and c.resource_path.begins_with("res://data/skills/%s/" % line) and (_only.is_empty() or String(c.id) in _only):
 			ids.append(c.id)
 	var home: Vector2 = game.room.random_spot(Vector2.ZERO, 0.0)
 	for _i in 200:
@@ -51,7 +66,10 @@ func _shoot() -> void:
 			home = spot
 			break
 	var dummies: Array[Enemy] = []
+	var offsets: Array[Vector2] = []
 	for off: Vector2 in [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)]:
+		offsets.append(off * _far)
+	for off: Vector2 in offsets:
 		var e: Enemy = game.room.spawn(&"torobbie", home + off)
 		dummies.append(e)
 	await _wait(0.8)
@@ -65,8 +83,10 @@ func _shoot() -> void:
 			if is_instance_valid(dummies[k]):
 				dummies[k].max_hp = 99999
 				dummies[k].hp = 99999
-				dummies[k].global_position = home + [Vector2(55, 10), Vector2(95, -25), Vector2(80, 45)][k]
+				dummies[k].global_position = home + offsets[k]
 		Run.deck.cards[id] = 3
+		for w: String in _with:
+			Run.deck.cards[StringName(w)] = 5
 		Run.deck.loadout[0] = id
 		p.end_instinct()
 		Run.form = &""
@@ -81,6 +101,10 @@ func _shoot() -> void:
 			Run.deck.add_card(need)
 			p.become_beast()
 			await _wait(0.3)
+		for e: Enemy in game.room.enemies.duplicate():
+			if not e in dummies:  # a straggler would take the hits meant for the dummies
+				game.room.enemies.erase(e)
+				e.queue_free()
 		Run.mp = Run.max_mp
 		p.skills.slot_ready_at[0] = 0.0
 		p.skills.try_cast(0)
@@ -91,6 +115,12 @@ func _shoot() -> void:
 			await _wait(cast_time * 0.4)
 		else:
 			await _wait(cast_time)
+		if _frames > 0:
+			for f in _frames:
+				await _snap("%02d_%s_%02d" % [i, id, f])
+				await _wait(0.08)
+			await _wait(1.0)
+			continue
 		if Run.deck.is_basic(id):
 			await _wait(0.06)
 			await _snap("%02d_%s_flight" % [i, id])  # the projectile on its way

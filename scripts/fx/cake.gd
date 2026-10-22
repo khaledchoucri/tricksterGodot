@@ -13,7 +13,9 @@ extends Node2D
 ## texture (a 43 px smoke puff at 300 is 129 px); "ZAlign" lays a particle flat on
 ## the ground; dispersions scatter a value by up to that share either way;
 ## StartAngle..EndAngle is the starting rotation; Bounding bounces particles
-## off the ground.
+## off the ground; an emitter's first particle comes as it starts, the rest
+## at its EmissionRate (the flying card, eft_skl_c_301_sut, emits one a
+## second and is on screen from the throw).
 
 const DIR := Assets.EFFECTS
 const SORT_Z := {"Ground_Over": -2, "Object_Over": 18, "Map_Over": 20, "UI_Over": 40}
@@ -61,7 +63,7 @@ static func play(parent: Node, name: String, at: Vector2, opts := {}) -> Cake:
 	c.scale = Vector2.ONE * float(opts.get("scale", 1.0))
 	c._loop = String(data.get("play", "")) in ["PlayLoop", "PlayRestart"]
 	for sub: Dictionary in data.get("subs", []):
-		c._subs.append({"cream": sub.cream, "start": float(sub.time), "emitted": 0, "carry": 0.0,
+		c._subs.append({"cream": sub.cream, "start": float(sub.time), "emitted": 0, "carry": 1.0,
 			"particles": [], "sort": String(sub.sort)})
 	parent.add_child(c)
 	c.global_position = at

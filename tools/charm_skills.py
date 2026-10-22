@@ -47,6 +47,14 @@ from skill_trees import NORMAL_HIT, build, job_ids, load, pct_hit  # noqa: E402
 CARD_REACH = 1.35
 
 
+# The client's flying card (eft_skl_c_301_sut) and the throw's landing sound
+# (EtcSound's throw_hit_drow), which ESACardThrow (0x47efc0) and ESAOnePair
+# (0x48b820) play; Card Strike lands with "hit drow", One Pair with its own
+# C_304_one_pair_hit (matched by name).
+CARD_FLIGHT = 'eft_skl_c_301_sut'
+THROW_HIT = 'skill_throw_hit_dorw.wav'
+
+
 def reach(r):
     """An aimed throw's reach: the table's Range x CARD_REACH."""
     return r['Range'] * CARD_REACH
@@ -114,10 +122,13 @@ SPEC = {
     # ---- Card Master (Raccoon)
     '4201': dict(card='card_strike', behavior='card_throw', value=pct_hit, scaling='AP+8HV',
                  rows={'range': reach, 'radius': 'Radius'},
+                 effects={'fl': [CARD_FLIGHT], 'ht': ['hit drow']}, sounds={'ht': THROW_HIT},
                  text='Flick an empty card at the enemy you aim at: {v} damage, splashing those nearby.'),
     '4204': dict(card='one_pair', behavior='card_throw', value=pct_hit, scaling='AP+8HV',
                  rows={'range': reach, 'count': lambda r: 2},
-                 text='Throw a pair of cards at one enemy, {v} damage in all, from further away than Card Strike.'),
+                 effects={'fl': [CARD_FLIGHT]}, sounds={'ht': THROW_HIT},
+                 text='Throw a pair of cards in a tight fan at the enemy you aim at, {v} damage in all, from '
+                      'further away than Card Strike; each card strikes the first enemy on its line.'),
     '4205': dict(card='impelling_rage', behavior='charm_burst', value=pct_hit, scaling='MA',
                  rows={'radius': 'Radius', 'targets': lambda r: 5},
                  text='Force your fighting spirit out: up to {targets} enemies around you are pushed back for {v} damage.'),
@@ -137,7 +148,7 @@ SPEC = {
                  text='Throw a wild handful of Galder (up to 1000, a fifth of it paid): {v} damage per Galder, '
                       'through any defence.'),
     '4210': dict(card='lady_luck', mods={'one_pair.cards_min': 'min', 'one_pair.cards_max': 'value'}, value=lambda r: r['MaxCard'], rows={'min': 'MinCard'},
-                 text='One Pair throws {min} to {v} cards, each adding to the damage.'),
+                 text='One Pair throws {min} to {v} cards in a fan up to 30 degrees wide, each adding to the damage.'),
     '4211': dict(card='mass_destruction', behavior='charm_burst', value=pct_hit, scaling='AP',
                  rows={'radius': 'Radius', 'targets': 'KillNum', 'hp_left': lambda r: r['HpRemainRatio'] * 100},
                  text='Hug a huge bomb as it goes off: up to {targets} enemies around take {v} damage, and you are left '
