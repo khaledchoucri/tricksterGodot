@@ -20,9 +20,10 @@ func start() -> void:
 	var reach := player.gun.range()
 	var dir := GunShot.assisted_aim(self, reach)
 	if card.id == &"shield_breaker":
-		# The breaching round hits as a gun shot plus its breach (Ratio 0.2+).
+		# The breaching round is 100% of a shot plus its breach (Ratio 0.2+),
+		# with the same skill modifiers as the other gun skills.
 		var fx := {"debuffs": {"gunbreak": [card.value_at(level), param("seconds", 5.0)]}}
-		var amount := Run.formulas.GUN_SHOT * (1.0 + card.value_at(level) / 100.0) * Run.formulas.gun_shot_mult()
+		var amount := (100.0 + card.value_at(level)) * Run.formulas.skill_mult(card)
 		GunShot.fire_line(self, dir, reach, amount, false, fx)
 		return
 	var shots := maxi(int(param("count", 1)), 1)
