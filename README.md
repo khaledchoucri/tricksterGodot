@@ -29,7 +29,9 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   BossMonsterparamEx row (four for Tutankhamen and Tombeth), stacked in the client's colours. A boss staggers as
   a bar breaks, then starts its next phase, and steps in with a name card and one of its original lines.
   Tutankhamen calls his three Mads, who buff, shield and heal him, casts Mana Arrow and Rust, calls two Sphinxes
-  at half HP and warps away when you pin him.
+  at half HP and warps away when you pin him. Tombeth hides behind Sturdy Shield (half damage), raises Mana Reflector (10 s
+  in every 30) and casts Magic Meltdown (your MA down); at half HP he rages, drops his guard, and leaps to bring
+  rocks down in an X, each impact marked on the ground first.
 - **Twelve stats in four types**, with traits at their thresholds. There are six run-gear slots with refining
   and compounding, monster dens and shops.
 - **Between runs:** a warehouse (24 shelves, up to 80 with Harkon Shards) whose items you wear in every

@@ -23,26 +23,7 @@ func run() -> void:
 
 	await _boss_bar()
 	await _tutankhamen()
-
-	# The Caballa Relics: the last region's boss room is the Trident Maze, with Tombeth, who
-	# calls Chimu as he loses his first life.
-	await clear_room()
-	Run.route.depth = Run.route.plan.size() - 1
-	game.get_tree().paused = false
-	game.hud.pick_panel.visible = false
-	game._load_room()
-	await wait(3.0)
-	var tombeth: Enemy = null
-	for e: Enemy in enemies():
-		if e.is_boss:
-			tombeth = e
-	check(tombeth is BossTombeth and game.room.data.map == "map_dg03e" and Run.route.final_boss(),
-		"the last boss room is the Trident Maze with Tombeth (%s)" % (tombeth.data.id if tombeth else "no boss"))
-	if tombeth:
-		tombeth.take_hit(int(tombeth.max_hp * 0.36), Vector2.RIGHT, 0.0, true)
-		await wait(1.3)
-		var chimus := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"chimu").size()
-		check(chimus >= 1, "Tombeth calls Chimu as he loses a life (%d)" % chimus)
+	await _tombeth()
 
 	# A monster spell (Magic Meltdown) cuts your MA for a while, shown on the HUD, then wears off.
 	var ma: int = Run.stat("MA")
@@ -264,3 +245,49 @@ func _tutankhamen() -> void:
 		check(float(sx.stats.MD) > float(tut.stats.MD) and sx.damage >= tut._base_damage * 0.6,
 			"Sphinxes resist magic and hit hard (MD %d, hit %d)" % [sx.stats.MD, sx.damage])
 
+
+## Tombeth: four bars, Sturdy Shield, Mana Reflector's 10 s on 30, and the rage at half HP with
+## his leap and the X of falling rocks.
+func _tombeth() -> void:
+	var Run := run_state()
+	var tb := await _boss_room(Run.route.regions.size() - 1) as BossTombeth
+	check(tb != null and game.room.data.map == "map_dg03e" and Run.route.final_boss(),
+		"the last boss room is the Trident Maze with Tombeth")
+	if tb == null:
+		return
+	check(tb.bars == 4, "Tombeth has four bars (%d)" % tb.bars)
+	var before := tb.hp
+	tb.take_hit(100, Vector2.RIGHT, 0.0, true)
+	check(before - tb.hp == 50, "Sturdy Shield halves his hits (%d of 100)" % (before - tb.hp))
+	tb.take_hit(int((tb.hp - tb.bar_hp * 2.9) / 0.5), Vector2.RIGHT, 0.0, true)
+	await wait(Boss.STAGGER_FOR + 0.6)
+	check(tb.reflecting() and absf(tb.reflect_until - tb.now() - 10.0) < 1.0 and absf(tb.reflect_ready_at - tb.now() - 30.0) < 1.0,
+		"from his second bar Mana Reflector holds 10 s on a 30 s cooldown (%.1f, %.1f)"
+		% [tb.reflect_until - tb.now(), tb.reflect_ready_at - tb.now()])
+	game.player.invulnerable_until = 0.0
+	var hp_before: int = Run.hp
+	before = tb.hp
+	tb.take_hit(100, Vector2.RIGHT, 0.0, true, {"magic": true})
+	check(Run.hp < hp_before and before - tb.hp < 50, "a spell on him comes partly back (%d to you, %d to him)"
+		% [hp_before - Run.hp, before - tb.hp])
+	game.player.invulnerable_until = game.player.now() + 999.0
+	await wait(1.0)
+	var chimus := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"chimu").size()
+	check(chimus >= 1, "Tombeth calls Chimu as he loses a bar (%d)" % chimus)
+	var speed := tb.run_speed
+	var dp: float = tb.stats.DP
+	tb.take_hit(int((tb.hp - tb.bar_hp * 1.9) / 0.5), Vector2.RIGHT, 0.0, true)
+	await wait(Boss.STAGGER_FOR + 0.3)
+	check(tb.enraged and not tb.shielded() and tb.run_speed > speed and float(tb.stats.DP) < dp,
+		"at half HP he rages: faster, the shield gone, his DP down (%s, %.0f -> %.0f, DP %d -> %d)"
+		% [tb.enraged, speed, tb.run_speed, dp, tb.stats.DP])
+	var x := tb.x_pattern(Vector2.ZERO)
+	var diagonal := x.all(func(p: Dictionary) -> bool:
+		var g := Combat.ground(p.at)
+		return is_zero_approx(absf(g.x) - absf(g.y)))
+	check(x.size() == 13 and diagonal, "his slam drops 13 rocks on an X across the floor (%d)" % x.size())
+	tb._slam_at = 0.0
+	await wait(1.0)
+	var rocks := game.room.world.get_children().filter(func(n: Node) -> bool: return n is FallingRock).size()
+	var warns := game.room.ground_fx.get_children().filter(func(n: Node) -> bool: return n is Telegraph).size()
+	check(rocks >= 1 and warns >= rocks, "the rocks fall with a mark on the ground under each (%d rocks, %d marks)" % [rocks, warns])

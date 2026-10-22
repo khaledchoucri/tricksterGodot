@@ -397,12 +397,13 @@ func _shoot_desert() -> void:
 			await _snap("21_echoes")
 
 
-## The chunk's bosses: Tutankhamen's name card, his Mads, a bar breaking, half HP with the Sphinxes.
+## The chunk's bosses: Tutankhamen's name card, his Mads, half HP with the Sphinxes; Tombeth's
+## card, Mana Reflector, and his rage with the X of falling rocks.
 func _shoot_bosses() -> void:
 	game = load("res://scenes/game.tscn").instantiate()
 	add_child(game)
 	await _wait(2.0)
-	for region: int in [1]:
+	for region: int in [1, Run.route.regions.size() - 1]:
 		Run.route.depth = Run.route.plan.find_custom(func(p: RoomPlan) -> bool:
 			return p.region == Run.route.regions[region] and p.boss)
 		game._load_room()
@@ -424,13 +425,16 @@ func _shoot_bosses() -> void:
 		await _snap("40_%s_intro" % tag)
 		await _wait(3.5)
 		await _snap("41_%s_first_bar" % tag)
-		boss.take_hit(roundi(boss.hp - boss.bar_hp * 2.6), Vector2.RIGHT, 0.0, true)
+		boss.take_hit(roundi((boss.hp - boss.bar_hp * 2.6) / (0.5 if boss is BossTombeth else 1.0)), Vector2.RIGHT, 0.0, true)
 		await _wait(0.2)
 		await _snap("42_%s_bar_breaks" % tag)
 		await _wait(3.0)
 		await _snap("43_%s_second_bar" % tag)
-		boss.take_hit(roundi(boss.hp - boss.bar_hp * 1.7), Vector2.RIGHT, 0.0, true)
+		boss.take_hit(roundi((boss.hp - boss.bar_hp * 1.7) / (0.5 if boss is BossTombeth else 1.0)), Vector2.RIGHT, 0.0, true)
 		await _wait(Boss.STAGGER_FOR + 1.2)
+		if boss is BossTombeth:
+			(boss as BossTombeth)._slam_at = 0.0
+			await _wait(0.8)
 		await _snap("44_%s_half" % tag)
 		await _wait(2.0)
 		await _snap("45_%s_later" % tag)

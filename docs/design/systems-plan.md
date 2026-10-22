@@ -18,7 +18,8 @@ Built:
   0x79f4e0, in MonsterHPInfoUI.nri's colours); a stagger as a bar breaks, then the next phase; the row's M
   Cure heals; a name card. Monster debuffs on you (Rust, Magic Meltdown) cut a stat for a while.
   Tutankhamen: his Mads (Mad Spirit, Mana Shield, M Cure on him), Mana Arrow, Rust, Mana Storm, two Sphinxes
-  at half HP, M Warp. Numbers sit in `BossData.tune` for the coming Extreme Measures Heat to harden.
+  at half HP, M Warp. Tombeth: Sturdy Shield, Mana Reflector 10 s on 30, Magic Meltdown, the rage at half HP
+  (faster, defences down, Power and Final Blows quick, the leap and the X of falling rocks). Numbers sit in `BossData.tune` for the coming Extreme Measures Heat to harden.
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops. Gear comes from
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,
   written by `tools/gear_items.py` and `tools/gun_items.py`).
