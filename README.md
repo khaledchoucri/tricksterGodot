@@ -64,6 +64,8 @@ live in the git-ignored `original_assets/` folder, generated from your own clien
 
 - `CLAUDE.md`: how the code is written here (cards and monsters are data, sources cited, typed code, tests).
 - `tests/run_smoke.sh [section|character ...]`: the smoke test, under a minute, seeded so results repeat.
+- `godot --headless --path . res://tests/combat/clinch_release.tscn`: map-independent stagger escape checks
+  (also included in the Power smoke section).
 - `tests/baseline.sh record|compare`: smoke results, the progression probe and seeded bots for every
   character, to show a change kept behaviour.
 - `tests/check_generated.sh`: generated data matches its generators.

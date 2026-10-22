@@ -19,6 +19,8 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 ## The sections' scripts (tests/smoke/).
 const CORE := preload("res://tests/smoke/core.gd")
 const POWER := preload("res://tests/smoke/power.gd")
+## Actor-free checks run before the map-dependent Power tests.
+const CLINCH_RELEASE := preload("res://tests/combat/clinch_release.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
 const SENSE := preload("res://tests/smoke/sense.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
@@ -77,6 +79,13 @@ func _on(section: String) -> bool:
 
 func _run() -> void:
 	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
+	if _on("power"):
+		var combat_checks: Node = CLINCH_RELEASE.new()
+		add_child(combat_checks)
+		check(combat_checks.run() == 0, "stagger escape regression checks")
+		combat_checks.free()
+		seed(test_seed)
+		Run.next_seed = test_seed
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	await get_tree().create_timer(2.6).timeout

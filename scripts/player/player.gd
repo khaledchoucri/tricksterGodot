@@ -389,13 +389,12 @@ func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 
-## Clinch Release can be cast while staggered: it cancels the hit.
+## Clinch Release cancels stagger only after a successful cast. A rejected
+## cast must preserve the hit; SkillCaster and the skill own the transition.
 func _clinch_release() -> bool:
 	for i in SkillCaster.SLOT_ACTIONS.size():
 		var c := skills.card_in(i)
 		if c and c.has_tag(&"cast_staggered") and take_buffer(SkillCaster.SLOT_ACTIONS[i]):
-			knock = Vector2.ZERO
-			enter(State.MOVE)
 			return skills.try_cast(i)
 	return false
 
