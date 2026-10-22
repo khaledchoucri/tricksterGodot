@@ -20,6 +20,8 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 const CORE := preload("res://tests/smoke/core.gd")
 const POWER := preload("res://tests/smoke/power.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
+## Shared lingering-skill timing checks need no map.
+const SKILL_WAIT := preload("res://tests/combat/skill_wait.gd")
 const SENSE := preload("res://tests/smoke/sense.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
 const CHARM := preload("res://tests/smoke/charm.gd")
@@ -77,6 +79,11 @@ func _on(section: String) -> bool:
 
 func _run() -> void:
 	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
+	if _on("magic"):
+		var wait_checks: Node = SKILL_WAIT.new()
+		add_child(wait_checks)
+		check(await wait_checks.run() == 0, "skill pause/resume regression checks")
+		wait_checks.free()
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	await get_tree().create_timer(2.6).timeout

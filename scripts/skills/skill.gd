@@ -108,15 +108,19 @@ func alive() -> bool:
 
 ## Waits `seconds` (one physics frame when 0) on the game's clock; false when
 ## the caster's game is gone by then, so a lingering skill stops instead of
-## touching freed nodes. Use as `if not await wait_for(t): ...`.
+## touching freed nodes. Both paths suspend during pause, like Events.time.
+## Use as `if not await wait_for(t): ...`.
 func wait_for(seconds := 0.0) -> bool:
 	if not alive():
 		return false
 	var tree := player.get_tree()
 	if seconds > 0.0:
-		await tree.create_timer(seconds).timeout
+		await tree.create_timer(seconds, false, true).timeout
 	else:
 		await tree.physics_frame
+		# physics_frame still emits while the tree is paused.
+		while tree.paused and alive():
+			await tree.physics_frame
 	return alive()
 
 
