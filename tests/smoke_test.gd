@@ -22,6 +22,8 @@ const POWER := preload("res://tests/smoke/power.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
 const SENSE := preload("res://tests/smoke/sense.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
+## Burn lifecycle checks do not require a map.
+const BURN_EXPIRY := preload("res://tests/smoke/burn_expiry.gd")
 const CHARM := preload("res://tests/smoke/charm.gd")
 const TALENTS := preload("res://tests/smoke/talents.gd")
 const BALANCE := preload("res://tests/smoke/balance.gd")
@@ -65,6 +67,8 @@ func _ready() -> void:
 				get_tree().quit(2)
 				return
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
+	if _on("elements"):
+		_section(BURN_EXPIRY).run()
 	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
 	Run.next_seed = test_seed
 	_run.call_deferred()
