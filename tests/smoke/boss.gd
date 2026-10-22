@@ -40,6 +40,17 @@ func run() -> void:
 		var chimus := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"chimu").size()
 		check(chimus >= 1, "Tombeth calls Chimu as he loses a life (%d)" % chimus)
 
+	# A monster spell (Magic Meltdown) cuts your MA for a while, shown on the HUD, then wears off.
+	var ma: int = Run.stat("MA")
+	Run.apply_debuff("MA", 30.0, 0.5, "Magic Meltdown")
+	game.hud.refresh(game.player)
+	var label: Label = game.hud.get_node("%DebuffLabel")
+	check(absi(Run.stat("MA") - roundi(ma * 0.7)) <= 1, "Magic Meltdown cuts your MA by 30%% (%d -> %d)" % [ma, Run.stat("MA")])
+	check(label.visible and label.text.contains("Magic Meltdown"), "the HUD shows it (%s)" % label.text)
+	await wait(0.7)
+	game.hud.refresh(game.player)
+	check(Run.stat("MA") == ma and not label.visible, "and it wears off (%d)" % Run.stat("MA"))
+
 	# A lingering spell outlives its room (a run ending, a room change) cleanly:
 	# the field's end effect used to wait on a freed player and error.
 	check(Enemy.projectile_scene().instantiate() is Projectile, "monster shots load (Tutankhamen's curse once got an empty scene)")

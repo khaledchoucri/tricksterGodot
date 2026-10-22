@@ -89,6 +89,19 @@ func refresh(player: Player) -> void:
 		sheet.refresh()
 	if is_instance_valid(player):
 		%DashLabel.text = "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
+	_refresh_debuffs()
+
+
+## The monster spells cutting your stats (Rust, Magic Meltdown), with the time they have left.
+func _refresh_debuffs() -> void:
+	var parts: PackedStringArray = []
+	for k: String in Run.debuffs:
+		var d: Dictionary = Run.debuffs[k]
+		var left := float(d.until) - Events.time
+		if left > 0.0:
+			parts.append("%s  %s -%d%%  %ds" % [d.name, k, roundi(float(d.percent)), ceili(left)])
+	%DebuffLabel.visible = not parts.is_empty()
+	%DebuffLabel.text = "  ·  ".join(parts)
 
 
 ## The type the class grows in most (Power for Buffalo and Bunny).

@@ -38,6 +38,9 @@ var barrier := 0
 var barrier_back_at := 0.0
 ## Revival (2221): when it can bring you back again.
 var revival_ready_at := 0.0
+## Monster spells on you that cut a stat for a while (Tutankhamen's Rust, Tombeth's Magic
+## Meltdown): stat key -> {"percent", "until", "name"}, on the game clock.
+var debuffs: Dictionary = {}
 var hub: HubData
 var cls: ClassData
 var classes: Array[ClassData] = []
@@ -180,6 +183,7 @@ func new_run(with_seed := -1) -> void:
 	barrier = 0
 	barrier_back_at = 0.0
 	revival_ready_at = 0.0
+	debuffs.clear()
 	bonus_hp = 0
 	form = &""
 	instinct = false
@@ -242,6 +246,8 @@ static func raw_hit(s: Dictionary) -> float:
 ## A stat's total: class base, automatic growth along the class's type
 ## graph, chosen type points, gear, restorations.
 func stat(key: String) -> int:
+	if not debuffs.is_empty():
+		_expire_debuffs()
 	if _stats.is_empty():
 		_compute_stats()
 	return _stats.get(key, 0)
@@ -270,8 +276,36 @@ func _compute_stats() -> void:
 	for key: String in Mod.STAT_FLAT:
 		s[key] += mod(key)
 	_form_stats(s)
+	for k: String in debuffs:
+		s[k] *= 1.0 - float(debuffs[k].percent) / 100.0
 	for k: String in s:
 		_stats[k] = maxi(0, floori(s[k]))
+
+
+## A monster spell cuts your `key` stat by `percent` % for `seconds` (the stronger cut wins
+## while both last; a recast refreshes it). `name` is the spell's, for the HUD.
+func apply_debuff(key: String, percent: float, seconds: float, name: String) -> void:
+	var held: Dictionary = debuffs.get(key, {})
+	var pct := maxf(percent, float(held.get("percent", 0.0))) if not held.is_empty() else percent
+	debuffs[key] = {"percent": pct, "until": Events.time + seconds, "name": name}
+	stats_changed()
+
+
+## The cut on `key` while it lasts, in %, else 0.
+func debuff(key: String) -> float:
+	var d: Dictionary = debuffs.get(key, {})
+	return float(d.percent) if not d.is_empty() and Events.time < float(d.until) else 0.0
+
+
+func _expire_debuffs() -> void:
+	var gone: Array[String] = []
+	for k: String in debuffs:
+		if Events.time >= float(debuffs[k].until):
+			gone.append(k)
+	for k in gone:
+		debuffs.erase(k)
+	if not gone.is_empty():
+		_stats.clear()
 
 
 ## The beast forms' stat changes (ESAction_WildMutation, _Change, _Beast):
