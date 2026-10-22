@@ -17,8 +17,8 @@ var step := 0
 ## Aim locked in for the current swing.
 var swing_aim := Vector2.RIGHT
 
-var _t := 0.0
-var _window := -1
+var _t := 0.0  # accumulated swing time at normal speed
+var _hits_by_window: Dictionary[int, Array] = {}
 var _hit_this_window: Array[Enemy] = []
 
 @onready var player: Player = get_parent()
@@ -31,7 +31,8 @@ func _steps() -> Array[ComboStep]:
 func start(index: int) -> void:
 	step = index
 	_t = 0.0
-	_window = -1
+	_hits_by_window.clear()
+	_hit_this_window = []
 	var s := _steps()[index]
 	player.enter(Player.State.ATTACK)
 	swing_aim = player.aim  # each swing commits to the aim it started with
@@ -43,22 +44,25 @@ func start(index: int) -> void:
 	Audio.play(s.sound, -6.0)
 
 
-## Runs one physics frame of the current swing.
+## Resolves every hit window crossed by this frame. Each window retains its own
+## targets, and speed changes advance swing time without rewinding prior hits.
 func update(delta: float) -> void:
-	_t += delta
 	var s := _steps()[step]
 	var speed := Run.formulas.attack_speed_mult()
-	var t := _t * speed  # swing time at normal speed
+	var previous := _t
+	_t += delta * speed
+	var t := _t
 	var lunge := s.lunge if t < s.windows[s.windows.size() - 1].y else 0.0
 	player.velocity = Combat.screen(swing_aim) * lunge + player.knock
 	for i in s.windows.size():
 		var w := s.windows[i]
-		if t >= w.x and t <= w.y:
-			if _window != i:
-				_window = i
-				_hit_this_window.clear()
+		if t >= w.x and previous < w.y:
+			if not _hits_by_window.has(i):
+				var hits: Array[Enemy] = []
+				_hits_by_window[i] = hits
 				if s.slash:
 					_spawn_slash(s, (w.y - w.x) / speed)
+			_hit_this_window = _hits_by_window[i]
 			_apply(s)
 	if t >= s.dash_cancel and player.take_buffer("dash") and player.can_dash():
 		player.start_dash()

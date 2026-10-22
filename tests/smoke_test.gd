@@ -17,6 +17,8 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 
 
 ## The sections' scripts (tests/smoke/).
+## Combo timing checks run without an exported map.
+const COMBO_WINDOWS := preload("res://tests/smoke/combo_windows.gd")
 const CORE := preload("res://tests/smoke/core.gd")
 const POWER := preload("res://tests/smoke/power.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
@@ -68,6 +70,9 @@ func _ready() -> void:
 	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
 	Run.next_seed = test_seed
 	_run.call_deferred()
+	# Synchronous fixture checks finish before the deferred game boot.
+	if _on("power"):
+		_section(COMBO_WINDOWS).run()
 
 
 ## Whether a section runs: every one, or those picked on the command line.
