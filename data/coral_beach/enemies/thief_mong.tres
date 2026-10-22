@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/yellow_monkey_fur.tres" id="m_mat"]
+[ext_resource type="Resource" path="res://data/attacks/melee.tres" id="atk"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"thief_mong"
+display_name = "Thief Mong"
+monster_id = "2189"
+attack = ExtResource("atk")
+body_radius = 13.0
+cost = 2
+min_depth = 99
+hp_mult = 0.5
+steal_galder = 12
+material = ExtResource("m_mat")

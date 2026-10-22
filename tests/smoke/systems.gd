@@ -385,7 +385,7 @@ func run(Run: Node) -> void:
 	Profile.restorations["card_house"] = 1
 	var boss_cards := 0
 	for _i in 40:
-		boss_cards += 1 if Run.purse.roll_card(&"golden_mole", false, true) else 0
+		boss_cards += 1 if Run.purse.roll_card(&"master_mong", false, true) else 0
 	check(boss_cards > 8 and boss_cards < 32, "bosses drop their cards half the time (%d / 40)" % boss_cards)
 	var shore: CardSetData = Run.hub.card_sets.filter(func(s: CardSetData) -> bool: return s.id == &"shore_critters")[0]
 	for m in shore.monsters:

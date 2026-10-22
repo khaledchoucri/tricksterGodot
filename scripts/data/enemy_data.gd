@@ -29,6 +29,8 @@ extends Resource
 @export var echo := false
 @export var stats_override: Dictionary = {}
 @export var runes: Array[CardData] = []
+## Galder a hit that lands takes from you, all given back when it dies (Thief Mong's theft).
+@export var steal_galder := 0
 ## Signature drop for compounding, and the chance a kill drops one.
 @export var material: MaterialData
 @export var material_chance := 0.2

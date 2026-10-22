@@ -145,6 +145,10 @@ func _ready() -> void:
 	sprite.modulate.a = 0.0
 
 
+## Galder this monster has stolen from you (EnemyData.steal_galder), returned when it dies.
+var stolen := 0
+## The colour of a theft and its return over your head.
+const STOLEN_COLOR := Color(0.95, 0.8, 0.3)
 ## When the player first landed a hit and how many hits it took (tuning data).
 var first_hit_at := -1.0
 var hits_taken := 0
@@ -450,7 +454,10 @@ func _state_attack() -> void:
 				hit = Combat.in_circle(global_position, player.global_position, body_radius + 14.0)
 		if hit and not player.is_invulnerable():
 			_attack_landed = true
+			var hp_before := Run.hp
 			player.take_hit(damage, Combat.ground(player.global_position - global_position).normalized(), 220.0, false, accuracy(), self)
+			if data.steal_galder > 0 and Run.hp < hp_before:
+				_steal()
 	if _t >= _state_len:
 		room.release_attack_token(self)
 		_enter(State.RECOVER, attack.recover)
@@ -527,7 +534,24 @@ func _cancel_attack() -> void:
 		_telegraph.queue_free()
 
 
+## A thief's hit: takes up to `steal_galder` of your Galder, to give back when it dies.
+func _steal() -> void:
+	var took := mini(data.steal_galder, Run.purse.galder)
+	if took <= 0:
+		return
+	Run.purse.galder -= took
+	stolen += took
+	Events.text_shown.emit(player.global_position + Vector2(0, -90), "-%d Galder" % took, STOLEN_COLOR)
+	Events.loot_found.emit("%s stole %d Galder!" % [display_name, took])
+	Audio.play("etc_money.wav", -8.0)
+
+
 func _die(dir: Vector2) -> void:
+	if stolen > 0:
+		Run.purse.galder += stolen
+		Events.text_shown.emit(global_position + Vector2(0, -60), "+%d Galder" % stolen, STOLEN_COLOR)
+		Events.loot_found.emit("Got back %d Galder from %s." % [stolen, display_name])
+		stolen = 0
 	_cancel_attack()
 	_enter(State.DEAD)
 	collision_layer = 0

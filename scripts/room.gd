@@ -16,7 +16,6 @@ const MAX_SHOOTERS := 2
 ## Physics layers: 1 map obstacles, 2 player, 3 enemies, 4 room boundary.
 const BOUNDARY_LAYER_BIT := 8
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
-const BOSS_SCENE := preload("res://scenes/boss_mole.tscn")
 const DOOR_SCENE := preload("res://scenes/door.tscn")
 ## Points on an actor's body, relative to its feet, checked for being hidden.
 const BODY_POINTS: Array[Vector2] = [Vector2(0, -6), Vector2(0, -26), Vector2(0, -46), Vector2(-9, -26), Vector2(9, -26)]
@@ -408,7 +407,7 @@ func spawn_with_warning(id: StringName, at: Vector2, delay: float, elite := fals
 
 func spawn(id: StringName, at: Vector2, elite := false) -> Enemy:
 	var enemy_data := Run.route.enemy(id)
-	var scene: PackedScene = enemy_data.scene if enemy_data.scene else (BOSS_SCENE if enemy_data.is_boss else ENEMY_SCENE)
+	var scene: PackedScene = enemy_data.scene if enemy_data.scene else ENEMY_SCENE
 	var e: Enemy = scene.instantiate()
 	e.configure(enemy_data, Run.formulas.monster_stats(enemy_data), elite)
 	e.room = self

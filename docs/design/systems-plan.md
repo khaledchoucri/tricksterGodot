@@ -11,8 +11,8 @@ Built:
   supplements change their skill.
 - Three regions (Coral Beach, Desert Beach, Caballa Relics), nine rooms and a boss each, elites at the 4th and
   8th rooms, played in the 1st job (a chunk's clear opens the next job for that character). A rest stop at the original's gate follows the
-  first two bosses (32 rooms): half of max HP and MP back, Keeper Julio and the warehouse swap. 23 monsters with five attack patterns, three bosses
-  (the Golden Mole, Tutankhamen, Tombeth).
+  first two bosses (32 rooms): half of max HP and MP back, Keeper Julio and the warehouse swap. 24 monsters with five attack patterns, three bosses
+  (Master Mong with his Thief Mongs, Tutankhamen, Tombeth).
 - Six run-gear slots, refining, compounding with monster materials, monster dens and shops. Gear comes from
   the original item tables in tiers up to level 65 (the Relics get the original's level-50 and level-65 lines,
   written by `tools/gear_items.py` and `tools/gun_items.py`).

@@ -32,10 +32,6 @@ The original Buffalo sprite has attack, cast and throw poses only for se, sw, nw
 
 Skill sounds (`SKILL_SOUNDS` in `tools/setup_assets.py`) were assigned from file names without listening; reassign any that don't fit. Lightning Strike's icon (SkillParam2 1211) isn't in the client, so its slot shows an empty tile.
 
-## Golden Mole uses placeholder dialogue
-
-`scripts/boss_mole.gd` speaks placeholder lines. Export the boss's original lines from the client tables (into `original_assets/`) or write new ones for the story.
-
 ## Faint stripes around some grass areas in decoded maps
 
 A few faint lines remain around some grass patches in `ground.png`, likely a decal or tile-flag case `tools/trickster_map.py` doesn't handle yet. Low priority: the original maps are placeholders.

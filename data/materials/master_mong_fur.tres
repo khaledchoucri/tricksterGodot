@@ -4,10 +4,10 @@
 
 [resource]
 script = ExtResource("1_s")
-id = &"duck_mole_paws"
-display_name = "Duck Mole's Paws"
-item_id = 10233
-weight = 5
+id = &"master_mong_fur"
+display_name = "Master Mong's Fur"
+item_id = 63354
+weight = 10
 stat = "HV"
 min_value = 2
 max_value = 5

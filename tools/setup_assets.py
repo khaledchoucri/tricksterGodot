@@ -110,11 +110,13 @@ SOUNDS = [
     'etc_critical.wav', 'eff_energy.wav', 'eff_healing1.wav', 'etc_levelup.wav', 'etc_money.wav',
     'etc_mon_death.wav', 'etc_warp.wav', 'etc_warpzone.wav', 'etc_monq_complete.wav',
     'ui_card.wav', 'ui_btn_ok.wav', 'ui_unique_get.wav', 'guild_battlewin.wav',
-    'sgmon103.wav', 'sdmon103.wav', 'samon021.wav', 'bgs_beach.wav', 'bgs_cave01.wav',
+    'sdmon103.wav', 'samon021.wav', 'bgs_beach.wav', 'bgs_cave01.wav',
     'weapon002.wav', 'weapon003.wav', 'etc_item1.wav', 'ui_refine_proceed.wav', 'ui_refine_success.wav',
     'ui_refine_fail.wav', 'ui_compose_success.wav', 'bgs_blacksmith.wav', 'bgs_sandwind.wav',
     'bgs_pyramid_loop_evening.wav', 'bgs_forest.wav', 'snd_ui_crazydrill_boom.wav', 'ui_drillboy1.wav', 'ui_drillboy2.wav',
     'bgs_night_sea.wav', 'bgs_softwind.wav',  # MapSound_Beach and _Relics: the gates' ambience
+    # Master Mong's attack and BossSound's bv_mon281 (his voice).
+    'samon281.wav', 'snd_bv_mon281.wav',
 ]
 # From data/sound/skillsound.
 SKILL_SOUNDS = [

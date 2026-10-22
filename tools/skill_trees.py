@@ -74,7 +74,7 @@ FIRST_JOBS = {'schoolgirl', 'fighter', 'librarian', 'shaman', 'archeologist', 'e
 # Master Louis's material for each card (the original's are monster drops
 # from SkillMasterInfo, most of which aren't in the game yet).
 MATERIALS = ['sharp_leg', 'eye_drop', 'hard_scales', 'scorpion_sting', 'cooling_fan', 'acorn_nut',
-             'cool_ice', 'cool_spring_water', 'duck_mole_paws', 'bronze_scarab', 'nemeth_towel', 'shawabti',
+             'cool_ice', 'cool_spring_water', 'master_mong_fur', 'bronze_scarab', 'nemeth_towel', 'shawabti',
              'cocos_shell', 'sand_glass', 'slime_husk', 'turban_shell', 'twinkle_star', 'ugly_pearl']
 
 # Fallback sounds by element for skills SkillSound has none for (the

@@ -92,13 +92,13 @@ The game starts in Megalopolis Square, the city of a world whose servers have ju
 
 Each run replays a career: Buffalo starts as a level-1 **Fighter** with a Rookie Sword and Shockwave, and crosses two regions (16 rooms).
 
-- **Coral Beach.** Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then the Real Golden Mole in the Dark Cave.
+- **Coral Beach.** Seven combat rooms from the Blue Wave, Passionate Sun, Sunny Beach and Hidden Shore maps, then Master Mong in the Dark Cave. He storms where you stand, raises Mana Shield and, on his last life, throws Mana Rings and Cures himself; three Thief Mongs come with him and five more at half HP, and a Thief Mong that hits you steals Galder until you kill it.
 - **Desert Beach.** Seven rooms on Delta Island, the Statue of Anubis and Parasol River.
   - Original monsters at levels 18–33: Fanta Slime, Shell Trap, Golden Mole, Sea Scorpion, Pineapple, Fan Lizard, Sand Demon and Cannon Shell.
   - Then **Tutankhamen** at the Pyramid Steps. He slams up close, fans curse bolts at range, drops three sand coffins around you, and calls Basic Mummies at 66% and 33% HP. He can drop the legendary **Golden Sword** (Pharaoh's Gold: hits can scatter Galder).
   - Desert Beach gear is the original level 25–40 items.
   - Level sync allows +6 here.
-- Beating the Golden Mole gives a Harkon Shard and a Portable Port before Desert Beach.
+- Beating Master Mong gives a Harkon Shard and a Portable Port before Desert Beach.
 - Rooms 4 and 7 of each region add elite monsters, and elites also drop gear.
 - **Room 4 is the Fighter's trial.** Clearing it changes job to **Knight**: you become the Knight, the Knight skill tree joins the card offers, and you pick a Knight skill.
 - Clearing a room grants the reward shown on the door you came through: a skill card, a card upgrade, **equipment**, an **anvil**, a **Compounder**, a **shop**, healing, Galder (with Bronze Fragments) or a Harkon Shard.
@@ -247,7 +247,8 @@ The Buffalo and Bunny lines have all 43 of Trickster's Power skills, generated b
 | Blue Penguin | Cool Ice | Water attack |
 | Bustshell | Hard Scales | DP |
 | Clione | Cool Spring Water | MD |
-| Golden Mole | Duck Mole's Paws | HV |
+| Thief Mong | Yellow Monkey Fur | DX |
+| Master Mong | Master Mong's Fur | HV |
 
 - **Compound slots.** Gear has the original item's compound slots. Drops can roll one more slot, and Shrewd items always do.
 - **Compounder rooms** put 3–4 of one material into a free slot. The stat rolls in the material's range (the original ranges where the item existed), leaning toward the middle, with DA raising it.

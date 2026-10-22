@@ -7,5 +7,5 @@
 script = ExtResource("1_s")
 id = &"coral_beach"
 display_name = "Coral Beach"
-monsters = Array[StringName]([&"torobbie", &"tottochi", &"little_cora", &"bad_fury", &"blue_penguin", &"bustshell", &"clione", &"golden_mole"])
+monsters = Array[StringName]([&"torobbie", &"tottochi", &"little_cora", &"bad_fury", &"blue_penguin", &"bustshell", &"clione", &"thief_mong", &"master_mong"])
 reward = ExtResource("2_w")
