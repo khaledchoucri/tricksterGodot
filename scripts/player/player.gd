@@ -141,6 +141,10 @@ static func dress_sprite(s: ActorSprite) -> void:
 	for slot: String in ["hat", "shield"]:
 		var g := Run.gear.equipped(slot)
 		s.wear(slot, g.data.worn_sprite() if g else "")
+	var shield_pose := s.worn_item("shield") != ""
+	if shield_pose != s.shield_pose:
+		s.shield_pose = shield_pose
+		s.play_action(s.action if s.action != "" else "idle", s.facing, 0.0, true)
 	# A carried gun is worn too: the pivots place it in the gun poses.
 	var held := Run.gear.equipped("weapon")
 	s.wear("gun", held.data.worn_sprite() if held and Run.gear.carries_gun() else "")

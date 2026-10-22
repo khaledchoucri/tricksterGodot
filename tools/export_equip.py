@@ -4,8 +4,9 @@ they sit on a character, frame by frame.
 Trickster draws worn items as separate sprites over (or under) the body. An
 item's .nri holds one animation whose frames are the item seen from each
 angle; the character's pivot file (.pvo, see pivots.py) says, for every
-body frame, where the item's origin goes, which of its frames to draw and
-whether it goes behind the body.
+body frame, where the item's origin goes, which of its frames to draw and its
+depth: under the body below pivots.BODY_DEPTH, over it at or above, and items
+in depth order (a hat's 105 over a mask's 100, ears' 120 over both).
 
 usage: python -I export_equip.py <client dir> <actor out dir> <actor name> <chr.pvo> <item.nri>...
 
@@ -13,7 +14,7 @@ Writes, for each item, original_assets/equip/<item>.png (its frames side by
 side) and .json ({"frames": [[x, w, h, ox, oy]...]}: where each frame sits in
 the strip, its size, and its top-left relative to the item's origin), and for
 the actor <actor out dir>/<name>_equip.json:
-    {"groups": {group: {animation: [[x, y, item_frame, front] or 0 per frame]}},
+    {"groups": {group: {animation: [[x, y, item_frame, depth, scale_x %] or 0 per frame]}},
      "items": {item: group}}
 Items that share pivots (most hats share hat001's) share a group. Needs the
 actor's manifest from export_actor.py, which records each frame's source.
@@ -26,11 +27,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import nori  # noqa: E402
 import pivots  # noqa: E402
 from export_actor import blit, write_png  # noqa: E402
-
-# Kinds always drawn over the body: they sit on the head, so even seen from
-# behind they cover it. Shields and tails follow the pivot's layer byte.
-ALWAYS_FRONT = ('hat', 'face', 'head', 'ear')
-
 
 def export_item(path, out_dir):
     """Writes <out_dir>/<stem>.png and .json; returns the frame count (0 if empty)."""
@@ -90,8 +86,7 @@ def main():
         if not os.path.exists(os.path.join(equip_dir, stem + '.json')) and not export_item(path, equip_dir):
             print(f'{name}: {fname} has no frames, skipped')
             continue
-        kind = stem.split('_')[0].rstrip('0123456789')
-        key = (id(recs), kind in ALWAYS_FRONT)
+        key = id(recs)
         if key not in by_records:
             table = {}
             for act, info in manifest['actions'].items():
@@ -100,8 +95,7 @@ def main():
                     for f in frames:
                         rec = recs.get(tuple(f['src'])) if 'src' in f else None
                         if rec:
-                            front = 1 if kind in ALWAYS_FRONT else (1 if rec[3] else 0)
-                            row.append([rec[0], rec[1], rec[2], front])
+                            row.append(list(rec))
                         else:
                             row.append(0)
                     table[f'{act}_{d}'] = row

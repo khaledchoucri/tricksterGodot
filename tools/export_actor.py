@@ -12,7 +12,8 @@ usage:
 With --pivots, each frame that holds a weapon gets a hand socket in the
 manifest ("hand": [x, y] from the feet, "front": drawn over the body), taken
 from the character's pivot file (see pivots.py), and the "equipped" versions
-of idle, walk, run and combat stance replace the empty-handed ones. The weapon
+of idle, walk, run and combat stance replace the empty-handed ones (without
+--pivots they are kept as "<action>_equipped", the shield-wearing poses). The weapon
 itself is a separate sprite (export_weapon.py) that the game attaches to the
 socket, so any weapon fits and it can point in any direction.
 
@@ -32,6 +33,9 @@ import pivots  # noqa: E402
 
 EQUIPPED = '장비'  # title suffix of the poses that hold a weapon
 GUN = '총'  # title suffix of the poses that hold a gun (Sense characters): their own actions
+# Suffix of the actions exported from the equipped poses of a character without
+# hand sockets (ActorSprite.SHIELD_POSE plays them while a shield is worn).
+SHIELD_POSE = '_equipped'
 
 ACTIONS = {
     '서있기': 'idle', '정지': 'idle', '자동행동1': 'idle_auto', '걷기': 'walk', '달리기': 'run', '피격': 'hit', '기절': 'faint',
@@ -127,7 +131,10 @@ def main():
             continue
         act, d, equipped = parsed
         if equipped and not places:
-            continue
+            # Without hand sockets (the punchers) the equipped poses become
+            # actions of their own, played while a shield is worn: the pivot
+            # files place shields on them, not on the empty-handed idle.
+            act += SHIELD_POSE
         dirs = groups.setdefault(act, {})
         if equipped or d not in dirs:
             dirs[d] = (i, a)
@@ -171,7 +178,7 @@ def main():
                 place = places.get((ai, c))
                 if place:
                     entry['hand'] = [place[0], place[1]]
-                    entry['front'] = place[3] != 0
+                    entry['front'] = place[3] >= pivots.BODY_DEPTH
                 frames.append(entry)
             info['dirs'][d] = frames
         write_png(os.path.join(args.out_dir, info['sheet']), sw, sh, bytes(sheet))

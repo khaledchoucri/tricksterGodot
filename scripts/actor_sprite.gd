@@ -14,6 +14,14 @@ extends AnimatedSprite2D
 ## frame from the original pivot tables (tools/export_equip.py).
 
 const PALETTE_SHADER := preload("res://shaders/palette.gdshader")
+## The body's depth in the pivot tables (tools/pivots.py): a worn item at or
+## above it draws over the body, below it under the body, and items stack in
+## depth order (hats 105, head pieces 110, ears 120; a shield 95 to 105 as it swings).
+const BODY_DEPTH := 100
+## Suffix of the equipped poses of a character without hand sockets (the
+## punchers): "idle_equipped" is played for "idle" while shield_pose is on,
+## since the pivot files place shields only on those (tools/export_actor.py).
+const SHIELD_POSE := "_equipped"
 const EQUIP_DIR := Assets.EQUIP
 
 const DIRS: Array[String] = ["e", "se", "s", "sw", "w", "nw", "n", "ne"]
@@ -27,6 +35,8 @@ var action := ""
 ## Draw the left-facing directions by mirroring the right ones even when
 ## left-facing art exists (to compare the two).
 var prefer_mirror := false
+## Play the equipped poses where the art has them (a worn shield needs them).
+var shield_pose := false
 
 var _anchor := Vector2.ZERO
 var _cell := Vector2.ZERO
@@ -35,7 +45,7 @@ var _stop_at := -1  # frame to hold on when playing part of a clip
 var _last_dir: Dictionary = {}  # action -> direction last used, for tie-breaking
 var _palette: Dictionary = {}   # {"base": [[r, g, b] x256], "parts": {"w13": {index: [r, g, b]}}}
 var _palette_tex: ImageTexture
-var _equip: Dictionary = {}     # {"groups": {group: {animation: [[x, y, frame, front] or 0]}}, "items": {item: group}}
+var _equip: Dictionary = {}     # {"groups": {group: {animation: [[x, y, frame, depth, scale_x %] or 0]}}, "items": {item: group}}
 var _worn: Dictionary = {}      # slot -> {"item", "sprite": Sprite2D, "frames": Array, "group": String}
 
 
@@ -142,8 +152,9 @@ func play_action(act: String, v := Vector2.ZERO, duration := 0.0, restart := fal
 		return
 	if v != Vector2.ZERO:
 		facing = v.normalized()
-	var pick := dir_for(act, facing)
-	var anim := "%s_%s" % [act, pick[0]]
+	var clip := act + SHIELD_POSE if shield_pose and has_action(act + SHIELD_POSE) else act
+	var pick := dir_for(clip, facing)
+	var anim := "%s_%s" % [clip, pick[0]]
 	flip_h = pick[1]
 	# A flipped frame mirrors inside its cell; keep the feet on the same spot.
 	offset = Vector2(_anchor.x - _cell.x if flip_h else -_anchor.x, -_anchor.y)
@@ -154,7 +165,7 @@ func play_action(act: String, v := Vector2.ZERO, duration := 0.0, restart := fal
 		var count := sprite_frames.get_frame_count(anim)
 		share = float(absi(frames[1] - frames[0]) + 1) / count
 		_stop_at = clampi(frames[1], 0, count - 1)
-	speed_scale = lengths[act] * share / duration if duration > 0.0 else 1.0
+	speed_scale = lengths[clip] * share / duration if duration > 0.0 else 1.0
 	if animation == anim and is_playing() and not restart and frames.is_empty():
 		return
 	stop()
@@ -260,6 +271,7 @@ func worn_shown(slot: String) -> bool:
 
 
 func _place_worn() -> void:
+	var by_depth: Array = []  # [depth, Sprite2D] of the items shown on this frame
 	for slot: String in _worn:
 		var w: Dictionary = _worn[slot]
 		var s: Sprite2D = w.sprite
@@ -271,9 +283,19 @@ func _place_worn() -> void:
 		var f: Array = w.frames[int(rec[2])]
 		s.visible = true
 		s.region_rect = Rect2(f[0], 0, f[1], f[2])
-		var at := Vector2(float(rec[0]) + float(f[3]), float(rec[1]) + float(f[4]))
+		# Reading: the pivot's width percent squeezes the item about its origin
+		# (a shield turned edge-on in a bard's side view).
+		var sx := float(rec[4]) / 100.0 if rec.size() > 4 else 1.0
+		s.scale = Vector2(sx, 1.0)
+		var at := Vector2(float(rec[0]) + float(f[3]) * sx, float(rec[1]) + float(f[4]))
 		s.flip_h = flip_h
 		if flip_h:
-			at.x = -at.x - float(f[1])
+			at.x = -at.x - float(f[1]) * sx
 		s.position = at
-		s.show_behind_parent = int(rec[3]) == 0
+		var depth := int(rec[3])
+		s.show_behind_parent = depth < BODY_DEPTH
+		by_depth.append([depth, s])
+	# Children draw in order, so the deepest goes first.
+	by_depth.sort_custom(func(a: Array, b: Array) -> bool: return int(a[0]) < int(b[0]))
+	for entry: Array in by_depth:
+		move_child(entry[1] as Node, -1)

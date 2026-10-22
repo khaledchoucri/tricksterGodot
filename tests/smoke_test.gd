@@ -10,7 +10,7 @@ extends Node
 
 ## The sections, in the order they run.
 const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "talents", "balance", "ui", "rest", "boss",
-	"systems", "lint"]
+	"systems", "art", "lint"]
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
@@ -29,6 +29,7 @@ const UI := preload("res://tests/smoke/ui.gd")
 const BOSS := preload("res://tests/smoke/boss.gd")
 const SYSTEMS := preload("res://tests/smoke/systems.gd")
 const REST := preload("res://tests/smoke/rest.gd")
+const ART := preload("res://tests/smoke/art.gd")
 const LINT := preload("res://tests/smoke/lint.gd")
 
 ## The sections picked on the command line; empty runs them all.
@@ -113,6 +114,8 @@ func _run() -> void:
 		await _section(BOSS).run()
 	if _on("systems"):
 		_section(SYSTEMS).run(get_node("/root/Run"))
+	if _on("art"):
+		_section(ART).run()
 	if _on("lint"):
 		_section(LINT).run()
 
