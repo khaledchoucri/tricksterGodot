@@ -5,6 +5,11 @@ extends SmokeSection
 
 ## The first room builds, a wave spawns, a punch lands, and pathfinding works.
 func first_room() -> void:
+	var idle: SmokeSection = preload("res://tests/smoke/idle_slow.gd").new()
+	idle.runner = runner
+	add_child(idle)
+	idle.run()
+	idle.free()
 	var Run := run_state()
 	var room: Room = game.room
 	check(room != null and room.world != null, "first room builds from %s" % (room.data.map if room else "?"))

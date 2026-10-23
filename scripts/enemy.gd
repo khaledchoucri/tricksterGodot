@@ -316,7 +316,7 @@ func _tick_status(delta: float) -> void:
 func _state_idle() -> void:
 	var to := _wander_target - global_position
 	if to.length() > 6.0:
-		velocity = to.normalized() * walk_speed + _knock
+		velocity = to.normalized() * walk_speed * speed_factor() + _knock
 		sprite.play_action("walk", to)
 	else:
 		velocity = _knock
