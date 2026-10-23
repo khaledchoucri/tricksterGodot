@@ -140,7 +140,12 @@ func _load_room() -> void:
 	if plan.elite:
 		title += "\nElite monsters ahead"
 	hud.center(title, 1.2)
-	await get_tree().create_timer(0.9).timeout
+	await _start_fight_after_intro(plan)
+
+
+## Encounter pacing is gameplay time: pausing cannot start monsters behind a menu.
+func _start_fight_after_intro(plan: RoomPlan) -> void:
+	await get_tree().create_timer(0.9, false, true).timeout
 	if room and room.is_inside_tree():
 		phase = Phase.FIGHT
 		room.start_encounter(Run.route.local_depth(), plan.elite, plan.boss)
@@ -194,8 +199,12 @@ func _on_room_cleared() -> void:
 	if Run.mod("clear_heal%") > 0.0:
 		Run.heal(int(Run.max_hp * (Run.mod("clear_heal%") / 100.0)))
 	hud.log_line("[System] Room cleared.", Color("94a7b2"))
-	var cleared_room := room
-	await get_tree().create_timer(0.6).timeout
+	await _queue_room_rewards(room)
+
+
+## Reward generation and its RNG wait for gameplay to resume, not wall-clock menu time.
+func _queue_room_rewards(cleared_room: Room) -> void:
+	await get_tree().create_timer(0.6, false, true).timeout
 	if room != cleared_room:
 		return  # a different room loaded while we waited
 	_steps.clear()

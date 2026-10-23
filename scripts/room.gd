@@ -393,10 +393,10 @@ func _next_wave() -> void:
 func spawn_with_warning(id: StringName, at: Vector2, delay: float, elite := false) -> void:
 	pending += 1
 	if delay > 0.0:
-		await get_tree().create_timer(delay).timeout
+		await get_tree().create_timer(delay, false, true).timeout
 	var warn := Telegraph.make("circle", 0.6, {"radius": 26.0, "color": Telegraph.SPAWN})
 	add_ground_fx(warn, at)
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(0.6, false, true).timeout
 	if not is_inside_tree():
 		return
 	if is_instance_valid(warn):
@@ -441,7 +441,7 @@ func _on_enemy_died(e: Enemy) -> void:
 		# Several deaths at once (a boss taking its summons with it) each get
 		# here; only the first advances the wave.
 		var at_wave := wave
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(1.0, false, true).timeout
 		if is_inside_tree() and alive <= 0 and pending <= 0 and wave == at_wave and not _cleared:
 			_next_wave()
 
