@@ -4,6 +4,11 @@ extends SmokeSection
 
 
 func run(Run: Node) -> void:
+	var health: SmokeSection = preload("res://tests/smoke/equip_hp.gd").new()
+	health.runner = runner
+	add_child(health)
+	health.run()
+	health.free()
 	_restore_all(Run)
 	# The run crosses three regions; every room's map is exported and every monster has its
 	# original stats.
