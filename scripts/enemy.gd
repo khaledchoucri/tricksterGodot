@@ -357,7 +357,7 @@ func _state_chase() -> void:
 		# Ranged enemies back away to keep their distance.
 		var away := -to.normalized()
 		if room.is_walkable(global_position + away * 24.0):
-			velocity = away * walk_speed + _knock
+			velocity = away * walk_speed * speed_factor() + _knock
 			sprite.play_action("walk", away)
 			return
 	# Entrancing Wink: an entranced monster can't cast its magic (its shots).
