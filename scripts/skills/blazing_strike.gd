@@ -18,10 +18,14 @@ func _init() -> void:
 	dash_cancel_at = 0.36
 
 
-func start() -> void:
+## Finalize target-dependent timing before the caster starts animation.
+func prepare() -> void:
 	_targets = closest_in_circle(player.global_position, param("range", 120.0), int(param("targets", 2)))
 	_hits = clampi(2 + int((Run.formulas.attack_speed_mult() - 1.0) / 0.25), 2, 5)
 	duration = 0.14 + GAP * _hits * maxi(_targets.size(), 1)
+
+
+func start() -> void:
 	Audio.play("snd_p_207_ap.wav", -6.0)
 
 

@@ -175,6 +175,7 @@ func new_run(with_seed := -1) -> void:
 	kills = 0
 	time = 0.0
 	won = false
+	city.finished = false
 	pending_levels = 0
 	revives = 0
 	second_wind_used = false

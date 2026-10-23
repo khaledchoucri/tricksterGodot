@@ -222,8 +222,9 @@ func move_input() -> Vector2:
 
 
 ## Starts whatever buffered action can start now. Returns true if one did.
+## Cooldown-blocked dash input keeps its original buffer deadline.
 func try_actions() -> bool:
-	if take_buffer("dash") and can_dash():
+	if can_dash() and take_buffer("dash"):
 		start_dash()
 		return true
 	for i in SkillCaster.SLOT_ACTIONS.size():
@@ -389,13 +390,12 @@ func _retaliate(attacker: Enemy, amount: int, magic: bool) -> void:
 			Sparks.burst(room, attacker.global_position + Vector2(0, -20), Color(0.8, 0.9, 1.0), 8, 110.0)
 
 
-## Clinch Release can be cast while staggered: it cancels the hit.
+## Clinch Release cancels stagger only after a successful cast. A rejected
+## cast must preserve the hit; SkillCaster and the skill own the transition.
 func _clinch_release() -> bool:
 	for i in SkillCaster.SLOT_ACTIONS.size():
 		var c := skills.card_in(i)
 		if c and c.has_tag(&"cast_staggered") and take_buffer(SkillCaster.SLOT_ACTIONS[i]):
-			knock = Vector2.ZERO
-			enter(State.MOVE)
 			return skills.try_cast(i)
 	return false
 
@@ -433,8 +433,10 @@ func enter(s: State) -> void:
 
 ## Damages an enemy with crits and Armor Breaker. Every hit the player deals
 ## (combo, dash, skills) comes through here. `from` sets the knockback
-## direction. Returns true on a critical hit.
+## direction. Returns true on an accepted critical hit; rejected contacts return false.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
+	if not is_instance_valid(e) or not e.can_take_hit():
+		return false
 	var power_shot: bool = fx.get("power_shot", false)
 	# The basic gun shot never rolls a critical: the server's gun formula
 	# (0x59b310) only misses, hits, or lands a power shot.

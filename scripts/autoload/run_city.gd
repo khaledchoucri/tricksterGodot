@@ -3,6 +3,9 @@ extends RefCounted
 ## What a run takes from Megalopolis and gives back (Run.city): the restorations' systems and
 ## bonuses, the loadout and the warehouse, the custom Trickster, and banking the finished run.
 
+## Whether this run has already banked its terminal outcome; reset by Run.new_run.
+var finished := false
+
 ## Trees a Trickster can pick from: every class's 2nd and 3rd jobs, and
 ## the other classes' trees learned through Echo runes.
 const TRICKSTER_TREES: Array[String] = ["res://data/jobs/knight.tres", "res://data/jobs/boxer.tres",
@@ -97,20 +100,20 @@ func rewear_loadout() -> void:
 	Run.stats_changed()
 
 
-## The item on warehouse shelf `index`, ready to wear: its shelf noted, so its progress
+## The item on warehouse shelf `index`, ready to wear: its identity noted, so its progress
 ## can be saved back. Null if unknown.
 func from_shelf(index: int) -> GearItem:
 	if index < 0 or index >= Profile.warehouse.size():
 		return null
 	var g := GearItem.from_dict(Profile.warehouse[index], Run.gear.item_by_id)
 	if g:
-		g.stored = index
+		g.stored = Profile.item_uid(index)
 	return g
 
 
 ## Whether the item on shelf `index` is being worn in this run.
 func worn_from_shelf(index: int) -> bool:
-	return Run.gear.equipment.values().any(func(g: GearItem) -> bool: return g.stored == index)
+	return Run.gear.equipment.values().any(func(g: GearItem) -> bool: return g.stored == Profile.item_uid(index))
 
 
 ## A rest stop's swap: puts on the item from shelf `index` and banks what it replaces
@@ -127,12 +130,54 @@ func swap_from_shelf(index: int) -> bool:
 			key = k
 			break
 	var old := Run.gear.equipped(key)
-	if old and old.stored < 0 and Profile.warehouse_full():
+	var outgoing: Array[GearItem] = []
+	if old:
+		outgoing.append(old)
+	var shield := Run.gear.equipped("shield")
+	if g.data.family == "gun" and Run.deck.holds_tag(&"carries_guns") and shield:
+		outgoing.append(shield)
+	var needed := 0
+	for item: GearItem in outgoing:
+		if item.stored < 0:
+			needed += 1
+	if needed > Profile.warehouse_size() - Profile.warehouse.size():
 		return false
+	return _apply_shelf_swap(g, key, outgoing)
+
+
+## Commit a preflighted swap synchronously; retain the old inventory if any bank rejects it.
+func _apply_shelf_swap(g: GearItem, key: String, outgoing: Array[GearItem]) -> bool:
+	var equipment: Dictionary = Run.gear.equipment.duplicate()
+	var displaced: Array[GearItem] = Run.gear.displaced.duplicate()
+	var shelves: Array = Profile.warehouse.duplicate(true)
+	var flags: Dictionary = Profile.flags.duplicate()
+	var identities: Array[int] = []
+	for item: GearItem in outgoing:
+		identities.append(item.stored)
+	var hp: int = Run.hp
+	var mp: int = Run.mp
+	var blocked: bool = Events.is_blocking_signals()
+	Events.set_block_signals(true)
 	Run.gear.equip(g, key)
-	for put_away: GearItem in ([old] if old else []) + Run.gear.displaced:
-		bank(put_away)
-	return true
+	var success := true
+	for item: GearItem in outgoing:
+		if not bank(item):
+			success = false
+			break
+	if not success:
+		Profile.warehouse = shelves
+		Profile.flags = flags
+		for i: int in outgoing.size():
+			outgoing[i].stored = identities[i]
+		Run.gear.equipment = equipment
+		Run.gear.displaced = displaced
+		Run.hp = hp
+		Run.mp = mp
+		Run.stats_changed()
+		Profile.save()
+	Events.set_block_signals(blocked)
+	Events.player_hp_changed.emit()
+	return success
 
 
 ## Sends a worn item home at a Port or rest stop: it's safe on a shelf (a stored one keeps its
@@ -140,7 +185,8 @@ func swap_from_shelf(index: int) -> bool:
 ## banking costs you the item's power, so carrying it stays a risk. False if the warehouse is full.
 func bank(g: GearItem) -> bool:
 	if g.stored >= 0:
-		Profile.update_item(g.stored, g.to_dict())
+		if not Profile.update_item_id(g.stored, g.to_dict()):
+			return false
 	elif not save_point(g):
 		return false
 	Run.gear.take_off(g)
@@ -189,11 +235,13 @@ func drop_bag(at: Vector2) -> Dictionary:
 	var items: Array = []
 	var bagged: Array[String] = []
 	var saved: Array[String] = []
-	var shelves: Array[int] = []
+	var identities: Array[int] = []
 	for g: GearItem in split.home:
 		if g.stored >= 0:
-			Profile.update_item(g.stored, g.to_dict())
-			saved.append(g.title())
+			if Profile.update_item_id(g.stored, g.to_dict()):
+				saved.append(g.title())
+			else:
+				split.bag.append(g)
 		elif Profile.store_item(g.to_dict()) >= 0:
 			saved.append(g.title())
 		else:
@@ -202,11 +250,9 @@ func drop_bag(at: Vector2) -> Dictionary:
 		items.append(g.to_dict())
 		bagged.append(g.title())
 		if g.stored >= 0:
-			shelves.append(g.stored)
-	shelves.sort()
-	shelves.reverse()
-	for i in shelves:
-		Profile.discard_item(i)
+			identities.append(g.stored)
+	for i in identities:
+		Profile.discard_item(Profile.item_index(i))
 	if not items.is_empty():
 		Profile.lost_bag = {"region": Run.route.region_index(), "room": Run.route.local_depth(),
 			"x": at.x, "y": at.y, "items": items}
@@ -246,7 +292,8 @@ func bring_home() -> Array[GearItem]:
 	var left: Array[GearItem] = []
 	for g: GearItem in Run.gear.equipment.values():
 		if g.stored >= 0:
-			Profile.update_item(g.stored, g.to_dict())
+			if not Profile.update_item_id(g.stored, g.to_dict()):
+				left.append(g)
 		elif g.data != Run.cls.start_weapon and not save_point(g):
 			left.append(g)
 	return left
@@ -257,14 +304,16 @@ func bring_home() -> Array[GearItem]:
 func save_point(item: GearItem = null) -> bool:
 	for g: GearItem in Run.gear.equipment.values():
 		if g.stored >= 0:
-			Profile.update_item(g.stored, g.to_dict())
+			Profile.update_item_id(g.stored, g.to_dict())
 	if item == null:
 		return true
+	if item.stored >= 0:
+		return Profile.update_item_id(item.stored, item.to_dict())
 	var index := Profile.store_item(item.to_dict())
 	if index < 0:
 		return false
 	Profile.set_flag("stored_any")
-	item.stored = index
+	item.stored = Profile.item_uid(index)
 	return true
 
 
@@ -315,6 +364,9 @@ func room_mp_bonus() -> int:
 ## Banks the finished run into the profile and remembers it for the hub.
 ## Heat adds TM; clearing at a new best Heat pays a shard per new level.
 func finish(p_won: bool) -> void:
+	if finished:
+		return
+	finished = true
 	var reached := Run.route.depth + (1 if p_won else 0)
 	var heat := ServerSettings.heat()
 	Run.purse.tm += int(Run.purse.tm * heat * ServerSettings.TM_PER_HEAT)

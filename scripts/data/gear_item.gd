@@ -34,7 +34,7 @@ var refine := 0
 ## Compound slots, and what fills them: {"material", "stat", "value"}.
 var slots := 0
 var compounds: Array[Dictionary] = []
-## The warehouse entry it's saved in (-1: not stored).
+## Persistent warehouse identity, independent of shelf position (-1: not stored).
 var stored := -1
 
 
@@ -168,6 +168,7 @@ static func from_dict(d: Dictionary, lookup: Callable) -> GearItem:
 	for k: String in d.get("rolled", {}):
 		rolled[k] = int(d.rolled[k])
 	var g := make(item_data, d.get("prefix", ""), rolled)
+	g.stored = int(d.get("uid", -1))
 	g.refine = int(d.get("refine", 0))
 	g.slots = int(d.get("slots", item_data.compound_slots))
 	for c: Dictionary in d.get("compounds", []):
@@ -177,4 +178,4 @@ static func from_dict(d: Dictionary, lookup: Callable) -> GearItem:
 
 func to_dict() -> Dictionary:
 	return {"id": String(data.id), "prefix": prefix, "rolled": rolled, "refine": refine, "slots": slots,
-		"compounds": compounds}
+		"compounds": compounds, "uid": stored}

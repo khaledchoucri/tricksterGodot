@@ -2,9 +2,17 @@ extends SmokeSection
 ## The first room: it builds, a wave spawns, a punch lands, pathfinding works; then fading props,
 ## vaulting, the room reward, gear, the anvil, level-ups, a door and a monster's shot.
 
+## Map-independent ranged movement regression checks.
+const RETREAT_SLOW := preload("res://tests/smoke/retreat_slow.gd")
+
 
 ## The first room builds, a wave spawns, a punch lands, and pathfinding works.
 func first_room() -> void:
+	var checks: SmokeSection = RETREAT_SLOW.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var Run := run_state()
 	var room: Room = game.room
 	check(room != null and room.world != null, "first room builds from %s" % (room.data.map if room else "?"))
@@ -34,6 +42,16 @@ func first_room() -> void:
 
 ## Fading props, vaulting, the room reward, gear, the anvil, level-ups, a door, and a monster's shot.
 func rewards() -> void:
+	var outcome: SmokeSection = preload("res://tests/smoke/run_outcome.gd").new()
+	outcome.runner = runner
+	add_child(outcome)
+	outcome.run()
+	outcome.free()
+	var checks: SmokeSection = preload("res://tests/smoke/dash_buffer.gd").new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var Run := run_state()
 	var room: Room = game.room
 	var player: Player = game.player

@@ -5,7 +5,8 @@ extends Node
 ## in every run). Saved as JSON in user://profile.json after
 ## every change.
 
-const VERSION := 2
+## Save schema 3 adds persistent warehouse identities (shelf positions remain UI indices).
+const VERSION := 3
 ## The warehouse is the original's grid (WareHouseUI.ucf: 8 wide, 3 rows shown, up to 10 rows).
 const WAREHOUSE_ROW := 8
 const WAREHOUSE_ROWS_START := 3
@@ -28,6 +29,8 @@ var restorations: Dictionary = {}  # restoration id -> level
 ## Rows of shelves bought so far (Keeper Julio sells more for Harkon Shards).
 var warehouse_rows := WAREHOUSE_ROWS_START
 var warehouse: Array = []
+## Monotonic identity allocator; never reuse an ID after a discard or lost bag.
+var next_item_uid := 0
 ## What is worn from the warehouse in every run: gear slot key -> shelf index.
 var loadout: Dictionary = {}
 ## The lost bag (empty: none): {"region", "room" (its depth in the region), "x", "y", "items"
@@ -84,6 +87,8 @@ func load_profile() -> void:
 	flags = {}
 	restorations = {}
 	warehouse = []
+	next_item_uid = 0
+	legacy_heirloom = -1
 	warehouse_rows = WAREHOUSE_ROWS_START
 	loadout = {}
 	lost_bag = {}
@@ -122,6 +127,10 @@ func load_profile() -> void:
 	legacy_heirloom = int(data.get("heirloom", -1))
 	warehouse_rows = clampi(int(data.get("warehouse_rows", WAREHOUSE_ROWS_START)), WAREHOUSE_ROWS_START, WAREHOUSE_ROWS_MAX)
 	lost_bag = data.get("lost_bag", {})
+	next_item_uid = int(data.get("next_item_uid", 0))
+	_migrate_item_ids(data)
+	if data.has("heirloom_uid"):
+		legacy_heirloom = item_index(int(data.heirloom_uid))
 	for k: String in data.get("server_settings", {}):
 		server_settings[k] = int(data.server_settings[k])
 	best_heat = int(data.get("best_heat", -1))
@@ -147,7 +156,8 @@ func save() -> void:
 		return
 	f.store_string(JSON.stringify({"version": VERSION, "tm": tm, "shards": shards, "galder": galder, "ore": ore,
 		"materials": materials, "stats": stats,
-		"flags": flags, "restorations": restorations, "warehouse": warehouse, "warehouse_rows": warehouse_rows, "loadout": loadout, "lost_bag": lost_bag,
+		"flags": flags, "restorations": restorations, "warehouse": warehouse, "warehouse_rows": warehouse_rows, "loadout_ids": _loadout_ids(), "lost_bag": lost_bag,
+		"next_item_uid": next_item_uid, "heirloom_uid": item_uid(legacy_heirloom),
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
 		"worn": worn, "mastery": mastery, "start_skills": start_skills, "chunks": chunks, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
@@ -240,13 +250,77 @@ func wear(slot: String, piece: StringName) -> void:
 	save()
 
 
+## The persistent identity at a shelf index, or -1 if it no longer exists.
+func item_uid(index: int) -> int:
+	return int(warehouse[index].get("uid", -1)) if index >= 0 and index < warehouse.size() else -1
+
+
+## Finds an identity's current shelf; live gear must never retain this index.
+func item_index(uid: int) -> int:
+	if uid >= 0:
+		for i: int in warehouse.size():
+			if item_uid(i) == uid:
+				return i
+	return -1
+
+
+## Updates the same stored item even after lower shelves have been removed.
+func update_item_id(uid: int, item: Dictionary) -> bool:
+	var index := item_index(uid)
+	if index < 0:
+		return false
+	update_item(index, item)
+	return true
+
+
+func _new_item_uid() -> int:
+	var uid := next_item_uid
+	next_item_uid += 1
+	return uid
+
+
+func _loadout_ids() -> Dictionary:
+	var ids: Dictionary = {}
+	for key: String in loadout:
+		var uid := item_uid(int(loadout[key]))
+		if uid >= 0:
+			ids[key] = uid
+	return ids
+
+
+## Version 1/2 loadouts use indices; version 3 persists IDs and resolves indices only for UI.
+## Preserve every item, including unknown item definitions and legacy lost-bag entries.
+func _migrate_item_ids(data: Dictionary) -> void:
+	var entries: Array = warehouse + lost_bag.get("items", [])
+	for entry: Dictionary in entries:
+		next_item_uid = maxi(next_item_uid, int(entry.get("uid", -1)) + 1)
+	var seen: Dictionary[int, bool] = {}
+	for entry: Dictionary in entries:
+		var uid := int(entry.get("uid", -1))
+		if uid < 0 or seen.has(uid):
+			uid = _new_item_uid()
+		entry["uid"] = uid
+		seen[uid] = true
+	if data.has("loadout_ids"):
+		loadout = {}
+		for key: String in data.loadout_ids:
+			var index := item_index(int(data.loadout_ids[key]))
+			if index >= 0:
+				loadout[key] = index
+
+
 # ---------------------------------------------------------------- warehouse
 
 ## Stores an item sent home; returns its index, or -1 if the warehouse is full.
 func store_item(item: Dictionary) -> int:
 	if warehouse_full():
 		return -1
-	warehouse.append(item)
+	var entry := item.duplicate(true)
+	if int(entry.get("uid", -1)) < 0 or item_index(int(entry.uid)) >= 0:
+		entry["uid"] = _new_item_uid()
+	else:
+		next_item_uid = maxi(next_item_uid, int(entry.uid) + 1)
+	warehouse.append(entry)
 	save()
 	return warehouse.size() - 1
 
@@ -254,7 +328,9 @@ func store_item(item: Dictionary) -> int:
 ## Saves a stored item's new state (worn and improved during a run).
 func update_item(index: int, item: Dictionary) -> void:
 	if index >= 0 and index < warehouse.size():
-		warehouse[index] = item
+		var entry := item.duplicate(true)
+		entry["uid"] = item_uid(index)
+		warehouse[index] = entry
 		save()
 
 
@@ -313,6 +389,10 @@ func discard_item(index: int) -> void:
 	if index < 0 or index >= warehouse.size():
 		return
 	warehouse.remove_at(index)
+	if legacy_heirloom == index:
+		legacy_heirloom = -1
+	elif legacy_heirloom > index:
+		legacy_heirloom -= 1
 	for k: String in loadout.keys():
 		var i := int(loadout[k])
 		if i == index:

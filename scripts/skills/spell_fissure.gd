@@ -37,7 +37,8 @@ func update(t: float, _delta: float) -> void:
 	if once(t, along / _reach * 0.35, "crack%d" % int(along / 24.0)):
 		Sparks.burst(room, head, color(), 6, 100.0, 0.35, 2.5)
 		Ring.spawn(room.ground_fx, head, width, 0.3, Color(color(), 0.8))
-	for e in room.enemies:
+	# A lethal strike removes its target before the next target is visited.
+	for e: Enemy in room.enemies.duplicate():
 		if e.is_hittable() and Combat.in_lane(player.global_position, e.global_position, _dir, along, width * 2.0, e.body_radius):
 			_strike(e)
 

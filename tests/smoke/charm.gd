@@ -1,10 +1,18 @@
 extends SmokeSection
 ## The Charm line: Cat and Raccoon, the beast forms, every Charm skill.
 
+## Map-independent checks for prepared animation and duration.
+const CHARM_PREPARATION := preload("res://tests/smoke/charm_preparation.gd")
+
 
 ## The Charm line: Cat and Raccoon, the server's HV-weighted attacks, the
 ## beast forms, Galder, and every Charm skill on a dummy.
 func run() -> void:
+	var checks: SmokeSection = CHARM_PREPARATION.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var p: Player = game.player
 	var saved: String = Profile.class_id
 
@@ -316,6 +324,9 @@ func _one_pair_fan(p: Player) -> void:
 			var item := n as ThrownItem
 			angles.append(Combat.ground(item.target_point - p.global_position).angle())
 			as_cards = as_cards and item.cake == "eft_skl_c_301_sut" and not item.homing
+	# Relative to the first card, so a fan thrown across the +-180 degree seam still measures its width.
+	for i in range(angles.size() - 1, -1, -1):
+		angles[i] = wrapf(angles[i] - angles[0], -PI, PI)
 	angles.sort()
 	var spread := rad_to_deg(angles[-1] - angles[0]) if angles.size() > 1 else 0.0
 	await wait(0.8)
@@ -377,7 +388,9 @@ func _full_house(p: Player) -> void:
 			cards += 1
 	await wait(1.0)
 	var struck := foes.filter(func(e: Enemy) -> bool: return e.hp < 99999).size()
-	check(cast and cards == 5 and struck >= 3 and struck + (1 if Run.hp < Run.max_hp else 0) >= 4,
+	# Each card strikes its monster or comes back as a bad hand (a random roll): every card that
+	# didn't strike must have hurt you.
+	check(cast and cards == 5 and struck >= 1 and (struck == 5 or Run.hp < Run.max_hp),
 		"Full House deals a flying card to each of five monsters (%d cards, %d struck, HP %d/%d)" % [cards, struck, Run.hp, Run.max_hp])
 	p.invulnerable_until = 0.0
 	for e in foes:
