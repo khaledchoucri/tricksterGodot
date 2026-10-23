@@ -23,8 +23,15 @@ client's tables and code, and the server's formulas come from `GameServer.exe`, 
   2nd job. Between regions, a rest stop at the
   original's gate (the Gates of Desert Beach and Caballa Relics) heals half your HP and MP, and Keeper Julio
   lets you swap what you wear with your warehouse shelves: 32 rooms in all.
-- **23 monsters**, three bosses with their summons, and three Echoes of other classes that lend their skills as
+- **28 monsters**, three bosses with their summons, and three Echoes of other classes that lend their skills as
   runes.
+- **Bosses fight in bars.** Their HP is drawn as the original client draws it: one bar per life in their
+  BossMonsterparamEx row (three for Master Mong, four for Tutankhamen and Tombeth), stacked in the client's colours. A boss staggers as
+  a bar breaks, then starts its next phase, and steps in with a name card and one of its original lines.
+  Tutankhamen calls his three Mads, who buff, shield and heal him, casts Mana Arrow and Rust, calls two Sphinxes
+  at half HP and warps away when you pin him. Tombeth hides behind Sturdy Shield (half damage), raises Mana Reflector (10 s
+  in every 30) and casts Magic Meltdown (your MA down); at half HP he rages, drops his guard, and leaps to bring
+  rocks down in an X, each impact marked on the ground first.
 - **Twelve stats in four types**, with traits at their thresholds. There are six run-gear slots with refining
   and compounding, monster dens and shops.
 - **Between runs:** a warehouse (24 shelves, up to 80 with Harkon Shards) whose items you wear in every
@@ -66,8 +73,12 @@ live in the git-ignored `original_assets/` folder, generated from your own clien
 - `tests/run_smoke.sh [section|character ...]`: the smoke test, under a minute, seeded so results repeat.
 - `godot --headless --path . res://tests/combat/clinch_release.tscn`: map-independent stagger escape checks
   (also included in the Power smoke section).
+- `godot --headless --fixed-fps 60 --path . res://tests/combat/multi_target.tscn`: lethal multi-target
+  combat checks without map or actor exports; also included in the smoke test’s Power section.
 - `tests/baseline.sh record|compare`: smoke results, the progression probe and seeded bots for every
   character, to show a change kept behaviour.
 - `tests/check_generated.sh`: generated data matches its generators.
+- `godot --headless --fixed-fps 60 --path . res://tests/combat/skill_wait.tscn`: map-independent
+  skill pause/resume checks (also included in the Magic smoke section).
 - `docs/design/systems-plan.md`: what each system is for; `docs/design/refactor-plan.md`: the code's structure.
 - `docs/poc/`: map format, actor art, timing references and the QA backlog.

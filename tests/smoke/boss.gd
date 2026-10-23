@@ -1,44 +1,32 @@
 extends SmokeSection
-## The bosses (Master Mong, Tombeth), a lingering spell, death and the rollback, then Megalopolis.
+## The bosses (Master Mong, Tutankhamen, Tombeth) and their bars, a lingering spell, death and
+## the rollback, then Megalopolis.
 
 
 ## The boss room, a lingering spell, death and the rollback, then Megalopolis.
 func run() -> void:
 	var Run := run_state()
 	await clear_room()
-	Run.route.depth = Run.route.regions[0].run_length
-	game.get_tree().paused = false
-	game.hud.pick_panel.visible = false
-	game._load_room()
-	await wait(3.0)
-	var boss: Enemy = null
-	for e: Enemy in enemies():
-		if e.is_boss:
-			boss = e
+	var boss := await _boss_room(0)
 	check(boss is BossMong and game.room.data.map == "map_dg11b" and boss.display_name == "Master Mong",
 		"the Coral Beach boss is Master Mong, in the Dark Cave (%s)" % (boss.display_name if boss else "no boss"))
 	if boss is BossMong:
 		await _master_mong(boss as BossMong)
 
-	# The Caballa Relics: the last region's boss room is the Trident Maze, with Tombeth, who
-	# calls Chimu as he loses his first life.
-	await clear_room()
-	Run.route.depth = Run.route.plan.size() - 1
-	game.get_tree().paused = false
-	game.hud.pick_panel.visible = false
-	game._load_room()
-	await wait(3.0)
-	var tombeth: Enemy = null
-	for e: Enemy in enemies():
-		if e.is_boss:
-			tombeth = e
-	check(tombeth is BossTombeth and game.room.data.map == "map_dg03e" and Run.route.final_boss(),
-		"the last boss room is the Trident Maze with Tombeth (%s)" % (tombeth.data.id if tombeth else "no boss"))
-	if tombeth:
-		tombeth.take_hit(int(tombeth.max_hp * 0.36), Vector2.RIGHT, 0.0, true)
-		await wait(1.3)
-		var chimus := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"chimu").size()
-		check(chimus >= 1, "Tombeth calls Chimu as he loses a life (%d)" % chimus)
+	await _boss_bar()
+	await _tutankhamen()
+	await _tombeth()
+
+	# A monster spell (Magic Meltdown) cuts your MA for a while, shown on the HUD, then wears off.
+	var ma: int = Run.stat("MA")
+	Run.apply_debuff("MA", 30.0, 0.5, "Magic Meltdown")
+	game.hud.refresh(game.player)
+	var label: Label = game.hud.get_node("%DebuffLabel")
+	check(absi(Run.stat("MA") - roundi(ma * 0.7)) <= 1, "Magic Meltdown cuts your MA by 30%% (%d -> %d)" % [ma, Run.stat("MA")])
+	check(label.visible and label.text.contains("Magic Meltdown"), "the HUD shows it (%s)" % label.text)
+	await wait(0.7)
+	game.hud.refresh(game.player)
+	check(Run.stat("MA") == ma and not label.visible, "and it wears off (%d)" % Run.stat("MA"))
 
 	# A lingering spell outlives its room (a run ending, a room change) cleanly:
 	# the field's end effect used to wait on a freed player and error.
@@ -118,19 +106,19 @@ func _master_mong(mong: BossMong) -> void:
 	check(mong.casts.get("storm", 0) >= 1 and mong.casts.get("shield", 0) == 0 and mong.casts.get("ring", 0) == 0,
 		"on his first life Mong casts only his storm (%s)" % mong.casts)
 	mong.take_hit(int(mong.max_hp * 0.36), Vector2.RIGHT, 0.0, true)
-	await wait(1.0)
-	check(mong.lives_left() == 2 and mong.is_shielded() and int(mong.stats.MD) == roundi(mong.base_md * 1.19),
-		"at 2/3 HP Mong loses a life and raises Mana Shield, MD +19%% (%d lives, %s)" % [mong.lives_left(), mong.casts])
+	await wait(Boss.STAGGER_FOR + 1.0)
+	check(mong.bars == 3 and mong.bars_left() == 2 and mong.is_shielded() and int(mong.stats.MD) == roundi(mong.base_md * 1.19),
+		"at 2/3 HP Mong loses a life and raises Mana Shield, MD +19%% (%d lives, %s)" % [mong.bars_left(), mong.casts])
 	mong.take_hit(int(mong.max_hp * 0.16), Vector2.RIGHT, 0.0, true)
-	await wait(1.5)
+	await wait(Boss.STAGGER_FOR + 1.5)
 	check(called[0] == mong.summon_start + mong.summon_half,
 		"at half HP Mong calls %d more Thief Mongs (%d in all, %d standing)" % [mong.summon_half, called[0], _thieves()])
 	check(mong.casts.get("ring", 0) == 0, "Mana Ring waits for his last life (%s)" % mong.casts)
 	mong.take_hit(int(mong.max_hp * 0.2), Vector2.RIGHT, 0.0, true)
 	var low := mong.hp
 	mong.global_position = game.room.nearest_reachable(p.global_position + Vector2(90, 0))
-	await wait((BossMong.HEAL_EVERY + BossMong.HEAL_CAST) * (mong.heal_casts + 1))
-	check(mong.lives_left() == 1 and mong.casts.get("ring", 0) >= 1 and mong.hp > low,
+	await wait(Boss.STAGGER_FOR + (BossMong.HEAL_EVERY + BossMong.HEAL_CAST) * (mong.heal_casts + 1))
+	check(mong.bars_left() == 1 and mong.casts.get("ring", 0) >= 1 and mong.hp > low,
 		"on his last life Mong casts Mana Ring and Cures himself (%s, %d -> %d HP)" % [mong.casts, low, mong.hp])
 	check(mong.casts.get("heal", 0) == mong.heal_casts, "Mong's Cure runs out after %d casts (%s)" % [mong.heal_casts, mong.casts])
 	Events.enemy_spawned.disconnect(count_thief)
@@ -171,3 +159,127 @@ func _thief_steals(p: Player) -> void:
 
 func _thieves() -> int:
 	return enemies().filter(func(e: Enemy) -> bool: return e.data.id == BossMong.SUMMON_ID).size()
+
+
+## Loads the boss room of `region` (or the last region's) and waits for its boss to step in.
+func _boss_room(region: int) -> Boss:
+	var Run := run_state()
+	await clear_room()
+	Run.route.depth = Run.route.plan.find_custom(func(p: RoomPlan) -> bool:
+		return p.region == Run.route.regions[region] and p.boss)
+	game.get_tree().paused = false
+	game.hud.pick_panel.visible = false
+	game._load_room()
+	for _i in 40:
+		await wait(0.2)
+		for e: Enemy in enemies():
+			if e is Boss:
+				game.player.invulnerable_until = game.player.now() + 999.0
+				return e
+	return null
+
+
+## The boss bar's art: one gauge colour per lives left, as the client's MonsterHPInfoUI.nri.
+func _boss_bar() -> void:
+	var bar: BossHpBar = game.hud.get_node("%BossBar")
+	var want: Array[Color] = [Color8(255, 0, 0), Color8(255, 206, 0), Color8(0, 206, 0), Color8(24, 156, 255), Color8(189, 41, 255)]
+	var seen: PackedStringArray = []
+	for i in 6:
+		var tex := bar.gauge_texture(i)
+		var c := tex.get_image().get_pixel(10, 3) if tex else Color.BLACK
+		seen.append(c.to_html(false))
+		if not c.is_equal_approx(want[mini(i, 4)]):
+			seen.append("<- wrong")
+	check(not "<- wrong" in seen, "boss bars are red, yellow, green, blue, purple by lives left (%s)" % ", ".join(seen))
+	bar.set_hp("Test", 500, 1000, 4)
+	check(bar.layer() == 1 and absf(bar.fill() - 1.0) < 0.01,
+		"500 of 1000 HP in four bars is a full yellow bar over the red (layer %d, fill %.2f)" % [bar.layer(), bar.fill()])
+	bar.set_hp("Test", 100, 1000, 4)
+	check(bar.layer() == 0 and absf(bar.fill() - 0.4) < 0.01, "and 100 is the red bar 40%% full (%.2f)" % bar.fill())
+
+
+## Tutankhamen: four bars, his Mads and their spells on him, a stagger as a bar breaks, and two
+## Sphinxes at half HP.
+func _tutankhamen() -> void:
+	var tut := await _boss_room(1) as BossTutankhamen
+	check(tut != null, "the Desert Beach boss room has Tutankhamen")
+	if tut == null:
+		return
+	var bar: BossHpBar = game.hud.get_node("%BossBar")
+	check(tut.bars == 4 and bar.layer() == 3, "Tutankhamen has four bars, blue on top (%d, layer %d)" % [tut.bars, bar.layer()])
+	var card := game.hud.boss_intro()
+	check(card != null and (card.get_child(0) as Label).text == tut.display_name, "his name card shows as he steps in")
+	await wait(4.5)
+	var roles := {}
+	for role: StringName in [&"spirit", &"barrier", &"mender"]:
+		roles[role] = tut.minion(role) != null
+	check(not false in roles.values(), "he calls his Mad Lieutenant, Sergeant and Captain (%s)" % roles)
+	check(tut.is_empowered() and tut.has_shield(), "the Lieutenant's Mad Spirit and the Sergeant's Mana Shield are on him (%s, %s)"
+		% [tut.is_empowered(), tut.has_shield()])
+	var before := tut.hp
+	tut.take_hit(300, Vector2.RIGHT, 0.0, true)
+	check(tut.hp > before - 300, "the Mana Shield soaks his hits (%d of 300 got through)" % (before - tut.hp))
+	tut._barrier = 0
+	tut.hp = tut.bar_top() - 200
+	tut._cure_at = 0.0
+	before = tut.hp
+	await wait(0.2)
+	check(tut.hp > before, "the Captain's M Cure heals him (%d -> %d)" % [before, tut.hp])
+	tut.take_hit(int(tut.hp - tut.bar_hp * 1.98), Vector2.RIGHT, 0.0, true)
+	await wait(0.1)
+	check(tut.state == Enemy.State.HURT and tut.lives_left == 1 and bar.layer() == 1,
+		"losing bars staggers him and the bar drops to yellow (lives %d, layer %d)" % [tut.lives_left, bar.layer()])
+	await wait(Boss.STAGGER_FOR + 1.8)
+	var sphinxes := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"sphinx")
+	check(sphinxes.size() == 2, "at half his HP he calls two Sphinxes (%d)" % sphinxes.size())
+	if not sphinxes.is_empty():
+		var sx: Enemy = sphinxes[0]
+		check(float(sx.stats.MD) > float(tut.stats.MD) and sx.damage >= tut._base_damage * 0.6,
+			"Sphinxes resist magic and hit hard (MD %d, hit %d)" % [sx.stats.MD, sx.damage])
+
+
+## Tombeth: four bars, Sturdy Shield, Mana Reflector's 10 s on 30, and the rage at half HP with
+## his leap and the X of falling rocks.
+func _tombeth() -> void:
+	var Run := run_state()
+	var tb := await _boss_room(Run.route.regions.size() - 1) as BossTombeth
+	check(tb != null and game.room.data.map == "map_dg03e" and Run.route.final_boss(),
+		"the last boss room is the Trident Maze with Tombeth")
+	if tb == null:
+		return
+	check(tb.bars == 4, "Tombeth has four bars (%d)" % tb.bars)
+	var before := tb.hp
+	tb.take_hit(100, Vector2.RIGHT, 0.0, true)
+	check(before - tb.hp == 50, "Sturdy Shield halves his hits (%d of 100)" % (before - tb.hp))
+	tb.take_hit(int((tb.hp - tb.bar_hp * 2.9) / 0.5), Vector2.RIGHT, 0.0, true)
+	await wait(Boss.STAGGER_FOR + 0.6)
+	check(tb.reflecting() and absf(tb.reflect_until - tb.now() - 10.0) < 1.0 and absf(tb.reflect_ready_at - tb.now() - 30.0) < 1.0,
+		"from his second bar Mana Reflector holds 10 s on a 30 s cooldown (%.1f, %.1f)"
+		% [tb.reflect_until - tb.now(), tb.reflect_ready_at - tb.now()])
+	game.player.invulnerable_until = 0.0
+	var hp_before: int = Run.hp
+	before = tb.hp
+	tb.take_hit(100, Vector2.RIGHT, 0.0, true, {"magic": true})
+	check(Run.hp < hp_before and before - tb.hp < 50, "a spell on him comes partly back (%d to you, %d to him)"
+		% [hp_before - Run.hp, before - tb.hp])
+	game.player.invulnerable_until = game.player.now() + 999.0
+	await wait(1.0)
+	var chimus := enemies().filter(func(e: Enemy) -> bool: return e.data.id == &"chimu").size()
+	check(chimus >= 1, "Tombeth calls Chimu as he loses a bar (%d)" % chimus)
+	var speed := tb.run_speed
+	var dp: float = tb.stats.DP
+	tb.take_hit(int((tb.hp - tb.bar_hp * 1.9) / 0.5), Vector2.RIGHT, 0.0, true)
+	await wait(Boss.STAGGER_FOR + 0.3)
+	check(tb.enraged and not tb.shielded() and tb.run_speed > speed and float(tb.stats.DP) < dp,
+		"at half HP he rages: faster, the shield gone, his DP down (%s, %.0f -> %.0f, DP %d -> %d)"
+		% [tb.enraged, speed, tb.run_speed, dp, tb.stats.DP])
+	var x := tb.x_pattern(Vector2.ZERO)
+	var diagonal := x.all(func(p: Dictionary) -> bool:
+		var g := Combat.ground(p.at)
+		return is_zero_approx(absf(g.x) - absf(g.y)))
+	check(x.size() == 13 and diagonal, "his slam drops 13 rocks on an X across the floor (%d)" % x.size())
+	tb._slam_at = 0.0
+	await wait(1.0)
+	var rocks := game.room.world.get_children().filter(func(n: Node) -> bool: return n is FallingRock).size()
+	var warns := game.room.ground_fx.get_children().filter(func(n: Node) -> bool: return n is Telegraph).size()
+	check(rocks >= 1 and warns >= rocks, "the rocks fall with a mark on the ground under each (%d rocks, %d marks)" % [rocks, warns])

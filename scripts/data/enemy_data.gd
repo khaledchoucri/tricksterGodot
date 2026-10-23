@@ -23,6 +23,11 @@ extends Resource
 @export var scene: PackedScene
 @export var drop_item: ItemData
 @export var drop_chance := 0.0
+## Bosses: their BossMonsterparamEx row and moveset numbers (scripts/boss.gd).
+@export var boss: BossData
+## How much larger than its sheet it is drawn. Reading: CharacterInfo's SizeOnStop (2 for
+## the Sphinx, which shares the Mad Captain's mon161 sheet, 1 for most) draws it bigger.
+@export var sprite_scale := 1.0
 ## Echoes: ghosts of former players of another class. Their stats come from
 ## `stats_override` (a monster-row-like Dictionary), they ignore the region's
 ## scales, and beating one offers one of its `runes` (borrowed skills).

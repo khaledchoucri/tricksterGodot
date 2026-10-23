@@ -1,11 +1,12 @@
 class_name BossMong
-extends Enemy
+extends Boss
 ## Master Mong, the Coral Beach boss (scenes/boss_mong.tscn), monster 2215 (mon281.nri).
 ## Deviation (user, 2026-10-22): he fights in the Coral Beach boss room the Golden Mole used, cut from
 ## map_dg11b (MapInfoEx 152, "Coral Beach - Dark Cave", Mon_Coral_Dungeon2), not on his own map,
 ## map_fd11g (MapInfoEx 216, the same name: Mon_Coral_Play7, BossMon_Coral_Play7).
 ## His BossMonsterparamEx row (2215, read by the server's loader at 0x5ddb80) gives:
-##  - three lives (LifeCnt 3): one HP pool, a life lost at each third of it;
+##  - three lives (LifeCnt 3): one HP pool drawn as three bars (Boss: his 2.9 x hp_mult is three
+##    original lives), a life lost as each bar breaks, with the stagger and phase that follow;
 ##  - M Mana Storm (5104 Lv 7) on every life, Mana Shield (2013 Lv 4) from his second (LeftLife 2),
 ##    M Mana Ring (5103 Lv 5) and his heal on his last (LeftLife 1, HealLeftLife_0 1);
 ##  - his two lines (Speech_0 as he appears, Speech_1 as he calls the Thief Mongs), and NotEarthQuake 1:
@@ -21,13 +22,12 @@ extends Enemy
 ## Each spell's numbers are its ESAction / ESAII row at that level. The client draws these monster
 ## spells with the player's classes (it has no ESAMon class for them: ESAMagicRing, ESAMagicStormHit,
 ## ESAMagicWall), so they wear our player spells' effects and sounds (the scene's *_look cards).
-## Left out: Rust (2011), which lowers your AP (the player has no debuffs yet), and his field
+## Left out: Rust (2011), which lowers your AP (his spells are the user's three), and his field
 ## tactics (Tactics_Mon281: Arrow Rush, Fire Breath, M Cure), which our monsters don't read; his
 ## GiveItem rows (Master and level 35-60 gear) are far above Coral Beach's gear levels.
 
-## Reading: a skill row is active while his lives left are at most its LeftLife; a row with
-## LeftLife 0 (M Mana Storm) has no gate.
-const LIVES := 3
+## Reading: a skill row is active while his bars left (bars_left(), counting the one he is on)
+## are at most its LeftLife; a row with LeftLife 0 (M Mana Storm) has no gate.
 const SHIELD_LIVES := 2  # SkillLeftLife_0
 const RING_LIVES := 1    # SkillLeftLife_3
 const HEAL_LIVES := 1    # HealLeftLife_0
@@ -63,12 +63,11 @@ const SUMMON_ID := &"thief_mong"
 const HALF_HP := 0.5
 ## Ours: a moment after he appears before the first group comes, so they don't land on the door.
 const SUMMON_DELAY := 1.5
-## His heal (HealLevel_0 1 = M Cure Lv 1, ESAction_Mon_Heal Ratio 0.06; HealTime_0 5000 ms).
+## His heal (HealLevel_0 1 = M Cure Lv 1, ESAction_Mon_Heal Ratio 0.06 of one life's HP, a bar;
+## HealTime_0 5000 ms).
 const HEAL_SHARE := 0.06
 const HEAL_EVERY := 5.0
 const HEAL_CAST := 1.0  # Ours: he stands to cast it, a window to punish
-const LINE_OPEN := "Hey, guys~ Do I have to put myself forward to this matter?"
-const LINE_SUMMON := "Come on out immediately~"
 ## His own attack (samon281) and voice (BossSound bv_mon281), and the heal's (Cure has no card here).
 const SND_CAST := "samon281.wav"
 const SND_VOICE := "snd_bv_mon281.wav"
@@ -84,7 +83,6 @@ const SND_HEAL := "eff_healing1.wav"
 ## Deviation (user, 2026-10-22): Cure is cast a limited number of times a fight. Ours: three.
 @export var heal_casts := 3
 
-var lives_lost := 0
 ## Thief Mongs called so far.
 var summoned := 0
 ## Each spell's casts so far, by name (tests and tuning read it).
@@ -95,24 +93,23 @@ var _storm_at := 0.0
 var _shield_at := 0.0
 var _shield_until := 0.0
 var _ring_at := 0.0
-var _heal_at := INF
+var _cure_at := INF
 var _half_called := false
 
 
 func _ready() -> void:
 	super._ready()
 	base_md = float(stats.get("MD", 0))
-	_storm_at = now() + STORM_EVERY
+	_storm_at = now() + INTRO_FOR + STORM_EVERY
 	Audio.play(SND_VOICE, -4.0)
-	Events.boss_spoke.emit(LINE_OPEN)
-	await get_tree().create_timer(SUMMON_DELAY).timeout
+	await get_tree().create_timer(SUMMON_DELAY, false).timeout
 	if state != State.DEAD and is_inside_tree():
 		_summon(summon_start)
 
 
-## Lives left (LifeCnt minus those lost).
-func lives_left() -> int:
-	return LIVES - lives_lost
+## Bars left, counting the one he is on (3, 2, then 1): his rows' LeftLife count.
+func bars_left() -> int:
+	return lives_left + 1
 
 
 ## Whether Mana Shield is up. Its +19% is of the MD he wears, the region's (Coral Beach's is 0).
@@ -140,15 +137,15 @@ func _state_chase() -> void:
 		super._state_chase()
 		return
 	var dist := Combat.ground(player.global_position - global_position).length()
-	if lives_left() <= SHIELD_LIVES and now() >= _shield_at:
+	if bars_left() <= SHIELD_LIVES and now() >= _shield_at:
 		_mana_shield()
-	if lives_left() <= HEAL_LIVES and now() >= _heal_at and hp < max_hp:
+	if bars_left() <= HEAL_LIVES and now() >= _cure_at and hp < bar_top():
 		_cure()
 		return
 	if now() >= _storm_at and dist <= STORM_RANGE and room.request_attack_token(self):
 		_mana_storm()
 		return
-	if lives_left() <= RING_LIVES and now() >= _ring_at and dist <= RING_RANGE and room.request_attack_token(self):
+	if bars_left() <= RING_LIVES and now() >= _ring_at and dist <= RING_RANGE and room.request_attack_token(self):
 		_mana_ring()
 		return
 	super._state_chase()
@@ -187,9 +184,9 @@ func _mana_storm() -> void:
 	var radius := STORM_RADIUS * STORM_SHRINK
 	var warn := Telegraph.make("circle", STORM_DELAY, {"radius": radius})
 	room.add_ground_fx(warn, at)
-	await get_tree().create_timer(STORM_DELAY).timeout
+	await get_tree().create_timer(STORM_DELAY, false).timeout
 	room.release_attack_token(self)
-	if state == State.DEAD or not is_inside_tree() or not is_instance_valid(player):
+	if broken_off():
 		return
 	if is_instance_valid(warn):
 		warn.trigger()
@@ -266,36 +263,32 @@ func _mana_shield() -> void:
 ## Calls `count` Thief Mongs around him.
 func _summon(count: int) -> void:
 	summoned += count
-	Events.boss_spoke.emit(LINE_SUMMON)
+	Events.boss_spoke.emit(boss.line_summon)
 	room.summon(global_position, SUMMON_ID, count)
 
 
 ## Cure: he stands, then a share of his max HP comes back, while his casts last.
 func _cure() -> void:
 	_cast("heal", HEAL_CAST)
-	_heal_at = now() + HEAL_EVERY if casts.heal < heal_casts else INF
-	await get_tree().create_timer(HEAL_CAST).timeout
-	if state == State.DEAD or not is_inside_tree():
+	_cure_at = now() + HEAL_EVERY if casts.heal < heal_casts else INF
+	await get_tree().create_timer(HEAL_CAST, false).timeout
+	if broken_off():
 		return
-	hp = mini(max_hp, hp + roundi(max_hp * HEAL_SHARE))
-	Events.boss_health_changed.emit(self)
+	heal(roundi(bar_hp * HEAL_SHARE))
 	Audio.play(SND_HEAL, -6.0)
 	Ring.spawn(room.ground_fx, global_position, 36.0, 0.5, Color(0.6, 1.0, 0.6, 0.85))
 
 
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
-	super.take_hit(amount, dir, knockback * 0.2, heavy, fx)
+	super.take_hit(amount, dir, knockback, heavy, fx)
 	if hp <= 0:
 		return
-	while lives_lost < LIVES - 1 and float(hp) / max_hp <= 1.0 - float(lives_lost + 1) / LIVES:
-		_lose_life()
 	if not _half_called and float(hp) / max_hp <= HALF_HP:
 		_half_called = true
 		_summon(summon_half)
 
 
-## A life lost: on his last he starts to Cure himself.
-func _lose_life() -> void:
-	lives_lost += 1
-	if lives_left() <= HEAL_LIVES and casts.get("heal", 0) < heal_casts:
-		_heal_at = now() + HEAL_EVERY
+## A bar broken (Boss): on his last he starts to Cure himself.
+func _on_phase(_lives: int) -> void:
+	if bars_left() <= HEAL_LIVES and casts.get("heal", 0) < heal_casts and _cure_at == INF:
+		_cure_at = now() + HEAL_EVERY

@@ -38,7 +38,8 @@ func _physics_process(delta: float) -> void:
 			e.nudge(to.normalized() * pull * (0.35 if e.is_boss else 1.0))
 	if _t >= _next_tick:
 		_next_tick = _t + tick
-		for e in room.enemies:
+		# on_hit can kill and remove enemies during this tick.
+		for e: Enemy in room.enemies.duplicate():
 			if e.is_hittable() and Combat.in_circle(global_position, e.global_position, radius, e.body_radius):
 				on_hit.call(e)
 		Sparks.burst(room, global_position + Vector2(0, -20), Color(0.85, 1.0, 0.95, 0.8), 6, 90.0, 0.35, 2.0)

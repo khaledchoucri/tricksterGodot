@@ -25,11 +25,10 @@ const CURVE_STEP := 10.0
 const CURVE_FPS := 60.0
 
 var room: Room
-var target: Enemy
+## Who it flies at: a monster (your spells) or you (a boss casting them back).
+var target: Node2D
 ## Where to fly when there's no target (or it dies on the way).
 var target_point := Vector2.ZERO
-## A node to home on instead of a monster: a monster's spell flying at the player.
-var homing: Node2D
 var caster: Node2D
 var appear := 0.0
 var fire := 0.3
@@ -56,7 +55,7 @@ var trail_alpha := 1.0
 var trail_speed := 200.0
 var trail_vary := true
 var trail_shrink := false
-## Called with the enemy hit, or null when it ends without one.
+## Called with the target hit (an Enemy, or the Player), or null when it ends without one.
 var on_hit: Callable
 var on_appear: Callable
 
@@ -86,10 +85,8 @@ func _ready() -> void:
 
 
 func _aim_ground() -> Vector2:
-	if is_instance_valid(target) and target.is_hittable():
+	if _target_alive():
 		target_point = target.global_position
-	elif is_instance_valid(homing):
-		target_point = homing.global_position
 	return Combat.ground(target_point)
 
 
@@ -132,7 +129,7 @@ func _physics_process(delta: float) -> void:
 				_angle += deg_to_rad(spin) * delta
 			var g := _aim_ground() - _ground
 			if Vector3(g.x, AIM_HEIGHT - _height, g.y).length() < REACH:
-				_finish(target if is_instance_valid(target) and target.is_hittable() else null)
+				_finish(target if _target_alive() else null)
 			elif _rush_t > MAX_RUSH:
 				_finish(null)
 	_tick_trail(delta)
@@ -207,7 +204,15 @@ func _exit_tree() -> void:
 			on_hit.call(null)
 
 
-func _finish(e: Enemy) -> void:
+func _target_alive() -> bool:
+	if not is_instance_valid(target):
+		return false
+	if target is Enemy:
+		return (target as Enemy).is_hittable()
+	return not (target is Player and (target as Player).state == Player.State.DEAD)
+
+
+func _finish(e: Node2D) -> void:
 	_phase = 4
 	if on_hit.is_valid():
 		on_hit.call(e)

@@ -15,7 +15,8 @@ func _init() -> void:
 	dash_cancel_at = 0.15
 
 
-func start() -> void:
+## Finalize target and strike-count timing before the caster starts animation.
+func prepare() -> void:
 	_spot = target_spot()
 	_foe = nearest_to(_spot, 90.0)
 	if _foe == null:

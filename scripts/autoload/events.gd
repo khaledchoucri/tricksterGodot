@@ -30,6 +30,8 @@ signal enemy_spawned(enemy: Enemy)
 signal enemy_died(enemy: Enemy)
 signal boss_health_changed(enemy: Enemy)
 signal boss_spoke(text: String)
+## A boss steps in: its name card shows its name, its title and its opening line.
+signal boss_intro(boss_name: String, title: String, line: String)
 signal player_hp_changed
 signal player_died
 ## The player cast the skill in a slot (0-2).

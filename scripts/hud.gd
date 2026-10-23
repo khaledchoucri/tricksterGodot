@@ -12,6 +12,9 @@ const MUTED := Color(1, 1, 1, 0.6)
 const SLOT_KEYS: Array[String] = ["RMB", "Q", "E", "F"]
 const PICK_OPTION := preload("res://scenes/ui/pick_option.tscn")
 const LOG_LINES := 6
+## The boss name card: seconds to fade in or out, and to hold. Ours.
+const INTRO_FADE := 0.4
+const INTRO_HOLD := 2.2
 
 @onready var pick_panel: PanelContainer = %PickPanel
 @onready var results_panel: PanelContainer = %ResultsPanel
@@ -26,6 +29,7 @@ var _pick_buttons: Array[PickOption] = []
 var _pick_cancel := -1
 var _pick_keys: Array[int] = []
 var _hub_mode := false
+var _intro: VBoxContainer
 
 
 func _ready() -> void:
@@ -89,6 +93,19 @@ func refresh(player: Player) -> void:
 		sheet.refresh()
 	if is_instance_valid(player):
 		%DashLabel.text = "Dash  [Space]  " + ("ready" if player.can_dash() else "...")
+	_refresh_debuffs()
+
+
+## The monster spells cutting your stats (Rust, Magic Meltdown), with the time they have left.
+func _refresh_debuffs() -> void:
+	var parts: PackedStringArray = []
+	for k: String in Run.debuffs:
+		var d: Dictionary = Run.debuffs[k]
+		var left := float(d.until) - Events.time
+		if left > 0.0:
+			parts.append("%s  %s -%d%%  %ds" % [d.name, k, roundi(float(d.percent)), ceili(left)])
+	%DebuffLabel.visible = not parts.is_empty()
+	%DebuffLabel.text = "  ·  ".join(parts)
 
 
 ## The type the class grows in most (Power for Buffalo and Bunny).
@@ -130,12 +147,47 @@ func set_room(text: String) -> void:
 	%RoomLabel.text = text
 
 
-func show_boss(enemy_name: String, hp: int, max_hp: int) -> void:
+## The boss's HP, drawn as `bars` stacked bars (scripts/ui/boss_hp_bar.gd).
+func show_boss(enemy_name: String, hp: int, max_hp: int, bars := 1) -> void:
 	%BossBox.visible = true
-	%BossName.text = enemy_name
-	var bar: ProgressBar = %BossBar
-	bar.max_value = max_hp
-	bar.value = hp
+	(%BossBar as BossHpBar).set_hp(enemy_name, hp, max_hp, bars)
+
+
+## A boss's name card as it steps in: its name, its title, and its opening line.
+func show_boss_intro(boss_name: String, title: String, line: String) -> void:
+	if is_instance_valid(_intro):
+		_intro.queue_free()
+	_intro = VBoxContainer.new()
+	_intro.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_intro.alignment = BoxContainer.ALIGNMENT_CENTER
+	_intro.set_anchors_preset(Control.PRESET_CENTER)
+	_intro.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_intro.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_intro.position.y -= 120.0
+	for part: Array in [[boss_name, 40, Color(0.95, 0.78, 0.35)], [title, 16, Color(1, 1, 1, 0.8)],
+			["\"%s\"" % line if line != "" else "", 17, Color(0.9, 0.88, 0.8)]]:
+		if String(part[0]) == "":
+			continue
+		var l := Label.new()
+		l.text = part[0]
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.add_theme_font_size_override("font_size", part[1])
+		l.add_theme_color_override("font_color", part[2])
+		l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+		l.add_theme_constant_override("outline_size", 6)
+		_intro.add_child(l)
+	$Root.add_child(_intro)
+	_intro.modulate.a = 0.0
+	var tw := _intro.create_tween()
+	tw.tween_property(_intro, "modulate:a", 1.0, INTRO_FADE)
+	tw.tween_interval(INTRO_HOLD)
+	tw.tween_property(_intro, "modulate:a", 0.0, INTRO_FADE)
+	tw.tween_callback(_intro.queue_free)
+
+
+## The boss name card on screen, while it shows (for tests).
+func boss_intro() -> Control:
+	return _intro if is_instance_valid(_intro) else null
 
 
 func hide_boss() -> void:

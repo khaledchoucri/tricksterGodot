@@ -68,7 +68,8 @@ func _ready() -> void:
 			Run.purse.carried_weight(), Run.purse.carry_limit()], Color("f07a62")))
 	Events.enemy_spawned.connect(_on_enemy_spawned)
 	Events.enemy_died.connect(_on_enemy_died)
-	Events.boss_health_changed.connect(func(e: Enemy) -> void: hud.show_boss(e.display_name, e.hp, e.max_hp))
+	Events.boss_health_changed.connect(_show_boss)
+	Events.boss_intro.connect(hud.show_boss_intro)
 	Events.boss_spoke.connect(func(text: String) -> void: hud.log_line("[%s] %s" % [_boss_name, text], Color("e0b54d")))
 	Events.player_died.connect(_on_player_died)
 	Events.revived.connect(func() -> void:
@@ -909,6 +910,11 @@ func _region_cleared() -> void:
 		next.region.display_name], Color("e0b54d"))
 
 
+## The boss's HP on the HUD, in its bars.
+func _show_boss(e: Enemy) -> void:
+	hud.show_boss(e.display_name, e.hp, e.max_hp, (e as Boss).bars if e is Boss else 1)
+
+
 func _region_boss_name() -> String:
 	for e in Run.route.region.enemies:
 		if e.is_boss:
@@ -935,7 +941,7 @@ func _process(delta: float) -> void:
 func _on_enemy_spawned(e: Enemy) -> void:
 	if e.is_boss:
 		_boss_name = e.display_name
-		hud.show_boss(e.display_name, e.hp, e.max_hp)
+		_show_boss(e)
 
 
 func _on_enemy_died(e: Enemy) -> void:
