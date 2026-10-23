@@ -4,6 +4,11 @@ extends SmokeSection
 
 
 func run(Run: Node) -> void:
+	var rune: SmokeSection = preload("res://tests/smoke/rune_level.gd").new()
+	rune.runner = runner
+	add_child(rune)
+	rune.run()
+	rune.free()
 	var health: SmokeSection = preload("res://tests/smoke/equip_hp.gd").new()
 	health.runner = runner
 	add_child(health)
