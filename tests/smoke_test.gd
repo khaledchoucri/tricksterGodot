@@ -120,6 +120,13 @@ func _run() -> void:
 	if _on("lint"):
 		_section(LINT).run()
 
+	if _on("core"):
+		# No game callbacks or later timing-sensitive sections may share this fixture's frames.
+		if is_instance_valid(game):
+			game.free()
+		game = null
+		await _section(CORE).paused_room_gameplay()
+
 	print("\n%s: %d failure(s)%s" % ["OK" if failures == 0 else "FAILED", failures,
 		"" if only.is_empty() else " in " + ", ".join(only)])
 	Engine.time_scale = 1.0

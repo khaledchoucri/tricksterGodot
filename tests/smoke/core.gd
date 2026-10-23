@@ -172,3 +172,12 @@ func rewards() -> void:
 			break
 	check(saw_shot, "Clione fires a projectile")
 	check(Run.hp < hp_start, "enemy attacks hurt the player (%d -> %d)" % [hp_start, Run.hp])
+
+
+## Run async map-independent checks last, after the runner has disposed of its game.
+func paused_room_gameplay() -> void:
+	var section: SmokeSection = preload("res://tests/smoke/room_pause.gd").new()
+	section.runner = runner
+	add_child(section)
+	await section.run()
+	section.free()
