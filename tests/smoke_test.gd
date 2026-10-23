@@ -23,6 +23,8 @@ const CORE := preload("res://tests/smoke/core.gd")
 ## Map-independent movement checks for enemy crowd control.
 const ENEMY_CONTROL := preload("res://tests/smoke/enemy_control.gd")
 const POWER := preload("res://tests/smoke/power.gd")
+## Actor-free checks run before the map-dependent Power tests.
+const CLINCH_RELEASE := preload("res://tests/combat/clinch_release.gd")
 const MULTI_TARGET := preload("res://tests/combat/multi_target.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
 ## Shared lingering-skill timing checks need no map.
@@ -98,11 +100,15 @@ func _on(section: String) -> bool:
 func _run() -> void:
 	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
 	if _on("power"):
-		# Run map-independent lethal-hit checks before constructing the game.
-		var combat_checks: Node = MULTI_TARGET.new()
+		var combat_checks: Node = CLINCH_RELEASE.new()
 		add_child(combat_checks)
-		check(combat_checks.run() == 0, "multi-target combat regression checks")
+		check(combat_checks.run() == 0, "stagger escape regression checks")
 		combat_checks.free()
+		# Run map-independent lethal-hit checks before constructing the game.
+		var combat_checks_2: Node = MULTI_TARGET.new()
+		add_child(combat_checks_2)
+		check(combat_checks_2.run() == 0, "multi-target combat regression checks")
+		combat_checks_2.free()
 		# Cosmetic effects in the checks must not change the smoke test's placement/rolls.
 		seed(test_seed)
 		Run.next_seed = test_seed
