@@ -206,9 +206,10 @@ func all_cards() -> Array[CardData]:
 	return out
 
 
+## Reading: a borrowed rune may strengthen a learned skill, never lower its effective level.
 func card_level(id: StringName) -> int:
 	if rune and id == rune.id:
-		return rune_level
+		return maxi(rune_level, int(cards.get(id, 0)))
 	return cards.get(id, 0)
 
 

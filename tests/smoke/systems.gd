@@ -4,6 +4,11 @@ extends SmokeSection
 
 
 func run(Run: Node) -> void:
+	var rune: SmokeSection = preload("res://tests/smoke/rune_level.gd").new()
+	rune.runner = runner
+	add_child(rune)
+	rune.run()
+	rune.free()
 	_restore_all(Run)
 	# The run crosses three regions; every room's map is exported and every monster has its
 	# original stats.
