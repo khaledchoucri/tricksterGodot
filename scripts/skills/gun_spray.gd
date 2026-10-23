@@ -3,7 +3,9 @@ extends Skill
 ## shots at up to MonNum random enemies around you, one each in quick
 ## succession (the client's ESAMeleeShot and ESAReckless pick them at random).
 ## They don't need the gun loaded and don't reload it.
-## Like basic gunfire, cover blocks target selection and each subsequent shot.
+## Reading: like basic gunfire (the client's GunAttack refuses a blocked line, "obstacles
+## impossible to penetrate"), cover blocks target selection and each later shot. The client's
+## ESAMeleeShot/ESAReckless cover rule wasn't found.
 
 const GAP := 0.07
 
