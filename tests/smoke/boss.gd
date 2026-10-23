@@ -279,7 +279,31 @@ func _tombeth() -> void:
 		return is_zero_approx(absf(g.x) - absf(g.y)))
 	check(x.size() == 13 and diagonal, "his slam drops 13 rocks on an X across the floor (%d)" % x.size())
 	tb._slam_at = 0.0
-	await wait(1.0)
-	var rocks := game.room.world.get_children().filter(func(n: Node) -> bool: return n is FallingRock).size()
-	var warns := game.room.ground_fx.get_children().filter(func(n: Node) -> bool: return n is Telegraph).size()
-	check(rocks >= 1 and warns >= rocks, "the rocks fall with a mark on the ground under each (%d rocks, %d marks)" % [rocks, warns])
+	var sample := await _sample_rocks(get_tree(), game.room.world, game.room.ground_fx)
+	check(sample.x >= 1 and sample.y == sample.x,
+		"the rocks fall with a mark on the ground under each (%d rocks, %d marked)" % [sample.x, sample.y])
+
+
+## Sample during flight instead of after a fixed delay that can outlast the rocks.
+## Ours: 90 physics frames allow 1.5 s at the smoke suite's fixed 60 fps for a slam to start.
+static func _sample_rocks(tree: SceneTree, world: Node, ground: Node) -> Vector2i:
+	for frame: int in 90:
+		await tree.physics_frame
+		var sample := _rocks_with_marks(world, ground)
+		if sample.x > 0:
+			return sample
+	return Vector2i.ZERO
+
+
+## Check that each airborne rock has a warning at its landing position.
+static func _rocks_with_marks(world: Node, ground: Node) -> Vector2i:
+	var sample := Vector2i.ZERO
+	for child: Node in world.get_children():
+		if not child is FallingRock:
+			continue
+		sample.x += 1
+		for mark: Node in ground.get_children():
+			if mark is Telegraph and (mark as Node2D).global_position.is_equal_approx((child as Node2D).global_position):
+				sample.y += 1
+				break
+	return sample
