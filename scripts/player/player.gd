@@ -222,8 +222,9 @@ func move_input() -> Vector2:
 
 
 ## Starts whatever buffered action can start now. Returns true if one did.
+## Cooldown-blocked dash input keeps its original buffer deadline.
 func try_actions() -> bool:
-	if take_buffer("dash") and can_dash():
+	if can_dash() and take_buffer("dash"):
 		start_dash()
 		return true
 	for i in SkillCaster.SLOT_ACTIONS.size():
