@@ -42,6 +42,11 @@ func first_room() -> void:
 
 ## Fading props, vaulting, the room reward, gear, the anvil, level-ups, a door, and a monster's shot.
 func rewards() -> void:
+	var outcome: SmokeSection = preload("res://tests/smoke/run_outcome.gd").new()
+	outcome.runner = runner
+	add_child(outcome)
+	outcome.run()
+	outcome.free()
 	var checks: SmokeSection = preload("res://tests/smoke/dash_buffer.gd").new()
 	checks.runner = runner
 	add_child(checks)

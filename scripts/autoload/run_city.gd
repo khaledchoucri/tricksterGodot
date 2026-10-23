@@ -3,6 +3,9 @@ extends RefCounted
 ## What a run takes from Megalopolis and gives back (Run.city): the restorations' systems and
 ## bonuses, the loadout and the warehouse, the custom Trickster, and banking the finished run.
 
+## Whether this run has already banked its terminal outcome; reset by Run.new_run.
+var finished := false
+
 ## Trees a Trickster can pick from: every class's 2nd and 3rd jobs, and
 ## the other classes' trees learned through Echo runes.
 const TRICKSTER_TREES: Array[String] = ["res://data/jobs/knight.tres", "res://data/jobs/boxer.tres",
@@ -319,6 +322,9 @@ func room_mp_bonus() -> int:
 ## Banks the finished run into the profile and remembers it for the hub.
 ## Heat adds TM; clearing at a new best Heat pays a shard per new level.
 func finish(p_won: bool) -> void:
+	if finished:
+		return
+	finished = true
 	var reached := Run.route.depth + (1 if p_won else 0)
 	var heat := ServerSettings.heat()
 	Run.purse.tm += int(Run.purse.tm * heat * ServerSettings.TM_PER_HEAT)
