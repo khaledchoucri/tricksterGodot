@@ -307,6 +307,7 @@ func _one_pair_fan(p: Player) -> void:
 	Run.mp = Run.max_mp
 	p.skills.slot_ready_at[0] = 0.0
 	var before := dummy.hp
+	var throw_direction := Combat.ground(dummy.global_position - p.global_position).normalized()
 	var cast := p.skills.try_cast(0)
 	await get_tree().physics_frame
 	var angles: Array[float] = []
@@ -314,7 +315,7 @@ func _one_pair_fan(p: Player) -> void:
 	for n in game.room.get_children():
 		if n is ThrownItem:
 			var item := n as ThrownItem
-			angles.append(Combat.ground(item.target_point - p.global_position).angle())
+			angles.append(_fan_angle(throw_direction, Combat.ground(item.target_point - p.global_position)))
 			as_cards = as_cards and item.cake == "eft_skl_c_301_sut" and not item.homing
 	angles.sort()
 	var spread := rad_to_deg(angles[-1] - angles[0]) if angles.size() > 1 else 0.0
@@ -389,3 +390,8 @@ func _full_house(p: Player) -> void:
 	Run.job = job0
 	Run.hp = Run.max_hp
 	await wait(0.3)
+
+
+## Measure in the throw's frame so a fan across -PI/PI is still narrow.
+static func _fan_angle(aim: Vector2, direction: Vector2) -> float:
+	return aim.angle_to(direction)
