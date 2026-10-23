@@ -17,8 +17,8 @@ var step := 0
 ## Aim locked in for the current swing.
 var swing_aim := Vector2.RIGHT
 
-var _t := 0.0
-var _window := -1
+var _t := 0.0  # accumulated swing time at normal speed
+var _hits_by_window: Dictionary[int, Array] = {}
 var _hit_this_window: Array[Enemy] = []
 
 @onready var player: Player = get_parent()
@@ -31,7 +31,8 @@ func _steps() -> Array[ComboStep]:
 func start(index: int) -> void:
 	step = index
 	_t = 0.0
-	_window = -1
+	_hits_by_window.clear()
+	_hit_this_window = []
 	var s := _steps()[index]
 	player.enter(Player.State.ATTACK)
 	swing_aim = player.aim  # each swing commits to the aim it started with
@@ -43,24 +44,27 @@ func start(index: int) -> void:
 	Audio.play(s.sound, -6.0)
 
 
-## Runs one physics frame of the current swing.
+## Resolves every hit window crossed by this frame. Each window retains its own
+## targets, and speed changes advance swing time without rewinding prior hits.
 func update(delta: float) -> void:
-	_t += delta
 	var s := _steps()[step]
 	var speed := Run.formulas.attack_speed_mult()
-	var t := _t * speed  # swing time at normal speed
+	var previous := _t
+	_t += delta * speed
+	var t := _t
 	var lunge := s.lunge if t < s.windows[s.windows.size() - 1].y else 0.0
 	player.velocity = Combat.screen(swing_aim) * lunge + player.knock
 	for i in s.windows.size():
 		var w := s.windows[i]
-		if t >= w.x and t <= w.y:
-			if _window != i:
-				_window = i
-				_hit_this_window.clear()
+		if t >= w.x and previous < w.y:
+			if not _hits_by_window.has(i):
+				var hits: Array[Enemy] = []
+				_hits_by_window[i] = hits
 				if s.slash:
 					_spawn_slash(s, (w.y - w.x) / speed)
+			_hit_this_window = _hits_by_window[i]
 			_apply(s)
-	if t >= s.dash_cancel and player.take_buffer("dash") and player.can_dash():
+	if t >= s.dash_cancel and player.can_dash() and player.take_buffer("dash"):
 		player.start_dash()
 		return
 	if t >= s.chain_at and step + 1 < _steps().size() and player.take_buffer("attack"):
@@ -76,10 +80,11 @@ func update(delta: float) -> void:
 func _apply(s: ComboStep) -> void:
 	var landed := false
 	var crit_any := false
-	for e in player.room.enemies:
+	# A lethal hit removes its target from the room immediately. Keep this damage pass stable.
+	for e: Enemy in player.room.enemies.duplicate():
 		if e in _hit_this_window or not e.is_hittable():
 			continue
-		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius):
+		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius) and e.can_take_hit():
 			_hit_this_window.append(e)
 			crit_any = player.deal_hit(e, s.damage, _mult(s), s.knockback, s.finisher, _talent_fx(s)) or crit_any
 			if player.now() >= float(e.get_meta("hit_fx_at", -1.0)) + HIT_EFFECT_GAP:

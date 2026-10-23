@@ -17,11 +17,24 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 
 
 ## The sections' scripts (tests/smoke/).
+## Combo timing checks run without an exported map.
+const COMBO_WINDOWS := preload("res://tests/smoke/combo_windows.gd")
 const CORE := preload("res://tests/smoke/core.gd")
+## Map-independent movement checks for enemy crowd control.
+const ENEMY_CONTROL := preload("res://tests/smoke/enemy_control.gd")
 const POWER := preload("res://tests/smoke/power.gd")
+## Actor-free checks run before the map-dependent Power tests.
+const CLINCH_RELEASE := preload("res://tests/combat/clinch_release.gd")
+const MULTI_TARGET := preload("res://tests/combat/multi_target.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
+## Shared lingering-skill timing checks need no map.
+const SKILL_WAIT := preload("res://tests/combat/skill_wait.gd")
 const SENSE := preload("res://tests/smoke/sense.gd")
+## Gun skill modifiers can be checked without spawning the game.
+const GUN_BONUSES := preload("res://tests/smoke/gun_bonuses.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
+## Burn lifecycle checks do not require a map.
+const BURN_EXPIRY := preload("res://tests/smoke/burn_expiry.gd")
 const CHARM := preload("res://tests/smoke/charm.gd")
 const TALENTS := preload("res://tests/smoke/talents.gd")
 const BALANCE := preload("res://tests/smoke/balance.gd")
@@ -64,10 +77,19 @@ func _ready() -> void:
 				push_error("smoke test: unknown argument %s (sections: %s)" % [arg, ", ".join(SECTIONS)])
 				get_tree().quit(2)
 				return
+	if _on("core"):
+		_section(ENEMY_CONTROL).run()
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
+	if _on("elements"):
+		_section(BURN_EXPIRY).run()
 	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
 	Run.next_seed = test_seed
+	if _on("sense"):
+		_section(GUN_BONUSES).run()
 	_run.call_deferred()
+	# Synchronous fixture checks finish before the deferred game boot.
+	if _on("power"):
+		_section(COMBO_WINDOWS).run()
 
 
 ## Whether a section runs: every one, or those picked on the command line.
@@ -77,6 +99,19 @@ func _on(section: String) -> bool:
 
 func _run() -> void:
 	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
+	if _on("power"):
+		var combat_checks: Node = CLINCH_RELEASE.new()
+		add_child(combat_checks)
+		check(combat_checks.run() == 0, "stagger escape regression checks")
+		combat_checks.free()
+		# Run map-independent lethal-hit checks before constructing the game.
+		var combat_checks_2: Node = MULTI_TARGET.new()
+		add_child(combat_checks_2)
+		check(combat_checks_2.run() == 0, "multi-target combat regression checks")
+		combat_checks_2.free()
+		# Cosmetic effects in the checks must not change the smoke test's placement/rolls.
+		seed(test_seed)
+		Run.next_seed = test_seed
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	await get_tree().create_timer(2.6).timeout
@@ -119,6 +154,13 @@ func _run() -> void:
 		_section(SYSTEMS).run(get_node("/root/Run"))
 	if _on("lint"):
 		_section(LINT).run()
+	if _on("magic"):
+		# Last: it spends real frames paused and unpaused, which would shift the game clock
+		# under the timed checks of the sections above.
+		var wait_checks: Node = SKILL_WAIT.new()
+		add_child(wait_checks)
+		check(await wait_checks.run() == 0, "skill pause/resume regression checks")
+		wait_checks.free()
 
 	print("\n%s: %d failure(s)%s" % ["OK" if failures == 0 else "FAILED", failures,
 		"" if only.is_empty() else " in " + ", ".join(only)])

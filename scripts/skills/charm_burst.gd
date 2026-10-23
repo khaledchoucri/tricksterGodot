@@ -30,7 +30,8 @@ func _init() -> void:
 	dash_cancel_at = 0.25
 
 
-func start() -> void:
+## Finalize presentation and targeting before the caster starts the action.
+func prepare() -> void:
 	match card.id:
 		&"siren_song", &"sharp_scream":
 			anim = "attack2"

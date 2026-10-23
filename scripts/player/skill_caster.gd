@@ -151,6 +151,7 @@ func casting_slot() -> int:
 
 
 func _begin() -> void:
+	_skill.prepare()
 	if _skill.invulnerable:
 		player.invulnerable_until = maxf(player.invulnerable_until, player.now() + _skill.duration)
 		player.set_phasing(true)
@@ -164,7 +165,7 @@ func _begin() -> void:
 func update(delta: float) -> void:
 	if _cast_left > 0.0:
 		player.velocity = Vector2.ZERO  # locked in place while casting
-		if player.take_buffer("dash") and player.can_dash():
+		if player.can_dash() and player.take_buffer("dash"):
 			cancel()
 			player.start_dash()
 			return
@@ -179,7 +180,7 @@ func update(delta: float) -> void:
 	_t += delta
 	player.velocity = _skill.movement(_t) + player.knock * 0.3
 	_skill.update(_t, delta)
-	if _t >= _skill.dash_cancel_at and player.take_buffer("dash") and player.can_dash():
+	if _t >= _skill.dash_cancel_at and player.can_dash() and player.take_buffer("dash"):
 		player.start_dash()
 		return
 	if _t >= _skill.duration:

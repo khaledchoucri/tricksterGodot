@@ -1,9 +1,17 @@
 extends SmokeSection
 ## The Sense line: Fox and Lion, the gun's cycle, every Sense skill.
 
+## Map-independent burst-cover checks complete synchronously before playing the section.
+const GUN_VISIBILITY := preload("res://tests/smoke/gun_visibility.gd")
+
 
 ## The Sense line: Fox and Lion, the gun's cycle, every Sense skill.
 func run() -> void:
+	var checks: SmokeSection = GUN_VISIBILITY.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var p: Player = game.player
 	var saved: String = Profile.class_id
 
