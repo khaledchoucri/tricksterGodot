@@ -841,7 +841,10 @@ func _refine(g: GearItem) -> void:
 
 # ---------------------------------------------------------------- end of run
 
+## A terminal outcome is accepted once, before presentation can yield.
 func _on_player_died() -> void:
+	if phase in [Phase.DEAD, Phase.WON] or Run.city.finished:
+		return
 	phase = Phase.DEAD
 	var fall := Run.city.drop_bag(player.global_position)
 	var bagged: Array[String] = fall.bag
@@ -849,6 +852,11 @@ func _on_player_died() -> void:
 	Run.last_bag = bagged
 	Run.last_saved = saved
 	Run.city.finish(false)
+	_present_death(saved, bagged)
+
+
+## Presentation follows settlement; it cannot accept another outcome while waiting.
+func _present_death(saved: Array[String], bagged: Array[String]) -> void:
 	Audio.play("shchr002.wav")
 	await get_tree().create_timer(1.2).timeout
 	hud.log_line("[System] Connection lost.", Color("f07a62"))
@@ -862,13 +870,23 @@ func _on_player_died() -> void:
 	hud.show_results(false)
 
 
+## Reading: death wins if HP is already zero when victory arrives (including a double KO).
+## Once a live victory settles, later damage cannot convert it into a rollback.
 func _win() -> void:
-	if phase == Phase.WON:
+	if phase in [Phase.DEAD, Phase.WON] or Run.city.finished:
+		return
+	if Run.hp <= 0:
+		_on_player_died()
 		return
 	phase = Phase.WON
 	Run.won = true
 	Run.purse.shards += 2
 	Run.city.finish(true)
+	_present_win()
+
+
+## The victory presentation starts only after its rewards have settled.
+func _present_win() -> void:
 	Audio.play("guild_battlewin.wav")
 	hud.log_line("[Notice] %s cleared. The Harkon Shards resonate." % Run.route.region.display_name, Color("e0b54d"))
 	await get_tree().create_timer(2.0).timeout
