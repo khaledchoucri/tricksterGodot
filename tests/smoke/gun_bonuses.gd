@@ -24,6 +24,9 @@ func run() -> void:
 	var saved: Dictionary = {}
 	for key: String in ["jobs", "deck", "gear", "ref_stats", "_stats", "type_points", "_baseline"]:
 		saved[key] = Run.get(key)
+	# The casts roll on the run's RNG: restore it so later sections see the same rolls.
+	var rng_seed := Run.rng.seed
+	var rng_state := Run.rng.state
 	Run.jobs = []
 	Run.deck = RunDeck.new()
 	Run.gear = RunGear.new()
@@ -35,6 +38,8 @@ func run() -> void:
 	_check_bonuses()
 	for key: String in saved:
 		Run.set(key, saved[key])
+	Run.rng.seed = rng_seed
+	Run.rng.state = rng_state
 
 
 func _check_bonuses() -> void:
