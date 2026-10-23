@@ -45,6 +45,7 @@ func can_equip(item: GearItem) -> bool:
 
 ## Puts an item on (in the first free fitting slot unless `slot_key` is
 ## given) and returns what it replaced, or null.
+## Reading: gear changes preserve current HP, capped to the new maximum; gear is not healing.
 func equip(item: GearItem, slot_key := "") -> GearItem:
 	displaced = []
 	if not can_equip(item):
@@ -57,14 +58,11 @@ func equip(item: GearItem, slot_key := "") -> GearItem:
 				slot_key = k
 				break
 	var old: GearItem = equipment.get(slot_key)
-	var before := Run.max_hp
 	equipment[slot_key] = item
 	if carries_gun() and equipment.has("shield"):
 		displaced.append(equipment["shield"])
 		equipment.erase("shield")
 	Run.stats_changed()
-	if Run.max_hp > before:
-		Run.heal(Run.max_hp - before)
 	return old
 
 
