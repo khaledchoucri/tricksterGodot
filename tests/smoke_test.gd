@@ -17,6 +17,8 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 
 
 ## The sections' scripts (tests/smoke/).
+## Combo timing checks run without an exported map.
+const COMBO_WINDOWS := preload("res://tests/smoke/combo_windows.gd")
 const CORE := preload("res://tests/smoke/core.gd")
 ## Map-independent movement checks for enemy crowd control.
 const ENEMY_CONTROL := preload("res://tests/smoke/enemy_control.gd")
@@ -83,6 +85,9 @@ func _ready() -> void:
 	if _on("sense"):
 		_section(GUN_BONUSES).run()
 	_run.call_deferred()
+	# Synchronous fixture checks finish before the deferred game boot.
+	if _on("power"):
+		_section(COMBO_WINDOWS).run()
 
 
 ## Whether a section runs: every one, or those picked on the command line.
