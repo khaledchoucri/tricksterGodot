@@ -258,6 +258,12 @@ func is_hittable() -> bool:
 	return state != State.DEAD and state != State.SPAWN
 
 
+## Accepts an incoming hit now. Frozen targets remain targetable, but cannot take damage.
+## Reward and supplement callers must use this before resolving a contact.
+func can_take_hit() -> bool:
+	return is_hittable() and debuff("frozen") <= 0.0
+
+
 func _physics_process(delta: float) -> void:
 	_t += delta
 	_knock = _knock.move_toward(Vector2.ZERO, 700.0 * delta)
@@ -477,10 +483,8 @@ func nudge(v: Vector2) -> void:
 ## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps), "crit",
 ## "graze" and "debuffs" ({key: [value, seconds]}, see `debuffs`).
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
-	if not is_hittable():
+	if not can_take_hit():
 		return
-	if debuff("frozen") > 0.0:
-		return  # Icey Shackles: frozen solid, it can't be hurt
 	if first_hit_at < 0.0:
 		first_hit_at = now()
 	hits_taken += 1
