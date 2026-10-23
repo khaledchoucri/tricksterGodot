@@ -1,8 +1,16 @@
 extends SmokeSection
 ## The Magic line: Sheep and Dragon, casting, Seals and Pacts, every spell.
 
+## Dynamic-duration checks run synchronously before the Magic play checks.
+const MULTI_PREPARATION := preload("res://tests/smoke/multi_preparation.gd")
+
 
 func run() -> void:
+	var checks: SmokeSection = MULTI_PREPARATION.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var p: Player = game.player
 	for e: Enemy in enemies():
 		e.take_hit(99999, Vector2.RIGHT, 0.0, true)
