@@ -4,6 +4,11 @@ extends SmokeSection
 
 
 func run(Run: Node) -> void:
+	var identity: SmokeSection = preload("res://tests/smoke/warehouse_identity.gd").new()
+	identity.runner = runner
+	add_child(identity)
+	identity.run()
+	identity.free()
 	_restore_all(Run)
 	# The run crosses three regions; every room's map is exported and every monster has its
 	# original stats.
@@ -287,7 +292,7 @@ func run(Run: Node) -> void:
 	var heir := GearItem.make(_item("wood_sword"))
 	heir.refine = 5
 	Run.gear.equip(heir)
-	check(Run.city.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == 0, "a Portable Port sends the sword home")
+	check(Run.city.save_point(heir) and Profile.warehouse.size() == 1 and heir.stored == Profile.item_uid(0), "a Portable Port sends the sword home")
 	var hat := GearItem.make(_item("candy_hat"))
 	Run.gear.equip(hat)
 	Run.city.save_point(hat)

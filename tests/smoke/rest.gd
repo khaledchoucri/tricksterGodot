@@ -58,7 +58,7 @@ func _arrive(Run: Node, P: Node, stops: Array[int]) -> void:
 	Run.gear.equip(found, "hat")
 	var swapped: bool = Run.city.swap_from_shelf(shelf)
 	var worn: GearItem = Run.gear.equipped("hat")
-	check(swapped and worn != null and worn.stored == shelf and found.stored >= 0 and P.warehouse.size() == before + 2,
+	check(swapped and worn != null and worn.stored == P.item_uid(shelf) and found.stored >= 0 and P.warehouse.size() == before + 2,
 		"swapping at the gate wears the stored hat and sends the found one home")
 	check(not Run.city.swap_from_shelf(shelf), "an item already worn can't be taken off the shelf again")
 	for i in range(P.warehouse.size() - 1, before - 1, -1):
