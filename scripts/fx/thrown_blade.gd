@@ -60,7 +60,8 @@ func _physics_process(delta: float) -> void:
 		_trail.remove_at(0)
 	if randf() < 0.5:
 		Sparks.burst(room, global_position + Vector2(randf_range(-6, 6), -height), Color(1.0, 0.55, 0.15), 3, 40.0, 0.35, 2.0, -60.0)
-	for e in room.enemies:
+	# on_hit can kill and remove enemies; keep this damage pass stable.
+	for e: Enemy in room.enemies.duplicate():
 		if not e.is_hittable() or not Combat.in_circle(global_position, e.global_position, radius, e.body_radius):
 			continue
 		if _t - float(_last_hit.get(e, -10.0)) >= tick:
