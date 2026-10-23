@@ -243,7 +243,8 @@ func can_hide() -> bool:
 	return not (eye > 0.0 and is_instance_valid(player) and Combat.in_circle(global_position, player.global_position, eye))
 
 
-## Held in place (Hinder Snare, ice, a rift): no moving, no attacking.
+## Held in place (Hinder Snare, ice, a rift): no AI movement or attacking.
+## Forced knockback and pulls remain possible.
 func is_held() -> bool:
 	return debuff("hold") > 0.0 or debuff("frozen") > 0.0
 
@@ -255,6 +256,12 @@ func speed_factor() -> float:
 
 func is_hittable() -> bool:
 	return state != State.DEAD and state != State.SPAWN
+
+
+## Accepts an incoming hit now. Frozen targets remain targetable, but cannot take damage.
+## Reward and supplement callers must use this before resolving a contact.
+func can_take_hit() -> bool:
+	return is_hittable() and debuff("frozen") <= 0.0
 
 
 func _physics_process(delta: float) -> void:
@@ -314,6 +321,10 @@ func _tick_status(delta: float) -> void:
 
 
 func _state_idle() -> void:
+	if is_held():
+		velocity = _knock
+		sprite.play_action("idle")
+		return
 	var to := _wander_target - global_position
 	if to.length() > 6.0:
 		velocity = to.normalized() * walk_speed * speed_factor() + _knock
@@ -339,6 +350,10 @@ func _stand() -> void:
 
 
 func _state_chase() -> void:
+	if is_held():
+		velocity = _knock
+		sprite.play_action("idle")
+		return
 	if not is_instance_valid(player) or player.state == Player.State.DEAD or Run.hidden:
 		_wander()  # Hide: they lose you
 		return
@@ -348,13 +363,9 @@ func _state_chase() -> void:
 		# Ranged enemies back away to keep their distance.
 		var away := -to.normalized()
 		if room.is_walkable(global_position + away * 24.0):
-			velocity = away * walk_speed + _knock
+			velocity = away * walk_speed * speed_factor() + _knock
 			sprite.play_action("walk", away)
 			return
-	if is_held():
-		velocity = _knock
-		sprite.play_action("idle")
-		return
 	# Entrancing Wink: an entranced monster can't cast its magic (its shots).
 	var silenced := attack.ranged and debuff("silence") > 0.0
 	if dist <= attack.range + body_radius and debuff("fear") <= 0.0 and not silenced and room.line_clear(global_position, player.global_position) \
@@ -472,10 +483,8 @@ func nudge(v: Vector2) -> void:
 ## `fx` may hold "stun" (seconds), "break" (% bonus), "burn" (dps), "crit",
 ## "graze" and "debuffs" ({key: [value, seconds]}, see `debuffs`).
 func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}) -> void:
-	if not is_hittable():
+	if not can_take_hit():
 		return
-	if debuff("frozen") > 0.0:
-		return  # Icey Shackles: frozen solid, it can't be hurt
 	if first_hit_at < 0.0:
 		first_hit_at = now()
 	hits_taken += 1
@@ -492,6 +501,10 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 		break_bonus = fx.break
 		break_until = now() + 4.0
 	if fx.has("burn"):
+		# An expired burn cannot lend its strength or partial tick to a new one.
+		if now() >= burn_until:
+			burn_dps = 0.0
+			_burn_tick = 0.0
 		burn_until = now() + float(fx.get("burn_for", 3.0))
 		burn_dps = maxf(burn_dps, fx.burn)
 	var applied: Dictionary = fx.get("debuffs", {})
