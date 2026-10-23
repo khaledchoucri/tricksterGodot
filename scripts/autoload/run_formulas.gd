@@ -134,7 +134,8 @@ func skill_mult(c: CardData = null) -> float:
 	# of a gun shot (its table Ratio). The runes' DP skills keep a damped curve.
 	var m := 1.0
 	if scaling == "GUN":
-		return gun_shot_mult() * GUN_SHOT / 100.0
+		# Use the stat-only shot: the shared path applies skill bonuses and rage once.
+		m = gun_stat_mult() * GUN_SHOT / 100.0
 	elif scaling in ["AP", "MA", "DA", "HV"]:
 		m = _linear(scaling)
 	elif _is_expression(scaling):
