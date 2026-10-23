@@ -29,6 +29,8 @@ const SENSE := preload("res://tests/smoke/sense.gd")
 ## Gun skill modifiers can be checked without spawning the game.
 const GUN_BONUSES := preload("res://tests/smoke/gun_bonuses.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
+## Burn lifecycle checks do not require a map.
+const BURN_EXPIRY := preload("res://tests/smoke/burn_expiry.gd")
 const CHARM := preload("res://tests/smoke/charm.gd")
 const TALENTS := preload("res://tests/smoke/talents.gd")
 const BALANCE := preload("res://tests/smoke/balance.gd")
@@ -74,6 +76,8 @@ func _ready() -> void:
 	if _on("core"):
 		_section(ENEMY_CONTROL).run()
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
+	if _on("elements"):
+		_section(BURN_EXPIRY).run()
 	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
 	Run.next_seed = test_seed
 	if _on("sense"):

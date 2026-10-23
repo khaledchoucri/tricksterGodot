@@ -497,6 +497,10 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 		break_bonus = fx.break
 		break_until = now() + 4.0
 	if fx.has("burn"):
+		# An expired burn cannot lend its strength or partial tick to a new one.
+		if now() >= burn_until:
+			burn_dps = 0.0
+			_burn_tick = 0.0
 		burn_until = now() + float(fx.get("burn_for", 3.0))
 		burn_dps = maxf(burn_dps, fx.burn)
 	var applied: Dictionary = fx.get("debuffs", {})
