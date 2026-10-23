@@ -17,7 +17,7 @@ func _init() -> void:
 	invulnerable = true
 
 
-func start() -> void:
+func prepare() -> void:
 	var from := player.global_position
 	_target = null
 	for e in enemies_in_wedge(from, aim, param("range", 500.0), AIM_ARC):
@@ -32,8 +32,11 @@ func start() -> void:
 	_travel = from.distance_to(_to) / SPEED
 	duration = _travel + 0.18
 	dash_cancel_at = duration
+
+
+func start() -> void:
 	Audio.play("etc_miss.wav", -4.0)
-	Ring.spawn(room.ground_fx, from, 20.0, 0.25, Color(1, 1, 1, 0.6))
+	Ring.spawn(room.ground_fx, player.global_position, 20.0, 0.25, Color(1, 1, 1, 0.6))
 
 
 func movement(t: float) -> Vector2:
