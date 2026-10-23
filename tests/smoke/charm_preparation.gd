@@ -8,6 +8,9 @@ func run() -> void:
 	var saved: Dictionary = {}
 	for key: String in ["jobs", "deck", "ref_stats", "_stats", "type_points", "_baseline", "form", "mp", "hp", "instinct", "hidden"]:
 		saved[key] = Run.get(key)
+	# The casts roll on the run's RNG: restore it so later sections see the same rolls.
+	var rng_seed := Run.rng.seed
+	var rng_state := Run.rng.state
 	var registry := Run.deck.registry.duplicate()
 	Run.jobs = []
 	Run.deck = RunDeck.new()
@@ -36,6 +39,8 @@ func run() -> void:
 	_target.free()
 	for key: String in saved:
 		Run.set(key, saved[key])
+	Run.rng.seed = rng_seed
+	Run.rng.state = rng_state
 
 
 func _configuration(id: StringName, action_name: String, duration: float) -> void:
