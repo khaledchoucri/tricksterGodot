@@ -78,11 +78,6 @@ func _on(section: String) -> bool:
 
 
 func _run() -> void:
-	if _on("magic"):
-		var wait_checks: Node = SKILL_WAIT.new()
-		add_child(wait_checks)
-		check(await wait_checks.run() == 0, "skill pause/resume regression checks")
-		wait_checks.free()
 	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
@@ -126,6 +121,13 @@ func _run() -> void:
 		_section(SYSTEMS).run(get_node("/root/Run"))
 	if _on("lint"):
 		_section(LINT).run()
+	if _on("magic"):
+		# Last: it spends real frames paused and unpaused, which would shift the game clock
+		# under the timed checks of the sections above.
+		var wait_checks: Node = SKILL_WAIT.new()
+		add_child(wait_checks)
+		check(await wait_checks.run() == 0, "skill pause/resume regression checks")
+		wait_checks.free()
 
 	print("\n%s: %d failure(s)%s" % ["OK" if failures == 0 else "FAILED", failures,
 		"" if only.is_empty() else " in " + ", ".join(only)])
