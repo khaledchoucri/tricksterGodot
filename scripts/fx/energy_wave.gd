@@ -31,7 +31,8 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 		return
 	var g := Combat.ground(direction).normalized()
-	for e in room.enemies:
+	# on_hit can kill and remove enemies; keep this damage pass stable.
+	for e: Enemy in room.enemies.duplicate():
 		if e in _hit or not e.is_hittable():
 			continue
 		if Combat.in_lane(global_position - Combat.screen(g) * 18.0, e.global_position, g, 36.0, half_width * 2.0, e.body_radius):

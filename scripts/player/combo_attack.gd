@@ -76,7 +76,8 @@ func update(delta: float) -> void:
 func _apply(s: ComboStep) -> void:
 	var landed := false
 	var crit_any := false
-	for e in player.room.enemies:
+	# A lethal hit removes its target from the room immediately. Keep this damage pass stable.
+	for e: Enemy in player.room.enemies.duplicate():
 		if e in _hit_this_window or not e.is_hittable():
 			continue
 		if Combat.in_wedge(player.global_position, e.global_position, swing_aim, _reach(s), s.arc(), e.body_radius):

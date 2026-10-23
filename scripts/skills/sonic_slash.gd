@@ -36,7 +36,8 @@ func update(t: float, _delta: float) -> void:
 	# Everything between the start and where Buffalo is now.
 	var g_from := Combat.ground(_from)
 	var g_now := Combat.ground(player.global_position)
-	for e in room.enemies:
+	# Death callbacks remove enemies immediately; traverse this update's snapshot.
+	for e: Enemy in room.enemies.duplicate():
 		if not e.is_hittable() or e in _hit or _hit.size() >= int(param("targets", 5)):
 			continue
 		var g := Combat.ground(e.global_position)

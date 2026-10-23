@@ -19,6 +19,7 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 ## The sections' scripts (tests/smoke/).
 const CORE := preload("res://tests/smoke/core.gd")
 const POWER := preload("res://tests/smoke/power.gd")
+const MULTI_TARGET := preload("res://tests/combat/multi_target.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
 const SENSE := preload("res://tests/smoke/sense.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
@@ -77,6 +78,15 @@ func _on(section: String) -> bool:
 
 func _run() -> void:
 	Profile.use_path("user://smoke_test_profile.json", true)  # never touch the real save
+	if _on("power"):
+		# Run map-independent lethal-hit checks before constructing the game.
+		var combat_checks: Node = MULTI_TARGET.new()
+		add_child(combat_checks)
+		check(combat_checks.run() == 0, "multi-target combat regression checks")
+		combat_checks.free()
+		# Cosmetic effects in the checks must not change the smoke test's placement/rolls.
+		seed(test_seed)
+		Run.next_seed = test_seed
 	game = load("res://scenes/game.tscn").instantiate()
 	get_tree().root.add_child(game)
 	await get_tree().create_timer(2.6).timeout
