@@ -317,9 +317,6 @@ func _one_pair_fan(p: Player) -> void:
 			var item := n as ThrownItem
 			angles.append(_fan_angle(throw_direction, Combat.ground(item.target_point - p.global_position)))
 			as_cards = as_cards and item.cake == "eft_skl_c_301_sut" and not item.homing
-	# Relative to the first card, so a fan thrown across the +-180 degree seam still measures its width.
-	for i in range(angles.size() - 1, -1, -1):
-		angles[i] = wrapf(angles[i] - angles[0], -PI, PI)
 	angles.sort()
 	var spread := rad_to_deg(angles[-1] - angles[0]) if angles.size() > 1 else 0.0
 	await wait(0.8)
