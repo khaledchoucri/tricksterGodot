@@ -1,8 +1,16 @@
 extends SmokeSection
 ## Elemental attack compounds and their hit effects; shields and guns.
 
+## Map-independent damage acceptance and reward checks.
+const BLOCKED_HITS := preload("res://tests/smoke/blocked_hits.gd")
+
 
 func run() -> void:
+	var checks: SmokeSection = BLOCKED_HITS.new()
+	checks.runner = runner
+	add_child(checks)
+	checks.run()
+	checks.free()
 	var p: Player = game.player
 	var saved: String = Profile.class_id
 	Profile.class_id = "buffalo"

@@ -222,8 +222,9 @@ func move_input() -> Vector2:
 
 
 ## Starts whatever buffered action can start now. Returns true if one did.
+## Cooldown-blocked dash input keeps its original buffer deadline.
 func try_actions() -> bool:
-	if take_buffer("dash") and can_dash():
+	if can_dash() and take_buffer("dash"):
 		start_dash()
 		return true
 	for i in SkillCaster.SLOT_ACTIONS.size():
@@ -433,8 +434,10 @@ func enter(s: State) -> void:
 
 ## Damages an enemy with crits and Armor Breaker. Every hit the player deals
 ## (combo, dash, skills) comes through here. `from` sets the knockback
-## direction. Returns true on a critical hit.
+## direction. Returns true on an accepted critical hit; rejected contacts return false.
 func deal_hit(e: Enemy, base: float, mult: float, knockback: float, heavy: bool, fx := {}, from := Vector2.INF) -> bool:
+	if not is_instance_valid(e) or not e.can_take_hit():
+		return false
 	var power_shot: bool = fx.get("power_shot", false)
 	# The basic gun shot never rolls a critical: the server's gun formula
 	# (0x59b310) only misses, hits, or lands a power shot.

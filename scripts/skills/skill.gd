@@ -1,7 +1,8 @@
 class_name Skill
 extends RefCounted
 ## One cast of an active skill. The player creates it from the card's
-## `behavior` script, fills in the fields below, calls start(), then
+## `behavior` script, fills in the fields below, prepares settings before
+## animation/protection, calls start(), then
 ## update() every physics frame for `duration` seconds and finish() at the
 ## end (or when the cast is interrupted). Effects that outlive the cast
 ## (waves, thrown blades, tornadoes) are nodes added to the room.
@@ -47,6 +48,13 @@ func damage(scale := 1.0) -> float:
 	return card.value_at(level) * scale * Run.formulas.skill_mult(card)
 
 
+## Finalizes settings at activation, after cast time and before animation/protection.
+## Override for target-dependent timing; reserve damage, sounds and effects for start().
+func prepare() -> void:
+	pass
+
+
+## Activates the already-prepared skill and its effects.
 func start() -> void:
 	pass
 
@@ -108,15 +116,19 @@ func alive() -> bool:
 
 ## Waits `seconds` (one physics frame when 0) on the game's clock; false when
 ## the caster's game is gone by then, so a lingering skill stops instead of
-## touching freed nodes. Use as `if not await wait_for(t): ...`.
+## touching freed nodes. Both paths suspend during pause, like Events.time.
+## Use as `if not await wait_for(t): ...`.
 func wait_for(seconds := 0.0) -> bool:
 	if not alive():
 		return false
 	var tree := player.get_tree()
 	if seconds > 0.0:
-		await tree.create_timer(seconds).timeout
+		await tree.create_timer(seconds, false, true).timeout
 	else:
 		await tree.physics_frame
+		# physics_frame still emits while the tree is paused.
+		while tree.paused and alive():
+			await tree.physics_frame
 	return alive()
 
 
@@ -134,6 +146,8 @@ func param(name: String, default := 0.0) -> float:
 
 
 func hit(e: Enemy, amount: float, knockback: float, heavy := true, fx := {}, from := Vector2.INF) -> void:
+	if not is_instance_valid(e) or not e.can_take_hit():
+		return
 	fx = fx.duplicate()
 	if card.element != "none" and not fx.has("element"):
 		fx.element = card.element
