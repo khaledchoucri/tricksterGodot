@@ -130,12 +130,54 @@ func swap_from_shelf(index: int) -> bool:
 			key = k
 			break
 	var old := Run.gear.equipped(key)
-	if old and old.stored < 0 and Profile.warehouse_full():
+	var outgoing: Array[GearItem] = []
+	if old:
+		outgoing.append(old)
+	var shield := Run.gear.equipped("shield")
+	if g.data.family == "gun" and Run.deck.holds_tag(&"carries_guns") and shield:
+		outgoing.append(shield)
+	var needed := 0
+	for item: GearItem in outgoing:
+		if item.stored < 0:
+			needed += 1
+	if needed > Profile.warehouse_size() - Profile.warehouse.size():
 		return false
+	return _apply_shelf_swap(g, key, outgoing)
+
+
+## Commit a preflighted swap synchronously; retain the old inventory if any bank rejects it.
+func _apply_shelf_swap(g: GearItem, key: String, outgoing: Array[GearItem]) -> bool:
+	var equipment: Dictionary = Run.gear.equipment.duplicate()
+	var displaced: Array[GearItem] = Run.gear.displaced.duplicate()
+	var shelves: Array = Profile.warehouse.duplicate(true)
+	var flags: Dictionary = Profile.flags.duplicate()
+	var identities: Array[int] = []
+	for item: GearItem in outgoing:
+		identities.append(item.stored)
+	var hp: int = Run.hp
+	var mp: int = Run.mp
+	var blocked: bool = Events.is_blocking_signals()
+	Events.set_block_signals(true)
 	Run.gear.equip(g, key)
-	for put_away: GearItem in ([old] if old else []) + Run.gear.displaced:
-		bank(put_away)
-	return true
+	var success := true
+	for item: GearItem in outgoing:
+		if not bank(item):
+			success = false
+			break
+	if not success:
+		Profile.warehouse = shelves
+		Profile.flags = flags
+		for i: int in outgoing.size():
+			outgoing[i].stored = identities[i]
+		Run.gear.equipment = equipment
+		Run.gear.displaced = displaced
+		Run.hp = hp
+		Run.mp = mp
+		Run.stats_changed()
+		Profile.save()
+	Events.set_block_signals(blocked)
+	Events.player_hp_changed.emit()
+	return success
 
 
 ## Sends a worn item home at a Port or rest stop: it's safe on a shelf (a stored one keeps its

@@ -4,6 +4,11 @@ extends SmokeSection
 
 
 func run() -> void:
+	var swap: SmokeSection = preload("res://tests/smoke/warehouse_swap.gd").new()
+	swap.runner = runner
+	add_child(swap)
+	swap.run()
+	swap.free()
 	var Run := run_state()
 	var P := profile()
 	var stops: Array[int] = []
