@@ -84,7 +84,7 @@ func _checks() -> void:
 	check(worn.weapon.stored == -1 and worn.shield.stored == -1,
 		"rollback restores outgoing storage markers")
 	Profile.load_profile()
-	check(Profile.warehouse == JSON.parse_string(JSON.stringify(shelves)), "rollback is persisted to disk")
+	check(JSON.parse_string(JSON.stringify(Profile.warehouse)) == JSON.parse_string(JSON.stringify(shelves)), "rollback is persisted to disk")
 
 
 func _setup(free_shelves: int) -> int:

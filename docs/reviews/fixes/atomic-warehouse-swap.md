@@ -34,3 +34,6 @@ Profile field and replaced Run field plus both RNG values and signal blocking.
 Existing engine shutdown ObjectDB/resource warnings remain. Full smoke and
 visual checks were not run because original runtime assets are absent. Target
 Godot 4.7.2, actual rest UI and save interruption recovery remain unverified.
+
+Persistence comparisons normalize both sides through JSON, so identity migration
+casting uid values back to int does not create a false failure against JSON floats.
