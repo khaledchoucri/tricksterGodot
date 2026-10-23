@@ -21,6 +21,8 @@ const CORE := preload("res://tests/smoke/core.gd")
 const POWER := preload("res://tests/smoke/power.gd")
 const MULTI_TARGET := preload("res://tests/combat/multi_target.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
+## Shared lingering-skill timing checks need no map.
+const SKILL_WAIT := preload("res://tests/combat/skill_wait.gd")
 const SENSE := preload("res://tests/smoke/sense.gd")
 const ELEMENTS := preload("res://tests/smoke/elements.gd")
 const CHARM := preload("res://tests/smoke/charm.gd")
@@ -129,6 +131,13 @@ func _run() -> void:
 		_section(SYSTEMS).run(get_node("/root/Run"))
 	if _on("lint"):
 		_section(LINT).run()
+	if _on("magic"):
+		# Last: it spends real frames paused and unpaused, which would shift the game clock
+		# under the timed checks of the sections above.
+		var wait_checks: Node = SKILL_WAIT.new()
+		add_child(wait_checks)
+		check(await wait_checks.run() == 0, "skill pause/resume regression checks")
+		wait_checks.free()
 
 	print("\n%s: %d failure(s)%s" % ["OK" if failures == 0 else "FAILED", failures,
 		"" if only.is_empty() else " in " + ", ".join(only)])
