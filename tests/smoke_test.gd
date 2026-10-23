@@ -18,6 +18,8 @@ const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": 
 
 ## The sections' scripts (tests/smoke/).
 const CORE := preload("res://tests/smoke/core.gd")
+## Map-independent movement checks for enemy crowd control.
+const ENEMY_CONTROL := preload("res://tests/smoke/enemy_control.gd")
 const POWER := preload("res://tests/smoke/power.gd")
 const MULTI_TARGET := preload("res://tests/combat/multi_target.gd")
 const MAGIC := preload("res://tests/smoke/magic.gd")
@@ -67,6 +69,8 @@ func _ready() -> void:
 				push_error("smoke test: unknown argument %s (sections: %s)" % [arg, ", ".join(SECTIONS)])
 				get_tree().quit(2)
 				return
+	if _on("core"):
+		_section(ENEMY_CONTROL).run()
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	seed(test_seed)  # the test's own placement, and every later run's seed, follow from it
 	Run.next_seed = test_seed

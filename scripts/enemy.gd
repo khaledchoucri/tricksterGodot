@@ -243,7 +243,8 @@ func can_hide() -> bool:
 	return not (eye > 0.0 and is_instance_valid(player) and Combat.in_circle(global_position, player.global_position, eye))
 
 
-## Held in place (Hinder Snare, ice, a rift): no moving, no attacking.
+## Held in place (Hinder Snare, ice, a rift): no AI movement or attacking.
+## Forced knockback and pulls remain possible.
 func is_held() -> bool:
 	return debuff("hold") > 0.0 or debuff("frozen") > 0.0
 
@@ -314,6 +315,10 @@ func _tick_status(delta: float) -> void:
 
 
 func _state_idle() -> void:
+	if is_held():
+		velocity = _knock
+		sprite.play_action("idle")
+		return
 	var to := _wander_target - global_position
 	if to.length() > 6.0:
 		velocity = to.normalized() * walk_speed + _knock
@@ -339,6 +344,10 @@ func _stand() -> void:
 
 
 func _state_chase() -> void:
+	if is_held():
+		velocity = _knock
+		sprite.play_action("idle")
+		return
 	if not is_instance_valid(player) or player.state == Player.State.DEAD or Run.hidden:
 		_wander()  # Hide: they lose you
 		return
@@ -351,10 +360,6 @@ func _state_chase() -> void:
 			velocity = away * walk_speed + _knock
 			sprite.play_action("walk", away)
 			return
-	if is_held():
-		velocity = _knock
-		sprite.play_action("idle")
-		return
 	# Entrancing Wink: an entranced monster can't cast its magic (its shots).
 	var silenced := attack.ranged and debuff("silence") > 0.0
 	if dist <= attack.range + body_radius and debuff("fear") <= 0.0 and not silenced and room.line_clear(global_position, player.global_position) \
