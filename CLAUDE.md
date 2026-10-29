@@ -11,7 +11,7 @@ fixed in the same change or tracked in "Known debt" below.
 | `data/**/*.tres` (Resources) | numbers, names, prerequisites, tags, effects | logic |
 | `tools/*.py` generators | turning the original tables into `data/` | hand-tuned one-offs; put an override in the generator's SPEC |
 | `scripts/autoload/run_state.gd` (`Run`) | the character: class, job, level, HP/MP, form, stats, traits, mods | anything a module owns |
-| `scripts/autoload/run_*.gd` (`Run.route`, `.deck`, `.gear`, `.purse`, `.formulas`, `.city`) | the rest of the run, one concern each | forwarding functions on `Run`: callers name the module |
+| `scripts/autoload/run_*.gd` (`Run.route`, `.deck`, `.gear`, `.purse`, `.formulas`, `.city`, `.veteran`) | the rest of the run, one concern each | forwarding functions on `Run`: callers name the module |
 | `scripts/autoload/profile.gd` | what persists between runs | run-only state |
 | `scripts/autoload/events.gd` | the signal bus and game clock | state |
 | `scripts/skills/*.gd` | what one skill *does* when cast | stat bonuses or another card's rules |
@@ -80,7 +80,7 @@ if card.has_tag(&"galder"): ...
 
 - **Every behaviour change has a check** in the smoke test section for its class or system, its own file in
   `tests/smoke/` (a `SmokeSection`; a new system gets a new section). Run just that section while working (`tests/run_smoke.sh charm`, `tests/run_smoke.sh lion ui`; sections: core, power,
-  magic, sense, elements, charm, talents, balance, ui, rest, art, boss, systems, lint). Each section passes on its own. Changes to
+  magic, sense, elements, charm, talents, balance, ui, rest, art, boss, systems, chunks, lint). Each section passes on its own. Changes to
   shared code, and every commit, run the full suite (`tests/run_smoke.sh`). It runs at a fixed 60 fps and a
   fixed seed (`-- seed=N` to change it), so the full suite takes under a minute and a result repeats exactly.
 - **Test like a player.** Use input actions and real button presses, the real window size and the game clock.

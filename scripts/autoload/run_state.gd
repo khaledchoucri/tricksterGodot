@@ -10,6 +10,7 @@ extends Node
 ##  - purse: Galder, ore, TM, shards, materials, and what kills and digs bring
 ##  - formulas: your damage, defence, speed and crits, and the monster curve
 ##  - city: what the run takes from Megalopolis and gives back
+##  - veteran: a later chunk's start (its level, jobs, type points and earlier cards)
 
 signal leveled_up(new_level: int)
 
@@ -29,6 +30,7 @@ var gear := RunGear.new()
 var purse := RunPurse.new()
 var formulas := RunFormulas.new()
 var city := RunCity.new()
+var veteran := RunVeteran.new()
 
 ## Guard (1107): blocks left, and when the next spent one returns.
 var guard_blocks := 0
@@ -205,6 +207,7 @@ func new_run(with_seed := -1) -> void:
 	_baseline = false
 	_stats.clear()
 	start_job(cls.start_job)
+	veteran.start(route.chunk)
 	for id in cls.start_cards:
 		if deck.card_level(id) == 0:
 			deck.add_card(id)

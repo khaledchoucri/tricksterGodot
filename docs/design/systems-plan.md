@@ -226,8 +226,15 @@ its 1st-job cards run over TM levels 1-50 (Sense's to 70), the 2nd job came at L
 - **The Job Hall restoration is gone.** It only switched on the in-run job change.
 - **Chunks are data** (`ChunkData`, `data/chunks/`): its regions, start level, job tier, the chunk whose clear
   opens it, and its card pace (`tm_open`, `tm_pace`; chunk 2 opens TM 41-61 and keeps 0.6). `Run.route` plays one.
-- **Next:** the veteran start: a chunk-2 run starts at Lv 54 (where chunk-1 clears end, 52-56 in the bots) in the
-  2nd job, carrying 1st-job cards.
+- **The veteran start** (`Run.veteran`): a chunk-2 run starts at Lv 54 (where chunk-1 clears end, 52-56 in the
+  bots) as the 2nd job, with the 1st job behind it.
+  - Its 53 type points follow the character's last clear (`Profile.builds`), or its type graph without one (Ours).
+  - Damage stays linear against the level-1 character.
+  - A veteran without a loadout weapon gets the class's weapon at the chunk's first item level (Ours).
+  - The 1st-job cards are carried by `ChunkData.veteran_cards`, under test with the bots: `max` (the whole tree at
+    its cap; the bots' chunk-1 clears hold 8-14 cards, nearly all at Lv 5), `all:L`, or `draft:N:L` (N picks of
+    one of three, each at Lv L, before the first room). A beast form is left for the run to offer.
+- **Next:** choosing the 3rd job at a chunk-2 clear (one branch per clear), and chunk 2's regions.
 
 | Chunk | Region 1 (boss) | Region 2 (boss) | Region 3 (boss) | Rest stops |
 |---|---|---|---|---|

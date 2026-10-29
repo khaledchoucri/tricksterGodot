@@ -36,6 +36,10 @@ var seed_base := -1
 ## regions=N: a run ends, as a clear, once it leaves the first N regions (0: play them all). A
 ## boss's balance needs only its region: regions=1 plays Coral Beach and stops at the Desert gate.
 var stop_regions := 0
+## chunk=N: every run plays chunk N (opened for the bot's character); vet=SPEC plays its veteran
+## start with these cards instead of the chunk's (ChunkData.veteran_cards: max, all:L, draft:N:L).
+var chunk := 1
+var vet := ""
 ## The class chosen before the profile is set up (kept for fresh=1 profiles).
 var _chosen_class := ""
 ## Between runs: the city, crafting and the loadout (tests/playtest_city.gd).
@@ -88,6 +92,10 @@ func _ready() -> void:
 			seed_base = int(kv[1])
 		elif kv.size() == 2 and kv[0] == "regions":
 			stop_regions = int(kv[1])
+		elif kv.size() == 2 and kv[0] == "chunk":
+			chunk = int(kv[1])
+		elif kv.size() == 2 and kv[0] == "vet":
+			vet = kv[1]
 	Events.enemy_died.connect(func(e: Enemy) -> void:
 		if e.first_hit_at >= 0.0:
 			kill_log.append({"region": Run.route.region_index(), "depth": Run.route.depth, "elite": e.is_elite or e.is_boss,
@@ -125,6 +133,10 @@ func _setup_profile() -> void:
 		for r: RestorationData in Run.hub.restorations:
 			Profile.restorations[String(r.id)] = r.max_level
 		Profile.stats["clears"] = 1  # a veteran city: Echoes can appear
+	if chunk > 1:
+		Profile.chunks[chosen] = maxi(int(Profile.chunks.get(chosen, 0)), chunk - 1)
+		Profile.chunk_choice[chosen] = chunk
+	Run.veteran.cards_override = vet
 	_apply_heat(heat)
 
 

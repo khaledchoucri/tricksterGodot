@@ -10,7 +10,7 @@ extends Node
 
 ## The sections, in the order they run.
 const SECTIONS: Array[String] = ["core", "power", "magic", "sense", "elements", "charm", "talents", "balance", "ui", "rest", "art", "boss",
-	"systems", "lint"]
+	"systems", "chunks", "lint"]
 ## The section that tests each character.
 const CLASS_SECTION: Dictionary[String, String] = {"buffalo": "power", "bunny": "power", "sheep": "magic",
 	"dragon": "magic", "fox": "sense", "lion": "sense", "cat": "charm", "raccoon": "charm"}
@@ -41,6 +41,7 @@ const BALANCE := preload("res://tests/smoke/balance.gd")
 const UI := preload("res://tests/smoke/ui.gd")
 const BOSS := preload("res://tests/smoke/boss.gd")
 const SYSTEMS := preload("res://tests/smoke/systems.gd")
+const CHUNKS := preload("res://tests/smoke/chunks.gd")
 const REST := preload("res://tests/smoke/rest.gd")
 const ART := preload("res://tests/smoke/art.gd")
 const LINT := preload("res://tests/smoke/lint.gd")
@@ -152,6 +153,9 @@ func _run() -> void:
 		await _section(BOSS).run()
 	if _on("systems"):
 		_section(SYSTEMS).run(get_node("/root/Run"))
+	if _on("chunks"):
+		# Chunks and the veteran start; it ends the shared game for one of its own.
+		await _section(CHUNKS).run(get_node("/root/Run"))
 	if _on("lint"):
 		_section(LINT).run()
 	if _on("magic"):

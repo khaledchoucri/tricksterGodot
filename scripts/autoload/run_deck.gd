@@ -287,6 +287,47 @@ func earlier_cards() -> Array[CardData]:
 	return out
 
 
+## A veteran start learns every earlier card it can at `level` (0: its cap), in TM order and
+## again until nothing new opens (prerequisites, then advanced forms). Ours: a beast form is left
+## for the run to offer, since it's a choice of body; the skill slots hold the latest skills
+## learned, the deepest of the tree.
+func learn_earlier(level: int) -> void:
+	for c in earlier_cards():
+		raise_to(c.id, level if level > 0 else card_cap(c.id))  # the 1st job's starter, held already
+	var learned := true
+	while learned:
+		learned = false
+		for c in earlier_cards():
+			if c.form_actor == "" and can_learn(c):
+				add_card(c.id)
+				raise_to(c.id, level if level > 0 else card_cap(c.id))  # its level may open the next card
+				learned = true
+	var skills: Array[StringName] = []
+	for c in earlier_cards():
+		if card_level(c.id) > 0 and c.is_skill() and not is_basic(c.id) and Run.form_allows(c.id):
+			skills.append(c.id)
+	var top := skills.slice(maxi(0, skills.size() - SLOTS))
+	for i in SLOTS:
+		loadout[i] = top[i] if i < top.size() else &""
+	Run.stats_changed()
+
+
+## Up to `n` draft offers before a veteran's first room: earlier cards it can learn.
+func draft_offers(n: int) -> Array[CardData]:
+	var pool := earlier_cards().filter(func(c: CardData) -> bool: return can_learn(c))
+	Run.shuffle(pool)
+	var out: Array[CardData] = []
+	out.assign(pool.slice(0, n))
+	return out
+
+
+## Raises a held card to `level` (its cap at most; never lowers it).
+func raise_to(id: StringName, level: int) -> void:
+	if card_level(id) > 0:
+		cards[id] = clampi(level, card_level(id), card_cap(id))
+		Run.stats_changed()
+
+
 ## Up to `n` card offers from the current jobs' trees (or only `from_job`'s):
 ## new cards whose prerequisites and level are met, or upgrades of owned ones when
 ## `upgrade` is true. New-card offers lean on skills: at least two of three

@@ -51,6 +51,9 @@ var _rune_from: EnemyData   # an Echo beaten in this room: offer its runes
 var _boss_name := ""
 var _ambush := false  # an ambush from a Dig Site is being fought
 var _left_behind: Array[GearItem] = []  # a clear's finds that found no free shelf
+## A veteran's draft is being picked (before the first room's fight), and when it's done.
+var _drafting := false
+signal _drafted
 
 @onready var hud: Hud = $Hud
 
@@ -140,6 +143,8 @@ func _load_room() -> void:
 	if plan.elite:
 		title += "\nElite monsters ahead"
 	hud.center(title, 1.2)
+	if Run.veteran.draft_left > 0:
+		await _veteran_draft()
 	await _start_fight_after_intro(plan)
 
 
@@ -222,10 +227,26 @@ func _queue_room_rewards(cleared_room: Room) -> void:
 	_next_step()
 
 
-## Runs the next queued reward step; level-ups come after them, then the doors.
+## A veteran's draft before the first room (RunVeteran.carry_cards()): one of three earlier cards,
+## as many times as the chunk says, each taken at its draft level.
+func _veteran_draft() -> void:
+	phase = Phase.REWARD
+	_drafting = true
+	for _i in Run.veteran.draft_left:
+		_steps.append("draft")
+	_next_step()
+	await _drafted
+
+
+## Runs the next queued reward step; level-ups come after them, then the doors (or, after a
+## veteran's draft, the first fight).
 func _next_step() -> void:
 	if not _steps.is_empty():
 		_grant(_steps.pop_front())
+		return
+	if _drafting:
+		_drafting = false
+		_drafted.emit()
 		return
 	if Run.pending_levels > 0:
 		Run.pending_levels -= 1
@@ -241,6 +262,12 @@ func _grant(reward: String) -> void:
 			var opts := Run.deck.card_offers(n, reward == "upgrade")
 			if opts.is_empty():
 				opts = Run.deck.card_offers(n, reward != "upgrade")
+			if not opts.is_empty():
+				_start_pick("card", opts)
+				return
+		"draft":
+			var opts := Run.deck.draft_offers(3 + int(Run.mod("card_choices")))
+			Run.veteran.draft_left -= 1
 			if not opts.is_empty():
 				_start_pick("card", opts)
 				return
@@ -387,6 +414,9 @@ Replaces %s and keeps its Lv %d." % [base.display_name, Run.deck.card_level(base
 					text += _beast_warning(card.id)
 				shown.append({"title": card.display_name, "tag": tag, "text": text})
 			title = "Level %d  ·  Train a skill" % (Run.level - Run.pending_levels) if _skill_training else "Choose a %s skill card" % Run.job.display_name
+			if _drafting:
+				title = "Veteran draft  ·  a %s card at Lv %d  ·  %d left" % [Run.jobs[0].display_name, Run.veteran.draft_level,
+					Run.veteran.draft_left + 1]
 			_skill_training = false
 			Audio.play("ui_card.wav")
 		"replace":
@@ -560,6 +590,8 @@ func _on_picked(i: int) -> void:
 				return
 			var was_beast := Run.form != &""
 			Run.deck.add_card(card.id)
+			if _drafting:
+				Run.deck.raise_to(card.id, Run.veteran.draft_level)
 			hud.log_line("[System] %s learned (Lv %d)." % [card.display_name, Run.deck.card_level(card.id)], INFO)
 			if Run.form != &"" and not was_beast:
 				player.become_beast()
@@ -567,6 +599,8 @@ func _on_picked(i: int) -> void:
 			var slot: int = _pick_options[i]
 			if slot >= 0:
 				Run.deck.add_card(_pending_skill.id, slot)
+				if _drafting:
+					Run.deck.raise_to(_pending_skill.id, Run.veteran.draft_level)
 				hud.log_line("[System] %s learned." % _pending_skill.display_name, INFO)
 			_pending_skill = null
 		"type":
