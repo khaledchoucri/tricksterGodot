@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ChunkData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/chunk_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/region_data.gd" id="2_r"]
+[ext_resource type="Resource" path="res://data/coral_beach/region.tres" id="3_r"]
+[ext_resource type="Resource" path="res://data/desert_beach/region.tres" id="4_r"]
+[ext_resource type="Resource" path="res://data/caballa_relics/region.tres" id="5_r"]
+
+[resource]
+script = ExtResource("1_s")
+number = 1
+regions = Array[ExtResource("2_r")]([ExtResource("3_r"), ExtResource("4_r"), ExtResource("5_r")])
+start_level = 1
+job_tier = 1
+opened_by = 0
+tm_open = 20
+tm_pace = 0.6

@@ -101,8 +101,8 @@ var _baseline := false
 
 
 func _ready() -> void:
-	for p in route.REGION_PATHS:
-		route.regions.append(load(p))
+	route.load_chunks()
+	route.use_chunk(route.chunks[0])
 	hub = load(HUB_PATH)
 	for p in CLASS_PATHS:
 		classes.append(load(p))
@@ -132,6 +132,13 @@ func chosen_class() -> ClassData:
 	return classes[0]
 
 
+## The chunk the Profile chose for this character: chunk 1 unless a later one is open to it and
+## built.
+func chosen_chunk() -> ChunkData:
+	var c := route.chunk_numbered(int(Profile.chunk_choice.get(String(cls.id), 1)))
+	return c if c and c.playable() and c.open_for(String(cls.id)) else route.chunks[0]
+
+
 ## Shuffles an array in place with the run's RNG (Array.shuffle() uses the global one).
 func shuffle(a: Array) -> void:
 	for i in range(a.size() - 1, 0, -1):
@@ -157,6 +164,8 @@ func new_run(with_seed := -1) -> void:
 	bunker_until = 0.0
 	bunker_hp = 0
 	cls = chosen_class()
+	if not route.chunks.is_empty():
+		route.use_chunk(chosen_chunk())
 	route.depth = 0
 	level = 1
 	xp = 0

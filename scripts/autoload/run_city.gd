@@ -377,5 +377,5 @@ func finish(p_won: bool) -> void:
 		Profile.best_heat = heat
 	Run.last_result = {"won": p_won, "depth": reached, "tm": Run.purse.tm, "shards": Run.purse.shards, "heat": heat, "bounty": bounty}
 	Profile.bank_run(p_won, reached, Run.purse.tm, Run.purse.shards, String(Run.job.id))
-	Run.last_result.opened = p_won and Profile.clear_chunk(String(Run.cls.id), Run.route.chunk)
+	Run.last_result.opened = p_won and Profile.clear_chunk(String(Run.cls.id), Run.route.chunk.number)
 	Run.last_result.kept = Profile.bank_leftovers(p_won, Run.purse.galder, Run.purse.ore, Run.purse.materials)

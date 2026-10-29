@@ -55,6 +55,8 @@ var start_skills: Dictionary = {}
 ## that character in its next job (the original's job change at Lv 50 in Relics Town, after
 ## chunk 1's last region).
 var chunks: Dictionary = {}
+## The chunk each character sets out into (class id -> chunk number; chunk 1 when unset or closed).
+var chunk_choice: Dictionary = {}
 ## The class played (ClassData id).
 var class_id := "buffalo"
 ## The custom Trickster: {"kit": sword/hammer/fists, "graph": preset name,
@@ -100,6 +102,7 @@ func load_profile() -> void:
 	mastery = {}
 	start_skills = {}
 	chunks = {}
+	chunk_choice = {}
 	class_id = "buffalo"
 	drills = []
 	drill = ""
@@ -143,6 +146,8 @@ func load_profile() -> void:
 	start_skills = data.get("start_skills", {})
 	for k: String in data.get("chunks", {}):
 		chunks[k] = int(data.chunks[k])
+	for k: String in data.get("chunk_choice", {}):
+		chunk_choice[k] = int(data.chunk_choice[k])
 	class_id = data.get("class_id", "buffalo")
 	drills = data.get("drills", [])
 	custom = data.get("custom", {})
@@ -159,7 +164,7 @@ func save() -> void:
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "warehouse_rows": warehouse_rows, "loadout_ids": _loadout_ids(), "lost_bag": lost_bag,
 		"next_item_uid": next_item_uid, "heirloom_uid": item_uid(legacy_heirloom),
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
-		"worn": worn, "mastery": mastery, "start_skills": start_skills, "chunks": chunks, "class_id": class_id, "drills": drills, "drill": drill,
+		"worn": worn, "mastery": mastery, "start_skills": start_skills, "chunks": chunks, "chunk_choice": chunk_choice, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
 
 
@@ -190,11 +195,6 @@ func bank_run(won: bool, depth: int, run_tm: int, run_shards: int, job := "") ->
 ## The highest chunk `cls_id` has cleared (0: none yet).
 func chunk_cleared(cls_id: String) -> int:
 	return int(chunks.get(cls_id, 0))
-
-
-## Whether `cls_id` may play chunk `n`: chunk 1 always, a later one once the one before is cleared.
-func chunk_open(cls_id: String, n: int) -> bool:
-	return n <= chunk_cleared(cls_id) + 1
 
 
 ## Records a clear of chunk `n` by `cls_id`. Returns whether it opened the next chunk.

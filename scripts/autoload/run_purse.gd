@@ -89,7 +89,7 @@ func compoundable_materials() -> Array[MaterialData]:
 
 ## Every material the run can drop, by id (for city crafting).
 func material_by_id(id: StringName) -> MaterialData:
-	for r in Run.route.regions:
+	for r in Run.route.all_regions():
 		for e in r.enemies:
 			if e.material and e.material.id == id:
 				return e.material

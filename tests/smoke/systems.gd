@@ -208,7 +208,7 @@ func run(Run: Node) -> void:
 		for c: CardData in Run.deck.card_offers(3, false):
 			if not c.id in first_offers:
 				first_offers.append(c.id)
-	check(first_offers.size() >= 5 and first_offers.all(func(id: StringName) -> bool: return Run.deck.card(id).tm_level <= RunDeck.TM_OPEN)
+	check(first_offers.size() >= 5 and first_offers.all(func(id: StringName) -> bool: return Run.deck.card(id).tm_level <= Run.route.chunk.tm_open)
 		and Run.deck.unlock_level(smash) == 12, "a Lv 1 Fighter is offered the original's TM 1-20 cards (%s); Upper Smash comes at Lv 12"
 		% ", ".join(first_offers))
 	Run.level = 12
@@ -231,8 +231,9 @@ func run(Run: Node) -> void:
 		func(m: Dictionary) -> bool: return m.name == "job_change_due"), "no room of chunk 1 brings a job change")
 	var chunks_before: Dictionary = Profile.chunks.duplicate()
 	Profile.chunks.erase("buffalo")
-	check(Profile.chunk_open("buffalo", 1) and not Profile.chunk_open("buffalo", 2), "chunk 2 is closed to a Buffalo who hasn't cleared chunk 1")
-	check(Profile.clear_chunk("buffalo", 1) and Profile.chunk_open("buffalo", 2) and not Profile.chunk_open("bunny", 2)
+	var two: ChunkData = Run.route.chunk_numbered(2)
+	check(not two.open_for("buffalo"), "chunk 2 is closed to a Buffalo who hasn't cleared chunk 1")
+	check(Profile.clear_chunk("buffalo", 1) and two.open_for("buffalo") and not two.open_for("bunny")
 		and not Profile.clear_chunk("buffalo", 1), "a Buffalo's chunk 1 clear opens chunk 2 for the Buffalo only, once")
 	Profile.chunks = chunks_before
 	Profile.save()

@@ -382,7 +382,7 @@ func show_results(won: bool) -> void:
 		for j: JobData in Run.job.next_jobs:
 			if j.unlocked():
 				next.append(j.display_name)
-		t += "\n[color=#e0b54d]Chunk %d opened[/color]  %s goes on as %s." % [Run.route.chunk + 1, Run.cls.display_name,
+		t += "\n[color=#e0b54d]Chunk %d opened[/color]  %s goes on as %s." % [Run.route.chunk.number + 1, Run.cls.display_name,
 			" or ".join(next)]
 	if not won and not Run.last_saved.is_empty():
 		t += "\n[color=#a8d8da]Carried out[/color]  %s (WT): back on your shelves." % ", ".join(Run.last_saved)

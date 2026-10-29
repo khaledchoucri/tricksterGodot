@@ -224,8 +224,10 @@ its 1st-job cards run over TM levels 1-50 (Sense's to 70), the 2nd job came at L
   open from room 1. Past it, 0.6 run levels per TM level (Ours): a Fighter's last card (TM 50) at Lv 18, Sense's
   TM 70 cards at Lv 30. Upgrades of cards you hold aren't gated.
 - **The Job Hall restoration is gone.** It only switched on the in-run job change.
-- **Next:** a chunk resource (its regions, starting level, job tier and unlock), and the veteran start: a chunk-2
-  run starts at about Lv 54 in the 2nd job, with a draft of 1st-job cards.
+- **Chunks are data** (`ChunkData`, `data/chunks/`): its regions, start level, job tier, the chunk whose clear
+  opens it, and its card pace (`tm_open`, `tm_pace`; chunk 2 opens TM 41-61 and keeps 0.6). `Run.route` plays one.
+- **Next:** the veteran start: a chunk-2 run starts at Lv 54 (where chunk-1 clears end, 52-56 in the bots) in the
+  2nd job, carrying 1st-job cards.
 
 | Chunk | Region 1 (boss) | Region 2 (boss) | Region 3 (boss) | Rest stops |
 |---|---|---|---|---|

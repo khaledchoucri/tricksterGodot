@@ -20,7 +20,7 @@ var registry: Dictionary = {}
 
 
 func index_cards() -> void:
-	for r in Run.route.regions:
+	for r in Run.route.all_regions():
 		for c in r.cards:
 			registry[c.id] = c
 	var jobs_left: Array[JobData] = []
@@ -258,26 +258,33 @@ func card_value(id: StringName) -> float:
 	return c.value_at(card_level(id)) if c else 0.0
 
 
-## Ours: cards up to this original TM level (CardData.tm_level) are offered from room 1. The
-## original's first 20 TM levels pass in its first hours; here they give room 1 a choice (six
-## of a Fighter's eleven cards).
-const TM_OPEN := 20
-## Ours: past TM_OPEN, a card comes this many run levels per original TM level. The original
-## spreads a 1st job's cards over TM levels 1-50 (Sense's to 70) and chunk 1 runs from Lv 1 to
-## about 54: a Fighter's last card (TM 50) comes at Lv 18 in Desert Beach, Sense's TM 70 ones
-## at Lv 30 in the Relics. Reading: one run level stands for both the original's character and
-## TM levels. A later chunk will need its own start (its 2nd-job cards begin at TM 41).
-const TM_PACE := 0.6
-
-
-## The run level `c` is first offered at.
+## The run level `c` is first offered at: by the chunk's pace (ChunkData.tm_open, tm_pace) from
+## its start level. The cards of the jobs below the chunk's tier are open from the start: a
+## veteran's career has passed all their TM levels.
 func unlock_level(c: CardData) -> int:
-	return maxi(1, ceili((c.tm_level - TM_OPEN) * TM_PACE))
+	var ch := Run.route.chunk
+	if c in earlier_cards():
+		return 1
+	return maxi(ch.start_level, ch.start_level - 1 + ceili((c.tm_level - ch.tm_open) * ch.tm_pace))
 
 
 ## Whether the run is far enough along for `c` to be offered.
 func level_reached(c: CardData) -> bool:
 	return Run.level >= unlock_level(c)
+
+
+## The cards of the jobs held below the chunk's tier (a veteran's 1st job in chunk 2), in their
+## original TM order.
+func earlier_cards() -> Array[CardData]:
+	var out: Array[CardData] = []
+	for j in Run.jobs:
+		if j.tier < Run.route.chunk.job_tier:
+			for c in j.cards:
+				if not c in out:
+					out.append(c)
+	out.sort_custom(func(a: CardData, b: CardData) -> bool:
+		return a.tm_level < b.tm_level or (a.tm_level == b.tm_level and a.skill_id < b.skill_id))
+	return out
 
 
 ## Up to `n` card offers from the current jobs' trees (or only `from_job`'s):

@@ -1,12 +1,14 @@
 class_name RunRoute
 extends RefCounted
-## The run's route (Run.route): the regions it crosses, the planned rooms and how deep you are.
+## The run's route (Run.route): the chunk it plays, its regions, the planned rooms and how deep
+## you are.
 
-## Regions a run passes through, in order; the last one's boss ends it.
-const REGION_PATHS: Array[String] = ["res://data/coral_beach/region.tres", "res://data/desert_beach/region.tres",
-	"res://data/caballa_relics/region.tres"]
-## The chunk being played (a run is one chunk of three regions). Only chunk 1 exists so far.
-var chunk := 1
+## Every chunk, in order (a run is one chunk of three regions).
+const CHUNK_PATHS: Array[String] = ["res://data/chunks/chunk_1.tres", "res://data/chunks/chunk_2.tres"]
+var chunks: Array[ChunkData] = []
+## The chunk being played (its defaults are chunk 1's until use_chunk()).
+var chunk := ChunkData.new()
+## The chunk's regions, in order; the last one's boss ends the run.
 var regions: Array[RegionData] = []
 
 ## The region of the room the run is in.
@@ -19,6 +21,38 @@ var depth := 0
 ## Every room of the run, region by region, each region ending in its boss, with a rest stop
 ## between regions.
 var plan: Array[RoomPlan] = []
+
+
+func load_chunks() -> void:
+	for p in CHUNK_PATHS:
+		chunks.append(load(p))
+
+
+## Plays chunk `c`: its regions become the route's.
+func use_chunk(c: ChunkData) -> void:
+	chunk = c
+	regions.assign(c.regions)
+
+
+## The chunk numbered `n`, or null.
+func chunk_numbered(n: int) -> ChunkData:
+	for c in chunks:
+		if c.number == n:
+			return c
+	return null
+
+
+## Every region of every chunk (the card registry and city crafting know them all).
+func all_regions() -> Array[RegionData]:
+	var out: Array[RegionData] = []
+	for c in chunks:
+		for r in c.regions:
+			if not r in out:
+				out.append(r)
+	for r in regions:
+		if not r in out:
+			out.append(r)
+	return out
 
 
 ## A fresh plan: each region's rest stop on the way in (after the first), its rooms
