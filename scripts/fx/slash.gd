@@ -3,6 +3,8 @@ extends Node2D
 ## Crescent trail left by a sword swing. Sweeps from one side of the arc to
 ## the other on the ground plane, then fades. Drawn above actors.
 
+## Ours: the shortest arc worth drawing, in pixels along the swing.
+const MIN_ARC_PX := 2.0
 var radius := 58.0
 var arc := deg_to_rad(140.0)
 var dir := Vector2.RIGHT      # ground-plane aim
@@ -35,7 +37,8 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var head := clampf(_t / sweep_time, 0.0, 1.0)            # leading edge, 0..1 along the arc
 	var tail := clampf((_t - sweep_time * 0.5) / (life - sweep_time * 0.5), 0.0, 1.0)  # trailing edge
-	if head <= tail:
+	# An arc shorter than a couple of pixels has no area to fill (its polygon can't be triangulated).
+	if (head - tail) * absf(arc) * radius < MIN_ARC_PX:
 		return
 	var fade := 1.0 - clampf((_t - sweep_time) / (life - sweep_time), 0.0, 1.0)
 	var a0 := dir.angle() + (-arc / 2.0 if clockwise else arc / 2.0)
