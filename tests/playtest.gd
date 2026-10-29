@@ -40,6 +40,10 @@ var stop_regions := 0
 ## start with these cards instead of the chunk's (ChunkData.veteran_cards: max, all:L, draft:N:L).
 var chunk := 1
 var vet := ""
+## until_clear=1: stop after the first clear (a profile that has cleared, to start other bots from).
+## from=TAG: start from the profile another bot left (tag=TAG), e.g. its chunk 1 clear's loadout.
+var until_clear := false
+var from := ""
 ## The class chosen before the profile is set up (kept for fresh=1 profiles).
 var _chosen_class := ""
 ## Between runs: the city, crafting and the loadout (tests/playtest_city.gd).
@@ -96,6 +100,10 @@ func _ready() -> void:
 			chunk = int(kv[1])
 		elif kv.size() == 2 and kv[0] == "vet":
 			vet = kv[1]
+		elif kv.size() == 2 and kv[0] == "until_clear":
+			until_clear = kv[1] == "1"
+		elif kv.size() == 2 and kv[0] == "from":
+			from = kv[1]
 	Events.enemy_died.connect(func(e: Enemy) -> void:
 		if e.first_hit_at >= 0.0:
 			kill_log.append({"region": Run.route.region_index(), "depth": Run.route.depth, "elite": e.is_elite or e.is_boss,
@@ -121,7 +129,11 @@ func _ready() -> void:
 ## A new profile for the bot: its class, the city (earned or full) and the Heat it plays at.
 func _setup_profile() -> void:
 	var chosen := _chosen_class
-	Profile.use_path("user://playtest_profile%s.json" % tag, true)
+	var own := "user://playtest_profile%s.json" % tag
+	if from != "":
+		DirAccess.copy_absolute(ProjectSettings.globalize_path("user://playtest_profile%s.json" % from),
+			ProjectSettings.globalize_path(own))
+	Profile.use_path(own, from == "")
 	Profile.class_id = chosen
 	if chosen != "buffalo":
 		Profile.stats["clears"] = maxi(1, int(Profile.stats.get("clears", 0)))  # the slot is open
@@ -176,6 +188,8 @@ func _apply_heat(target: int) -> void:
 func _play() -> void:
 	for i in runs:
 		await _one_run(i)
+		if until_clear and results[-1].won:
+			break
 	_report()
 	get_tree().quit()
 
