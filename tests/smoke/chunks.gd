@@ -241,12 +241,12 @@ func _gate(Run: Node) -> void:
 	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
 	get_tree().root.add_child(hub)
 	await wait(1.0)
-	var titles: Array = hub.chunk_options().map(func(o: Dictionary) -> String: return "%s [%s]%s" % [o.title, o.tag,
+	var titles: Array = hub.gate_menu.chunk_options().map(func(o: Dictionary) -> String: return "%s [%s]%s" % [o.title, o.tag,
 		" (off)" if o.disabled else ""])
 	Profile.chunks.erase("buffalo")
-	var closed: Array = hub.chunk_options().filter(func(o: Dictionary) -> bool: return o.disabled)
+	var closed: Array = hub.gate_menu.chunk_options().filter(func(o: Dictionary) -> bool: return o.disabled)
 	Profile.chunks["buffalo"] = 1
-	hub._depart_to_chunk()
+	hub.gate_menu.depart_to_chunk()
 	for _w in 20:
 		await wait(0.05)
 		if hub.dialogue.visible:

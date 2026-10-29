@@ -190,7 +190,7 @@ func _audit_hub() -> void:
 	Profile.stats["clears"] = 1
 	Profile.stats["clears_gladiator"] = 1
 	Profile.stats["clears_champion"] = 1
-	hub._choose_character()
+	hub.gate_menu.choose_character()
 	await _choices_open(hub)
 	await _check_choices(hub, "hub_character_select")
 	hub.dialogue._chosen.emit(hub.dialogue._cancel)
