@@ -82,7 +82,7 @@ func run() -> void:
 	# Every monster names an attack pattern, and its tune overrides only that pattern's fields.
 	var bad_attacks: PackedStringArray = []
 	var monsters: Array[EnemyData] = Run.echoes.duplicate()
-	for r in Run.route.regions:
+	for r in Run.route.all_regions():
 		monsters.append_array(r.enemies)
 	for e in monsters:
 		if e.attack == null:

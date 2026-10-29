@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="RegionData" load_steps=32 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/region_data.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2_r"]
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="3_e"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/path_a.tres" id="r_path_a"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/path_b.tres" id="r_path_b"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/haunted_town_a.tres" id="r_haunted_town_a"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/haunted_town_b.tres" id="r_haunted_town_b"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/devil_crow_a.tres" id="r_devil_crow_a"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/devil_crow_b.tres" id="r_devil_crow_b"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/phantom_park_a.tres" id="r_phantom_park_a"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/phantom_park_b.tres" id="r_phantom_park_b"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/chrono_wharf_a.tres" id="r_chrono_wharf_a"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/chrono_wharf_b.tres" id="r_chrono_wharf_b"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/silent_hallway.tres" id="r_silent_hallway"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/school_toilet.tres" id="r_school_toilet"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/chilly_hallway.tres" id="r_chilly_hallway"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/shiver_hallway.tres" id="r_shiver_hallway"]
+[ext_resource type="Resource" path="res://data/oops_wharf/rooms/wharf_boss_room.tres" id="r_wharf_boss_room"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/ironclad_turtle.tres" id="e_ironclad_turtle"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/sea_tiger.tres" id="e_sea_tiger"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/requi.tres" id="e_requi"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/quiem.tres" id="e_quiem"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/black_foe.tres" id="e_black_foe"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/master_foe.tres" id="e_master_foe"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/evil_black_foe.tres" id="e_evil_black_foe"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/crow.tres" id="e_crow"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/egg_specter.tres" id="e_egg_specter"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/maiden_ghost.tres" id="e_maiden_ghost"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/ugly_corpse.tres" id="e_ugly_corpse"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/great_coolem_c.tres" id="e_great_coolem_c"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/captain_skull.tres" id="e_captain_skull"]
+
+[resource]
+script = ExtResource("1_s")
+display_name = "Oops Wharf"
+rooms = Array[ExtResource("2_r")]([ExtResource("r_path_a"), ExtResource("r_path_b"), ExtResource("r_haunted_town_a"), ExtResource("r_haunted_town_b"), ExtResource("r_devil_crow_a"), ExtResource("r_devil_crow_b"), ExtResource("r_phantom_park_a"), ExtResource("r_phantom_park_b"), ExtResource("r_chrono_wharf_a"), ExtResource("r_chrono_wharf_b"), ExtResource("r_silent_hallway"), ExtResource("r_school_toilet"), ExtResource("r_chilly_hallway"), ExtResource("r_shiver_hallway")])
+boss_room = ExtResource("r_wharf_boss_room")
+enemies = Array[ExtResource("3_e")]([ExtResource("e_ironclad_turtle"), ExtResource("e_sea_tiger"), ExtResource("e_requi"), ExtResource("e_quiem"), ExtResource("e_black_foe"), ExtResource("e_master_foe"), ExtResource("e_evil_black_foe"), ExtResource("e_crow"), ExtResource("e_egg_specter"), ExtResource("e_maiden_ghost"), ExtResource("e_ugly_corpse"), ExtResource("e_great_coolem_c"), ExtResource("e_captain_skull")])
+run_length = 9
+elite_depths = Array[int]([3, 7])
+gear_levels = Vector2i(73, 106)
+port_depth = 3
+hp_scale = 1.1
+damage_scale = 0.7
+tm_scale = 0.15
+galder_scale = 0.3
+field_music = "bayside.mp3"
+boss_music = "Boss_Monster.mp3"
+field_ambience = "bgs_night_sea.wav"
+boss_ambience = "bgs_night_sea.wav"

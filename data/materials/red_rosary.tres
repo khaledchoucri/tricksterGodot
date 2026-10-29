@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"red_rosary"
+display_name = "Red Rosary"
+item_id = 10158
+weight = 50
+stat = "MA"
+min_value = 9
+max_value = 22
+need = 4

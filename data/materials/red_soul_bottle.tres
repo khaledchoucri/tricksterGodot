@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"red_soul_bottle"
+display_name = "Red Soul Bottle"
+item_id = 11921
+weight = 10
+stat = "Fire"
+min_value = 8
+max_value = 38
+need = 4

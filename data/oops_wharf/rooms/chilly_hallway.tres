@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"chilly_hallway"
+display_name = "Phantom School - Chilly Hallway"
+map = "map_dg05a_1"
+rect = Rect2i(3136, 640, 1120, 680)

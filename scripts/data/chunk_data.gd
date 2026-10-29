@@ -33,9 +33,14 @@ func open_for(cls_id: String) -> bool:
 	return opened_by == 0 or Profile.chunk_cleared(cls_id) >= opened_by
 
 
-## Whether the chunk can be played yet (its regions are built).
+## A chunk is three regions; until all three are built it isn't offered (a clear of part of it
+## would open the next chunk).
+const REGIONS := 3
+
+
+## Whether the chunk can be played yet (all its regions are built).
 func playable() -> bool:
-	return not regions.is_empty()
+	return regions.size() >= REGIONS
 
 
 ## The regions' names, for the gate's menu ("Coral Beach > Desert Beach > Caballa Relics").

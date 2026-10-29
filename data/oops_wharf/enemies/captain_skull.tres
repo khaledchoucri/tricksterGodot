@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/golden_eyepatch.tres" id="m_mat"]
+[ext_resource type="Resource" path="res://data/attacks/slam.tres" id="atk"]
+[ext_resource type="Script" path="res://scripts/data/boss_data.gd" id="b_s"]
+[ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/crow.tres" id="e_crow"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/master_foe.tres" id="e_master_foe"]
+
+[sub_resource type="Resource" id="boss_row"]
+script = ExtResource("b_s")
+lives = 3
+heals = Array[Dictionary]([{"lives": 0, "share": 0.06, "every": 6.0}])
+line_open = "I am pretty bored.."
+line_summon = "Let's party!"
+line_rage = "To the Pain."
+title = "Captain of the Oops Wharf"
+summons = {&"minion": ExtResource("e_crow"), &"brute": ExtResource("e_master_foe")}
+
+[resource]
+script = ExtResource("1_s")
+id = &"captain_skull"
+monster_id = "2213"
+attack = ExtResource("atk")
+body_radius = 28.0
+cost = 0
+min_depth = 0
+hp_mult = 3.8
+is_boss = true
+boss = SubResource("boss_row")
+scene = ExtResource("2_scene")
+material = ExtResource("m_mat")

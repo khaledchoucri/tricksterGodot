@@ -10,6 +10,7 @@ var _saved: Dictionary = {}
 func run(Run: Node) -> void:
 	_save(Run)
 	_chunk_data(Run)
+	_exports(Run)
 	_gating(Run)
 	_choice(Run)
 	_veteran(Run)
@@ -98,7 +99,7 @@ func _choice(Run: Node) -> void:
 	check(Run.route.chunk.number == 1, "choosing a closed chunk 2 still plays chunk 1")
 	Profile.chunks["buffalo"] = 1
 	Run.new_run(7)
-	check(Run.route.chunk.number == 1, "an open chunk 2 with no regions built plays chunk 1")
+	check(Run.route.chunk.number == 1, "an open chunk 2 not yet built (%d of 3 regions) plays chunk 1" % Run.route.chunk_numbered(2).regions.size())
 	_buffalo_in_chunk_2(Run, "max")
 	check(Run.route.chunk.number == 2 and Run.route.regions == Run.route.chunk.regions and Run.route.plan[-1].boss,
 		"an open, built chunk 2 is played when chosen: its regions, %d rooms to its last boss" % Run.route.plan.size())
@@ -312,3 +313,22 @@ func _branches(Run: Node) -> void:
 	var fighter: Array = Run.veteran.branch_offers().map(func(j: JobData) -> StringName: return j.id)
 	check(fighter == [&"knight"], "a Fighter's clear has the Knight to open, its only next job (%s)" % [fighter])
 	Profile.jobs_open = opened
+
+
+## Every chunk's built regions are exported: each room's map, each monster's original row and sprite.
+func _exports(Run: Node) -> void:
+	var names: PackedStringArray = []
+	var gaps: PackedStringArray = []
+	for c: ChunkData in Run.route.chunks:
+		for r in c.regions:
+			names.append("%d: %s" % [c.number, r.display_name])
+			for room: RoomData in r.rooms + [r.boss_room]:
+				if not FileAccess.file_exists(Assets.map_dir(room.map) + "map.json"):
+					gaps.append("%s's map %s" % [room.id, room.map])
+			for e: EnemyData in r.enemies:
+				if not Run.monster_data.has(e.monster_id):
+					gaps.append("%s's stats (row %s)" % [e.id, e.monster_id])
+				elif not FileAccess.file_exists(Assets.actor_json(String(e.id))):
+					gaps.append("%s's sprite" % e.id)
+	check(gaps.is_empty() and "2: Oops Wharf" in names, "every built region of every chunk is exported (%s)%s" % [
+		", ".join(names), "" if gaps.is_empty() else ": " + ", ".join(gaps)])

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"school_toilet"
+display_name = "Phantom School - 1F Toilet"
+map = "map_dg05f"
+rect = Rect2i(896, 640, 1120, 680)

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
+[ext_resource type="Resource" path="res://data/materials/flashlight.tres" id="m_mat"]
+[ext_resource type="Resource" path="res://data/attacks/spin.tres" id="atk"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"great_coolem_c"
+monster_id = "2165"
+attack = ExtResource("atk")
+body_radius = 20.0
+cost = 4
+min_depth = 7
+tune = {"windup": 0.6, "radius": 66.0}
+material = ExtResource("m_mat")

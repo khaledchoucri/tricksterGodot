@@ -136,8 +136,24 @@ func _setup_profile() -> void:
 	if chunk > 1:
 		Profile.chunks[chosen] = maxi(int(Profile.chunks.get(chosen, 0)), chunk - 1)
 		Profile.chunk_choice[chosen] = chunk
+		_play_unfinished(Run.route.chunk_numbered(chunk))
 	Run.veteran.cards_override = vet
 	_apply_heat(heat)
+
+
+## A chunk still being built isn't offered: the bot plays it anyway, its last built region
+## standing in for the rest (play it with regions=N, which stops before them).
+func _play_unfinished(c: ChunkData) -> void:
+	if c == null or c.playable():
+		return
+	var stand_in: ChunkData = c.duplicate()
+	var regions: Array[RegionData] = c.regions.duplicate()
+	while regions.size() < ChunkData.REGIONS:
+		regions.append(regions[-1])
+	stand_in.regions = regions
+	Run.route.chunks[Run.route.chunks.find(c)] = stand_in
+	print("chunk %d is unfinished: %d of %d regions built (play it with regions=%d)" % [c.number, c.regions.size(),
+		ChunkData.REGIONS, c.regions.size()])
 
 
 ## Raises Server Settings, in order, until `target` points of Heat are on.

@@ -238,8 +238,15 @@ its 1st-job cards run over TM levels 1-50 (Sense's to 70), the 2nd job came at L
   chunk-2 clear one 3rd-job branch of the player's choice, hybrids included (the Mercenary no longer waits on a
   Gladiator clear, which only chunk 3 could give); a second clear opens the branch left. A 3rd-tier chunk sets
   out in the first branch opened.
-- **Next:** chunk 2's regions; then the gate's choice among the opened 3rd jobs (with chunk 3), and the
-  Trickster's unlock, which still asks for 3rd-job clears.
+- **Oops Wharf** (chunk 2, region 1) is built: rooms from the Path to Oops Wharf, Wharf Fields 1-4 and Phantom
+  School's three floors; 12 monsters from their tables (Lv 68 Ironclad Turtle to Lv 123 Great Coolem C), each
+  with an attack pattern read from its tactic (Ours) and a material from its drop list (stats ours, about 1.5x the
+  Relics'); item levels 73-106 (Ours: Phantom School's floors reach the original's 120, and the bands climb to the
+  Vamp Dungeons' 160); Captain Skull (BossMonsterparamEx 2213, four bars) in the Wharf's boss room, on the shared
+  boss layer until his moveset is approved. A chunk is offered once all three regions are built.
+  - First bot (Buffalo veteran, `max`): Lv 54 to 69 through the region, kills as quick as the Relics'.
+- **Next:** Ghost Blue and the Rose Garden; then the gate's choice among the opened 3rd jobs (with chunk 3), and
+  the Trickster's unlock, which still asks for 3rd-job clears.
 
 | Chunk | Region 1 (boss) | Region 2 (boss) | Region 3 (boss) | Rest stops |
 |---|---|---|---|---|
