@@ -72,38 +72,25 @@ func _ready() -> void:
 	get_window().size = Vector2i(1280, 720)  # the shipped window, not headless 1280x1280
 	for a in OS.get_cmdline_user_args():
 		var kv := a.split("=")
-		if kv.size() == 2 and kv[0] == "runs":
-			runs = int(kv[1])
-		elif kv.size() == 2 and kv[0] == "build":
-			build = kv[1]
-		elif kv.size() == 2 and kv[0] == "heat":
-			heat = int(kv[1])
-		elif kv.size() == 2 and kv[0] == "fresh":
-			fresh = kv[1] == "1"
-		elif kv.size() == 2 and kv[0] == "climb":
-			climb = kv[1] == "1"
-		elif kv.size() == 2 and kv[0] == "city":
-			city = kv[1]
-		elif kv.size() == 2 and kv[0] == "class":
-			Profile.class_id = kv[1]
-		elif kv.size() == 2 and kv[0] == "tag":
-			tag = kv[1]
-		elif kv.size() == 2 and kv[0] == "god":
-			god = kv[1] == "1"
-		elif kv.size() == 2 and kv[0] == "trees":
-			trees = kv[1].split("+")
-		elif kv.size() == 2 and kv[0] == "seed":
-			seed_base = int(kv[1])
-		elif kv.size() == 2 and kv[0] == "regions":
-			stop_regions = int(kv[1])
-		elif kv.size() == 2 and kv[0] == "chunk":
-			chunk = int(kv[1])
-		elif kv.size() == 2 and kv[0] == "vet":
-			vet = kv[1]
-		elif kv.size() == 2 and kv[0] == "until_clear":
-			until_clear = kv[1] == "1"
-		elif kv.size() == 2 and kv[0] == "from":
-			from = kv[1]
+		if kv.size() != 2:
+			continue
+		match kv[0]:
+			"runs": runs = int(kv[1])
+			"build": build = kv[1]
+			"heat": heat = int(kv[1])
+			"fresh": fresh = kv[1] == "1"
+			"climb": climb = kv[1] == "1"
+			"city": city = kv[1]
+			"class": Profile.class_id = kv[1]
+			"tag": tag = kv[1]
+			"god": god = kv[1] == "1"
+			"trees": trees = kv[1].split("+")
+			"seed": seed_base = int(kv[1])
+			"regions": stop_regions = int(kv[1])
+			"chunk": chunk = int(kv[1])
+			"vet": vet = kv[1]
+			"until_clear": until_clear = kv[1] == "1"
+			"from": from = kv[1]
 	Events.enemy_died.connect(func(e: Enemy) -> void:
 		if e.first_hit_at >= 0.0:
 			kill_log.append({"region": Run.route.region_index(), "depth": Run.route.depth, "elite": e.is_elite or e.is_boss,
