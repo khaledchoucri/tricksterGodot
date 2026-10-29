@@ -32,10 +32,14 @@ func job_path(c: ChunkData, cls: ClassData = null) -> Array[JobData]:
 	var out: Array[JobData] = [(cls if cls else Run.cls).start_job]
 	while out[-1].tier < c.job_tier:
 		var next: JobData = null
+		# The first branch a clear opened comes first (the gate's choice among them is still to build).
+		for id: String in Profile.jobs_open.get(String((cls if cls else Run.cls).id), []):
+			for j in out[-1].next_jobs:
+				if next == null and String(j.id) == id and j.tier == out[-1].tier + 1:
+					next = j
 		for j in out[-1].next_jobs:
-			if j.tier == out[-1].tier + 1 and j.unlocked():
+			if next == null and j.tier == out[-1].tier + 1 and j.unlocked():
 				next = j
-				break
 		if next == null:
 			break
 		out.append(next)
@@ -96,3 +100,30 @@ func _arm(c: ChunkData) -> void:
 				and it.level <= top and it.level > best.level:
 			best = it
 	Run.gear.equipment["weapon"] = GearItem.make(best)
+
+
+## The next-tier jobs a clear can open for this character (Profile.jobs_open), one per clear: the
+## job's branches not yet open. Deviation (user, 2026-10-22): a chunk-2 clear opens one of the 3rd
+## job's branches, the player's choice, so a hybrid (the Mercenary) is chosen like the others
+## instead of waiting on a clear as its pure branch (its unlock_stat), which only chunk 3 can give.
+func branch_offers() -> Array[JobData]:
+	var out: Array[JobData] = []
+	for j in Run.job.next_jobs:
+		if j.tier == Run.job.tier + 1 and not branch_open(j):
+			out.append(j)
+	return out
+
+
+## Whether `j` has been opened for this character by a clear.
+func branch_open(j: JobData) -> bool:
+	return String(j.id) in Profile.jobs_open.get(String(Run.cls.id), [])
+
+
+## Opens `j` for this character.
+func open_branch(j: JobData) -> void:
+	var opened: Array = Profile.jobs_open.get(String(Run.cls.id), [])
+	if not String(j.id) in opened:
+		opened.append(String(j.id))
+	Profile.jobs_open[String(Run.cls.id)] = opened
+	Profile.save()
+

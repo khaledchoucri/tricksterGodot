@@ -521,6 +521,11 @@ Safe on a shelf, refines and compounds included; you stop wearing it."),
 					"tag": "Worn" if Profile.worn_in(i) != "" else (stored.data.slot_name() if stored else ""),
 					"icon": stored.data.icon() if stored else null, "text": "Frees its shelf for %s." % keep.title()})
 			title = "Your shelves are full  ·  make room for %s" % keep.title()
+		"branch":
+			for j: JobData in options:
+				shown.append({"title": j.display_name, "tag": "Opens chunk %d" % (Run.route.chunk.number + 1),
+					"text": j.text if j.text != "" else j.passive_text})
+			title = "Chunk %d cleared  ·  choose the %s's next job" % [Run.route.chunk.number, Run.cls.display_name]
 		"rune":
 			for c: CardData in options:
 				if c == null:
@@ -683,6 +688,10 @@ func _on_picked(i: int) -> void:
 				Run.city.save_point(_left_behind.pop_front())
 			_make_room()
 			return
+		"branch":
+			var j: JobData = _pick_options[i]
+			Run.veteran.open_branch(j)
+			hud.log_line("[System] The %s can go on as a %s." % [Run.cls.display_name, j.display_name], Color("e0b54d"))
 		"rune":
 			var c: CardData = _pick_options[i]
 			if c:
@@ -708,6 +717,9 @@ func _resume() -> void:
 		"win":
 			_return_to = ""
 			_finish_win()
+		"results":
+			_return_to = ""
+			_show_win_results()
 		_:
 			_next_step()
 
@@ -952,13 +964,26 @@ func _finish_win() -> void:
 ## Full shelves: throw away a stored item to keep the next find, or log out without the rest.
 func _make_room() -> void:
 	if _left_behind.is_empty():
-		_show_win_results()
+		_choose_branch()
 		return
 	var shelves: Array = []
 	for i in Profile.warehouse.size():
 		shelves.append(i)
 	shelves.append(null)
 	_start_pick("make_room", shelves)
+
+
+## A clear opens one next-tier job for this character: the only one at once, or a pick of the
+## branches it hasn't opened (Run.veteran.branch_offers()); then the results.
+func _choose_branch() -> void:
+	var offers := Run.veteran.branch_offers()
+	if offers.size() == 1:
+		Run.veteran.open_branch(offers[0])
+	if offers.size() > 1:
+		_return_to = "results"
+		_start_pick("branch", offers)
+		return
+	_show_win_results()
 
 
 ## A region's boss (not the last) is down: a shard, then on to the next region.

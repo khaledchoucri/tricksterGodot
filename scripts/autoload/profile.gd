@@ -58,6 +58,9 @@ var builds: Dictionary = {}
 ## that character in its next job (the original's job change at Lv 50 in Relics Town, after
 ## chunk 1's last region).
 var chunks: Dictionary = {}
+## The next-tier jobs each character's clears have opened (class id -> [JobData ids]): a
+## chunk-2 clear opens one 3rd-job branch (Run.veteran.branch_offers()).
+var jobs_open: Dictionary = {}
 ## The chunk each character sets out into (class id -> chunk number; chunk 1 when unset or closed).
 var chunk_choice: Dictionary = {}
 ## The class played (ClassData id).
@@ -107,6 +110,7 @@ func load_profile() -> void:
 	builds = {}
 	chunks = {}
 	chunk_choice = {}
+	jobs_open = {}
 	class_id = "buffalo"
 	drills = []
 	drill = ""
@@ -151,6 +155,7 @@ func load_profile() -> void:
 	builds = data.get("builds", {})
 	for k: String in data.get("chunks", {}):
 		chunks[k] = int(data.chunks[k])
+	jobs_open = data.get("jobs_open", {})
 	for k: String in data.get("chunk_choice", {}):
 		chunk_choice[k] = int(data.chunk_choice[k])
 	class_id = data.get("class_id", "buffalo")
@@ -169,7 +174,7 @@ func save() -> void:
 		"flags": flags, "restorations": restorations, "warehouse": warehouse, "warehouse_rows": warehouse_rows, "loadout_ids": _loadout_ids(), "lost_bag": lost_bag,
 		"next_item_uid": next_item_uid, "heirloom_uid": item_uid(legacy_heirloom),
 		"server_settings": server_settings, "best_heat": best_heat, "cards": cards, "wardrobe": wardrobe,
-		"worn": worn, "mastery": mastery, "start_skills": start_skills, "builds": builds, "chunks": chunks, "chunk_choice": chunk_choice, "class_id": class_id, "drills": drills, "drill": drill,
+		"worn": worn, "mastery": mastery, "start_skills": start_skills, "builds": builds, "chunks": chunks, "chunk_choice": chunk_choice, "jobs_open": jobs_open, "class_id": class_id, "drills": drills, "drill": drill,
 		"custom": custom}, "  "))
 
 

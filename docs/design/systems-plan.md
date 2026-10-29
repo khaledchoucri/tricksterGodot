@@ -234,7 +234,12 @@ its 1st-job cards run over TM levels 1-50 (Sense's to 70), the 2nd job came at L
   - The 1st-job cards are carried by `ChunkData.veteran_cards`, under test with the bots: `max` (the whole tree at
     its cap; the bots' chunk-1 clears hold 8-14 cards, nearly all at Lv 5), `all:L`, or `draft:N:L` (N picks of
     one of three, each at Lv L, before the first room). A beast form is left for the run to offer.
-- **Next:** choosing the 3rd job at a chunk-2 clear (one branch per clear), and chunk 2's regions.
+- **A clear opens the next tier's job** (`Profile.jobs_open`): a chunk-1 clear its only one (the Knight), a
+  chunk-2 clear one 3rd-job branch of the player's choice, hybrids included (the Mercenary no longer waits on a
+  Gladiator clear, which only chunk 3 could give); a second clear opens the branch left. A 3rd-tier chunk sets
+  out in the first branch opened.
+- **Next:** chunk 2's regions; then the gate's choice among the opened 3rd jobs (with chunk 3), and the
+  Trickster's unlock, which still asks for 3rd-job clears.
 
 | Chunk | Region 1 (boss) | Region 2 (boss) | Region 3 (boss) | Rest stops |
 |---|---|---|---|---|

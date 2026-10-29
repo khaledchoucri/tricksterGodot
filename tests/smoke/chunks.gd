@@ -17,6 +17,7 @@ func run(Run: Node) -> void:
 	_build_and_arms(Run)
 	await _draft_by_keys(Run)
 	await _gate(Run)
+	await _branches(Run)
 	_restore(Run)
 
 
@@ -266,3 +267,48 @@ func _gate(Run: Node) -> void:
 	hub.queue_free()
 	Profile.stats.runs = runs
 	await get_tree().process_frame
+
+
+## A chunk-2 clear opens one 3rd-job branch, picked by key; the last one left opens by itself, and
+## a chunk-1 clear's single next job (the Knight) without a pick.
+func _branches(Run: Node) -> void:
+	var opened: Dictionary = Profile.jobs_open.duplicate()
+	Profile.jobs_open.erase("buffalo")
+	_buffalo_in_chunk_2(Run, "max")
+	var offered: Array = Run.veteran.branch_offers().map(func(j: JobData) -> StringName: return j.id)
+	var g: Game = load("res://scenes/game.tscn").instantiate()
+	get_tree().root.add_child(g)
+	await wait(2.6)
+	g._choose_branch()
+	await get_tree().process_frame
+	var title: String = g.hud.get_node("%PickTitle").text
+	var key := InputEventKey.new()
+	key.keycode = KEY_2
+	key.pressed = true
+	Input.parse_input_event(key)
+	await get_tree().process_frame
+	key.pressed = false
+	Input.parse_input_event(key)
+	await wait(1.0)  # the results fade in over 0.6 s
+	var after: Array = Profile.jobs_open.get("buffalo", []).duplicate()
+	check(offered == [&"gladiator", &"mercenary"] and title.contains("next job") and after == ["mercenary"]
+		and g.hud.results_panel.visible, "a Knight's chunk 2 clear offers %s; key 2 opens the Mercenary, then the results (%s; %s; results %s)" % [offered,
+		after, title, g.hud.results_panel.visible])
+	g._choose_branch()  # a second clear: one branch left, opened without a pick
+	await get_tree().process_frame
+	check(Profile.jobs_open.buffalo == ["mercenary", "gladiator"] and Run.veteran.branch_offers().is_empty(),
+		"a second clear opens the Gladiator, the branch left (%s)" % [Profile.jobs_open.buffalo])
+	var three: ChunkData = Run.route.chunk_numbered(2).duplicate()
+	three.job_tier = 3
+	var path: Array = Run.veteran.job_path(three).map(func(j: JobData) -> StringName: return j.id)
+	check(path == [&"fighter", &"knight", &"mercenary"], "a 3rd-tier chunk sets out in the first branch opened (%s)" % [path])
+	get_tree().paused = false
+	g.queue_free()
+	await get_tree().process_frame
+	Profile.jobs_open.erase("buffalo")
+	Profile.class_id = "buffalo"
+	Profile.chunk_choice.erase("buffalo")
+	Run.new_run(7)
+	var fighter: Array = Run.veteran.branch_offers().map(func(j: JobData) -> StringName: return j.id)
+	check(fighter == [&"knight"], "a Fighter's clear has the Knight to open, its only next job (%s)" % [fighter])
+	Profile.jobs_open = opened

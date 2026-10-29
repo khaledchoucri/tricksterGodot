@@ -380,7 +380,7 @@ func show_results(won: bool) -> void:
 	if won and Run.last_result.get("opened", false):
 		var next: PackedStringArray = []
 		for j: JobData in Run.job.next_jobs:
-			if j.unlocked():
+			if Run.veteran.branch_open(j):
 				next.append(j.display_name)
 		t += "\n[color=#e0b54d]Chunk %d opened[/color]  %s goes on as %s." % [Run.route.chunk.number + 1, Run.cls.display_name,
 			" or ".join(next)]
