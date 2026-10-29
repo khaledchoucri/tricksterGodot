@@ -87,7 +87,7 @@ func _welcome() -> void:
 		hud.log_line("[System] New best Heat %d cleared: +%d Harkon Shard%s." % [r.heat, r.bounty, "" if r.bounty == 1 else "s"],
 			Color("e0b54d"))
 	if r.won:
-		hud.log_line("[System] Expedition complete. Coral Beach is quiet, for now.", Color("e0b54d"))
+		hud.log_line("[System] Expedition complete. %s is quiet, for now." % Run.route.regions[0].display_name, Color("e0b54d"))
 	else:
 		hud.log_line("[System] Rollback complete. You remember everything.", Color("c9a4ff"))
 	hud.notice("Carried home: %d TM, %d Harkon Shard%s" % [r.tm, r.shards, "" if r.shards == 1 else "s"])
@@ -108,7 +108,7 @@ func _physics_process(_delta: float) -> void:
 		if Run.classes.filter(func(c: ClassData) -> bool: return c.unlocked()).size() > 1 or Run.city.trickster_unlocked():
 			_choose_character()
 		else:
-			_depart()
+			_depart_to_chunk()
 
 
 func _process(_delta: float) -> void:
@@ -609,7 +609,7 @@ func _choose_character() -> void:
 		Profile.class_id = "trickster"
 		Profile.save()
 		talker.set_talking(false)
-		_depart()
+		_depart_to_chunk()
 		return
 	talker.set_talking(false)
 	if pick < 0 or pick >= n:
@@ -617,7 +617,47 @@ func _choose_character() -> void:
 		return
 	Profile.class_id = String(Run.classes[pick].id)
 	Profile.save()
+	_depart_to_chunk()
+
+
+## Asks which chunk to set out into when the character has a later one open and built (chunk 1
+## otherwise, without asking), then departs.
+func _depart_to_chunk() -> void:
+	var options := chunk_options()
+	if options.filter(func(o: Dictionary) -> bool: return not o.get("disabled", false)).size() <= 1:
+		_depart()
+		return
+	var cls := Run.chosen_class()
+	var playable := Run.route.chunks.filter(func(c: ChunkData) -> bool: return c.playable())
+	talker.set_talking(true)
+	options.append({"title": "Not yet", "cancel": true, "tag": "", "text": "Stay in the city."})
+	var pick := await dialogue.choose({"name": "Server select", "portrait": null,
+		"text": "Where does the %s log in?" % cls.display_name}, options)
+	talker.set_talking(false)
+	if pick < 0 or pick >= playable.size():
+		player.global_position += Vector2(0, 60)
+		return
+	Profile.chunk_choice[String(cls.id)] = (playable[pick] as ChunkData).number
+	Profile.save()
 	_depart()
+
+
+## The gate's chunk menu for the chosen character: every built chunk, the ones it hasn't opened
+## disabled, with the level and job it sets out as.
+func chunk_options() -> Array:
+	var cls := Run.chosen_class()
+	var cls_id := String(cls.id)
+	var options: Array = []
+	for c: ChunkData in Run.route.chunks:
+		if not c.playable():
+			continue
+		var job: JobData = Run.veteran.job_path(c, cls)[-1]
+		options.append({"title": "Chunk %d  ·  %s" % [c.number, c.route_text()],
+			"tag": "Lv %d %s" % [c.start_level, job.display_name] if c.open_for(cls_id) else "Locked",
+			"text": ("Set out as a %s." % job.display_name) if c.open_for(cls_id)
+				else "Clear chunk %d with the %s to open it." % [c.opened_by, cls.display_name],
+			"disabled": not c.open_for(cls_id)})
+	return options
 
 
 ## Character creation for the custom class: kit, type graph, two trees.

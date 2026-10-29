@@ -16,6 +16,7 @@ func run(Run: Node) -> void:
 	_cards(Run)
 	_build_and_arms(Run)
 	await _draft_by_keys(Run)
+	await _gate(Run)
 	_restore(Run)
 
 
@@ -228,4 +229,40 @@ func _draft_by_keys(Run: Node) -> void:
 		"two draft picks by key, each card at Lv 3, then the first room's fight (%s; %s)" % [titles, drafted])
 	get_tree().paused = false
 	g.queue_free()
+	await get_tree().process_frame
+
+
+## The gate asks where a character with chunk 2 open logs in; Esc stays in the city.
+func _gate(Run: Node) -> void:
+	_buffalo_in_chunk_2(Run, "max")
+	Profile.chunk_choice["buffalo"] = 1
+	var runs := int(Profile.stats.runs)
+	Profile.stats.runs = maxi(runs, 1)  # not a first visit: no welcome conversation
+	var hub: Hub = load("res://scenes/hub.tscn").instantiate()
+	get_tree().root.add_child(hub)
+	await wait(1.0)
+	var titles: Array = hub.chunk_options().map(func(o: Dictionary) -> String: return "%s [%s]%s" % [o.title, o.tag,
+		" (off)" if o.disabled else ""])
+	Profile.chunks.erase("buffalo")
+	var closed: Array = hub.chunk_options().filter(func(o: Dictionary) -> bool: return o.disabled)
+	Profile.chunks["buffalo"] = 1
+	hub._depart_to_chunk()
+	for _w in 20:
+		await wait(0.05)
+		if hub.dialogue.visible:
+			break
+	var shown: bool = hub.dialogue.visible and hub.talker.talking
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await get_tree().process_frame
+	esc.pressed = false
+	Input.parse_input_event(esc)
+	await wait(0.2)
+	check(titles.size() == 2 and String(titles[1]).contains("Lv 54 Knight") and closed.size() == 1 and shown
+		and not hub.leaving and not hub.talker.talking and int(Profile.chunk_choice.buffalo) == 1,
+		"the gate asks a Buffalo with chunk 2 open where to log in (%s); a closed chunk is shown locked; Esc stays" % [titles])
+	hub.queue_free()
+	Profile.stats.runs = runs
 	await get_tree().process_frame

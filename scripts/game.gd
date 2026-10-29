@@ -85,7 +85,7 @@ func _ready() -> void:
 		return
 	Run.new_run()
 	hud.log_line("[Notice] Trickster service has ended. Thank you for playing.", Color("f07a62"))
-	hud.log_line("[Coral Beach] Players online: 1", Color("94a7b2"))
+	hud.log_line("[%s] Players online: 1" % Run.route.regions[0].display_name, Color("94a7b2"))
 	_load_room()
 
 
