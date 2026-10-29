@@ -16,6 +16,7 @@ func run(Run: Node) -> void:
 	_veteran(Run)
 	_cards(Run)
 	_build_and_arms(Run)
+	_packs(Run)
 	await _draft_by_keys(Run)
 	await _gate(Run)
 	await _branches(Run)
@@ -192,6 +193,27 @@ func _build_and_arms(Run: Node) -> void:
 	Run.city.finish(true)
 	check(Profile.builds.get("buffalo", {}) == {"power": 20, "magic": 3, "sense": 0, "charm": 30},
 		"a clear records the character's type points for its next veteran start")
+
+
+## A region's pack scale grows its waves' budget: chunk 2's veterans need bigger packs.
+func _packs(Run: Node) -> void:
+	Run.new_run(7)
+	var region: RegionData = Run.route.region
+	var wharf: RegionData = load("res://data/oops_wharf/region.tres")
+	var roller: Room = load("res://scripts/room.gd").new()
+	var counts: Array[int] = []
+	for scale: float in [1.0, 2.0]:
+		region.pack_scale = scale
+		Run.rng.seed = 11
+		var n := 0
+		for _r in 6:
+			for w: Array in roller._make_waves(4, false):
+				n += w.size()
+		counts.append(n)
+	region.pack_scale = 1.0
+	roller.free()
+	check(wharf.pack_scale == 2.0 and counts[1] >= counts[0] * 1.6,
+		"Oops Wharf packs twice the budget of chunk 1's rooms: %d monsters against %d" % [counts[1], counts[0]])
 
 
 ## The draft is a pick before the first room, made with the number keys like any other.

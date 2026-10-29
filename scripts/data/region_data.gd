@@ -21,6 +21,9 @@ extends Resource
 ## follow on from the one before.
 @export var hp_scale := 1.0
 @export var damage_scale := 1.0
+## Ours: a scale on each wave's encounter budget, so a later chunk's rooms hold bigger packs (its
+## veterans clear them faster and need more EXP a level).
+@export var pack_scale := 1.0
 ## Scales on the TM and Galder monsters give (later regions' originals are
 ## much larger than a roguelite's economy wants).
 @export var tm_scale := 1.0

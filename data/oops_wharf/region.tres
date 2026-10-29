@@ -44,6 +44,7 @@ gear_levels = Vector2i(73, 106)
 port_depth = 3
 hp_scale = 1.1
 damage_scale = 0.7
+pack_scale = 2.0
 tm_scale = 0.15
 galder_scale = 0.3
 field_music = "bayside.mp3"

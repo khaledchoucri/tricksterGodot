@@ -341,7 +341,7 @@ func _make_waves(depth: int, elite: bool) -> Array:
 	var out: Array = []
 	var count := 2 if depth < 3 else 3
 	for w in count:
-		var budget := 3.0 + depth * 1.2 + w * 1.5 + Run.route.region_index() * 2.0
+		var budget := (3.0 + depth * 1.2 + w * 1.5 + Run.route.region_index() * 2.0) * Run.route.region.pack_scale
 		var wave_list: Array[Dictionary] = []
 		var shooters := 0
 		while budget >= 1.0:
