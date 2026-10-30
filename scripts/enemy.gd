@@ -298,8 +298,20 @@ func _physics_process(delta: float) -> void:
 		velocity += _pull
 	_pull = Vector2.ZERO
 	move_and_slide()
+	_keep_in_room()
 	if sprite.modulate.r > 1.0:
 		sprite.modulate = sprite.modulate.lerp(Color(1, 1, 1, sprite.modulate.a), minf(1.0, delta * 14.0))
+
+
+## A hard knockback can carry it through the room's thin edge (Room's boundary segments), where
+## nothing can path to it and the room never clears: it is put back inside.
+func _keep_in_room() -> void:
+	if not is_instance_valid(room) or room.rect.grow(-body_radius).has_point(global_position):
+		return
+	var inner := room.rect.grow(-body_radius)
+	global_position = global_position.clamp(inner.position, inner.end)
+	if not room.is_walkable(global_position):
+		global_position = room.nearest_reachable(global_position)
 
 
 func _tick_status(delta: float) -> void:
