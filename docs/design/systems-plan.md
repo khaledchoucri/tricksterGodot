@@ -242,8 +242,11 @@ its 1st-job cards run over TM levels 1-50 (Sense's to 70), the 2nd job came at L
   School's three floors; 12 monsters from their tables (Lv 68 Ironclad Turtle to Lv 123 Great Coolem C), each
   with an attack pattern read from its tactic (Ours) and a material from its drop list (stats ours, about 1.5x the
   Relics'); item levels 73-106 (Ours: Phantom School's floors reach the original's 120, and the bands climb to the
-  Vamp Dungeons' 160); Captain Skull (BossMonsterparamEx 2213, four bars) in the Wharf's boss room, on the shared
-  boss layer until his moveset is approved. A chunk is offered once all three regions are built.
+  Vamp Dungeons' 160); twice chunk 1's pack size (`RegionData.pack_scale`) and full monster damage, so a
+  veteran ends it near Lv 82. Captain Skull (BossMonsterparamEx 2213, four bars, `scripts/boss_captain_skull.gd`)
+  in the Wharf's boss room: Armor Breaker and Burning Rave, then Shockvibe and his crew's waves (the shared
+  boss layer's `summon_*`, from his row), then Bull's Eye, a Shockwave lane every 2 s and M Cure, which a heavy
+  hit breaks off. A chunk is offered once all three regions are built.
   - First bot (Buffalo veteran, `max`): Lv 54 to 69 through the region, kills as quick as the Relics'.
 - **Next:** Ghost Blue and the Rose Garden; then the gate's choice among the opened 3rd jobs (with chunk 3), and
   the Trickster's unlock, which still asks for 3rd-job clears.

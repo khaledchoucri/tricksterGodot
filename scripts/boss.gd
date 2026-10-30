@@ -42,6 +42,11 @@ var _barrier_until := 0.0
 var _empowered_until := 0.0
 var _base_damage := 0
 var _base_speeds := Vector2.ZERO
+var _summon_at := -1.0
+var _crew_called := 0
+var _heal_due := 0
+var _heal_lands_at := 0.0
+var _heal_mark: Telegraph
 
 
 func configure(p_data: EnemyData, stats_row: Dictionary, elite := false) -> void:
@@ -93,10 +98,12 @@ func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
 	_check_bars()
+	_land_heal()
 	if _phase_due and now() >= _stagger_until:
 		_phase_due = false
 		_on_phase(lives_left)
 	_tick_heals()
+	_tick_summons()
 	if _empowered_until > 0.0 and now() >= _empowered_until:
 		_empowered_until = 0.0
 		damage = _base_damage
@@ -146,9 +153,62 @@ func _tick_heals() -> void:
 		var h: Dictionary = boss.heals[i]
 		if lives_left <= int(h.get("lives", 0)) and hp < bar_top() and Run.rng.randf() < HEAL_CHANCE:
 			pick = i
-			heal(roundi(float(h.get("share", 0.0)) * bar_hp))
+			_cast_heal(roundi(float(h.get("share", 0.0)) * bar_hp))
 			break
 	_heal_at = now() + float(boss.heals[pick].get("every", 5.0))
+
+
+## M Cure: at once, or after its cast (BossData.heal_cast) if no heavy hit breaks it off.
+func _cast_heal(amount: int) -> void:
+	if boss.heal_cast <= 0.0:
+		heal(amount)
+		return
+	if _heal_due > 0:
+		return
+	_heal_due = amount
+	_heal_lands_at = now() + boss.heal_cast
+	_heal_mark = Telegraph.make("circle", boss.heal_cast, {"radius": body_radius + 24.0, "color": Color(0.45, 1.0, 0.55)})
+	room.add_ground_fx(_heal_mark, global_position)
+	Events.text_shown.emit(global_position + Vector2(0, -80), "M Cure", Color(0.5, 1.0, 0.55))
+
+
+func _land_heal() -> void:
+	if _heal_due > 0 and now() >= _heal_lands_at:
+		heal(_heal_due)
+		_heal_due = 0
+
+
+## Whether an M Cure is being cast on it.
+func healing() -> bool:
+	return _heal_due > 0
+
+
+## Its row's summon waves (BossData.summon_*): the first as it reaches SummonLeftLife, then
+## every SummonTime, each SummonMin to SummonMax of its SummonMon, SummonTotalCnt in all.
+func _tick_summons() -> void:
+	if boss.summon_every <= 0.0 or boss.summon_pool.is_empty() or lives_left > boss.summon_lives \
+			or _crew_called >= boss.summon_total or state == State.SPAWN or now() < _stagger_until:
+		return
+	if _summon_at < 0.0:
+		_summon_at = now()
+	if now() < _summon_at:
+		return
+	_summon_at = now() + boss.summon_every
+	var count := mini(Run.rng.randi_range(boss.summon_min, boss.summon_max), boss.summon_total - _crew_called)
+	_crew_called += count
+	var by_id: Dictionary = {}
+	for _i in count:
+		var e: EnemyData = boss.summon_pool[Run.rng.randi() % boss.summon_pool.size()]
+		by_id[e.id] = int(by_id.get(e.id, 0)) + 1
+	for id: StringName in by_id:
+		room.summon(global_position, id, by_id[id])
+	if boss.line_summon != "":
+		Events.boss_spoke.emit(boss.line_summon)
+
+
+## How many its summon waves have called so far.
+func crew_called() -> int:
+	return _crew_called
 
 
 ## Heals it, never past the top of the bar it is on.
@@ -230,4 +290,9 @@ func take_hit(amount: int, dir: Vector2, knockback: float, heavy: bool, fx := {}
 		if amount <= 0:
 			Events.text_shown.emit(global_position + Vector2(0, -60), "Shield", Color(0.6, 0.8, 1.0))
 			return
+	if heavy and _heal_due > 0 and is_hittable():
+		_heal_due = 0
+		if is_instance_valid(_heal_mark):
+			_heal_mark.queue_free()
+		Events.text_shown.emit(global_position + Vector2(0, -80), "Interrupted", Color(1.0, 0.9, 0.5))
 	super.take_hit(amount, dir, knockback * KNOCKBACK_SHARE, heavy, fx)

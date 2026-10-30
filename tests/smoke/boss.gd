@@ -1,5 +1,5 @@
 extends SmokeSection
-## The bosses (Master Mong, Tutankhamen, Tombeth) and their bars, a lingering spell, death and
+## The bosses (Master Mong, Tutankhamen, Tombeth, Captain Skull) and their bars, a lingering spell, death and
 ## the rollback, then Megalopolis.
 
 
@@ -15,6 +15,7 @@ func run() -> void:
 
 	await _boss_bar()
 	await _tutankhamen()
+	await _captain_skull()
 	await _tombeth()
 
 	# A monster spell (Magic Meltdown) cuts your MA for a while, shown on the HUD, then wears off.
@@ -282,6 +283,86 @@ func _tombeth() -> void:
 	var sample := await _sample_rocks(get_tree(), game.room.world, game.room.ground_fx)
 	check(sample.x >= 1 and sample.y == sample.x,
 		"the rocks fall with a mark on the ground under each (%d rocks, %d marked)" % [sample.x, sample.y])
+
+
+## Captain Skull, on chunk 2's route: four bars; from his second, his crew's waves (3-9 of
+## them) and Shockvibe's ring; from his third, "To the Pain.": Bull's Eye and a Shockwave lane
+## every 2 s; his M Cure takes a cast that a heavy hit breaks off.
+func _captain_skull() -> void:
+	var Run := run_state()
+	await clear_room()  # the room before ends on its own route
+	Run.route.use_chunk(Run.route.chunk_numbered(2))
+	# A region after the Wharf, so his fall isn't the run's last (Tombeth's room comes next).
+	Run.route.regions.append(Run.route.chunk_numbered(1).regions[0])
+	Run.route.plan = Run.route.plan_rooms()
+	var sk := await _boss_room(0) as BossCaptainSkull
+	check(sk != null and game.room.data.map == "map_fd05e", "the Oops Wharf boss room is the Wharf Field with Captain Skull")
+	if sk != null:
+		await _skull_bars(sk)
+	await clear_room()
+	await wait(1.0)  # summons still on their spawn marks land before the route changes back
+	Run.route.use_chunk(Run.route.chunk_numbered(1))
+	Run.route.plan = Run.route.plan_rooms()
+
+
+func _skull_bars(sk: BossCaptainSkull) -> void:
+	check(sk.bars == 4, "Captain Skull has four bars (%d)" % sk.bars)
+	await wait(2.5)
+	check(sk.crew_called() == 0, "his crew stays off his first bar (%d)" % sk.crew_called())
+	sk.take_hit(int(sk.hp - sk.bar_hp * 2.9), Vector2.RIGHT, 0.0, true)
+	await wait(Boss.STAGGER_FOR + 2.0)
+	var crew_at: Array = enemies().filter(func(e: Enemy) -> bool: return e.data in sk.boss.summon_pool) 		.map(func(e: Enemy) -> String: return "%s %s %s" % [e.data.id, e.global_position, game.room.is_walkable(e.global_position)])
+	var crew := crew_at.size()
+	check(sk.crew_called() >= 3 and sk.crew_called() <= 9 and crew == sk.crew_called(),
+		"on his second bar his crew comes aboard: %d of them (%d standing)" % [sk.crew_called(), crew])
+	var mate: Enemy = enemies().filter(func(e: Enemy) -> bool: return e.data in sk.boss.summon_pool)[0] if crew > 0 else null
+	if mate:
+		mate.global_position = Vector2(mate.global_position.x, game.room.rect.position.y - 16.0)
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+		check(game.room.is_walkable(mate.global_position),
+			"a monster knocked through the room's edge is put back inside (%s)" % mate.global_position)
+	game.player.global_position = sk.global_position + Vector2(90, 0)
+	var vibe := await _mark_seen(func(m: Telegraph) -> bool:
+		return m.shape == "circle" and is_equal_approx(m.radius, BossCaptainSkull.VIBE_RADIUS), 7.0)
+	check(vibe, "Shockvibe rings out from him")
+	var ac: float = sk.stats.AC
+	sk.take_hit(int(sk.hp - sk.bar_hp * 1.9), Vector2.RIGHT, 0.0, true)
+	await wait(Boss.STAGGER_FOR + 0.3)
+	check(sk.raging and float(sk.stats.AC) > ac, "on his third bar he rages with Bull's Eye (AC %d -> %d)" % [ac, sk.stats.AC])
+	game.player.global_position = sk.global_position + Vector2(110, 0)
+	var wave := await _mark_seen(func(m: Telegraph) -> bool:
+		return m.shape == "lane" and is_equal_approx(m.width, BossCaptainSkull.WAVE_WIDTH), 3.0)
+	check(wave, "and punches a Shockwave down a marked lane")
+	sk.hp = sk.bar_top() - roundi(sk.bar_hp * 0.5)
+	await _until_healing(sk)
+	var before := sk.hp
+	sk.take_hit(1, Vector2.RIGHT, 0.0, true)
+	await wait(sk.boss.heal_cast + 0.2)
+	check(not sk.healing() and sk.hp <= before, "a heavy hit breaks off his M Cure (%d -> %d)" % [before, sk.hp])
+	await _until_healing(sk)
+	before = sk.hp
+	await wait(sk.boss.heal_cast + 0.2)
+	check(sk.hp > before, "and an M Cure left alone heals him (%d -> %d)" % [before, sk.hp])
+
+
+## Waits until a ground mark that `match` accepts appears, for up to `seconds`.
+func _mark_seen(match: Callable, seconds: float) -> bool:
+	for _i in roundi(seconds / 0.05):
+		await wait(0.05)
+		for m: Node in game.room.ground_fx.get_children():
+			if m is Telegraph and match.call(m):
+				return true
+	return false
+
+
+## Waits (up to 10 s of coin flips) until the boss casts M Cure.
+func _until_healing(b: Boss) -> void:
+	b._heal_at = 0.0
+	for _i in 200:
+		if b.healing():
+			return
+		await wait(0.05)
 
 
 ## Sample during flight instead of after a fixed delay that can outlast the rocks.

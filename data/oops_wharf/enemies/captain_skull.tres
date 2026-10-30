@@ -1,22 +1,30 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1_s"]
 [ext_resource type="Resource" path="res://data/materials/golden_eyepatch.tres" id="m_mat"]
 [ext_resource type="Resource" path="res://data/attacks/slam.tres" id="atk"]
 [ext_resource type="Script" path="res://scripts/data/boss_data.gd" id="b_s"]
-[ext_resource type="PackedScene" path="res://scenes/boss.tscn" id="2_scene"]
+[ext_resource type="PackedScene" path="res://scenes/boss_captain_skull.tscn" id="2_scene"]
 [ext_resource type="Resource" path="res://data/oops_wharf/enemies/crow.tres" id="e_crow"]
 [ext_resource type="Resource" path="res://data/oops_wharf/enemies/master_foe.tres" id="e_master_foe"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/quiem.tres" id="e_quiem"]
+[ext_resource type="Resource" path="res://data/oops_wharf/enemies/black_foe.tres" id="e_black_foe"]
 
 [sub_resource type="Resource" id="boss_row"]
 script = ExtResource("b_s")
 lives = 3
-heals = Array[Dictionary]([{"lives": 0, "share": 0.06, "every": 6.0}])
+heals = Array[Dictionary]([{"lives": 1, "share": 0.08, "every": 6.0}, {"lives": 0, "share": 0.16, "every": 1.5}])
 line_open = "I am pretty bored.."
 line_summon = "Let's party!"
 line_rage = "To the Pain."
 title = "Captain of the Oops Wharf"
-summons = {&"minion": ExtResource("e_crow"), &"brute": ExtResource("e_master_foe")}
+summon_pool = Array[ExtResource("1_s")]([ExtResource("e_crow"), ExtResource("e_quiem"), ExtResource("e_black_foe"), ExtResource("e_master_foe")])
+summon_every = 15.0
+summon_lives = 2
+summon_min = 3
+summon_max = 9
+summon_total = 40
+heal_cast = 0.8
 
 [resource]
 script = ExtResource("1_s")

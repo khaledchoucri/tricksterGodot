@@ -25,6 +25,19 @@ extends Resource
 @export var title := ""
 ## SummonMon_n, by the part each plays in the fight: role -> EnemyData.
 @export var summons: Dictionary = {}
+## Its row's summon waves (Boss._tick_summons), for a boss whose script doesn't call its own:
+## from `summon_lives` lives left (SummonLeftLife), every `summon_every` seconds (SummonTime),
+## SummonMin to SummonMax of `summon_pool` (SummonMon_n), until SummonTotalCnt have come.
+## 0 seconds: none.
+@export var summon_pool: Array[EnemyData] = []
+@export var summon_every := 0.0
+@export var summon_lives := 0
+@export var summon_min := 1
+@export var summon_max := 1
+@export var summon_total := 0
+## Ours: seconds its M Cure takes to cast, marked on it, which a heavy hit (a skill or a
+## combo's finisher) breaks off. 0: the heal lands as its timer comes round.
+@export var heal_cast := 0.0
 ## Spells whose look a boss's cast borrows from the player's cards: role -> CardData.
 @export var spells: Dictionary = {}
 ## The moveset's numbers: key -> number (see each boss script's header for its keys).
